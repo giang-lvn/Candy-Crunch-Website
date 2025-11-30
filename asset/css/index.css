@@ -124,6 +124,13 @@ nav.nav-visible {
   height: 100%;
   object-fit: cover;
   border-radius: var(--border-radius-12); /* 12px from main.css */
+  /* Optimize image rendering for faster display */
+  image-rendering: -webkit-optimize-contrast;
+  /* Prevent layout shift during load */
+  min-height: 527px;
+  /* Enable GPU acceleration for smoother rendering */
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 /* ================================================
@@ -1299,7 +1306,7 @@ nav.nav-visible {
 
 .faqs-subtitle {
   color: var(--teal-400, #26A69A);
-  font-family: Poppins;
+  font-family: var(--font-primary);
   font-size: 24px;
   font-style: normal;
   font-weight: 500;
@@ -1363,7 +1370,7 @@ nav.nav-visible {
 /* FAQ Question */
 .faq-question {
   color: var(--teal-500, #009688);
-  font-family: Poppins;
+  font-family: var(--font-primary);
   font-size: 18px;
   font-style: normal;
   font-weight: 500;
@@ -1416,7 +1423,7 @@ nav.nav-visible {
 
 .faq-answer p {
   color: var(--teal-500, #009688);
-  font-family: Poppins;
+  font-family: var(--font-primary);
   font-size: 18px;
   font-style: normal;
   font-weight: 400;
@@ -1624,7 +1631,7 @@ nav.nav-visible {
 /* ===== Testimonial Comment ===== */
 .testimonial-comment {
   color: var(--text-black, #212121);
-  font-family: Poppins;
+  font-family: var(--font-primary);
   font-size: 18px;
   font-style: normal;
   font-weight: 400;
@@ -1640,7 +1647,7 @@ nav.nav-visible {
 /* ===== Testimonial Tag ===== */
 .testimonial-tag {
   color: var(--grey-600, #757575);
-  font-family: Poppins;
+  font-family: var(--font-primary);
   font-size: 16px;
   font-style: normal;
   font-weight: 500;

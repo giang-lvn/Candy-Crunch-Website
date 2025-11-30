@@ -15,6 +15,7 @@ body {
   scrollbar-width: none;  /* Firefox */
   width: 100%;
   max-width: 100%;
+  font-family: var(--font-primary);
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -33,6 +34,17 @@ button {
 }
 body{
    background: var(--body-background, #F8F5EE);
+   font-family: var(--font-primary);
+}
+
+/* Ensure all text elements inherit Poppins font */
+p, span, div, a, li, td, th, label, input, textarea, select, button {
+  font-family: inherit;
+}
+
+/* Headings that don't use Modak should use Poppins */
+h1, h2, h3, h4, h5, h6 {
+  font-family: inherit;
 }
 
 
