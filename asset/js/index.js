@@ -9,6 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Wait for hero animation to complete (1s) then slide down nav
   setTimeout(() => {
     document.querySelector('nav').classList.add('nav-visible');
+    
+    // Show scroll indicators after navigation is visible
+    const scrollIndicators = document.querySelectorAll('.scroll-indicator');
+    scrollIndicators.forEach(indicator => {
+      indicator.classList.add('visible');
+    });
   }, 1200); // 1s hero animation + 200ms extra delay
 
   // Smooth scroll for logo link
@@ -599,4 +605,93 @@ function initArcSectionAnimations() {
   
   console.log('Arc section animations initialized');
 }
+
+// ============================================
+// SCROLL INDICATORS
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+  const scrollIndicator = document.getElementById('scrollIndicator');
+  const keepScrollingIndicator = document.getElementById('keepScrollingIndicator');
+  
+  if (!scrollIndicator || !keepScrollingIndicator) return;
+  
+  // Handle scroll indicators visibility
+  function handleScrollIndicators() {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const heroSection = document.querySelector('.hero');
+    const valuesSection = document.querySelector('.values');
+    
+    if (heroSection && valuesSection) {
+      // Calculate hero section height
+      const heroHeight = heroSection.offsetHeight;
+      
+      // Hero Scroll Indicator - only show when in hero section
+      if (scrollTop < heroHeight - 100) {
+        scrollIndicator.classList.add('visible');
+      } else {
+        scrollIndicator.classList.remove('visible');
+      }
+      
+      // Keep Scrolling Indicator - show ONLY during CANDY section (state 1)
+      // Values section is pinned from heroHeight to heroHeight + 400vh (400% pin duration)
+      // Timeline: Phase 1 (CANDY) is 0-3s out of 8s total = 0-37.5% of scroll progress
+      const valuesPinStart = heroHeight;
+      const valuesPinDuration = window.innerHeight * 4; // 400% of viewport height
+      
+      if (scrollTop >= valuesPinStart) {
+        // Calculate scroll progress through pinned Values section (0 = start, 1 = end)
+        const scrollProgress = (scrollTop - valuesPinStart) / valuesPinDuration;
+        
+        // Show only during first 40% (CANDY phase), fade out at 25-40%
+        if (scrollProgress < 0.4) {
+          // Start fading at 25% progress, fully hidden at 40%
+          let opacity = 1;
+          if (scrollProgress > 0.25) {
+            // Fade from 1 to 0 between 25% and 40% with easing
+            const fadeProgress = (scrollProgress - 0.25) / 0.15; // 0 to 1
+            // Use cubic easing for smoother fade out
+            const easedProgress = fadeProgress * fadeProgress * (3 - 2 * fadeProgress); // smoothstep
+            opacity = 1 - easedProgress;
+          }
+          
+          keepScrollingIndicator.classList.add('visible');
+          keepScrollingIndicator.style.opacity = opacity;
+        } else {
+          keepScrollingIndicator.classList.remove('visible');
+          keepScrollingIndicator.style.opacity = '1';
+        }
+      } else {
+        keepScrollingIndicator.classList.remove('visible');
+        keepScrollingIndicator.style.opacity = '1';
+      }
+    }
+  }
+  
+  // Smooth scroll to Values section when clicking hero indicator
+  scrollIndicator.addEventListener('click', () => {
+    const valuesSection = document.querySelector('.values');
+    if (valuesSection) {
+      valuesSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  });
+  
+  // Smooth scroll to Joy/Featured section when clicking keep scrolling indicator
+  keepScrollingIndicator.addEventListener('click', () => {
+    const featuredSection = document.querySelector('.featured-products');
+    if (featuredSection) {
+      featuredSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  });
+  
+  // Listen to scroll events
+  window.addEventListener('scroll', handleScrollIndicators, { passive: true });
+  
+  console.log('Scroll indicators initialized');
+});
 
