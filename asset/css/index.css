@@ -1786,7 +1786,7 @@ nav.nav-visible {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  opacity: 0.6;
+  opacity: 1;
   transition: opacity 0.3s ease;
 }
 
@@ -1802,7 +1802,7 @@ nav.nav-visible {
   color: var(--teal-500);
   box-shadow: 0 4px 12px rgba(0, 150, 136, 0.1);
   transition: all 0.3s ease, opacity 0.3s ease;
-  opacity: 0.6;
+  opacity: 1;
 }
 
 .scroll-indicator:hover .scroll-arrow {
@@ -1810,7 +1810,7 @@ nav.nav-visible {
   color: var(--text-white);
   transform: translateY(4px);
   box-shadow: 0 6px 16px rgba(0, 150, 136, 0.2);
-  opacity: 0.8;
+  opacity: 1;
 }
 
 .scroll-indicator:hover .scroll-text {

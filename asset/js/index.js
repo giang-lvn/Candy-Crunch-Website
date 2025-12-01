@@ -669,24 +669,14 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Smooth scroll to Values section when clicking hero indicator
   scrollIndicator.addEventListener('click', () => {
-    const valuesSection = document.querySelector('.values');
-    if (valuesSection) {
-      valuesSection.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }
+    // Scroll on click has been disabled intentionally
+    return;
   });
   
   // Smooth scroll to Joy/Featured section when clicking keep scrolling indicator
   keepScrollingIndicator.addEventListener('click', () => {
-    const featuredSection = document.querySelector('.featured-products');
-    if (featuredSection) {
-      featuredSection.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }
+    // Scroll on click has been disabled intentionally
+    return;
   });
   
   // Listen to scroll events
