@@ -29,7 +29,7 @@
 /* Content box */
 .welcome-content {
     display: flex;
-    padding: var(--spacing-48, 48px) 72px;
+    padding: var(--spacing-48) 72px;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -41,49 +41,32 @@
 
 /* Title 2 dòng giống ảnh */
 .welcome-title span:first-child {
-    color: var(--red-500, #FF4934);
+    color: var(--red-500);
     text-align: center;
-    /* Headings/Heading 1 */
-    font-family: Modak;
-    font-size: 90px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 86%; /* 77.4px */
-    letter-spacing: 0.36px;
+    font: var(--heading-1);
 }
 
 .welcome-title span:last-child {
-    color: var(--red-500, #FF4934);
+    color: var(--red-500);
     text-align: center;
-    /* Headings/Heading 1 */
-    font-family: Modak;
-    font-size: 90px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 86%; /* 77.4px */
-    letter-spacing: 0.36px;
+    font: var(--heading-1);
 }
 
 /* Description */
 .welcome-description {
-    color: var(--text-black, #212121);
+    color: var(--text-black);
     text-align: center;
-    /* Body Large/Regular */
-    font-family: Poppins;
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 27px; /* 150% */
+    font: var(--body-large-regular);
 }
 
 /* Button */
 .welcome-button {
     display: flex;
-    padding: var(--spacing-8, 8px) var(--spacing-16, 16px);
+    padding: var(--spacing-8) var(--spacing-16);
     justify-content: center;
     align-items: center;
-    border-radius: var(--border-radius-12, 12px);
-    background: var(--primary-button-default-background, #017E6A);
+    border-radius: var(--border-radius-12);
+    background: var(--primary-button-default-background);
 }
 
 /* ================================================
@@ -92,7 +75,7 @@
 /* STORY SECTION */
 .story-section {
     padding: 60px 0;
-    background: #faf7ef;
+    background: var(--beige-500);
 }
 
 .story-container {
@@ -100,7 +83,7 @@
     align-items: center;
     gap: 40px;
     flex-wrap: wrap;
-    max-width: 1200px;
+    max-width: 1440px;
     margin: 0 auto;
     padding: 0 20px;
 }
@@ -120,37 +103,19 @@
 }
 
 .story-title {
-    color: var(--pink-600, #E37695);
-    /* Headings/Heading 1 */
-    font-family: Modak;
-    font-size: 90px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 86%; /* 77.4px */
-    letter-spacing: 0.36px;
+    color: var(--pink-600);
+    font: var(--heading-1);
 }
 
 .story-subtitle {
-    color: var(--lightBlue-500, #8AB9EA);
-    /* Headings/Heading 3 */
-    font-family: Modak;
-    font-size: 40px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 120%; /* 48px */
-    letter-spacing: 0.12px;
+    color: var(--lightBlue-500);
+    font: var(--heading-3);
 }
 
 .story-description {
     text-align: justify;
-    color: #000;
-    /* Body/Regular */
-    font-family: Poppins;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 130%; /* 20.8px */
-    letter-spacing: -0.038px;
+    color: var(--text-black);
+    font: var(--body-regular);
 }
 
 .story-image {
@@ -191,12 +156,7 @@
 .timeline-title h2 {
     width: 968px;
     text-align: center;
-    font-family: Modak;
-    font-size: 90px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 86%;
-    letter-spacing: 0.36px;
+    font: var(--heading-1);
     background: linear-gradient(
         90deg,
         var(--green-500, #017E6A) 17.79%,
@@ -228,7 +188,7 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 60px;
-    background: var(--yellow-100, #FEEAB2);
+    background: var(--yellow-100);
 }
 
 /* CONTENT INSIDE ONE ITEM (IMG + TEXT) */
@@ -260,33 +220,18 @@
 /* YEAR */
 .timeline-year {
     flex: 1 0 0;
-    color: var(--yellow-700, #B48404);
-    font-family: Modak;
-    font-size: 30px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 120%;
-    letter-spacing: 0.06px;
+    color: var(--yellow-700);
+    font: var(--heading-5);
 }
 
 /* TITLE UNDER YEAR */
 .timeline-heading {
-    color: var(--yellow-700, #B48404);
-    font-family: Modak;
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 120%;
-    letter-spacing: 0.048px;
+    color: var(--yellow-700);
+    font: var(--heading-4);
 }
 
 /* DESCRIPTION */
 .timeline-desc {
-    color: #000;
-    font-family: Poppins;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 130%;
-    letter-spacing: -0.038px;
+    color: var(--text-black);
+    font: var(--body-regular);
 }
