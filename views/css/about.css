@@ -197,10 +197,10 @@
     position: relative;
 }
 
-/* ================================================
-   TIMELINE SECTION 
-   ================================================ */
-.timeline-section {
+/* ============================
+   TIMELINE SECTION (fixed)
+   ============================ */
+   .timeline-section {
     width: 100%;
     padding: 60px 0;
     display: flex;
@@ -219,17 +219,9 @@
     gap: 24px;
 }
 
-.line-1 {
-    font: var(--heading-1);
-}
-
-.candy {
-    color: var(--yellow-500);
-}
-
-.crunch {
-    color: var(--green-500);
-}
+.line-1 { font: var(--heading-1); }
+.candy { color: var(--yellow-500); }
+.crunch { color: var(--green-500); }
 
 .line-2 {
     font: var(--heading-1);
@@ -240,48 +232,73 @@
     text-align: center;
 }
 
-/* Timeline scroll area */
+/* Timeline scroll area: wrapper giữ overflow ẩn */
 .timeline-wrapper {
-    overflow-x: auto;      /* Cho phép scroll ngang */
-    overflow-y: hidden;
+    width: 100%;
+    overflow: hidden;               /* Ẩn scrollbar, JS sẽ điều khiển scrollLeft */
     padding-bottom: 10px;
-    scroll-behavior: smooth;  /* Lướt mượt */
-    -webkit-overflow-scrolling: touch; /* hỗ trợ mobile */
-    -ms-overflow-style: none; /* IE + Edge */
-    scrollbar-width: none;    /* Firefox */
-    justify-content: flex-start; /* ép timeline dạt về trái */
-    align-items: stretch;         /* tránh tự canh giữa theo chiều dọc */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
-.timeline-wrapper::-webkit-scrollbar {
-    display: none; /* Chrome + Safari */
-}
-
+/* actual scroller: flex row, nhưng KHÔNG đặt white-space: nowrap */
 .timeline-scroll {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     gap: 40px;
-    align-self: stretch;
     padding-left: 40px;
-    scroll-snap-type: x mandatory;
-    padding-left: 0;
-    justify-content: flex-start !important;
+    padding-right: 40px;
+    overflow: hidden;               /* để JS dùng scrollLeft nội bộ (bằng cách thay đổi scrollLeft) */
+    scroll-behavior: auto;          /* tránh smooth để reset không bị animation */
+    box-sizing: border-box;
+    will-change: scroll-left;
 }
+
+/* Ẩn scrollbar cho webkit (chỉ cosmetic) */
+.timeline-scroll::-webkit-scrollbar { display: none; }
 
 /* Timeline cards */
 .timeline-card {
-    width: 280px;
+    width: 280px;                   /* chiều ngang cố định */
     padding: 32px;
     display: flex;
     flex-direction: column;
-    gap: 52px;
-    flex-shrink: 0;
+    gap: 24px;                      /* giảm gap để nội dung không quá chật */
+    flex: 0 0 auto;                 /* không co lại, không giãn */
+    box-sizing: border-box;
     height: 455px;
     scroll-snap-align: start;
+    overflow: hidden;               /* giữ card không vọt ra ngoài */
+    border-radius: 12px;
 }
 
-.timeline-card:first-child {
-    margin-left: 0;
+/* đảm bảo nội dung bên trong wrap đúng */
+.timeline-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 0;                  /* cho flex item scroll/overflow đúng */
+}
+
+.timeline-content h4 { font: var(--heading-4); margin: 0; }
+.timeline-content h5 { font: var(--heading-5); margin: 0; }
+
+.timeline-content p {
+    color: var(--text-black);
+    font: var(--body-regular);
+    margin: 0;
+    white-space: normal;            /* CHO PHÉP XUỐNG DÒNG */
+    word-break: break-word;         /* ngắt từ khi cần (tránh tràn) */
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
+
+/* Image (square placeholder) */
+.timeline-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    flex-shrink: 0;
 }
 
 /* Color themes */
@@ -290,55 +307,21 @@
 .timeline-card.pink   { background: var(--pink-100); }
 .timeline-card.purple { background: var(--purple-100); }
 
-/* Image (square placeholder) */
-.timeline-image {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
-}
-
-/* Yellow card text colors */
+/* Text color per theme */
 .timeline-card.yellow h4,
-.timeline-card.yellow h5 {
-    color: var(--yellow-700);
-}
-
-/* Green card text colors */
+.timeline-card.yellow h5 { color: var(--yellow-700); }
 .timeline-card.green h4,
-.timeline-card.green h5 {
-    color: var(--teal-700);
-}
-
-/* Pink card text colors */
+.timeline-card.green h5   { color: var(--teal-700); }
 .timeline-card.pink h4,
-.timeline-card.pink h5 {
-    color: var(--pink-700);
-}
-
-/* Purple card text colors */
+.timeline-card.pink h5    { color: var(--pink-700); }
 .timeline-card.purple h4,
-.timeline-card.purple h5 {
-    color: var(--purple-700);
+.timeline-card.purple h5  { color: var(--purple-700); }
+
+/* Optional: khi hover, tạm dừng auto-scroll (JS sẽ dựa vào class này) */
+.timeline-wrapper.is-hovered {
+    /* không cần CSS đặc biệt, JS dùng biến để pause */
 }
 
-.timeline-content {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
-.timeline-content h4 {
-    font: var(--heading-4);
-}
-
-.timeline-content h5 {
-    font: var(--heading-5);
-}
-
-.timeline-content p {
-    color: var(--text-black);
-    font: var(--body-regular);
-}
 
 /* ================================================
    TEAM SECTION 
@@ -423,7 +406,6 @@
 .team-card .team-info p {
     margin-bottom: 14px;
 }
-
 
 /* -------- WHEN OPEN -------- */
 .team-card.open {
