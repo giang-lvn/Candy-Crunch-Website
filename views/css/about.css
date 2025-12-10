@@ -68,6 +68,72 @@
     }
 }
 
+/* ================================================
+   RESPONSIVE WELCOME
+   ================================================ */
+/* ============ 1200px ============ */
+@media (max-width: 1200px) {
+    .welcome-section {
+        padding: 64px 180px;
+        background-position: center;
+    }
+
+    .welcome-content {
+        padding: 40px 60px;
+        gap: 28px;
+    }
+
+    .welcome-content h1 {
+        font-size: 50px; 
+    }
+}
+
+/* ============ 992px ============ */
+@media (max-width: 992px) {
+    .welcome-section {
+        padding: 64px 120px;
+    }
+
+    .welcome-content {
+        padding: 36px 48px;
+        gap: 24px;
+    }
+
+    .welcome-content h1 {
+        font-size: 40px;
+        line-height: 1.2;
+    }
+
+    .welcome-content p {
+        font-size: 16px;
+    }
+}
+
+/* ============ 768px  ============ */
+@media (max-width: 768px) {
+    .welcome-section {
+        padding: 40px 24px;
+        min-height: 90vh;
+    }
+
+    .welcome-content {
+        padding: 28px 32px;
+        gap: 20px;
+    }
+
+    .welcome-content h1 {
+        font-size: 32px;
+    }
+
+    .welcome-content p {
+        font-size: 15px;
+    }
+
+    .cta-btn {
+        padding: 10px 18px;
+        font-size: 14px;
+    }
+}
 
 /* ================================================
    STORY SECTION 
@@ -75,6 +141,7 @@
 .story-section {
     padding: 60px;
     background: var(--beige-500);
+    width: 100%;
 }
 
 .story-container {
@@ -82,17 +149,19 @@
     align-items: center;
     gap: 60px;
     flex-wrap: wrap;
-    max-width: 1440px;
+    width: 100%;
+    max-width: 100%;
     margin: 0 auto;
 }
 
+/* LEFT */
 .story-left {
     display: flex;
-    height: 348px;
     flex-direction: column;
     align-items: flex-start;
     gap: 24px;
-    flex: 1 0 0;
+    flex: 1;
+    min-width: 280px;
 }
 
 .story-text {
@@ -116,11 +185,82 @@
     font: var(--body-regular);
 }
 
-.story-image img {
-    width: 621px;
-    height: 348px;
-    flex-shrink: 0;
-    aspect-ratio: 207/116;
+
+/* RIGHT (IMAGE) */
+.story-right img {
+    width: 100%;     
+    height: auto;
+    border-radius: 12px;
+    display: block;
+}
+
+
+/* ================================================
+   RESPONSIVE STORY
+   ================================================ */
+/* ======================== 1200px ======================== */
+@media (max-width: 1200px) {
+    .story-section {
+        padding: 40px;
+    }
+
+    .story-container {
+        gap: 40px;
+    }
+
+    .story-title {
+        font-size: 50px;
+    }
+
+    .story-subtitle {
+        font-size: 40px;
+    }
+}
+
+/* ======================== 992px ======================== */
+@media (max-width: 992px) {
+    .story-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 32px;
+    }
+
+    .story-left {
+        align-items: center;
+        text-align: center;
+    }
+
+    .story-title {
+        font-size: 40px;
+    }
+
+    .story-subtitle {
+        font-size: 30px;
+    }
+}
+
+/* ======================== 768px ======================== */
+@media (max-width: 768px) {
+    .story-section {
+        padding: 24px;
+    }
+
+    .story-left {
+        gap: 16px;
+    }
+
+    .story-description {
+        font-size: 15px;
+        text-align: left;
+    }
+
+    .story-title {
+        font-size: 32px;
+    }
+
+    .story-subtitle {
+        font-size: 22px;
+    }
 }
 
 /* ================================================
@@ -197,8 +337,103 @@
     position: relative;
 }
 
+/* ================================================
+   RESPONSIVE MISSION
+   ================================================ */
+/* ================================ 1200px ================================ */
+@media (max-width: 1200px) {
+    .mission-section {
+        height: auto; /* FIX: không khóa chiều cao */
+        padding: 40px 0;
+    }
+
+    .mission-container {
+        gap: 30px;
+        padding: 0 40px;
+    }
+
+    .candy-image img {
+        width: 380px;
+        height: auto;
+    }
+
+    .vision h2,
+    .mission h2 {
+        font-size: 50px;
+    }
+}
+
+/* ================================ 992px ================================ */
+@media (max-width: 992px) {
+    .mission-section {
+        height: auto;
+        padding: 50px 0;
+    }
+
+    /* Background chia dọc thay vì chia đôi ngang */
+    .mission-bg {
+        flex-direction: column;
+    }
+
+    .left-bg,
+    .right-bg {
+        width: 100%;
+        height: 50%;
+    }
+
+    .mission-container {
+        flex-direction: column;
+        text-align: center;
+        padding: 0 24px;
+        gap: 40px;
+    }
+
+    .vision h2,
+    .mission h2 {
+        font-size: 40px;
+    }
+
+    .vision p,
+    .mission p {
+        text-align: center;
+    }
+
+    .candy-image img {
+        width: 320px;
+        height: auto;
+    }
+}
+
+/* ================================ 768px ================================ */
+@media (max-width: 768px) {
+    .mission-section {
+        padding: 32px 0;
+    }
+
+    .mission-container {
+        gap: 28px;
+        padding: 0 20px;
+    }
+
+    .vision h2,
+    .mission h2 {
+        font-size: 32px; /* thu nhỏ heading */
+    }
+
+    .vision p,
+    .mission p {
+        font-size: 15px;
+        line-height: 1.5;
+    }
+
+    .candy-image img {
+        width: 260px;
+    }
+}
+
+
 /* ============================
-   TIMELINE SECTION (fixed)
+   TIMELINE SECTION 
    ============================ */
    .timeline-section {
     width: 100%;
@@ -317,11 +552,143 @@
 .timeline-card.purple h4,
 .timeline-card.purple h5  { color: var(--purple-700); }
 
-/* Optional: khi hover, tạm dừng auto-scroll (JS sẽ dựa vào class này) */
-.timeline-wrapper.is-hovered {
-    /* không cần CSS đặc biệt, JS dùng biến để pause */
+/* ================================================
+   RESPONSIVE MISSION
+   ================================================ */
+/* ================================ 1200px ================================ */
+@media (max-width: 1200px) {
+    .timeline-section {
+        padding: 40px 0;
+        gap: 40px;
+    }
+
+    .timeline-scroll {
+        gap: 32px;
+        padding-left: 32px;
+        padding-right: 32px;
+    }
+
+    .timeline-card {
+        width: 250px;
+        height: 420px;
+        padding: 28px;
+    }
+
+    .timeline-image {
+        width: 55px;
+        height: 55px;
+    }
+
+    .line-1 {
+        font-size: 50px;
+    }
+
+    .line-2 {
+        font-size: 50px;
+    }
 }
 
+/* ============================ 992px ============================= */
+@media (max-width: 992px) {
+
+    .timeline-section {
+        padding: 32px 0;
+        gap: 36px;
+    }
+
+    /* Thu nhỏ font heading */
+    .line-1 {
+        font-size: 40px;
+        text-align: center;
+    }
+
+    .line-2 {
+        font-size: 40px;
+        text-align: center;
+    }
+
+    /* Scroll area */
+    .timeline-scroll {
+        gap: 28px;
+        padding-left: 28px;
+        padding-right: 28px;
+    }
+
+    /* Cards */
+    .timeline-card {
+        width: 220px;
+        height: 395px;
+        padding: 24px;
+    }
+
+    .timeline-content h5 {
+        font-size: 18px;
+    }
+
+    .timeline-content p {
+        font-size: 14px;
+        line-height: 1.45;
+    }
+
+    .timeline-image {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+/* ============================ 768px ============================= */
+@media (max-width: 768px) {
+
+    .timeline-section {
+        padding: 24px 0;
+        gap: 30px;
+    }
+
+    .timeline-title {
+        gap: 12px;
+    }
+
+    .line-1 {
+        font-size: 32px;
+    }
+
+    .line-2 {
+        font-size: 32px;
+    }
+
+    /* Scroll wrapper giảm padding */
+    .timeline-scroll {
+        gap: 20px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    /* Card nhỏ hơn */
+    .timeline-card {
+        width: 180px;
+        height: 360px;
+        padding: 20px;
+        gap: 14px;
+    }
+
+    .timeline-image {
+        width: 45px;
+        height: 45px;
+    }
+
+    .timeline-content h4 {
+        font-size: 20px;
+    }
+
+    .timeline-content h5 {
+        font-size: 16px;
+    }
+
+    .timeline-content p {
+        font-size: 13px;
+        line-height: 1.4;
+    }
+}
 
 /* ================================================
    TEAM SECTION 
@@ -422,4 +789,138 @@
     display: flex;
     align-items: center;  
     gap: 32px;
+}
+
+/* ================================================
+   RESPONSIVE MISSION
+   ================================================ */
+/* ================================ 1200px ================================ */
+@media (max-width: 1200px) {
+    .team-container {
+        gap: 20px;
+    }
+
+    .team-card.open {
+        padding: 20px;
+        gap: 20px;
+    }
+
+    .team-card .team-open {
+        width: 650px;
+        gap: 24px;
+    }
+
+    .team-card .team-open img {
+        width: 240px;
+    }
+
+    .team-card .team-info h3 {
+        font-size: 22px;
+    }
+
+    .team-title {
+        font-size: 50px;
+    }
+}
+
+/* ================================ 992px ================================ */
+@media (max-width: 992px) {
+    .team-section {
+        padding: 0 30px 50px;
+    }
+
+    .team-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 40px;
+    }
+
+    .team-title {
+        font-size: 40px;
+    }
+
+    .team-card {
+        width: 100%;
+        max-width: 700px;
+        height: auto;
+    }
+
+    .team-card .team-closed {
+        width: 100%;
+        height: 70px;
+        writing-mode: horizontal-tb;
+        font-size: 18px;
+    }
+
+    /* OPEN STATE */
+    .team-card.open {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        height: auto;
+    }
+
+    .team-card .team-open {
+        flex-direction: column;
+        width: 100%;
+        text-align: center;
+        align-items: center;
+    }
+
+    .team-card .team-open img {
+        width: 280px;
+    }
+
+    .team-card .team-info {
+        text-align: center;
+    }
+
+    .team-card .team-info h3 {
+        font-size: 22px;
+    }
+}
+
+/* ================================ 768px ================================ */
+@media (max-width: 768px) {
+
+    .team-section {
+        padding: 0 20px 40px;
+    }
+
+    .team-title {
+        font-size: 32px;
+    }
+
+    .team-card {
+        max-width: 100%;
+        width: 100%;
+        border-radius: 14px;
+    }
+
+    .team-card .team-closed {
+        height: 60px;
+        font-size: 16px;
+    }
+
+    .team-card.open {
+        padding: 16px;
+        gap: 16px;
+    }
+
+    .team-card .team-open {
+        gap: 20px;
+    }
+
+    .team-card .team-open img {
+        width: 200px;
+    }
+
+    .team-card .team-info h3 {
+        font-size: 20px;
+    }
+
+    .team-card .team-info p {
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
 }
