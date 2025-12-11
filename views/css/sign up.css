@@ -1,0 +1,219 @@
+/* ================================================
+   CÀI ĐẶT RIÊNG CHO TRANG SIGNUP
+   ================================================ */
+
+/* --- 1. HEADER SECTION --- */
+.header-section {
+    background-color: #F8F5EE; 
+    padding: 0; /* Bỏ padding thừa */
+    width: 100%;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    height: 60px; /* Cố định chiều cao Header */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-img {
+    height: 45px; /* Logo vừa vặn */
+    object-fit: contain;
+}
+
+/* --- 2. SIGN UP SECTION --- */
+.signup-section {
+    width: 100%;
+    /* Chiều cao = 100% màn hình trừ đi 60px của Header */
+    height: calc(100vh - 60px); 
+    
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Căn giữa hộp */
+    padding: 10px; /* Padding rất nhỏ để tiết kiệm chỗ */
+    
+    /* BACKGROUND */
+    background-image: url('../img/Candy background.jpg'); 
+    background-size: cover;
+    background-position: center bottom;
+    background-repeat: no-repeat;
+    
+    overflow: hidden; /* QUAN TRỌNG: Chặn scroll */
+}
+
+/* --- 3. SIGN UP CARD --- */
+.signup-card {
+    background-color: #F8F5EE; /* Nền kem đặc */
+    
+    width: 100%;
+    max-width: 500px;
+    
+    /* Giảm padding trên dưới để nhường chỗ cho Title to */
+    padding: 15px 35px; 
+    
+    border-radius: 16px;
+    box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.3);
+    
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    
+    /* Đảm bảo hộp không bao giờ cao hơn vùng chứa */
+    max-height: 100%; 
+}
+
+/* Nút đóng X */
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #666;
+    cursor: pointer;
+    z-index: 5;
+}
+
+/* --- 4. TYPOGRAPHY (Cập nhật theo yêu cầu của bạn) --- */
+.signup-header {
+    text-align: center;
+    margin-bottom: 10px; /* Giảm khoảng cách dưới title */
+}
+
+.signup-title {
+    /* === YÊU CẦU CỦA BẠN === */
+    color: var(--teal-500, #009688);
+    text-align: center;
+    font-family: 'Modak', cursive; /* Đảm bảo fallback font */
+    font-size: 50px; /* Size to */
+    font-style: normal;
+    font-weight: 400;
+    line-height: 120%; /* ~60px */
+    letter-spacing: 0.2px;
+    /* ======================= */
+    
+    margin-top: 0;
+    margin-bottom: 0; /* Bỏ margin thừa vì line-height đã cao rồi */
+}
+
+.signup-subtitle {
+    font-family: var(--font-primary, sans-serif);
+    font-weight: 500;
+    color: var(--gray-900, #212121);
+    font-size: 16px;
+    margin-bottom: 0;
+    line-height: 1.4;
+}
+
+.signup-desc {
+    font-family: var(--font-primary, sans-serif);
+    font-size: 12px;
+    color: var(--gray-600, #616161);
+    margin-bottom: 10px; /* Cách form 1 chút */
+}
+
+/* --- 5. FORM STYLES (Siêu tối ưu diện tích) --- */
+.signup-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Khoảng cách giữa các dòng input cực nhỏ */
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+.form-row .form-group { flex: 1; }
+
+.form-group label {
+    display: block;
+    font-family: var(--font-primary, sans-serif);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-900, #212121);
+    margin-bottom: 2px; /* Dán sát vào input */
+}
+
+.form-group input {
+    width: 100%;
+    /* Input làm gọn lại (padding nhỏ) */
+    padding: 8px 12px; 
+    height: 38px; /* Cố định chiều cao input để dễ kiểm soát */
+    
+    font-family: var(--font-primary, sans-serif);
+    font-size: 14px;
+    border: 1px solid var(--gray-300, #E0E0E0);
+    border-radius: 8px;
+    background: #fff;
+    outline: none;
+}
+
+.form-group input:focus {
+    border-color: var(--teal-500, #009688);
+    box-shadow: 0 0 0 2px rgba(0, 150, 136, 0.15);
+}
+
+/* --- 6. BUTTON --- */
+.button-wrapper {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.cta-btn.full-width {
+    width: 100%;
+    height: 44px; /* Cố định chiều cao nút */
+    font-size: 16px;
+    background: var(--green-500, #017E6A);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    font-family: var(--font-primary, sans-serif);
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cta-btn:hover {
+    background: var(--green-600, #006655);
+}
+
+/* --- RIPPLE EFFECT --- */
+.ripple-effect {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    transform: scale(0);
+    animation: ripple 0.6s linear;
+    pointer-events: none;
+}
+@keyframes ripple { to { transform: scale(4); opacity: 0; } }
+
+/* --- RESPONSIVE MAGIC (Xử lý màn hình lùn) --- */
+/* Nếu chiều cao màn hình < 700px (Laptop nhỏ), ta buộc phải thu nhỏ Title một chút xíu để không bị vỡ layout */
+@media (max-height: 700px) {
+    .signup-title {
+        font-size: 40px; /* Giảm nhẹ xuống 40px để cứu layout */
+        line-height: 100%;
+    }
+    .signup-card {
+        padding: 10px 25px;
+    }
+    .signup-form {
+        gap: 6px;
+    }
+    .form-group input {
+        height: 34px;
+        font-size: 13px;
+    }
+    .cta-btn.full-width {
+        height: 40px;
+    }
+}
