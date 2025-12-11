@@ -105,12 +105,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Xóa trắng form để nhập người tiếp theo
             form.reset();
-            
-            // In ra console để bạn dễ kiểm tra (F12 -> Console)
-            console.log("Danh sách User hiện tại:", usersList);
-            
-            // (Tùy chọn) Chuyển hướng sang trang đăng nhập
-            // window.location.href = "login.html"; 
+            // Chuyển hướng đến trang login để đăng nhập lại;
+            window.location.href = 'login.html'; 
         });
     }
 });

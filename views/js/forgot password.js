@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Lưu email đang reset để dùng cho trang sau
                 localStorage.setItem('reset_email', email);
                 alert('Mã xác thực đã được gửi đến email của bạn.');
-                window.location.href = '../php/verify email.html';
+                window.location.href = 'verify email.html';
             } else {
                 alert('Email này chưa được đăng ký trong hệ thống!');
             }

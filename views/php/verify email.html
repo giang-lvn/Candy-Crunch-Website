@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Code - Candy Crunch</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Modak&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/verify email.css">
+    <script src="../js/verify email.js"></script>
+</head>
+<body>
+    <header class="header-section">
+        <div class="logo-img">
+            <img src="../img/logo.svg" alt="Candy Crunch Logo" class="logo-img">
+        </div>
+    </header>
+
+    <section class="verify-section">
+        <div class="verify-card">
+            <button class="close-btn" onclick="window.location.href='../php/login.html'">&times;</button>
+
+            <div class="verify-header-content">
+                <h1 class="verify-title">Verify Code</h1>
+                <p class="verify-subtitle">Check your email!</p>
+                <p class="verify-desc">Enter the 4-digit code sent to your email.</p>
+            </div>
+
+            <form id="verifyForm" class="verify-form">
+                <div class="form-group">
+                    <label>Verification Code</label>
+                    <input type="text" id="verify_code" placeholder="Enter code here" required style="text-align: center; letter-spacing: 2px;">
+                </div>
+
+                <div class="button-wrapper">
+                    <button type="submit" class="cta-btn full-width" id="btnVerify">
+                        Verify
+                    </button>
+                </div>
+                
+                <div class="verify-footer-links">
+                    <a href="#" onclick="alert('Mã mới đã được gửi!')" class="resend-link">Resend Code</a>
+                </div>
+            </form>
+        </div>
+    </section>
+
+</body>
+</html>
