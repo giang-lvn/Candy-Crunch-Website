@@ -526,7 +526,7 @@ function initArcSectionAnimations() {
       pin: true,
       scrub: 0.5,
       invalidateOnRefresh: true,
-      pinSpacing: true,
+      pinSpacing: true, // Keep spacing for proper scroll
       anticipatePin: 1
     }
   });
