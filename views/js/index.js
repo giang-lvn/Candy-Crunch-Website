@@ -685,3 +685,46 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('Scroll indicators initialized');
 });
 
+// ============================================
+// SNOWFLAKES EFFECT (Hero Section Only)
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+  const snowflakesContainer = document.querySelector('.snowflakes-container');
+  
+  if (!snowflakesContainer) return;
+  
+  // Snowflake characters (various styles)
+  const snowflakeChars = ['❄', '❅', '❆'];
+  
+  // Number of snowflakes
+  const snowflakeCount = 50;
+  
+  // Create snowflakes
+  function createSnowflakes() {
+    for (let i = 0; i < snowflakeCount; i++) {
+      const snowflake = document.createElement('div');
+      snowflake.classList.add('snowflake');
+      
+      // Random snowflake character
+      snowflake.textContent = snowflakeChars[Math.floor(Math.random() * snowflakeChars.length)];
+      
+      // Random horizontal position
+      snowflake.style.left = Math.random() * 100 + '%';
+      
+      // Random animation delay (stagger the falling)
+      snowflake.style.animationDelay = Math.random() * 10 + 's';
+      
+      // Random animation duration (between 10-15s)
+      const duration = 10 + Math.random() * 5;
+      snowflake.style.animationDuration = duration + 's';
+      
+      snowflakesContainer.appendChild(snowflake);
+    }
+  }
+  
+  // Initialize snowflakes after a short delay (let page load first)
+  setTimeout(createSnowflakes, 500);
+  
+  console.log('Snowflakes effect initialized for hero section');
+});
+

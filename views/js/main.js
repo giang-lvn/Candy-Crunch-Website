@@ -2,9 +2,9 @@
 document.addEventListener('DOMContentLoaded', () => {
   // Array of hero line images for rotation
   const heroImages = [
-    '/asset/img/hero-line2.webp',
-    '/asset/img/hero-line3.webp',
-    '/asset/img/hero-line4.webp'
+    '/views/img/hero-line2.webp',
+    '/views/img/hero-line3.webp',
+    '/views/img/hero-line4.webp'
   ];
   
   let currentImageIndex = 0;

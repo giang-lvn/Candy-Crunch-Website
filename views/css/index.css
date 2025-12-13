@@ -31,6 +31,123 @@ nav.nav-visible {
   gap: var(--spacing-64); /* 64px from main.css */
   align-self: stretch;
   min-height: 100vh; /* Full viewport height */
+  position: relative; /* For snowflakes positioning */
+  overflow: hidden; /* Keep snowflakes within hero section */
+}
+
+/* Snowflakes Container */
+.snowflakes-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* Don't interfere with hero content */
+  z-index: 10; /* Above all hero content */
+}
+
+/* Individual Snowflake */
+.snowflake {
+  position: absolute;
+  top: -100px;
+  color: var(--blue-50, #E3F2FD);
+  font-size: 1em;
+  opacity: 0.95;
+  user-select: none;
+  pointer-events: none;
+  animation: fall linear infinite;
+  text-shadow: 
+    0 0 10px rgba(227, 242, 253, 0.9),
+    0 0 20px rgba(227, 242, 253, 0.6),
+    0 0 30px rgba(173, 216, 230, 0.5),
+    2px 2px 4px rgba(0, 0, 0, 0.2);
+  filter: drop-shadow(0 0 8px rgba(227, 242, 253, 0.8));
+}
+
+/* Snowflake falling animation */
+@keyframes fall {
+  0% {
+    top: -15%;
+    opacity: 0;
+  }
+  5% {
+    opacity: 0.95;
+  }
+  95% {
+    opacity: 0.95;
+  }
+  100% {
+    top: 105%;
+    opacity: 0;
+  }
+}
+
+/* Different snowflake sizes and speeds */
+.snowflake:nth-child(3n) {
+  font-size: 0.8em;
+  animation-duration: 10s;
+}
+
+.snowflake:nth-child(3n+1) {
+  font-size: 1.2em;
+  animation-duration: 15s;
+}
+
+.snowflake:nth-child(3n+2) {
+  font-size: 1em;
+  animation-duration: 12s;
+}
+
+/* Slight horizontal drift */
+.snowflake:nth-child(2n) {
+  animation-name: fall-drift-left;
+}
+
+.snowflake:nth-child(2n+1) {
+  animation-name: fall-drift-right;
+}
+
+@keyframes fall-drift-left {
+  0% {
+    top: -15%;
+    opacity: 0;
+  }
+  5% {
+    opacity: 0.95;
+  }
+  95% {
+    opacity: 0.95;
+  }
+  100% {
+    top: 105%;
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+}
+
+@keyframes fall-drift-right {
+  0% {
+    top: -15%;
+    opacity: 0;
+  }
+  5% {
+    opacity: 0.95;
+  }
+  95% {
+    opacity: 0.95;
+  }
+  100% {
+    top: 105%;
+    opacity: 0;
+    transform: translateX(30px);
+  }
+}
+
+/* Ensure hero content is above snowflakes */
+.hero-content,
+.hero-image {
+  position: relative;
+  z-index: 2;
 }
 
 /* Hero Content (Left Side) */
@@ -689,47 +806,47 @@ nav.nav-visible {
 
 /* Card Background Images */
 .featured-card-green {
-  background-image: url('/asset/img/product2.png');
+  background-image: url('/views/img/product2.png');
   background-size: cover;
   background-position: center;
   transition: background-image 0.3s ease;
 }
 
 .featured-card-green:hover {
-  background-image: url('/asset/img/product1.png');
+  background-image: url('/views/img/product1.png');
 }
 
 .featured-card-red {
-  background-image: url('/asset/img/product2.png');
+  background-image: url('/views/img/product2.png');
   background-size: cover;
   background-position: center;
   transition: background-image 0.3s ease;
 }
 
 .featured-card-red:hover {
-  background-image: url('/asset/img/product1.png');
+  background-image: url('/views/img/product1.png');
 }
 
 .featured-card-yellow {
-  background-image: url('/asset/img/product2.png');
+  background-image: url('/views/img/product2.png');
   background-size: cover;
   background-position: center;
   transition: background-image 0.3s ease;
 }
 
 .featured-card-yellow:hover {
-  background-image: url('/asset/img/product1.png');
+  background-image: url('/views/img/product1.png');
 }
 
 .featured-card-pink {
-  background-image: url('/asset/img/product2.png');
+  background-image: url('/views/img/product2.png');
   background-size: cover;
   background-position: center;
   transition: background-image 0.3s ease;
 }
 
 .featured-card-pink:hover {
-  background-image: url('/asset/img/product1.png');
+  background-image: url('/views/img/product1.png');
 }
 
 /* ===== Scalloped Edge SVG ===== */
@@ -744,6 +861,13 @@ nav.nav-visible {
   flex-shrink: 0;
   pointer-events: none;
   z-index: 1; /* Above other content */
+  overflow: hidden; /* Cut off any overflow */
+  shape-rendering: crispEdges; /* Render sharp edges without anti-aliasing artifacts */
+}
+
+.scalloped-edge rect {
+  stroke: none; /* Remove any stroke */
+  stroke-width: 0;
 }
 
 .featured-card-green .scalloped-edge {
