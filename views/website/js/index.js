@@ -288,29 +288,35 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Original set has 6 cards, duplicate set has 4 more = 10 total
     // For seamless infinite scroll, we only move the width of original set (6 cards)
-    // then reset to 0 instantly, because duplicate set looks identical
     const originalSetCards = 6;
     const originalSetWidth = (cardWidth * originalSetCards) + (gap * (originalSetCards - 1));
     
-    // Create GSAP timeline for seamless infinite scroll
-    let carouselTimeline = gsap.timeline({ repeat: -1, paused: false });
+    // Seamless infinite animation using modulo technique
+    // Start from position 0, continuously move left
+    let animationActive = true;
     
-    // Move from right to left
-    carouselTimeline.to(carouselTrack, {
-      x: -originalSetWidth, // Move left by width of original set
-      duration: originalSetCards * 5, // Slow movement: 5 seconds per card
-      ease: 'none', // Linear movement
-    });
+    function animateCarousel() {
+      if (!animationActive) return;
+      
+      gsap.to(carouselTrack, {
+        x: -originalSetWidth,
+        duration: 30, // 30 seconds for full cycle (smooth, not too fast)
+        ease: 'none', // Linear movement for smoothness
+        onComplete: () => {
+          // Seamlessly wrap back to start
+          gsap.set(carouselTrack, { x: 0 });
+          // Continue animation
+          animateCarousel();
+        }
+      });
+    }
     
-    // Instantly reset to 0 (duration 0) for seamless loop
-    carouselTimeline.set(carouselTrack, {
-      x: 0 // Reset position instantly
-    });
+    // Start the animation
+    animateCarousel();
     
     // Store reference for pause/resume
-    let carouselAnimation = carouselTimeline;
-    let isUserControlling = false; // Flag to know if user is manually controlling
-    let resumeTimeout; // Timeout to resume auto-scroll
+    let isUserControlling = false;
+    let resumeTimeout;
     
     // Function to get current position
     function getCurrentPosition() {
@@ -324,8 +330,10 @@ document.addEventListener('DOMContentLoaded', () => {
         clearTimeout(resumeTimeout);
       }
       
+      // Stop continuous animation
+      gsap.killTweensOf(carouselTrack);
+      animationActive = false;
       isUserControlling = true;
-      carouselAnimation.pause(); // Pause auto-scroll
       
       const moveDistance = cardTotalWidth * 2; // Move 2 cards at a time
       let currentPosition = getCurrentPosition();
@@ -349,13 +357,11 @@ document.addEventListener('DOMContentLoaded', () => {
         duration: 0.5,
         ease: 'power2.out',
         onComplete: () => {
-          // Resume auto-scroll after a delay if not paused
+          // Resume auto-scroll after a delay
           resumeTimeout = setTimeout(() => {
             isUserControlling = false;
-            if (!isPaused) {
-              // Restart animation from current position
-              carouselAnimation.restart();
-            }
+            animationActive = true;
+            animateCarousel();
           }, 3000); // Resume after 3 seconds of no interaction
         }
       });
@@ -376,21 +382,17 @@ document.addEventListener('DOMContentLoaded', () => {
     nextBtn.style.opacity = '1';
     prevBtn.style.opacity = '1';
     
-    let isPaused = false;
-    
     // Pause animation when hovering over any card
     cards.forEach(card => {
       card.addEventListener('mouseenter', () => {
-        if (!isUserControlling) {
-          carouselAnimation.pause();
-          isPaused = true;
-        }
+        gsap.killTweensOf(carouselTrack);
+        animationActive = false;
       });
       
       card.addEventListener('mouseleave', () => {
         if (!isUserControlling) {
-          carouselAnimation.resume();
-          isPaused = false;
+          animationActive = true;
+          animateCarousel();
         }
       });
     });
@@ -398,16 +400,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Also pause when hovering over the track container
     if (container) {
       container.addEventListener('mouseenter', () => {
-        if (!isUserControlling) {
-          carouselAnimation.pause();
-          isPaused = true;
-        }
+        gsap.killTweensOf(carouselTrack);
+        animationActive = false;
       });
       
       container.addEventListener('mouseleave', () => {
         if (!isUserControlling) {
-          carouselAnimation.resume();
-          isPaused = false;
+          animationActive = true;
+          animateCarousel();
         }
       });
     }
@@ -544,10 +544,10 @@ function initArcSectionAnimations() {
     }
   );
   
-  // Gallery images parallax effect
-  gsap.to('.gallery-left .gallery-item', {
-    y: -300,
-    stagger: 0.1,
+  // Gallery images parallax effect - animate crew-member containers instead of just images
+  gsap.to('.gallery-left .crew-member', {
+    y: -1500,
+    stagger: 0.02,
     scrollTrigger: {
       trigger: arcSection,
       start: 'top top',
@@ -556,9 +556,20 @@ function initArcSectionAnimations() {
     }
   });
   
-  gsap.to('.gallery-center .gallery-item', {
-    y: -500,
-    stagger: 0.2,
+  // Logo parallax (slower, centered feel)
+  gsap.to('.crew-logo', {
+    y: -800,
+    scrollTrigger: {
+      trigger: arcSection,
+      start: 'top top',
+      end: '+=400%',
+      scrub: 2 // Slightly slower than others
+    }
+  });
+  
+  gsap.to('.gallery-center .crew-member', {
+    y: -800,
+    stagger: 0.02,
     scrollTrigger: {
       trigger: arcSection,
       start: 'top top',
@@ -567,9 +578,9 @@ function initArcSectionAnimations() {
     }
   });
   
-  gsap.to('.gallery-right .gallery-item', {
-    y: -400,
-    stagger: 0.15,
+  gsap.to('.gallery-right .crew-member', {
+    y: -800,
+    stagger: 0.02,
     scrollTrigger: {
       trigger: arcSection,
       start: 'top top',
@@ -603,8 +614,120 @@ function initArcSectionAnimations() {
     );
   }
   
+  // Community images animation - appear during "A COMMUNITY" phrase (around 33-66% of scroll)
+  const communityImages = document.querySelectorAll('.community-img');
+  if (communityImages.length > 0) {
+    communityImages.forEach((img, index) => {
+      // Define rotation for each image
+      const rotations = [-8, 5, -3, 7, -5];
+      const rotation = rotations[index] || 0;
+      
+      // Create a timeline for each image with keyframes
+      const communityTimeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: arcSection,
+          start: 'top top',
+          end: '+=400%',
+          scrub: 1
+        }
+      });
+      
+      // Keyframe animation: fade in -> zoom in/out -> fade out
+      communityTimeline
+        // Start state: invisible
+        .set(img, { 
+          opacity: 0, 
+          scale: 0.8, 
+          rotation: rotation 
+        })
+        // 0-30%: Stay invisible
+        .to(img, { 
+          opacity: 0, 
+          scale: 0.8,
+          duration: 0.3
+        })
+        // 30-35%: Fade in (only once)
+        .to(img, { 
+          opacity: 1, 
+          scale: 0.9,
+          duration: 0.05
+        })
+        // 35-65%: Zoom in and out while visible (no opacity change)
+        .to(img, { 
+          scale: 1.1,
+          duration: 0.15
+        })
+        .to(img, { 
+          scale: 0.95,
+          duration: 0.15
+        })
+        // 65-70%: Fade out (only once)
+        .to(img, { 
+          opacity: 0, 
+          scale: 0.8,
+          duration: 0.05
+        })
+        // 70-100%: Stay invisible
+        .to(img, { 
+          opacity: 0, 
+          scale: 0.8,
+          duration: 0.3
+        });
+    });
+  }
+  
   console.log('Arc section animations initialized');
 }
+
+// ============================================
+// CREW MEMBERS NAME TAG ANIMATION
+// ============================================
+function initCrewMembersAnimation() {
+  const crewNames = document.querySelectorAll('.crew-name');
+  
+  if (crewNames.length === 0) {
+    console.warn('No crew members found');
+    return;
+  }
+  
+  // Create ScrollTrigger for crew name tags
+  ScrollTrigger.create({
+    trigger: '.arc-section',
+    start: 'top 60%', // Start when section top reaches 60% of viewport
+    once: true, // Only animate once
+    markers: false,
+    onEnter: () => {
+      // Animate logo first with zoom out effect
+      gsap.to('.crew-logo', {
+        scale: 1,
+        opacity: 1,
+        duration: 1,
+        ease: 'back.out(1.5)',
+        delay: 0.5
+      });
+      
+      // Wait 1 second after section enters viewport
+      setTimeout(() => {
+        // Animate each name tag with stagger
+        gsap.to('.crew-name', {
+          scale: 1,
+          opacity: 1,
+          duration: 1.2,
+          ease: 'back.out(1.7)', // Bouncy effect
+          stagger: 0.3, // Animate one by one with 0.3s delay
+          onStart: () => {
+            console.log('Crew names animating...');
+          }
+        });
+      }, 1000); // 1 second delay
+    }
+  });
+  
+  console.log(`Crew members animation initialized for ${crewNames.length} members`);
+}
+
+// Initialize crew animation when DOM is ready
+document.addEventListener('DOMContentLoaded', initCrewMembersAnimation);
 
 // ============================================
 // SCROLL INDICATORS

@@ -806,47 +806,47 @@ nav.nav-visible {
 
 /* Card Background Images */
 .featured-card-green {
-  background-image: url('/views/img/product2.png');
+  background-image: url('/views/website/img/product2.png');
   background-size: cover;
   background-position: center;
   transition: background-image 0.3s ease;
 }
 
 .featured-card-green:hover {
-  background-image: url('/views/img/product1.png');
+  background-image: url('/views/website/img/product1.png');
 }
 
 .featured-card-red {
-  background-image: url('/views/img/product2.png');
+  background-image: url('/views/website/img/product2.png');
   background-size: cover;
   background-position: center;
   transition: background-image 0.3s ease;
 }
 
 .featured-card-red:hover {
-  background-image: url('/views/img/product1.png');
+  background-image: url('/views/website/img/product1.png');
 }
 
 .featured-card-yellow {
-  background-image: url('/views/img/product2.png');
+  background-image: url('/views/website/img/product2.png');
   background-size: cover;
   background-position: center;
   transition: background-image 0.3s ease;
 }
 
 .featured-card-yellow:hover {
-  background-image: url('/views/img/product1.png');
+  background-image: url('/views/website/img/product1.png');
 }
 
 .featured-card-pink {
-  background-image: url('/views/img/product2.png');
+  background-image: url('/views/website/img/product2.png');
   background-size: cover;
   background-position: center;
   transition: background-image 0.3s ease;
 }
 
 .featured-card-pink:hover {
-  background-image: url('/views/img/product1.png');
+  background-image: url('/views/website/img/product1.png');
 }
 
 /* ===== Scalloped Edge SVG ===== */
@@ -1157,59 +1157,104 @@ nav.nav-visible {
   object-fit: cover;
   border-radius: 16px;
   opacity: 1;
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
   transition: opacity 0.3s ease;
+  background: transparent; /* Ensure no background */
 }
 
-/* Gallery positioning - Left */
-.gallery-left .gallery-item:nth-child(1) {
-  top: 10%;
+/* Crew Member Container */
+.crew-member {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.crew-member .gallery-item {
+  position: relative;
+  width: 100%;
+}
+
+/* Crew Name Tag - Hidden Initially */
+.crew-name {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%) scale(0);
+  transform-origin: center bottom;
+  
+  display: inline-flex;
+  padding: 8px 20px;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap;
+  
+  color: var(--text-white, #FAFAFA);
+  font-family: Modak;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 120%;
+  letter-spacing: 0.06px;
+  
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+  
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Random colors for each member */
+.crew-member-1 .crew-name {
+  background: var(--pink-500, #F4A2BE);
+}
+
+.crew-member-2 .crew-name {
+  background: var(--blue-500, #2196F3);
+}
+
+.crew-member-3 .crew-name {
+  background: var(--orange-500, #F68951);
+}
+
+.crew-member-4 .crew-name {
+  background: var(--green-500, #009688);
+}
+
+/* Gallery positioning - Left (2 members) */
+.gallery-left .crew-member-1 {
+  top: 8%;
   left: 8%;
-  width: 180px;
+  width: 250px;
 }
 
-.gallery-left .gallery-item:nth-child(2) {
-  top: 45%;
-  left: 5%;
-  width: 220px;
-}
-
-.gallery-left .gallery-item:nth-child(3) {
-  top: 75%;
+.gallery-left .crew-member-2 {
+  top: 55%;
   left: 12%;
-  width: 190px;
+  width: 240px;
 }
 
-/* Gallery positioning - Center */
-.gallery-center .gallery-item:nth-child(1) {
-  top: 25%;
-  left: 42%;
-  width: 200px;
+/* Gallery positioning - Center (Logo) */
+.crew-logo {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 150px;
+  height: auto;
+  z-index: 5;
+  opacity: 0;
 }
 
-.gallery-center .gallery-item:nth-child(2) {
-  top: 65%;
-  left: 45%;
-  width: 210px;
-}
-
-/* Gallery positioning - Right */
-.gallery-right .gallery-item:nth-child(1) {
-  top: 15%;
+/* Gallery positioning - Right (2 members) */
+.gallery-right .crew-member-3 {
+  top: 8%;
   right: 8%;
-  width: 195px;
+  width: 250px;
 }
 
-.gallery-right .gallery-item:nth-child(2) {
-  top: 50%;
+.gallery-right .crew-member-4 {
+  top: 55%;
   right: 12%;
-  width: 185px;
-}
-
-.gallery-right .gallery-item:nth-child(3) {
-  top: 80%;
-  right: 6%;
-  width: 215px;
+  width: 240px;
 }
 
 /* Arc Wheel Container & Wheel */
@@ -1277,11 +1322,11 @@ nav.nav-visible {
 
 /* Arc phrase colors */
 .arc-phrase-1 text {
-  fill: var(--teal-500); /* #009688 */
+  fill: var(--light-blue-500 );
 }
 
 .arc-phrase-2 text {
-  fill: var(--pink-600); /* #E37695 */
+  fill: var(--amber-700); /* Changed from pink-600 */
 }
 
 .arc-phrase-3 text {
@@ -1313,6 +1358,69 @@ nav.nav-visible {
 .arc-button:hover {
   background: var(--teal-600);
   transform: translateX(-50%) scale(1.05);
+}
+
+/* Community Gallery - Random positioned images */
+.community-gallery {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 8;
+}
+
+.community-img {
+  position: absolute;
+  opacity: 0;
+  transform: scale(0.8);
+  border-radius: var(--border-radius-16);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  object-fit: cover;
+  will-change: transform, opacity;
+  filter: contrast(1.15) saturate(1.1) brightness(1.05);
+}
+
+/* Random positioning for community images */
+.community-img-1 {
+  top: 15%;
+  left: 10%;
+  width: 280px;
+  height: 280px;
+  transform: rotate(-8deg) scale(0.8);
+}
+
+.community-img-2 {
+  top: 55%;
+  right: 8%;
+  width: 320px;
+  height: 250px;
+  transform: rotate(5deg) scale(0.8);
+}
+
+.community-img-3 {
+  bottom: 12%;
+  left: 15%;
+  width: 260px;
+  height: 300px;
+  transform: rotate(-3deg) scale(0.8);
+}
+
+.community-img-4 {
+  top: 20%;
+  right: 15%;
+  width: 290px;
+  height: 270px;
+  transform: rotate(7deg) scale(0.8);
+}
+
+.community-img-5 {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-5deg) scale(0.8);
+  width: 300px;
+  height: 280px;
 }
 
 /* Responsive - Tablet */
