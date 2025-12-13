@@ -522,11 +522,12 @@ function initArcSectionAnimations() {
     scrollTrigger: {
       trigger: arcSection,
       start: 'top top',
-      end: '+=400%', // Pin for 4x viewport height - slower rotation
+      end: '+=300%', // Pin for 3x viewport height - smooth scroll experience
       pin: true,
       scrub: 0.5,
       invalidateOnRefresh: true,
-      pinSpacing: true
+      pinSpacing: true,
+      anticipatePin: 1
     }
   });
   
@@ -546,12 +547,12 @@ function initArcSectionAnimations() {
   
   // Gallery images parallax effect - animate crew-member containers instead of just images
   gsap.to('.gallery-left .crew-member', {
-    y: -1500,
-    stagger: 0.02,
+    y: -1000,
+    stagger: 0.01,
     scrollTrigger: {
       trigger: arcSection,
       start: 'top top',
-      end: '+=400%',
+      end: '+=300%',
       scrub: 1.5
     }
   });
@@ -562,7 +563,7 @@ function initArcSectionAnimations() {
     scrollTrigger: {
       trigger: arcSection,
       start: 'top top',
-      end: '+=400%',
+      end: '+=300%',
       scrub: 2 // Slightly slower than others
     }
   });
@@ -573,7 +574,7 @@ function initArcSectionAnimations() {
     scrollTrigger: {
       trigger: arcSection,
       start: 'top top',
-      end: '+=400%',
+      end: '+=300%',
       scrub: 1.8
     }
   });
@@ -584,7 +585,7 @@ function initArcSectionAnimations() {
     scrollTrigger: {
       trigger: arcSection,
       start: 'top top',
-      end: '+=400%',
+      end: '+=300%',
       scrub: 2
     }
   });
@@ -599,7 +600,7 @@ function initArcSectionAnimations() {
         scrollTrigger: {
           trigger: arcSection,
           start: 'top top',
-          end: '+=400%',
+          end: '+=300%',
           scrub: 1,
           onUpdate: (self) => {
             // Button appears after 75% of scroll progress
@@ -614,7 +615,7 @@ function initArcSectionAnimations() {
     );
   }
   
-  // Community images animation - appear during "A COMMUNITY" phrase (around 33-66% of scroll)
+  // Community images animation with flip out effect
   const communityImages = document.querySelectorAll('.community-img');
   if (communityImages.length > 0) {
     communityImages.forEach((img, index) => {
@@ -627,18 +628,19 @@ function initArcSectionAnimations() {
         scrollTrigger: {
           trigger: arcSection,
           start: 'top top',
-          end: '+=400%',
+          end: '+=300%',
           scrub: 1
         }
       });
       
-      // Keyframe animation: fade in -> zoom in/out -> fade out
+      // Keyframe animation: fade in -> stay at scale -> flip out at the end
       communityTimeline
         // Start state: invisible
         .set(img, { 
           opacity: 0, 
           scale: 0.8, 
-          rotation: rotation 
+          rotationZ: rotation,
+          rotationY: 0
         })
         // 0-30%: Stay invisible
         .to(img, { 
@@ -646,32 +648,62 @@ function initArcSectionAnimations() {
           scale: 0.8,
           duration: 0.3
         })
-        // 30-35%: Fade in (only once)
+        // 30-60%: Fade in and zoom to final scale slowly
         .to(img, { 
           opacity: 1, 
-          scale: 0.9,
-          duration: 0.05
-        })
-        // 35-65%: Zoom in and out while visible (no opacity change)
-        .to(img, { 
-          scale: 1.1,
-          duration: 0.15
-        })
-        .to(img, { 
-          scale: 0.95,
-          duration: 0.15
-        })
-        // 65-70%: Fade out (only once)
-        .to(img, { 
-          opacity: 0, 
-          scale: 0.8,
-          duration: 0.05
-        })
-        // 70-100%: Stay invisible
-        .to(img, { 
-          opacity: 0, 
-          scale: 0.8,
+          scale: 1,
           duration: 0.3
+        })
+        // 60-95%: Stay at scale 1
+        .to(img, { 
+          scale: 1,
+          duration: 0.35
+        })
+        // 95-100%: Flip out at the very end
+        .to(img, { 
+          rotationY: 90,
+          opacity: 0,
+          scale: 0.8,
+          duration: 0.05
+        });
+    });
+  }
+  
+  // Delight images flip in when community flips out
+  const delightImages = document.querySelectorAll('.delight-img');
+  if (delightImages.length > 0) {
+    delightImages.forEach((img, index) => {
+      const rotations = [-8, 5, -3, 7, -5];
+      const rotation = rotations[index] || 0;
+      
+      const delightTimeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: arcSection,
+          start: 'top top',
+          end: '+=300%',
+          scrub: 1
+        }
+      });
+      
+      delightTimeline
+        // Hidden until 95%
+        .set(img, { 
+          opacity: 0, 
+          rotationZ: rotation, 
+          rotationY: -90, 
+          scale: 0.8 
+        })
+        .to(img, { 
+          opacity: 0, 
+          rotationY: -90, 
+          duration: 0.95 
+        })
+        // 95-100%: Flip in at the very end
+        .to(img, { 
+          rotationY: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.05
         });
     });
   }
@@ -717,11 +749,30 @@ function initCrewMembersAnimation() {
           stagger: 0.3, // Animate one by one with 0.3s delay
           onStart: () => {
             console.log('Crew names animating...');
+          },
+          onComplete: () => {
+            // Start breathing animation after all names appear
+            startBreathingAnimation();
           }
         });
       }, 1000); // 1 second delay
     }
   });
+  
+  // Breathing animation: gentle scale in/out
+  function startBreathingAnimation() {
+    gsap.to('.crew-name', {
+      scale: 1.08, // Slightly more visible breathing
+      duration: 3, // Slower breathing (3s up, 3s down = 6s total)
+      ease: 'power1.inOut', // Smoother easing
+      yoyo: true, // Go back to scale 1
+      repeat: -1, // Infinite loop
+      stagger: {
+        each: 0.5, // More noticeable stagger
+        repeat: -1
+      }
+    });
+  }
   
   console.log(`Crew members animation initialized for ${crewNames.length} members`);
 }

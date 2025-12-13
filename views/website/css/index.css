@@ -1223,13 +1223,13 @@ nav.nav-visible {
 .gallery-left .crew-member-1 {
   top: 8%;
   left: 8%;
-  width: 250px;
+  width: 220px;
 }
 
 .gallery-left .crew-member-2 {
   top: 55%;
   left: 12%;
-  width: 240px;
+  width: 280px;
 }
 
 /* Gallery positioning - Center (Logo) */
@@ -1326,7 +1326,8 @@ nav.nav-visible {
 }
 
 .arc-phrase-2 text {
-  fill: var(--amber-700); /* Changed from pink-600 */
+  fill: var(--amber-600); /* Changed from pink-600 */
+  
 }
 
 .arc-phrase-3 text {
@@ -1380,6 +1381,7 @@ nav.nav-visible {
   object-fit: cover;
   will-change: transform, opacity;
   filter: contrast(1.15) saturate(1.1) brightness(1.05);
+  backface-visibility: hidden;
 }
 
 /* Random positioning for community images */
@@ -1419,6 +1421,70 @@ nav.nav-visible {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) rotate(-5deg) scale(0.8);
+  width: 300px;
+  height: 280px;
+}
+
+/* Delight Gallery - Flip in during "A DELIGHT" phase */
+.delight-gallery {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 8;
+}
+
+.delight-img {
+  position: absolute;
+  opacity: 0;
+  transform: scale(0.8) rotateY(-90deg);
+  border-radius: var(--border-radius-16);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  object-fit: cover;
+  will-change: transform, opacity;
+  filter: contrast(1.15) saturate(1.1) brightness(1.05);
+  backface-visibility: hidden;
+}
+
+/* Same positioning as community images */
+.delight-img-1 {
+  top: 15%;
+  left: 10%;
+  width: 280px;
+  height: 280px;
+  transform: rotate(-8deg) rotateY(-90deg) scale(0.8);
+}
+
+.delight-img-2 {
+  top: 55%;
+  right: 8%;
+  width: 320px;
+  height: 250px;
+  transform: rotate(5deg) rotateY(-90deg) scale(0.8);
+}
+
+.delight-img-3 {
+  bottom: 12%;
+  left: 15%;
+  width: 260px;
+  height: 300px;
+  transform: rotate(-3deg) rotateY(-90deg) scale(0.8);
+}
+
+.delight-img-4 {
+  top: 20%;
+  right: 15%;
+  width: 290px;
+  height: 270px;
+  transform: rotate(7deg) rotateY(-90deg) scale(0.8);
+}
+
+.delight-img-5 {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-5deg) rotateY(-90deg) scale(0.8);
   width: 300px;
   height: 280px;
 }
