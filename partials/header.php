@@ -84,7 +84,7 @@ if ($is_logged_in && isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
 
             <!-- Wishlist -->
             <a href="wishlist.php" class="action-item">
-                <img src="<?php echo @ROOT;?>/views/website/img/wishlist.svg" alt="Wishlist" class="action-icon"/>
+                <img src="<?php echo $ROOT;?>/views/website/img/wishlist.svg" alt="Wishlist" class="action-icon"/>
             </a>
 
             <!-- Account -->
