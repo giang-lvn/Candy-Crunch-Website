@@ -63,4 +63,4 @@ $ROOT = '/Candy-Crunch-Website';
     </div>
 </footer>
 
-<script src="<?php echo $ROOT; ?>/views/website/js/footer.css"></script>
+<script src="<?php echo $ROOT; ?>/views/website/js/footer.js"></script>

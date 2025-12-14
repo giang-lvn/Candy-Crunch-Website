@@ -5,11 +5,11 @@ $ROOT = '/Candy-Crunch-Website';
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Modak&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
 <link rel = "stylesheet" href = "<?php echo $ROOT; ?>/views/website/css/footer_vid.css">
-<link rel = "stylesheet" href = "<?php echo $ROOT; ?> /views/website/css/main/css">
+<link rel = "stylesheet" href = "<?php echo $ROOT; ?>/views/website/css/main.css">
 
 <footer class="footer">
     <video class="footer-video" autoplay muted loop playsinline>
-        <source src="<?php echo $ROOT; ?>/views/img/footervideo.mp4" type="video/mp4">
+    <source src="<?php echo $ROOT; ?>/views/website/img/footervideo.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
     
@@ -75,4 +75,4 @@ $ROOT = '/Candy-Crunch-Website';
     </div>
 </footer>
 
-<script src="<?php echo $ROOT; ?>/views/website/js/footer.css"></script>
+<script src="<?php echo $ROOT; ?>/views/website/js/footer.js"></script>
