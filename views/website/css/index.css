@@ -318,9 +318,9 @@ nav.nav-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
+  height: 100vh; /* Change from min-height to height to force 100vh */
   overflow: hidden;
-  margin-top: var(--spacing-64); /* 64px gap from hero section */
+  margin-top: 0; /* Remove margin to ensure full viewport */
 }
 
 /* Background Text - "CANDY" (Outline Only) */
@@ -1248,13 +1248,13 @@ nav.nav-visible {
 .gallery-right .crew-member-3 {
   top: 8%;
   right: 8%;
-  width: 250px;
+  width: 280px;
 }
 
 .gallery-right .crew-member-4 {
   top: 55%;
   right: 12%;
-  width: 240px;
+  width: 300px;
 }
 
 /* Arc Wheel Container & Wheel */
@@ -2053,17 +2053,18 @@ nav.nav-visible {
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-8);
-  cursor: pointer;
+  cursor: default;
   transition: opacity 0.8s cubic-bezier(0.4, 0.0, 0.2, 1), visibility 0.8s ease;
   animation: bounce 3s infinite;
   opacity: 0;
   visibility: hidden;
+  pointer-events: none;
 }
 
 .scroll-indicator.visible {
   opacity: 1;
   visibility: visible;
-  pointer-events: auto;
+  pointer-events: none;
 }
 
 .scroll-indicator:not(.visible) {
@@ -2085,7 +2086,6 @@ nav.nav-visible {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   opacity: 1;
-  transition: opacity 0.3s ease;
 }
 
 .scroll-arrow {
@@ -2096,23 +2096,9 @@ nav.nav-visible {
   height: 48px;
   border-radius: 50%;
   background: transparent;
-  border: 2px solid var(--teal-500);
+  border: none;
   color: var(--teal-500);
-  box-shadow: 0 4px 12px rgba(0, 150, 136, 0.1);
-  transition: all 0.3s ease, opacity 0.3s ease;
   opacity: 1;
-}
-
-.scroll-indicator:hover .scroll-arrow {
-  background: var(--teal-500);
-  color: var(--text-white);
-  transform: translateY(4px);
-  box-shadow: 0 6px 16px rgba(0, 150, 136, 0.2);
-  opacity: 1;
-}
-
-.scroll-indicator:hover .scroll-text {
-  opacity: 0.8;
 }
 
 .scroll-arrow svg {
@@ -2152,4 +2138,68 @@ nav.nav-visible {
     width: 20px;
     height: 20px;
   }
+}
+
+/* ================================================
+   FIX: Remove extra spacing below footer
+   ================================================ */
+
+/* Ensure no extra margins/padding */
+html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Remove any spacing from pin-spacer elements created by GSAP */
+.pin-spacer {
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block !important;
+}
+
+/* Ensure footer sits at the bottom without gaps */
+.footer {
+  margin: 0 !important;
+  padding-bottom: 48px !important;
+  position: relative;
+  z-index: 1;
+  display: flex;
+}
+
+/* Remove spacing after testimonials section */
+.testimonials {
+  margin-bottom: 0 !important;
+  padding-bottom: 80px;
+}
+
+/* Remove spacing after arc section */
+.arc-section {
+  margin-bottom: 0 !important;
+}
+
+/* Remove spacing after FAQs */
+.faqs {
+  margin-bottom: 0 !important;
+}
+
+/* Ensure sections don't create extra space */
+section {
+  margin-bottom: 0;
+}
+
+/* Fix any extra height at the end of body */
+body::after {
+  content: '';
+  display: block;
+  height: 0;
+  clear: both;
 }

@@ -336,21 +336,61 @@ h1, h2, h3, h4, h5, h6 {
   --beige-900: #686764;
 
 
-  /* 6. Component Color System */
-
-  /* Effect Styles - Ring Effects */
-  --invalid-ring: 0 0 4px 12px var(--red-400);
-  --focus-ring: 0 0 4px 12px var(--light-blue-300);
-
   /* ========================================
-     7. Component Design System - Tất cả các component style và layout sẽ được định nghĩa ở đây và có gì thay đổi trong figma thì dô đây đổi.
+     6. COMPONENT COLOR SYSTEM
+     Tất cả các component style và layout - có gì thay đổi trong Figma thì update ở đây
      ======================================== */
 
-  /* Text */
+  /* ===== TEXT COLORS ===== */
   --text-black: var(--gray-900);
   --text-white: var(--gray-50);
   --text-subtitle: var(--gray-700);
   --text-disabled: var(--gray-500);
+
+  /* ===== EFFECT STYLES - RING EFFECTS ===== */
+  --focus-ring: 0 0 3px var(--spacing-3) var(--blue-800);
+  --invalid-ring: 0 0 4px var(--spacing-3) var(--red-400);
+
+  /* ===== INPUT/FORM COMPONENTS ===== */
+  
+  /* Input Borders */
+  --input-border-default: var(--gray-300);
+  --input-border-hover: var(--gray-400);
+  --input-border-focus: var(--blue-800);
+  --input-border-error: var(--red-500);
+  --input-border-disabled: var(--gray-200);
+  
+  /* Input Backgrounds */
+  --input-background-default: var(--gray-50);
+  --input-background-disabled: var(--gray-200);
+  
+  /* Input Text Colors */
+  --input-text-default: var(--text-black);
+  --input-text-placeholder: var(--gray-400);
+  --input-text-disabled: var(--text-disabled);
+  
+  /* Input Icon Colors */
+  --dropdown-arrow-color: var(--gray-600);
+  --radio-checked-color: var(--green-500);
+
+  /* ===== ALERT COMPONENTS ===== */
+  
+  /* Alert Colors */
+  --alert-success-border: var(--green-500);
+  --alert-success-bg: var(--green-50);
+  --alert-success-text: var(--green-700);
+  
+  --alert-error-border: var(--red-500);
+  --alert-error-bg: var(--red-50);
+  --alert-error-text: var(--red-700);
+  
+  --alert-warning-border: var(--amber-500);
+  --alert-warning-bg: var(--amber-50);
+  --alert-warning-text: var(--amber-800);
+  
+  --alert-info-border: var(--blue-700);
+  --alert-info-bg: var(--blue-50);
+  --alert-info-text: var(--blue-800);
 
   /*=============================
     PRIMARY COMPONENTS
@@ -362,8 +402,27 @@ h1, h2, h3, h4, h5, h6 {
   --primary-button-hover-background: var(--green-600);
   --primary-button-pressed-border: var(--green-700);
   --primary-button-outline-text: var(--green-500);
+  --primary-button-outline-background: var(--green-50);
   --primary-button-outline-hovered-background: var(--green-100);
   --primary-button-outline-pressed-background: var(--green-200);
+
+  /* Secondary button*/
+  --secondary-button-default-background: var(--gray-600);
+  --secondary-button-hover-background: var(--gray-700);
+  --secondary-button-pressed-border: var(--gray-800);
+  --secondary-button-outline-text: var(--text-black);
+  --secondary-button-outline-background: var(--gray-50);
+  --secondary-button-outline-hovered-background: var(--gray-100);
+  --secondary-button-outline-pressed-background: var(--gray-200);
+
+  /* Error button*/
+  --error-button-default-background: var(--red-500);
+  --error-button-hover-background: var(--red-600);
+  --error-button-pressed-border: var(--red-700);
+  --error-button-outline-text: var(--red-500);
+  --error-button-outline-background: var(--red-50);
+  --error-button-outline-hovered-background: var(--red-100);
+  --error-button-outline-pressed-background: var(--red-200);
 
   /*=============================
     NAVIGATION COMPONENTS
@@ -402,6 +461,18 @@ h1, h2, h3, h4, h5, h6 {
   --nav-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
+/* ================================================
+   PRIMARY BUTTON COMPONENT
+   
+   - .btn-primary-large (18px medium)
+   - .btn-primary-medium (16px medium)
+   - .btn-primary-small (14px medium)
+   - .btn-primary-outline-large (18px medium)
+   - .btn-primary-outline-medium (16px medium)
+   - .btn-primary-outline-small (14px medium)
+   ================================================ */
+
+/* Primary Button - Large (18px) */
 .btn-primary-large {
   display: inline-flex;
   gap: var(--spacing-8);
@@ -412,16 +483,1294 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-white);
   font: var(--body-large-medium);
   transition: all 0.3s ease;
+  border: none;
 }
 
-.btn-primary-large:hover {
+/* Primary Button - Medium (16px) */
+.btn-primary-medium {
+  display: inline-flex;
+  gap: var(--spacing-8);
+  background: var(--primary-button-default-background);
+  padding: var(--spacing-8) var(--spacing-16);
+  align-items: center;
+  border-radius: var(--border-radius-12);
+  color: var(--text-white);
+  font: var(--body-medium);
+  transition: all 0.3s ease;
+  border: none;
+}
 
+/* Primary Button - Small (14px) */
+.btn-primary-small {
+  display: inline-flex;
+  gap: var(--spacing-8);
+  background: var(--primary-button-default-background);
+  padding: var(--spacing-8) var(--spacing-16);
+  align-items: center;
+  border-radius: var(--border-radius-12);
+  color: var(--text-white);
+  font: var(--footnote-medium);
+  transition: all 0.3s ease;
+  border: none;
+}
+
+/* Primary Button - Hover State (All Sizes) */
+.btn-primary-large:hover,
+.btn-primary-medium:hover,
+.btn-primary-small:hover {
   background: var(--primary-button-hover-background);
 }
 
-.btn-primary-large:active {
+/* Primary Button - Active State (All Sizes) */
+.btn-primary-large:active,
+.btn-primary-medium:active,
+.btn-primary-small:active {
   border: 1px solid var(--primary-button-pressed-border);
   background: var(--primary-button-hover-background);
+}
+
+/* Outline Primary Button - Large (18px) */
+.btn-primary-outline-large {
+  display: inline-flex;
+  gap: var(--spacing-8);
+  background: var(--primary-button-outline-background);
+  padding: var(--spacing-8) var(--spacing-16);
+  align-items: center;
+  border-radius: var(--border-radius-12);
+  color: var(--primary-button-outline-text);
+  font: var(--body-large-medium);
+  transition: all 0.3s ease;
+  border: 1px solid var(--primary-button-outline-text);
+}
+
+/* Outline Primary Button - Medium (16px) */
+.btn-primary-outline-medium {
+  display: inline-flex;
+  gap: var(--spacing-8);
+  background: var(--primary-button-outline-background);
+  padding: var(--spacing-8) var(--spacing-16);
+  align-items: center;
+  border-radius: var(--border-radius-12);
+  color: var(--primary-button-outline-text);
+  font: var(--body-medium);
+  transition: all 0.3s ease;
+  border: 1px solid var(--primary-button-outline-text);
+}
+
+/* Outline Primary Button - Small (14px) */
+.btn-primary-outline-small {
+  display: inline-flex;
+  gap: var(--spacing-8);
+  background: var(--primary-button-outline-background);
+  padding: var(--spacing-8) var(--spacing-16);
+  align-items: center;
+  border-radius: var(--border-radius-12);
+  color: var(--primary-button-outline-text);
+  font: var(--footnote-medium);
+  transition: all 0.3s ease;
+  border: 1px solid var(--primary-button-outline-text);
+}
+
+/* Outline Primary Button - Hover State (All Sizes) */
+.btn-primary-outline-large:hover,
+.btn-primary-outline-medium:hover,
+.btn-primary-outline-small:hover {
+  background: var(--primary-button-outline-hovered-background);
+}
+
+/* Outline Primary Button - Active State (All Sizes) */
+.btn-primary-outline-large:active,
+.btn-primary-outline-medium:active,
+.btn-primary-outline-small:active {
+  background: var(--primary-button-outline-pressed-background);
+  border: 1px solid var(--primary-button-pressed-border);
+}
+
+/* ================================================
+   SECONDARY BUTTON COMPONENT
+
+   - .btn-secondary-large (18px medium)
+   - .btn-secondary-medium (16px medium)
+   - .btn-secondary-small (14px medium)
+   - .btn-secondary-outline-large (18px medium)
+   - .btn-secondary-outline-medium (16px medium)
+   - .btn-secondary-outline-small (14px medium)
+   ================================================ */
+
+/* Secondary Button - Large (18px) */
+.btn-secondary-large {
+  display: inline-flex !important;
+  gap: var(--spacing-8);
+  background: var(--secondary-button-default-background) !important;
+  padding: var(--spacing-8) var(--spacing-16);
+  align-items: center;
+  border-radius: var(--border-radius-12);
+  color: var(--text-white) !important;
+  font: var(--body-large-medium);
+  transition: all 0.3s ease;
+  border: none !important;
+}
+
+/* Secondary Button - Medium (16px) */
+.btn-secondary-medium {
+  display: inline-flex !important;
+  gap: var(--spacing-8);
+  background: var(--secondary-button-default-background) !important;
+  padding: var(--spacing-8) var(--spacing-16);
+  align-items: center;
+  border-radius: var(--border-radius-12);
+  color: var(--text-white) !important;
+  font: var(--body-medium);
+  transition: all 0.3s ease;
+  border: none !important;
+}
+
+/* Secondary Button - Small (14px) */
+.btn-secondary-small {
+  display: inline-flex !important;
+  gap: var(--spacing-8);
+  background: var(--secondary-button-default-background) !important;
+  padding: var(--spacing-8) var(--spacing-16);
+  align-items: center;
+  border-radius: var(--border-radius-12);
+  color: var(--text-white) !important;
+  font: var(--footnote-medium);
+  transition: all 0.3s ease;
+  border: none !important;
+}
+
+/* Secondary Button - Hover State (All Sizes) */
+.btn-secondary-large:hover,
+.btn-secondary-medium:hover,
+.btn-secondary-small:hover {
+  background: var(--secondary-button-hover-background);
+}
+
+/* Secondary Button - Active State (All Sizes) */
+.btn-secondary-large:active,
+.btn-secondary-medium:active,
+.btn-secondary-small:active {
+  border: 1px solid var(--secondary-button-pressed-border);
+  background: var(--secondary-button-hover-background);
+}
+
+/* Outline Secondary Button - Large (18px) */
+.btn-secondary-outline-large {
+  display: inline-flex;
+  gap: var(--spacing-8);
+  background: var(--secondary-button-outline-background);
+  padding: var(--spacing-8) var(--spacing-16);
+  align-items: center;
+  border-radius: var(--border-radius-12);
+  color: var(--secondary-button-outline-text);
+  font: var(--body-large-medium);
+  transition: all 0.3s ease;
+  border: 1px solid var(--secondary-button-outline-text);
+}
+
+/* Outline Secondary Button - Medium (16px) */
+.btn-secondary-outline-medium {
+  display: inline-flex;
+  gap: var(--spacing-8);
+  background: var(--secondary-button-outline-background);
+  padding: var(--spacing-8) var(--spacing-16);
+  align-items: center;
+  border-radius: var(--border-radius-12);
+  color: var(--secondary-button-outline-text);
+  font: var(--body-medium);
+  transition: all 0.3s ease;
+  border: 1px solid var(--secondary-button-outline-text);
+}
+
+/* Outline Secondary Button - Small (14px) */
+.btn-secondary-outline-small {
+  display: inline-flex;
+  gap: var(--spacing-8);
+  background: var(--secondary-button-outline-background);
+  padding: var(--spacing-8) var(--spacing-16);
+  align-items: center;
+  border-radius: var(--border-radius-12);
+  color: var(--secondary-button-outline-text);
+  font: var(--footnote-medium);
+  transition: all 0.3s ease;
+  border: 1px solid var(--secondary-button-outline-text);
+}
+
+/* Outline Secondary Button - Hover State (All Sizes) */
+.btn-secondary-outline-large:hover,
+.btn-secondary-outline-medium:hover,
+.btn-secondary-outline-small:hover {
+  background: var(--secondary-button-outline-hovered-background);
+}
+
+/* Outline Secondary Button - Active State (All Sizes) */
+.btn-secondary-outline-large:active,
+.btn-secondary-outline-medium:active,
+.btn-secondary-outline-small:active {
+  background: var(--secondary-button-outline-pressed-background);
+  border: 1px solid var(--secondary-button-pressed-border);
+}
+
+/* ================================================
+   ERROR BUTTON COMPONENT
+   
+   - .btn-error-large (18px medium)
+   - .btn-error-medium (16px medium)
+   - .btn-error-small (14px medium)
+   - .btn-error-outline-large (18px medium)
+   - .btn-error-outline-medium (16px medium)
+   - .btn-error-outline-small (14px medium)
+   ================================================ */
+
+/* Error Button - Large (18px) */
+.btn-error-large {
+  display: inline-flex;
+  gap: var(--spacing-8);
+  background: var(--error-button-default-background);
+  padding: var(--spacing-8) var(--spacing-16);
+  align-items: center;
+  border-radius: var(--border-radius-12);
+  color: var(--text-white);
+  font: var(--body-large-medium);
+  transition: all 0.3s ease;
+  border: none;
+}
+
+/* Error Button - Medium (16px) */
+.btn-error-medium {
+  display: inline-flex;
+  gap: var(--spacing-8);
+  background: var(--error-button-default-background);
+  padding: var(--spacing-8) var(--spacing-16);
+  align-items: center;
+  border-radius: var(--border-radius-12);
+  color: var(--text-white);
+  font: var(--body-medium);
+  transition: all 0.3s ease;
+  border: none;
+}
+
+/* Error Button - Small (14px) */
+.btn-error-small {
+  display: inline-flex;
+  gap: var(--spacing-8);
+  background: var(--error-button-default-background);
+  padding: var(--spacing-8) var(--spacing-16);
+  align-items: center;
+  border-radius: var(--border-radius-12);
+  color: var(--text-white);
+  font: var(--footnote-medium);
+  transition: all 0.3s ease;
+  border: none;
+}
+
+/* Error Button - Hover State (All Sizes) */
+.btn-error-large:hover,
+.btn-error-medium:hover,
+.btn-error-small:hover {
+  background: var(--error-button-hover-background);
+}
+
+/* Error Button - Active State (All Sizes) */
+.btn-error-large:active,
+.btn-error-medium:active,
+.btn-error-small:active {
+  border: 1px solid var(--error-button-pressed-border);
+  background: var(--error-button-hover-background);
+}
+
+/* Outline Error Button - Large (18px) */
+.btn-error-outline-large {
+  display: inline-flex;
+  gap: var(--spacing-8);
+  background: var(--error-button-outline-background);
+  padding: var(--spacing-8) var(--spacing-16);
+  align-items: center;
+  border-radius: var(--border-radius-12);
+  color: var(--error-button-outline-text);
+  font: var(--body-large-medium);
+  transition: all 0.3s ease;
+  border: 1px solid var(--error-button-outline-text);
+}
+
+/* Outline Error Button - Medium (16px) */
+.btn-error-outline-medium {
+  display: inline-flex;
+  gap: var(--spacing-8);
+  background: var(--error-button-outline-background);
+  padding: var(--spacing-8) var(--spacing-16);
+  align-items: center;
+  border-radius: var(--border-radius-12);
+  color: var(--error-button-outline-text);
+  font: var(--body-medium);
+  transition: all 0.3s ease;
+  border: 1px solid var(--error-button-outline-text);
+}
+
+/* Outline Error Button - Small (14px) */
+.btn-error-outline-small {
+  display: inline-flex;
+  gap: var(--spacing-8);
+  background: var(--error-button-outline-background);
+  padding: var(--spacing-8) var(--spacing-16);
+  align-items: center;
+  border-radius: var(--border-radius-12);
+  color: var(--error-button-outline-text);
+  font: var(--footnote-medium);
+  transition: all 0.3s ease;
+  border: 1px solid var(--error-button-outline-text);
+}
+
+/* Outline Error Button - Hover State (All Sizes) */
+.btn-error-outline-large:hover,
+.btn-error-outline-medium:hover,
+.btn-error-outline-small:hover {
+  background: var(--error-button-outline-hovered-background);
+}
+
+/* Outline Error Button - Active State (All Sizes) */
+.btn-error-outline-large:active,
+.btn-error-outline-medium:active,
+.btn-error-outline-small:active {
+  background: var(--error-button-outline-pressed-background);
+  border: 1px solid var(--error-button-pressed-border);
+}
+
+/* ================================================
+   ICON-ONLY BUTTON COMPONENT
+   
+  Round Button/Square Button
+  
+   Primary Icon Buttons:
+   - .btn-icon-primary-large-round / .btn-icon-primary-large-square
+   - .btn-icon-primary-medium-round / .btn-icon-primary-medium-square
+   - .btn-icon-primary-small-round / .btn-icon-primary-small-square
+   - .btn-icon-primary-outline-large-round / .btn-icon-primary-outline-large-square
+   - .btn-icon-primary-outline-medium-round / .btn-icon-primary-outline-medium-square
+   - .btn-icon-primary-outline-small-round / .btn-icon-primary-outline-small-square
+   
+   Secondary Icon Buttons:
+   - .btn-icon-secondary-large-round / .btn-icon-secondary-large-square
+   - .btn-icon-secondary-medium-round / .btn-icon-secondary-medium-square
+   - .btn-icon-secondary-small-round / .btn-icon-secondary-small-square
+   - .btn-icon-secondary-outline-large-round / .btn-icon-secondary-outline-large-square
+   - .btn-icon-secondary-outline-medium-round / .btn-icon-secondary-outline-medium-square
+   - .btn-icon-secondary-outline-small-round / .btn-icon-secondary-outline-small-square
+   
+   Error Icon Buttons:
+   - .btn-icon-error-large-round / .btn-icon-error-large-square
+   - .btn-icon-error-medium-round / .btn-icon-error-medium-square
+   - .btn-icon-error-small-round / .btn-icon-error-small-square
+   - .btn-icon-error-outline-large-round / .btn-icon-error-outline-large-square
+   - .btn-icon-error-outline-medium-round / .btn-icon-error-outline-medium-square
+   - .btn-icon-error-outline-small-round / .btn-icon-error-outline-small-square
+   ================================================ */
+
+/* Base Icon Button Styles */
+[class*="btn-icon-"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ========================================
+   PRIMARY ICON BUTTONS - DEFAULT
+   
+   Classes:
+   - .btn-icon-primary-large-round
+   - .btn-icon-primary-large-square
+   - .btn-icon-primary-medium-round
+   - .btn-icon-primary-medium-square
+   - .btn-icon-primary-small-round
+   - .btn-icon-primary-small-square
+   ======================================== */
+
+/* Primary Icon - Large */
+.btn-icon-primary-large-round,
+.btn-icon-primary-large-square {
+  padding: var(--spacing-16);
+  background: var(--primary-button-default-background);
+  color: var(--text-white);
+}
+
+.btn-icon-primary-large-round {
+  border-radius: 999px;
+}
+
+.btn-icon-primary-large-square {
+  border-radius: var(--spacing-8);
+}
+
+/* Primary Icon - Medium */
+.btn-icon-primary-medium-round,
+.btn-icon-primary-medium-square {
+  padding: var(--spacing-8);
+  background: var(--primary-button-default-background);
+  color: var(--text-white);
+}
+
+.btn-icon-primary-medium-round {
+  border-radius: 999px;
+}
+
+.btn-icon-primary-medium-square {
+  border-radius: var(--spacing-8);
+}
+
+/* Primary Icon - Small */
+.btn-icon-primary-small-round,
+.btn-icon-primary-small-square {
+  padding: var(--spacing-4);
+  background: var(--primary-button-default-background);
+  color: var(--text-white);
+}
+
+.btn-icon-primary-small-round {
+  border-radius: 999px;
+}
+
+.btn-icon-primary-small-square {
+  border-radius: var(--spacing-8);
+}
+
+/* Primary Icon - Hover State (All) */
+.btn-icon-primary-large-round:hover,
+.btn-icon-primary-large-square:hover,
+.btn-icon-primary-medium-round:hover,
+.btn-icon-primary-medium-square:hover,
+.btn-icon-primary-small-round:hover,
+.btn-icon-primary-small-square:hover {
+  background: var(--primary-button-hover-background);
+}
+
+/* Primary Icon - Active State (All) */
+.btn-icon-primary-large-round:active,
+.btn-icon-primary-large-square:active,
+.btn-icon-primary-medium-round:active,
+.btn-icon-primary-medium-square:active,
+.btn-icon-primary-small-round:active,
+.btn-icon-primary-small-square:active {
+  background: var(--primary-button-hover-background);
+  border: 1px solid var(--primary-button-pressed-border);
+}
+
+/* ========================================
+   PRIMARY ICON BUTTONS - OUTLINE
+   
+   Classes:
+   - .btn-icon-primary-outline-large-round
+   - .btn-icon-primary-outline-large-square
+   - .btn-icon-primary-outline-medium-round
+   - .btn-icon-primary-outline-medium-square
+   - .btn-icon-primary-outline-small-round
+   - .btn-icon-primary-outline-small-square
+   ======================================== */
+
+/* Primary Icon Outline - Large */
+.btn-icon-primary-outline-large-round,
+.btn-icon-primary-outline-large-square {
+  padding: var(--spacing-16);
+  background: var(--primary-button-outline-background);
+  color: var(--primary-button-outline-text);
+  border: 1px solid var(--primary-button-outline-text);
+}
+
+.btn-icon-primary-outline-large-round {
+  border-radius: 999px;
+}
+
+.btn-icon-primary-outline-large-square {
+  border-radius: var(--spacing-8);
+}
+
+/* Primary Icon Outline - Medium */
+.btn-icon-primary-outline-medium-round,
+.btn-icon-primary-outline-medium-square {
+  padding: var(--spacing-8);
+  background: var(--primary-button-outline-background);
+  color: var(--primary-button-outline-text);
+  border: 1px solid var(--primary-button-outline-text);
+}
+
+.btn-icon-primary-outline-medium-round {
+  border-radius: 999px;
+}
+
+.btn-icon-primary-outline-medium-square {
+  border-radius: var(--spacing-8);
+}
+
+/* Primary Icon Outline - Small */
+.btn-icon-primary-outline-small-round,
+.btn-icon-primary-outline-small-square {
+  padding: var(--spacing-4);
+  background: var(--primary-button-outline-background);
+  color: var(--primary-button-outline-text);
+  border: 1px solid var(--primary-button-outline-text);
+}
+
+.btn-icon-primary-outline-small-round {
+  border-radius: 999px;
+}
+
+.btn-icon-primary-outline-small-square {
+  border-radius: var(--spacing-8);
+}
+
+/* Primary Icon Outline - Hover State (All) */
+.btn-icon-primary-outline-large-round:hover,
+.btn-icon-primary-outline-large-square:hover,
+.btn-icon-primary-outline-medium-round:hover,
+.btn-icon-primary-outline-medium-square:hover,
+.btn-icon-primary-outline-small-round:hover,
+.btn-icon-primary-outline-small-square:hover {
+  background: var(--primary-button-outline-hovered-background);
+}
+
+/* Primary Icon Outline - Active State (All) */
+.btn-icon-primary-outline-large-round:active,
+.btn-icon-primary-outline-large-square:active,
+.btn-icon-primary-outline-medium-round:active,
+.btn-icon-primary-outline-medium-square:active,
+.btn-icon-primary-outline-small-round:active,
+.btn-icon-primary-outline-small-square:active {
+  background: var(--primary-button-outline-pressed-background);
+  border: 1px solid var(--primary-button-pressed-border);
+}
+
+/* ========================================
+   SECONDARY ICON BUTTONS - DEFAULT
+   
+   Classes:
+   - .btn-icon-secondary-large-round
+   - .btn-icon-secondary-large-square
+   - .btn-icon-secondary-medium-round
+   - .btn-icon-secondary-medium-square
+   - .btn-icon-secondary-small-round
+   - .btn-icon-secondary-small-square
+   ======================================== */
+
+/* Secondary Icon - Large */
+.btn-icon-secondary-large-round,
+.btn-icon-secondary-large-square {
+  padding: var(--spacing-16);
+  background: var(--secondary-button-default-background);
+  color: var(--text-white);
+}
+
+.btn-icon-secondary-large-round {
+  border-radius: 999px;
+}
+
+.btn-icon-secondary-large-square {
+  border-radius: var(--spacing-8);
+}
+
+/* Secondary Icon - Medium */
+.btn-icon-secondary-medium-round,
+.btn-icon-secondary-medium-square {
+  padding: var(--spacing-8);
+  background: var(--secondary-button-default-background);
+  color: var(--text-white);
+}
+
+.btn-icon-secondary-medium-round {
+  border-radius: 999px;
+}
+
+.btn-icon-secondary-medium-square {
+  border-radius: var(--spacing-8);
+}
+
+/* Secondary Icon - Small */
+.btn-icon-secondary-small-round,
+.btn-icon-secondary-small-square {
+  padding: var(--spacing-4);
+  background: var(--secondary-button-default-background);
+  color: var(--text-white);
+}
+
+.btn-icon-secondary-small-round {
+  border-radius: 999px;
+}
+
+.btn-icon-secondary-small-square {
+  border-radius: var(--spacing-8);
+}
+
+/* Secondary Icon - Hover State (All) */
+.btn-icon-secondary-large-round:hover,
+.btn-icon-secondary-large-square:hover,
+.btn-icon-secondary-medium-round:hover,
+.btn-icon-secondary-medium-square:hover,
+.btn-icon-secondary-small-round:hover,
+.btn-icon-secondary-small-square:hover {
+  background: var(--secondary-button-hover-background);
+}
+
+/* Secondary Icon - Active State (All) */
+.btn-icon-secondary-large-round:active,
+.btn-icon-secondary-large-square:active,
+.btn-icon-secondary-medium-round:active,
+.btn-icon-secondary-medium-square:active,
+.btn-icon-secondary-small-round:active,
+.btn-icon-secondary-small-square:active {
+  background: var(--secondary-button-hover-background);
+  border: 1px solid var(--secondary-button-pressed-border);
+}
+
+/* ========================================
+   SECONDARY ICON BUTTONS - OUTLINE
+   
+   Classes:
+   - .btn-icon-secondary-outline-large-round
+   - .btn-icon-secondary-outline-large-square
+   - .btn-icon-secondary-outline-medium-round
+   - .btn-icon-secondary-outline-medium-square
+   - .btn-icon-secondary-outline-small-round
+   - .btn-icon-secondary-outline-small-square
+   ======================================== */
+
+/* Secondary Icon Outline - Large */
+.btn-icon-secondary-outline-large-round,
+.btn-icon-secondary-outline-large-square {
+  padding: var(--spacing-16);
+  background: var(--secondary-button-outline-background);
+  color: var(--secondary-button-outline-text);
+  border: 1px solid var(--secondary-button-outline-text);
+}
+
+.btn-icon-secondary-outline-large-round {
+  border-radius: 999px;
+}
+
+.btn-icon-secondary-outline-large-square {
+  border-radius: var(--spacing-8);
+}
+
+/* Secondary Icon Outline - Medium */
+.btn-icon-secondary-outline-medium-round,
+.btn-icon-secondary-outline-medium-square {
+  padding: var(--spacing-8);
+  background: var(--secondary-button-outline-background);
+  color: var(--secondary-button-outline-text);
+  border: 1px solid var(--secondary-button-outline-text);
+}
+
+.btn-icon-secondary-outline-medium-round {
+  border-radius: 999px;
+}
+
+.btn-icon-secondary-outline-medium-square {
+  border-radius: var(--spacing-8);
+}
+
+/* Secondary Icon Outline - Small */
+.btn-icon-secondary-outline-small-round,
+.btn-icon-secondary-outline-small-square {
+  padding: var(--spacing-4);
+  background: var(--secondary-button-outline-background);
+  color: var(--secondary-button-outline-text);
+  border: 1px solid var(--secondary-button-outline-text);
+}
+
+.btn-icon-secondary-outline-small-round {
+  border-radius: 999px;
+}
+
+.btn-icon-secondary-outline-small-square {
+  border-radius: var(--spacing-8);
+}
+
+/* Secondary Icon Outline - Hover State (All) */
+.btn-icon-secondary-outline-large-round:hover,
+.btn-icon-secondary-outline-large-square:hover,
+.btn-icon-secondary-outline-medium-round:hover,
+.btn-icon-secondary-outline-medium-square:hover,
+.btn-icon-secondary-outline-small-round:hover,
+.btn-icon-secondary-outline-small-square:hover {
+  background: var(--secondary-button-outline-hovered-background);
+}
+
+/* Secondary Icon Outline - Active State (All) */
+.btn-icon-secondary-outline-large-round:active,
+.btn-icon-secondary-outline-large-square:active,
+.btn-icon-secondary-outline-medium-round:active,
+.btn-icon-secondary-outline-medium-square:active,
+.btn-icon-secondary-outline-small-round:active,
+.btn-icon-secondary-outline-small-square:active {
+  background: var(--secondary-button-outline-pressed-background);
+  border: 1px solid var(--secondary-button-pressed-border);
+}
+
+/* ========================================
+   ERROR ICON BUTTONS - DEFAULT
+   
+   Classes:
+   - .btn-icon-error-large-round
+   - .btn-icon-error-large-square
+   - .btn-icon-error-medium-round
+   - .btn-icon-error-medium-square
+   - .btn-icon-error-small-round
+   - .btn-icon-error-small-square
+   ======================================== */
+
+/* Error Icon - Large */
+.btn-icon-error-large-round,
+.btn-icon-error-large-square {
+  padding: var(--spacing-16);
+  background: var(--error-button-default-background);
+  color: var(--text-white);
+}
+
+.btn-icon-error-large-round {
+  border-radius: 999px;
+}
+
+.btn-icon-error-large-square {
+  border-radius: var(--spacing-8);
+}
+
+/* Error Icon - Medium */
+.btn-icon-error-medium-round,
+.btn-icon-error-medium-square {
+  padding: var(--spacing-8);
+  background: var(--error-button-default-background);
+  color: var(--text-white);
+}
+
+.btn-icon-error-medium-round {
+  border-radius: 999px;
+}
+
+.btn-icon-error-medium-square {
+  border-radius: var(--spacing-8);
+}
+
+/* Error Icon - Small */
+.btn-icon-error-small-round,
+.btn-icon-error-small-square {
+  padding: var(--spacing-4);
+  background: var(--error-button-default-background);
+  color: var(--text-white);
+}
+
+.btn-icon-error-small-round {
+  border-radius: 999px;
+}
+
+.btn-icon-error-small-square {
+  border-radius: var(--spacing-8);
+}
+
+/* Error Icon - Hover State (All) */
+.btn-icon-error-large-round:hover,
+.btn-icon-error-large-square:hover,
+.btn-icon-error-medium-round:hover,
+.btn-icon-error-medium-square:hover,
+.btn-icon-error-small-round:hover,
+.btn-icon-error-small-square:hover {
+  background: var(--error-button-hover-background);
+}
+
+/* Error Icon - Active State (All) */
+.btn-icon-error-large-round:active,
+.btn-icon-error-large-square:active,
+.btn-icon-error-medium-round:active,
+.btn-icon-error-medium-square:active,
+.btn-icon-error-small-round:active,
+.btn-icon-error-small-square:active {
+  background: var(--error-button-hover-background);
+  border: 1px solid var(--error-button-pressed-border);
+}
+
+/* ========================================
+   ERROR ICON BUTTONS - OUTLINE
+   
+   Classes:
+   - .btn-icon-error-outline-large-round
+   - .btn-icon-error-outline-large-square
+   - .btn-icon-error-outline-medium-round
+   - .btn-icon-error-outline-medium-square
+   - .btn-icon-error-outline-small-round
+   - .btn-icon-error-outline-small-square
+   ======================================== */
+
+/* Error Icon Outline - Large */
+.btn-icon-error-outline-large-round,
+.btn-icon-error-outline-large-square {
+  padding: var(--spacing-16);
+  background: var(--error-button-outline-background);
+  color: var(--error-button-outline-text);
+  border: 1px solid var(--error-button-outline-text);
+}
+
+.btn-icon-error-outline-large-round {
+  border-radius: 999px;
+}
+
+.btn-icon-error-outline-large-square {
+  border-radius: var(--spacing-8);
+}
+
+/* Error Icon Outline - Medium */
+.btn-icon-error-outline-medium-round,
+.btn-icon-error-outline-medium-square {
+  padding: var(--spacing-8);
+  background: var(--error-button-outline-background);
+  color: var(--error-button-outline-text);
+  border: 1px solid var(--error-button-outline-text);
+}
+
+.btn-icon-error-outline-medium-round {
+  border-radius: 999px;
+}
+
+.btn-icon-error-outline-medium-square {
+  border-radius: var(--spacing-8);
+}
+
+/* Error Icon Outline - Small */
+.btn-icon-error-outline-small-round,
+.btn-icon-error-outline-small-square {
+  padding: var(--spacing-4);
+  background: var(--error-button-outline-background);
+  color: var(--error-button-outline-text);
+  border: 1px solid var(--error-button-outline-text);
+}
+
+.btn-icon-error-outline-small-round {
+  border-radius: 999px;
+}
+
+.btn-icon-error-outline-small-square {
+  border-radius: var(--spacing-8);
+}
+
+/* Error Icon Outline - Hover State (All) */
+.btn-icon-error-outline-large-round:hover,
+.btn-icon-error-outline-large-square:hover,
+.btn-icon-error-outline-medium-round:hover,
+.btn-icon-error-outline-medium-square:hover,
+.btn-icon-error-outline-small-round:hover,
+.btn-icon-error-outline-small-square:hover {
+  background: var(--error-button-outline-hovered-background);
+}
+
+/* Error Icon Outline - Active State (All) */
+.btn-icon-error-outline-large-round:active,
+.btn-icon-error-outline-large-square:active,
+.btn-icon-error-outline-medium-round:active,
+.btn-icon-error-outline-medium-square:active,
+.btn-icon-error-outline-small-round:active,
+.btn-icon-error-outline-small-square:active {
+  background: var(--error-button-outline-pressed-background);
+  border: 1px solid var(--error-button-pressed-border);
+}
+
+/* ================================================
+   INPUT COMPONENTS WITH DATA ATTRIBUTES
+   
+   Usage:
+   - Text Input: <div class="input" data-type="text" data-state="default" data-size="medium" data-show-label="true" data-optional="false">
+   - Password Input: <div class="input" data-type="password" data-state="default" data-size="medium">
+   - Dropdown: <div class="input" data-type="dropdown" data-state="default" data-size="medium">
+   - Radio: <label class="radio" data-checked="false">
+   
+   States:
+   - data-state: "default" | "focus" | "typed" | "error" | "disabled" | "open" | "picked"
+   - data-size: "large" | "medium" | "small"
+   - data-show-label: "true" | "false"
+   - data-optional: "true" | "false"
+   - data-checked: "true" | "false"
+   ================================================ */
+
+/* ========================================
+   INPUT WRAPPER - BASE STYLES
+   ======================================== */
+
+.input {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+  width: 100%;
+  overflow: visible; /* Allow dropdown menu to overflow */
+}
+
+/* ========================================
+   INPUT LABEL STYLES
+   ======================================== */
+
+.input-label {
+  font: var(--body-medium);
+  color: var(--text-black);
+  letter-spacing: var(--body-letter-spacing);
+}
+
+/* Hide label when data-show-label="false" */
+[data-show-label="false"] .input-label {
+  display: none;
+}
+
+/* Show "(optional)" text when data-optional="true" */
+[data-optional="true"] .input-label::after {
+  content: " (optional)";
+  color: var(--text-subtitle);
+  font: var(--body-regular);
+}
+
+/* ========================================
+   INPUT FIELD - BASE STYLES
+   ======================================== */
+
+.input-field {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-12);
+  border-radius: var(--border-radius-12);
+  border: 1px solid var(--input-border-default);
+  background: var(--input-background-default);
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+  overflow: visible; /* Allow dropdown menu to overflow */
+}
+
+.input-field input,
+.input-field .dropdown-trigger {
+  flex: 1;
+  border: none;
+  background: none;
+  outline: none;
+  font: var(--body-regular);
+  color: var(--input-text-default);
+  letter-spacing: var(--body-letter-spacing);
+}
+
+.input-field input::placeholder {
+  color: var(--input-text-placeholder);
+}
+
+/* Input icon styles */
+.input-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: var(--gray-600);
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.input-icon:hover {
+  color: var(--gray-800);
+}
+
+/* ========================================
+   INPUT SIZES
+   ======================================== */
+
+/* Large - 18px */
+[data-size="large"] .input-field {
+  padding: var(--spacing-16);
+}
+
+[data-size="large"] .input-field input,
+[data-size="large"] .input-field .dropdown-trigger {
+  font: var(--body-large-regular);
+}
+
+[data-size="large"] .input-label {
+  font: var(--body-large-medium);
+}
+
+/* Medium - 16px (Default) */
+[data-size="medium"] .input-field {
+  padding: var(--spacing-12);
+}
+
+[data-size="medium"] .input-field input,
+[data-size="medium"] .input-field .dropdown-trigger {
+  font: var(--body-regular);
+}
+
+[data-size="medium"] .input-label {
+  font: var(--body-medium);
+}
+
+/* Small - 14px */
+[data-size="small"] .input-field {
+  padding: var(--spacing-8);
+}
+
+[data-size="small"] .input-field input,
+[data-size="small"] .input-field .dropdown-trigger {
+  font: var(--footnote-regular);
+}
+
+[data-size="small"] .input-label {
+  font: var(--footnote-medium);
+}
+
+/* ========================================
+   INPUT STATES
+   ======================================== */
+
+/* Default State - Already styled above */
+
+/* Hover State */
+[data-state="default"] .input-field:hover {
+  border-color: var(--input-border-hover);
+}
+
+/* Focus State */
+[data-state="focus"] .input-field {
+  border-color: var(--input-border-focus);
+  box-shadow: var(--focus-ring);
+}
+
+/* Typed State */
+[data-state="typed"] .input-field {
+  border-color: var(--input-border-default);
+}
+
+/* Error State */
+[data-state="error"] .input-field {
+  border-color: var(--input-border-error);
+  box-shadow: var(--invalid-ring);
+}
+
+[data-state="error"] .input-label {
+  color: var(--red-500);
+}
+
+.input-error-message {
+  font: var(--footnote-regular);
+  color: var(--red-500);
+  margin-top: var(--spacing-4);
+}
+
+/* Disabled State */
+[data-state="disabled"] .input-field {
+  border-color: var(--input-border-disabled);
+  background: var(--input-background-disabled);
+  cursor: not-allowed;
+}
+
+[data-state="disabled"] .input-field input,
+[data-state="disabled"] .input-field .dropdown-trigger {
+  color: var(--input-text-disabled);
+  cursor: not-allowed;
+}
+
+[data-state="disabled"] .input-label {
+  color: var(--text-disabled);
+}
+
+/* ========================================
+   DROPDOWN SPECIFIC STYLES
+   ======================================== */
+
+.dropdown-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  cursor: pointer;
+}
+
+.dropdown-arrow {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+  color: var(--dropdown-arrow-color);
+}
+
+/* Rotate arrow when open */
+[data-state="open"] .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+  display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  border-radius: var(--border-radius-12);
+  border: 1px solid var(--gray-300);
+  background: #FFF;
+  margin-top: var(--spacing-8);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: visible;
+  width: 100%;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  min-height: fit-content; /* Ensure all options are visible */
+}
+
+[data-state="open"] .dropdown-menu {
+  display: flex;
+}
+
+/* Ensure input wrapper doesn't clip dropdown */
+.input[data-type="dropdown"] {
+  position: relative;
+  z-index: auto;
+}
+
+[data-state="open"].input[data-type="dropdown"] {
+  z-index: 999;
+}
+
+.dropdown-option {
+  width: 100%;
+  padding: var(--spacing-12) var(--spacing-16);
+  font: var(--body-regular);
+  color: var(--text-black);
+  cursor: pointer;
+  transition: background 0.2s ease;
+  border: none;
+  background: none;
+  text-align: left;
+}
+
+.dropdown-option:hover {
+  background: var(--gray-100);
+}
+
+.dropdown-option:first-child {
+  border-radius: var(--border-radius-12) var(--border-radius-12) 0 0;
+}
+
+.dropdown-option:last-child {
+  border-radius: 0 0 var(--border-radius-12) var(--border-radius-12);
+}
+
+/* Picked state styling */
+[data-state="picked"] .dropdown-trigger {
+  color: var(--text-black);
+}
+
+/* ========================================
+   RADIO BUTTON COMPONENT
+   ======================================== */
+
+.radio {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-12);
+  cursor: pointer;
+  position: relative;
+}
+
+.radio-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.radio-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.radio-label {
+  font: var(--body-regular);
+  color: var(--text-black);
+  letter-spacing: var(--body-letter-spacing);
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Hover effect */
+.radio:hover .radio-icon {
+  transform: scale(1.05);
+}
+
+/* Disabled state */
+.radio[data-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.radio[data-disabled="true"] .radio-label {
+  cursor: not-allowed;
+  color: var(--text-disabled);
+}
+
+/* ========================================
+   ALERT COMPONENT
+   ======================================== */
+
+.alert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-12) var(--spacing-16);
+  border-radius: 10px;
+  border: 1px solid;
+  gap: var(--spacing-12);
+  transition: opacity 0.3s ease;
+}
+
+.alert-text {
+  font: var(--body-regular);
+  letter-spacing: -0.038px;
+  flex: 1;
+}
+
+.alert-close {
+  background: none;
+  border: none;
+  color: currentColor;
+  cursor: pointer;
+  padding: var(--spacing-4);
+  opacity: 0.6;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.alert-close:hover {
+  opacity: 1;
+}
+
+/* Alert Types */
+.alert[data-type="success"] {
+  border-color: var(--alert-success-border);
+  background: var(--alert-success-bg);
+  color: var(--alert-success-text);
+}
+
+.alert[data-type="error"] {
+  border-color: var(--alert-error-border);
+  background: var(--alert-error-bg);
+  color: var(--alert-error-text);
+}
+
+.alert[data-type="warning"] {
+  border-color: var(--alert-warning-border);
+  background: var(--alert-warning-bg);
+  color: var(--alert-warning-text);
+}
+
+.alert[data-type="info"] {
+  border-color: var(--alert-info-border);
+  background: var(--alert-info-bg);
+  color: var(--alert-info-text);
 }
 
 /* ================================================

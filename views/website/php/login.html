@@ -11,9 +11,27 @@
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/login.css">
     <script src="../js/login.js"></script>
+    
 </head>
 <body>
-
+    <label class="radio" data-checked="true">
+        <input type="radio" name="group-name" value="option1" 
+               class="radio-input" checked>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="radio-icon">
+          <path d="M12 19C8.14 19 5 15.86 5 12C5 8.14 8.14 5 12 5C15.86 5 19 8.14 19 12C19 15.86 15.86 19 12 19ZM12 6C8.69 6 6 8.69 6 12C6 15.31 8.69 18 12 18C15.31 18 18 15.31 18 12C18 8.69 15.31 6 12 6Z" fill="#017E6A"/>
+          <path d="M12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16Z" fill="#017E6A"/>
+        </svg>
+        <span class="radio-label">Option 1</span>
+      </label>
+      
+      <label class="radio" data-checked="false">
+        <input type="radio" name="group-name" value="option2" 
+               class="radio-input">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="radio-icon">
+          <path d="M12 19C8.14 19 5 15.86 5 12C5 8.14 8.14 5 12 5C15.86 5 19 8.14 19 12C19 15.86 15.86 19 12 19ZM12 6C8.69 6 6 8.69 6 12C6 15.31 8.69 18 12 18C15.31 18 18 15.31 18 12C18 8.69 15.31 6 12 6Z" fill="#017E6A"/>
+        </svg>
+        <span class="radio-label">Option 2</span>
+      </label>
     <header class="header-section">
         <div class="logo-img">
             <img src="../img/logo.svg" alt="Candy Crunch Logo" class="logo-img">
@@ -55,5 +73,6 @@
             </form>
         </div>
     </section>
+   
 </body>
 </html>
