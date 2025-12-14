@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Input Components Demo - Candy Crunch Design System</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Modak&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="../views/website/css/main.css">
+  
+  <style>
+    .demo-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--spacing-64) var(--spacing-32);
+      background: var(--beige-500);
+      min-height: 100vh;
+    }
+    
+    .demo-header {
+      text-align: center;
+      margin-bottom: var(--spacing-64);
+    }
+    
+    .demo-title {
+      font: var(--heading-1);
+      color: var(--text-black);
+      margin-bottom: var(--spacing-16);
+    }
+    
+    .demo-subtitle {
+      font: var(--body-large-regular);
+      color: var(--text-subtitle);
+    }
+    
+    .demo-section {
+      background: white;
+      border-radius: var(--spacing-24);
+      padding: var(--spacing-48);
+      margin-bottom: var(--spacing-48);
+    }
+    
+    .section-title {
+      font: var(--heading-3);
+      color: var(--text-black);
+      margin-bottom: var(--spacing-32);
+      padding-bottom: var(--spacing-16);
+      border-bottom: 2px solid var(--gray-200);
+    }
+    
+    .component-group {
+      margin-bottom: var(--spacing-48);
+    }
+    
+    .group-title {
+      font: var(--heading-5);
+      color: var(--green-500);
+      margin-bottom: var(--spacing-24);
+    }
+    
+    .component-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--spacing-32);
+      margin-bottom: var(--spacing-24);
+    }
+    
+    .component-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-8);
+    }
+    
+    .component-description {
+      font: var(--footnote-regular);
+      color: var(--text-subtitle);
+      margin-top: var(--spacing-4);
+    }
+    
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-16);
+    }
+    
+    /* Fix for dropdown positioning in demo */
+    .input {
+      position: relative;
+    }
+    
+    /* Two Column Layout - Demo + Code */
+    .demo-code-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-32);
+      margin-bottom: var(--spacing-32);
+    }
+    
+    .demo-preview {
+      background: var(--beige-100);
+      padding: var(--spacing-24);
+      border-radius: var(--border-radius-12);
+      border: 1px solid var(--gray-200);
+    }
+    
+    .code-snippet {
+      position: relative;
+    }
+    
+    .code-snippet pre {
+      background: var(--gray-900);
+      color: var(--gray-50);
+      padding: var(--spacing-16);
+      border-radius: var(--border-radius-12);
+      overflow-x: auto;
+      overflow-y: auto;
+      max-height: 200px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-width: 100%;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      margin: 0;
+    }
+    
+    .code-snippet-label {
+      font: var(--footnote-semibold);
+      color: var(--text-black);
+      margin-bottom: var(--spacing-8);
+      display: block;
+    }
+    
+    .copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      padding: 6px 12px;
+      background: var(--green-500);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .copy-btn:hover {
+      background: var(--green-600);
+    }
+    
+    .copy-btn:active {
+      transform: scale(0.95);
+    }
+    
+    @media (max-width: 968px) {
+      .demo-code-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="demo-container">
+    
+    <!-- Header -->
+    <div class="demo-header">
+      <h1 class="demo-title">Input Components</h1>
+      <p class="demo-subtitle">Design System with Data Attributes</p>
+    </div>
+    
+    <!-- ========================================
+         TEXT INPUT COMPONENTS
+         ======================================== -->
+    <section class="demo-section">
+      <h2 class="section-title">Text Input</h2>
+      
+      <!-- Basic Text Input -->
+      <div class="component-group">
+        <h3 class="group-title">Basic Text Input (Medium Size)</h3>
+        
+        <div class="demo-code-layout">
+          <!-- Demo -->
+          <div class="demo-preview">
+            <div class="input" data-type="text" data-state="default" data-size="medium" data-show-label="true" data-optional="false">
+              <label class="input-label">Label</label>
+              <div class="input-field">
+                <input type="text" placeholder="e.g. placeholder">
+              </div>
+            </div>
+          </div>
+          
+          <!-- Code -->
+          <div class="code-snippet">
+            <span class="code-snippet-label">HTML Code (Copy & Paste)</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code>&lt;div class="input" data-type="text" data-state="default" data-size="medium"&gt;
+  &lt;label class="input-label"&gt;Label&lt;/label&gt;
+  &lt;div class="input-field"&gt;
+    &lt;input type="text" placeholder="e.g. placeholder"&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+      
+      <!-- With Optional Label -->
+      <div class="component-group">
+        <h3 class="group-title">With Optional Label</h3>
+        
+        <div class="demo-code-layout">
+          <!-- Demo -->
+          <div class="demo-preview">
+            <div class="input" data-type="text" data-state="default" data-size="medium" data-show-label="true" data-optional="true">
+              <label class="input-label">Label</label>
+              <div class="input-field">
+                <input type="text" placeholder="e.g. placeholder">
+              </div>
+            </div>
+          </div>
+          
+          <!-- Code -->
+          <div class="code-snippet">
+            <span class="code-snippet-label">HTML Code (Copy & Paste)</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code>&lt;div class="input" data-optional="true"&gt;
+  &lt;label class="input-label"&gt;Label&lt;/label&gt;
+  &lt;div class="input-field"&gt;
+    &lt;input type="text" placeholder="e.g. placeholder"&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Error State -->
+      <div class="component-group">
+        <h3 class="group-title">Error State</h3>
+        
+        <div class="demo-code-layout">
+          <!-- Demo -->
+          <div class="demo-preview">
+            <div class="input" data-type="text" data-state="error" data-size="medium">
+              <label class="input-label">Label</label>
+              <div class="input-field">
+                <input type="text" value="Invalid data" placeholder="e.g. placeholder">
+              </div>
+              <span class="input-error-message">Invalid input data</span>
+            </div>
+          </div>
+          
+          <!-- Code -->
+          <div class="code-snippet">
+            <span class="code-snippet-label">HTML Code (Copy & Paste)</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code>&lt;div class="input" data-state="error"&gt;
+  &lt;label class="input-label"&gt;Label&lt;/label&gt;
+  &lt;div class="input-field"&gt;
+    &lt;input type="text" placeholder="e.g. placeholder"&gt;
+  &lt;/div&gt;
+  &lt;span class="input-error-message"&gt;Error message&lt;/span&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Disabled State -->
+      <div class="component-group">
+        <h3 class="group-title">Disabled State</h3>
+        
+        <div class="demo-code-layout">
+          <!-- Demo -->
+          <div class="demo-preview">
+            <div class="input" data-type="text" data-state="disabled" data-size="medium">
+              <label class="input-label">Label</label>
+              <div class="input-field">
+                <input type="text" placeholder="e.g. placeholder" disabled>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Code -->
+          <div class="code-snippet">
+            <span class="code-snippet-label">HTML Code (Copy & Paste)</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code>&lt;div class="input" data-state="disabled"&gt;
+  &lt;label class="input-label"&gt;Label&lt;/label&gt;
+  &lt;div class="input-field"&gt;
+    &lt;input type="text" placeholder="e.g. placeholder" disabled&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+        </div>
+        
+        <p style="font: var(--footnote-regular); color: var(--text-subtitle); margin-top: var(--spacing-16);">
+          💡 <strong>Note:</strong> Add <code>disabled</code> attribute to the input element and set <code>data-state="disabled"</code> on wrapper.
+        </p>
+      </div>
+      
+      <!-- Different Sizes -->
+      <div class="component-group">
+        <h3 class="group-title">Sizes: Large / Medium / Small</h3>
+        
+        <div class="demo-code-layout">
+          <!-- Demo -->
+          <div class="demo-preview">
+            <div class="input" data-size="large" style="margin-bottom: 16px;">
+              <label class="input-label">Large (18px)</label>
+              <div class="input-field">
+                <input type="text" placeholder="Large input">
+              </div>
+            </div>
+            
+            <div class="input" data-size="medium" style="margin-bottom: 16px;">
+              <label class="input-label">Medium (16px)</label>
+              <div class="input-field">
+                <input type="text" placeholder="Medium input">
+              </div>
+            </div>
+            
+            <div class="input" data-size="small">
+              <label class="input-label">Small (14px)</label>
+              <div class="input-field">
+                <input type="text" placeholder="Small input">
+              </div>
+            </div>
+          </div>
+          
+          <!-- Code -->
+          <div class="code-snippet">
+            <span class="code-snippet-label">HTML Code (Copy & Paste)</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code>&lt;!-- Large --&gt;
+&lt;div class="input" data-size="large"&gt;...&lt;/div&gt;
+
+&lt;!-- Medium (Default) --&gt;
+&lt;div class="input" data-size="medium"&gt;...&lt;/div&gt;
+
+&lt;!-- Small --&gt;
+&lt;div class="input" data-size="small"&gt;...&lt;/div&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- ========================================
+         PASSWORD INPUT COMPONENTS
+         ======================================== -->
+    <section class="demo-section">
+      <h2 class="section-title">Password Input</h2>
+      
+      <div class="component-group">
+        <h3 class="group-title">Password with Toggle Visibility</h3>
+        
+        <div class="demo-code-layout">
+          <!-- Demo -->
+          <div class="demo-preview">
+            <div class="input" data-type="password" data-state="default" data-size="medium">
+              <label class="input-label">Password</label>
+              <div class="input-field">
+                <input type="password" placeholder="Enter your password">
+                <button class="input-icon password-toggle" type="button">
+                  <img src="../views/website/img/eye-closed.svg" alt="Toggle password" class="eye-icon">
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Code -->
+          <div class="code-snippet">
+            <span class="code-snippet-label">HTML Code (Copy & Paste)</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code>&lt;div class="input" data-type="password" data-size="medium"&gt;
+  &lt;label class="input-label"&gt;Password&lt;/label&gt;
+  &lt;div class="input-field"&gt;
+    &lt;input type="password" placeholder="Enter your password"&gt;
+    &lt;button class="input-icon password-toggle" type="button"&gt;
+      &lt;img src="/views/website/img/eye-closed.svg" alt="Toggle password" class="eye-icon"&gt;
+    &lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+        </div>
+        
+        <p style="font: var(--footnote-regular); color: var(--text-subtitle); margin-top: var(--spacing-16);">
+          💡 <strong>Note:</strong> Click the eye icon to toggle password visibility. JavaScript handles this automatically.
+        </p>
+      </div>
+    </section>
+    
+    <!-- ========================================
+         DROPDOWN COMPONENTS
+         ======================================== -->
+    <section class="demo-section">
+      <h2 class="section-title">Dropdown / Select</h2>
+      
+      <div class="component-group">
+        <h3 class="group-title">Basic Dropdown</h3>
+        
+        <div class="demo-code-layout">
+          <!-- Demo -->
+          <div class="demo-preview">
+            <div class="input" data-type="dropdown" data-state="default" data-size="medium">
+              <label class="input-label">Choose an option</label>
+              <div class="input-field">
+                <div class="dropdown-trigger">
+                  <span class="dropdown-text" style="color: var(--input-text-placeholder);">Select option</span>
+                  <img src="../views/website/img/dropdown-arrow.svg" alt="dropdown" class="dropdown-arrow">
+                </div>
+                <div class="dropdown-menu">
+                  <button class="dropdown-option" data-value="1">Option 1</button>
+                  <button class="dropdown-option" data-value="2">Option 2</button>
+                  <button class="dropdown-option" data-value="3">Option 3</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Code -->
+          <div class="code-snippet">
+            <span class="code-snippet-label">HTML Code (Copy & Paste)</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code>&lt;div class="input" data-type="dropdown" data-size="medium"&gt;
+  &lt;label class="input-label"&gt;Choose an option&lt;/label&gt;
+  &lt;div class="input-field"&gt;
+    &lt;div class="dropdown-trigger"&gt;
+      &lt;span class="dropdown-text"&gt;Select option&lt;/span&gt;
+      &lt;svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="dropdown-arrow"&gt;
+        &lt;path d="M18 9L12 15L6 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/&gt;
+      &lt;/svg&gt;
+    &lt;/div&gt;
+    &lt;div class="dropdown-menu"&gt;
+      &lt;button class="dropdown-option" data-value="1"&gt;Option 1&lt;/button&gt;
+      &lt;button class="dropdown-option" data-value="2"&gt;Option 2&lt;/button&gt;
+      &lt;button class="dropdown-option" data-value="3"&gt;Option 3&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+        </div>
+        
+        <p style="font: var(--footnote-regular); color: var(--text-subtitle); margin-top: var(--spacing-16);">
+          💡 <strong>Note:</strong> Click to open dropdown. JavaScript handles open/close and selection automatically.
+        </p>
+      </div>
+    </section>
+    
+    <!-- ========================================
+         RADIO BUTTON COMPONENTS
+         ======================================== -->
+    <section class="demo-section">
+      <h2 class="section-title">Radio Button</h2>
+      
+      <div class="component-group">
+        <h3 class="group-title">Radio Group</h3>
+        
+        <div class="demo-code-layout">
+          <!-- Demo -->
+          <div class="demo-preview">
+            <div class="radio-group">
+              <label class="radio" data-checked="true">
+                <input type="radio" name="demo-group" value="option1" class="radio-input" checked>
+                <img src="../views/website/img/radio-checked.svg" alt="radio" class="radio-icon">
+                <span class="radio-label">Option 1</span>
+              </label>
+              
+              <label class="radio" data-checked="false">
+                <input type="radio" name="demo-group" value="option2" class="radio-input">
+                <img src="../views/website/img/radio-unchecked.svg" alt="radio" class="radio-icon">
+                <span class="radio-label">Option 2</span>
+              </label>
+              
+              <label class="radio" data-checked="false">
+                <input type="radio" name="demo-group" value="option3" class="radio-input">
+                <img src="../views/website/img/radio-unchecked.svg" alt="radio" class="radio-icon">
+                <span class="radio-label">Option 3</span>
+              </label>
+            </div>
+          </div>
+          
+          <!-- Code -->
+          <div class="code-snippet">
+            <span class="code-snippet-label">HTML Code (Copy & Paste)</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code>&lt;label class="radio" data-checked="true"&gt;
+  &lt;input type="radio" name="group-name" value="option1" 
+         class="radio-input" checked&gt;
+  &lt;img src="/views/website/img/radio-checked.svg" alt="radio" class="radio-icon"&gt;
+  &lt;span class="radio-label"&gt;Option 1&lt;/span&gt;
+&lt;/label&gt;
+
+&lt;label class="radio" data-checked="false"&gt;
+  &lt;input type="radio" name="group-name" value="option2" 
+         class="radio-input"&gt;
+  &lt;img src="/views/website/img/radio-unchecked.svg" alt="radio" class="radio-icon"&gt;
+  &lt;span class="radio-label"&gt;Option 2&lt;/span&gt;
+&lt;/label&gt;</code></pre>
+          </div>
+        </div>
+        
+        <p style="font: var(--footnote-regular); color: var(--text-subtitle); margin-top: var(--spacing-16);">
+          💡 <strong>Note:</strong> Radios with same <code>name</code> attribute are grouped together. JavaScript handles selection automatically.
+        </p>
+      </div>
+    </section>
+    
+    <!-- Usage Guide -->
+    <section class="demo-section">
+      <h2 class="section-title">Quick Reference</h2>
+      
+      <div style="font: var(--body-regular); color: var(--text-black); line-height: 1.8;">
+        <h3 style="font: var(--heading-5); margin-bottom: var(--spacing-16);">Data Attributes</h3>
+        <ul style="margin-left: var(--spacing-24); margin-bottom: var(--spacing-24);">
+          <li><code>data-type</code>: "text" | "password" | "dropdown"</li>
+          <li><code>data-state</code>: "default" | "focus" | "typed" | "error" | "disabled" | "open" | "picked"</li>
+          <li><code>data-size</code>: "large" | "medium" | "small"</li>
+          <li><code>data-show-label</code>: "true" | "false"</li>
+          <li><code>data-optional</code>: "true" | "false"</li>
+          <li><code>data-checked</code>: "true" | "false" (radio only)</li>
+        </ul>
+        
+        <h3 style="font: var(--heading-5); margin-bottom: var(--spacing-16);">JavaScript Auto-Handlers</h3>
+        <ul style="margin-left: var(--spacing-24); margin-bottom: var(--spacing-24);">
+          <li>✅ Input focus/blur states change automatically</li>
+          <li>✅ Password visibility toggle on eye icon click</li>
+          <li>✅ Dropdown open/close/select handled automatically</li>
+          <li>✅ Radio button group selection managed automatically</li>
+        </ul>
+        
+        <h3 style="font: var(--heading-5); margin-bottom: var(--spacing-16);">Custom Events</h3>
+        <ul style="margin-left: var(--spacing-24);">
+          <li><code>dropdown-change</code>: Fired when dropdown selection changes</li>
+          <li><code>radio-change</code>: Fired when radio button is selected</li>
+        </ul>
+      </div>
+    </section>
+  
+  </div>
+  
+  <!-- Copy to Clipboard Script -->
+  <script>
+    function copyCode(btn) {
+      const codeBlock = btn.parentElement.querySelector('pre code');
+      if (!codeBlock) {
+        console.error('Code block not found');
+        return;
+      }
+      
+      const text = codeBlock.textContent;
+      
+      // Fallback for older browsers or non-HTTPS
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          const originalText = btn.textContent;
+          btn.textContent = 'Copied!';
+          btn.style.background = 'var(--green-600)';
+          
+          setTimeout(() => {
+            btn.textContent = originalText;
+            btn.style.background = 'var(--green-500)';
+          }, 2000);
+        }).catch(err => {
+          console.error('Failed to copy:', err);
+          alert('Copy failed. Please copy manually.');
+        });
+      } else {
+        // Fallback method
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        
+        try {
+          document.execCommand('copy');
+          btn.textContent = 'Copied!';
+          btn.style.background = 'var(--green-600)';
+          
+          setTimeout(() => {
+            btn.textContent = 'Copy';
+            btn.style.background = 'var(--green-500)';
+          }, 2000);
+        } catch (err) {
+          console.error('Fallback copy failed:', err);
+        }
+        
+        document.body.removeChild(textarea);
+      }
+    }
+  </script>
+  
+  <!-- Main JavaScript -->
+  <script src="../views/website/js/main.js"></script>
+  
+</body>
+</html>
+

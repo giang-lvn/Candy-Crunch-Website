@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alert Components Demo - Candy Crunch Design System</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Modak&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="../views/website/css/main.css">
+  
+  <style>
+    .demo-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--spacing-64) var(--spacing-32);
+      background: var(--beige-500);
+      min-height: 100vh;
+    }
+    
+    .demo-header {
+      text-align: center;
+      margin-bottom: var(--spacing-64);
+    }
+    
+    .demo-title {
+      font: var(--heading-1);
+      color: var(--text-black);
+      margin-bottom: var(--spacing-16);
+    }
+    
+    .demo-subtitle {
+      font: var(--body-large-regular);
+      color: var(--text-subtitle);
+    }
+    
+    .demo-section {
+      background: white;
+      border-radius: var(--spacing-24);
+      padding: var(--spacing-48);
+      margin-bottom: var(--spacing-48);
+    }
+    
+    .section-title {
+      font: var(--heading-3);
+      color: var(--text-black);
+      margin-bottom: var(--spacing-32);
+      padding-bottom: var(--spacing-16);
+      border-bottom: 2px solid var(--gray-200);
+    }
+    
+    .component-group {
+      margin-bottom: var(--spacing-48);
+    }
+    
+    .group-title {
+      font: var(--heading-5);
+      color: var(--green-500);
+      margin-bottom: var(--spacing-24);
+    }
+    
+    /* Two Column Layout - Demo + Code */
+    .demo-code-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-32);
+      margin-bottom: var(--spacing-32);
+    }
+    
+    .demo-preview {
+      background: var(--beige-100);
+      padding: var(--spacing-24);
+      border-radius: var(--border-radius-12);
+      border: 1px solid var(--gray-200);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-16);
+    }
+    
+    .code-snippet {
+      position: relative;
+    }
+    
+    .code-snippet pre {
+      background: var(--gray-900);
+      color: var(--gray-50);
+      padding: var(--spacing-16);
+      border-radius: var(--border-radius-12);
+      overflow-x: auto;
+      overflow-y: auto;
+      max-height: 200px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-width: 100%;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      margin: 0;
+    }
+    
+    .code-snippet-label {
+      font: var(--footnote-semibold);
+      color: var(--text-black);
+      margin-bottom: var(--spacing-8);
+      display: block;
+    }
+    
+    .copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      padding: 6px 12px;
+      background: var(--green-500);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .copy-btn:hover {
+      background: var(--green-600);
+    }
+    
+    .copy-btn:active {
+      transform: scale(0.95);
+    }
+    
+    @media (max-width: 968px) {
+      .demo-code-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="demo-container">
+    
+    <!-- Header -->
+    <div class="demo-header">
+      <h1 class="demo-title">Alert Components</h1>
+      <p class="demo-subtitle">Feedback Messages with Dismissible Actions</p>
+    </div>
+    
+    <!-- ========================================
+         SUCCESS ALERT
+         ======================================== -->
+    <section class="demo-section">
+      <h2 class="section-title">Success Alert</h2>
+      
+      <div class="component-group">
+        <h3 class="group-title">Success / Confirmation Message</h3>
+        
+        <div class="demo-code-layout">
+          <!-- Demo -->
+          <div class="demo-preview">
+            <div class="alert" data-type="success">
+              <span class="alert-text">A simple alert—check it out!</span>
+              <button class="alert-close" onclick="closeAlert(this)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M15.0037 -0.0135498C15.1363 -0.0146577 15.2676 0.0114505 15.3904 0.0616455C15.5133 0.111926 15.6256 0.185528 15.7195 0.279419C15.8134 0.373312 15.887 0.485624 15.9373 0.608521C15.9875 0.731268 16.0136 0.86263 16.0125 0.995239C16.0113 1.12802 15.9828 1.25995 15.9304 1.38196C15.878 1.50376 15.8022 1.61405 15.7068 1.70618L9.41382 7.99915L15.7068 14.2921C15.8889 14.4806 15.9892 14.7332 15.9871 14.9952C15.9848 15.2574 15.8795 15.5091 15.6941 15.6945C15.5087 15.8796 15.2578 15.9842 14.9958 15.9865C14.7338 15.9887 14.4813 15.8883 14.2927 15.7062L7.99976 9.41321L1.70679 15.7062C1.51826 15.8883 1.26574 15.9886 1.00366 15.9865C0.741465 15.9842 0.489851 15.8799 0.304443 15.6945C0.119038 15.5091 0.0147296 15.2574 0.0124512 14.9952C0.0102621 14.7332 0.110645 14.4806 0.292725 14.2921L6.58569 7.99915L0.292725 1.70618C0.105257 1.51865 -0.000244141 1.26431 -0.000244141 0.999146C-0.00023521 0.733994 0.105261 0.479634 0.292725 0.292114C0.48025 0.104661 0.734605 -0.000854492 0.999756 -0.000854492C1.26491 -0.000848155 1.51927 0.104652 1.70679 0.292114L7.99976 6.58508L14.2927 0.292114C14.3848 0.196741 14.4951 0.120879 14.6169 0.0684814C14.7389 0.0160724 14.8709 -0.012396 15.0037 -0.0135498Z" fill="currentColor"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Code -->
+          <div class="code-snippet">
+            <span class="code-snippet-label">HTML Code (Copy & Paste)</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code>&lt;div class="alert" data-type="success"&gt;
+  &lt;span class="alert-text"&gt;Success message here!&lt;/span&gt;
+  &lt;button class="alert-close"&gt;
+    &lt;svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"&gt;
+      &lt;path d="M15.0037 -0.0135498C15.1363 -0.0146577 15.2676 0.0114505 15.3904 0.0616455C15.5133 0.111926 15.6256 0.185528 15.7195 0.279419C15.8134 0.373312 15.887 0.485624 15.9373 0.608521C15.9875 0.731268 16.0136 0.86263 16.0125 0.995239C16.0113 1.12802 15.9828 1.25995 15.9304 1.38196C15.878 1.50376 15.8022 1.61405 15.7068 1.70618L9.41382 7.99915L15.7068 14.2921C15.8889 14.4806 15.9892 14.7332 15.9871 14.9952C15.9848 15.2574 15.8795 15.5091 15.6941 15.6945C15.5087 15.8796 15.2578 15.9842 14.9958 15.9865C14.7338 15.9887 14.4813 15.8883 14.2927 15.7062L7.99976 9.41321L1.70679 15.7062C1.51826 15.8883 1.26574 15.9886 1.00366 15.9865C0.741465 15.9842 0.489851 15.8799 0.304443 15.6945C0.119038 15.5091 0.0147296 15.2574 0.0124512 14.9952C0.0102621 14.7332 0.110645 14.4806 0.292725 14.2921L6.58569 7.99915L0.292725 1.70618C0.105257 1.51865 -0.000244141 1.26431 -0.000244141 0.999146C-0.00023521 0.733994 0.105261 0.479634 0.292725 0.292114C0.48025 0.104661 0.734605 -0.000854492 0.999756 -0.000854492C1.26491 -0.000848155 1.51927 0.104652 1.70679 0.292114L7.99976 6.58508L14.2927 0.292114C14.3848 0.196741 14.4951 0.120879 14.6169 0.0684814C14.7389 0.0160724 14.8709 -0.012396 15.0037 -0.0135498Z" fill="currentColor"/&gt;
+    &lt;/svg&gt;
+  &lt;/button&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+        </div>
+        
+        <p style="font: var(--footnote-regular); color: var(--text-subtitle); margin-top: var(--spacing-16);">
+          💡 <strong>Use for:</strong> Successful operations, confirmations, or positive feedback messages.
+        </p>
+      </div>
+    </section>
+    
+    <!-- ========================================
+         ERROR ALERT
+         ======================================== -->
+    <section class="demo-section">
+      <h2 class="section-title">Error Alert</h2>
+      
+      <div class="component-group">
+        <h3 class="group-title">Error / Danger Message</h3>
+        
+        <div class="demo-code-layout">
+          <!-- Demo -->
+          <div class="demo-preview">
+            <div class="alert" data-type="error">
+              <span class="alert-text">A simple alert—check it out!</span>
+              <button class="alert-close" onclick="closeAlert(this)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M15.0037 -0.0135498C15.1363 -0.0146577 15.2676 0.0114505 15.3904 0.0616455C15.5133 0.111926 15.6256 0.185528 15.7195 0.279419C15.8134 0.373312 15.887 0.485624 15.9373 0.608521C15.9875 0.731268 16.0136 0.86263 16.0125 0.995239C16.0113 1.12802 15.9828 1.25995 15.9304 1.38196C15.878 1.50376 15.8022 1.61405 15.7068 1.70618L9.41382 7.99915L15.7068 14.2921C15.8889 14.4806 15.9892 14.7332 15.9871 14.9952C15.9848 15.2574 15.8795 15.5091 15.6941 15.6945C15.5087 15.8796 15.2578 15.9842 14.9958 15.9865C14.7338 15.9887 14.4813 15.8883 14.2927 15.7062L7.99976 9.41321L1.70679 15.7062C1.51826 15.8883 1.26574 15.9886 1.00366 15.9865C0.741465 15.9842 0.489851 15.8799 0.304443 15.6945C0.119038 15.5091 0.0147296 15.2574 0.0124512 14.9952C0.0102621 14.7332 0.110645 14.4806 0.292725 14.2921L6.58569 7.99915L0.292725 1.70618C0.105257 1.51865 -0.000244141 1.26431 -0.000244141 0.999146C-0.00023521 0.733994 0.105261 0.479634 0.292725 0.292114C0.48025 0.104661 0.734605 -0.000854492 0.999756 -0.000854492C1.26491 -0.000848155 1.51927 0.104652 1.70679 0.292114L7.99976 6.58508L14.2927 0.292114C14.3848 0.196741 14.4951 0.120879 14.6169 0.0684814C14.7389 0.0160724 14.8709 -0.012396 15.0037 -0.0135498Z" fill="currentColor"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Code -->
+          <div class="code-snippet">
+            <span class="code-snippet-label">HTML Code (Copy & Paste)</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code>&lt;div class="alert" data-type="error"&gt;
+  &lt;span class="alert-text"&gt;Error message here!&lt;/span&gt;
+  &lt;button class="alert-close"&gt;
+    &lt;svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"&gt;
+      &lt;path d="M15.0037 -0.0135498C15.1363 -0.0146577 15.2676 0.0114505 15.3904 0.0616455C15.5133 0.111926 15.6256 0.185528 15.7195 0.279419C15.8134 0.373312 15.887 0.485624 15.9373 0.608521C15.9875 0.731268 16.0136 0.86263 16.0125 0.995239C16.0113 1.12802 15.9828 1.25995 15.9304 1.38196C15.878 1.50376 15.8022 1.61405 15.7068 1.70618L9.41382 7.99915L15.7068 14.2921C15.8889 14.4806 15.9892 14.7332 15.9871 14.9952C15.9848 15.2574 15.8795 15.5091 15.6941 15.6945C15.5087 15.8796 15.2578 15.9842 14.9958 15.9865C14.7338 15.9887 14.4813 15.8883 14.2927 15.7062L7.99976 9.41321L1.70679 15.7062C1.51826 15.8883 1.26574 15.9886 1.00366 15.9865C0.741465 15.9842 0.489851 15.8799 0.304443 15.6945C0.119038 15.5091 0.0147296 15.2574 0.0124512 14.9952C0.0102621 14.7332 0.110645 14.4806 0.292725 14.2921L6.58569 7.99915L0.292725 1.70618C0.105257 1.51865 -0.000244141 1.26431 -0.000244141 0.999146C-0.00023521 0.733994 0.105261 0.479634 0.292725 0.292114C0.48025 0.104661 0.734605 -0.000854492 0.999756 -0.000854492C1.26491 -0.000848155 1.51927 0.104652 1.70679 0.292114L7.99976 6.58508L14.2927 0.292114C14.3848 0.196741 14.4951 0.120879 14.6169 0.0684814C14.7389 0.0160724 14.8709 -0.012396 15.0037 -0.0135498Z" fill="currentColor"/&gt;
+    &lt;/svg&gt;
+  &lt;/button&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+        </div>
+        
+        <p style="font: var(--footnote-regular); color: var(--text-subtitle); margin-top: var(--spacing-16);">
+          💡 <strong>Use for:</strong> Errors, failures, critical issues that need attention.
+        </p>
+      </div>
+    </section>
+    
+    <!-- ========================================
+         WARNING ALERT
+         ======================================== -->
+    <section class="demo-section">
+      <h2 class="section-title">Warning Alert</h2>
+      
+      <div class="component-group">
+        <h3 class="group-title">Warning / Caution Message</h3>
+        
+        <div class="demo-code-layout">
+          <!-- Demo -->
+          <div class="demo-preview">
+            <div class="alert" data-type="warning">
+              <span class="alert-text">A simple alert—check it out!</span>
+              <button class="alert-close" onclick="closeAlert(this)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M15.0037 -0.0135498C15.1363 -0.0146577 15.2676 0.0114505 15.3904 0.0616455C15.5133 0.111926 15.6256 0.185528 15.7195 0.279419C15.8134 0.373312 15.887 0.485624 15.9373 0.608521C15.9875 0.731268 16.0136 0.86263 16.0125 0.995239C16.0113 1.12802 15.9828 1.25995 15.9304 1.38196C15.878 1.50376 15.8022 1.61405 15.7068 1.70618L9.41382 7.99915L15.7068 14.2921C15.8889 14.4806 15.9892 14.7332 15.9871 14.9952C15.9848 15.2574 15.8795 15.5091 15.6941 15.6945C15.5087 15.8796 15.2578 15.9842 14.9958 15.9865C14.7338 15.9887 14.4813 15.8883 14.2927 15.7062L7.99976 9.41321L1.70679 15.7062C1.51826 15.8883 1.26574 15.9886 1.00366 15.9865C0.741465 15.9842 0.489851 15.8799 0.304443 15.6945C0.119038 15.5091 0.0147296 15.2574 0.0124512 14.9952C0.0102621 14.7332 0.110645 14.4806 0.292725 14.2921L6.58569 7.99915L0.292725 1.70618C0.105257 1.51865 -0.000244141 1.26431 -0.000244141 0.999146C-0.00023521 0.733994 0.105261 0.479634 0.292725 0.292114C0.48025 0.104661 0.734605 -0.000854492 0.999756 -0.000854492C1.26491 -0.000848155 1.51927 0.104652 1.70679 0.292114L7.99976 6.58508L14.2927 0.292114C14.3848 0.196741 14.4951 0.120879 14.6169 0.0684814C14.7389 0.0160724 14.8709 -0.012396 15.0037 -0.0135498Z" fill="currentColor"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Code -->
+          <div class="code-snippet">
+            <span class="code-snippet-label">HTML Code (Copy & Paste)</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code>&lt;div class="alert" data-type="warning"&gt;
+  &lt;span class="alert-text"&gt;Warning message here!&lt;/span&gt;
+  &lt;button class="alert-close"&gt;
+    &lt;svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"&gt;
+      &lt;path d="M15.0037 -0.0135498C15.1363 -0.0146577 15.2676 0.0114505 15.3904 0.0616455C15.5133 0.111926 15.6256 0.185528 15.7195 0.279419C15.8134 0.373312 15.887 0.485624 15.9373 0.608521C15.9875 0.731268 16.0136 0.86263 16.0125 0.995239C16.0113 1.12802 15.9828 1.25995 15.9304 1.38196C15.878 1.50376 15.8022 1.61405 15.7068 1.70618L9.41382 7.99915L15.7068 14.2921C15.8889 14.4806 15.9892 14.7332 15.9871 14.9952C15.9848 15.2574 15.8795 15.5091 15.6941 15.6945C15.5087 15.8796 15.2578 15.9842 14.9958 15.9865C14.7338 15.9887 14.4813 15.8883 14.2927 15.7062L7.99976 9.41321L1.70679 15.7062C1.51826 15.8883 1.26574 15.9886 1.00366 15.9865C0.741465 15.9842 0.489851 15.8799 0.304443 15.6945C0.119038 15.5091 0.0147296 15.2574 0.0124512 14.9952C0.0102621 14.7332 0.110645 14.4806 0.292725 14.2921L6.58569 7.99915L0.292725 1.70618C0.105257 1.51865 -0.000244141 1.26431 -0.000244141 0.999146C-0.00023521 0.733994 0.105261 0.479634 0.292725 0.292114C0.48025 0.104661 0.734605 -0.000854492 0.999756 -0.000854492C1.26491 -0.000848155 1.51927 0.104652 1.70679 0.292114L7.99976 6.58508L14.2927 0.292114C14.3848 0.196741 14.4951 0.120879 14.6169 0.0684814C14.7389 0.0160724 14.8709 -0.012396 15.0037 -0.0135498Z" fill="currentColor"/&gt;
+    &lt;/svg&gt;
+  &lt;/button&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+        </div>
+        
+        <p style="font: var(--footnote-regular); color: var(--text-subtitle); margin-top: var(--spacing-16);">
+          💡 <strong>Use for:</strong> Warnings, potential issues, or information that needs caution.
+        </p>
+      </div>
+    </section>
+    
+    <!-- ========================================
+         INFO ALERT
+         ======================================== -->
+    <section class="demo-section">
+      <h2 class="section-title">Info Alert</h2>
+      
+      <div class="component-group">
+        <h3 class="group-title">Informational Message</h3>
+        
+        <div class="demo-code-layout">
+          <!-- Demo -->
+          <div class="demo-preview">
+            <div class="alert" data-type="info">
+              <span class="alert-text">A simple alert—check it out!</span>
+              <button class="alert-close" onclick="closeAlert(this)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M15.0037 -0.0135498C15.1363 -0.0146577 15.2676 0.0114505 15.3904 0.0616455C15.5133 0.111926 15.6256 0.185528 15.7195 0.279419C15.8134 0.373312 15.887 0.485624 15.9373 0.608521C15.9875 0.731268 16.0136 0.86263 16.0125 0.995239C16.0113 1.12802 15.9828 1.25995 15.9304 1.38196C15.878 1.50376 15.8022 1.61405 15.7068 1.70618L9.41382 7.99915L15.7068 14.2921C15.8889 14.4806 15.9892 14.7332 15.9871 14.9952C15.9848 15.2574 15.8795 15.5091 15.6941 15.6945C15.5087 15.8796 15.2578 15.9842 14.9958 15.9865C14.7338 15.9887 14.4813 15.8883 14.2927 15.7062L7.99976 9.41321L1.70679 15.7062C1.51826 15.8883 1.26574 15.9886 1.00366 15.9865C0.741465 15.9842 0.489851 15.8799 0.304443 15.6945C0.119038 15.5091 0.0147296 15.2574 0.0124512 14.9952C0.0102621 14.7332 0.110645 14.4806 0.292725 14.2921L6.58569 7.99915L0.292725 1.70618C0.105257 1.51865 -0.000244141 1.26431 -0.000244141 0.999146C-0.00023521 0.733994 0.105261 0.479634 0.292725 0.292114C0.48025 0.104661 0.734605 -0.000854492 0.999756 -0.000854492C1.26491 -0.000848155 1.51927 0.104652 1.70679 0.292114L7.99976 6.58508L14.2927 0.292114C14.3848 0.196741 14.4951 0.120879 14.6169 0.0684814C14.7389 0.0160724 14.8709 -0.012396 15.0037 -0.0135498Z" fill="currentColor"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Code -->
+          <div class="code-snippet">
+            <span class="code-snippet-label">HTML Code (Copy & Paste)</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code>&lt;div class="alert" data-type="info"&gt;
+  &lt;span class="alert-text"&gt;Info message here!&lt;/span&gt;
+  &lt;button class="alert-close"&gt;
+    &lt;svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"&gt;
+      &lt;path d="M15.0037 -0.0135498C15.1363 -0.0146577 15.2676 0.0114505 15.3904 0.0616455C15.5133 0.111926 15.6256 0.185528 15.7195 0.279419C15.8134 0.373312 15.887 0.485624 15.9373 0.608521C15.9875 0.731268 16.0136 0.86263 16.0125 0.995239C16.0113 1.12802 15.9828 1.25995 15.9304 1.38196C15.878 1.50376 15.8022 1.61405 15.7068 1.70618L9.41382 7.99915L15.7068 14.2921C15.8889 14.4806 15.9892 14.7332 15.9871 14.9952C15.9848 15.2574 15.8795 15.5091 15.6941 15.6945C15.5087 15.8796 15.2578 15.9842 14.9958 15.9865C14.7338 15.9887 14.4813 15.8883 14.2927 15.7062L7.99976 9.41321L1.70679 15.7062C1.51826 15.8883 1.26574 15.9886 1.00366 15.9865C0.741465 15.9842 0.489851 15.8799 0.304443 15.6945C0.119038 15.5091 0.0147296 15.2574 0.0124512 14.9952C0.0102621 14.7332 0.110645 14.4806 0.292725 14.2921L6.58569 7.99915L0.292725 1.70618C0.105257 1.51865 -0.000244141 1.26431 -0.000244141 0.999146C-0.00023521 0.733994 0.105261 0.479634 0.292725 0.292114C0.48025 0.104661 0.734605 -0.000854492 0.999756 -0.000854492C1.26491 -0.000848155 1.51927 0.104652 1.70679 0.292114L7.99976 6.58508L14.2927 0.292114C14.3848 0.196741 14.4951 0.120879 14.6169 0.0684814C14.7389 0.0160724 14.8709 -0.012396 15.0037 -0.0135498Z" fill="currentColor"/&gt;
+    &lt;/svg&gt;
+  &lt;/button&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+        </div>
+        
+        <p style="font: var(--footnote-regular); color: var(--text-subtitle); margin-top: var(--spacing-16);">
+          💡 <strong>Use for:</strong> General information, tips, or neutral notifications.
+        </p>
+      </div>
+    </section>
+    
+    <!-- Quick Reference -->
+    <section class="demo-section">
+      <h2 class="section-title">Quick Reference</h2>
+      
+      <div style="font: var(--body-regular); color: var(--text-black); line-height: 1.8;">
+        <h3 style="font: var(--heading-5); margin-bottom: var(--spacing-16);">Alert Types</h3>
+        <ul style="margin-left: var(--spacing-24); margin-bottom: var(--spacing-24);">
+          <li><code>data-type="success"</code> - Green: Success, confirmation messages</li>
+          <li><code>data-type="error"</code> - Red: Error, danger, critical issues</li>
+          <li><code>data-type="warning"</code> - Yellow/Amber: Warnings, cautions</li>
+          <li><code>data-type="info"</code> - Blue: Information, tips, neutral notifications</li>
+        </ul>
+        
+        <h3 style="font: var(--heading-5); margin-bottom: var(--spacing-16);">Features</h3>
+        <ul style="margin-left: var(--spacing-24); margin-bottom: var(--spacing-24);">
+          <li>✅ Dismissible with close button</li>
+          <li>✅ Smooth fade-out animation</li>
+          <li>✅ Icon color automatically matches alert type (currentColor)</li>
+          <li>✅ Responsive and accessible</li>
+        </ul>
+        
+        <h3 style="font: var(--heading-5); margin-bottom: var(--spacing-16);">JavaScript</h3>
+        <p style="margin-left: var(--spacing-24);">
+          Close button automatically fades out and removes the alert from DOM.
+        </p>
+      </div>
+    </section>
+    
+  </div>
+  
+  <!-- Alert Close Script -->
+  <script>
+    function closeAlert(btn) {
+      const alert = btn.closest('.alert');
+      alert.style.opacity = '0';
+      
+      setTimeout(() => {
+        alert.remove();
+      }, 300);
+    }
+  </script>
+  
+  <!-- Copy to Clipboard Script -->
+  <script>
+    function copyCode(btn) {
+      const codeBlock = btn.parentElement.querySelector('pre code');
+      if (!codeBlock) {
+        console.error('Code block not found');
+        return;
+      }
+      
+      const text = codeBlock.textContent;
+      
+      // Fallback for older browsers or non-HTTPS
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          const originalText = btn.textContent;
+          btn.textContent = 'Copied!';
+          btn.style.background = 'var(--green-600)';
+          
+          setTimeout(() => {
+            btn.textContent = originalText;
+            btn.style.background = 'var(--green-500)';
+          }, 2000);
+        }).catch(err => {
+          console.error('Failed to copy:', err);
+          alert('Copy failed. Please copy manually.');
+        });
+      } else {
+        // Fallback method
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        
+        try {
+          document.execCommand('copy');
+          btn.textContent = 'Copied!';
+          btn.style.background = 'var(--green-600)';
+          
+          setTimeout(() => {
+            btn.textContent = 'Copy';
+            btn.style.background = 'var(--green-500)';
+          }, 2000);
+        } catch (err) {
+          console.error('Fallback copy failed:', err);
+        }
+        
+        document.body.removeChild(textarea);
+      }
+    }
+  </script>
+  
+</body>
+</html>
+

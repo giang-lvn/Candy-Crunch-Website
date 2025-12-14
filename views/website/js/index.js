@@ -526,7 +526,7 @@ function initArcSectionAnimations() {
       pin: true,
       scrub: 0.5,
       invalidateOnRefresh: true,
-      pinSpacing: true,
+      pinSpacing: true, // Keep spacing for proper scroll
       anticipatePin: 1
     }
   });
@@ -749,30 +749,11 @@ function initCrewMembersAnimation() {
           stagger: 0.3, // Animate one by one with 0.3s delay
           onStart: () => {
             console.log('Crew names animating...');
-          },
-          onComplete: () => {
-            // Start breathing animation after all names appear
-            startBreathingAnimation();
           }
         });
       }, 1000); // 1 second delay
     }
   });
-  
-  // Breathing animation: gentle scale in/out
-  function startBreathingAnimation() {
-    gsap.to('.crew-name', {
-      scale: 1.08, // Slightly more visible breathing
-      duration: 3, // Slower breathing (3s up, 3s down = 6s total)
-      ease: 'power1.inOut', // Smoother easing
-      yoyo: true, // Go back to scale 1
-      repeat: -1, // Infinite loop
-      stagger: {
-        each: 0.5, // More noticeable stagger
-        repeat: -1
-      }
-    });
-  }
   
   console.log(`Crew members animation initialized for ${crewNames.length} members`);
 }

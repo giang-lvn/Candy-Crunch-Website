@@ -1,0 +1,448 @@
+/* ======================================================
+   MAIN CONTAINER
+====================================================== */
+.main-container {
+  width: 100%;
+  padding: var(--spacing-60) var(--spacing-120) var(--spacing-32);
+  max-width: 1440px;
+  position: relative;
+  z-index: 1;
+  margin: 0 auto;
+}
+
+/* ======================================================
+   HEADER NAV
+====================================================== */
+.header-nav {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 1000;
+  gap: var(--spacing-16);
+  isolation: isolate;
+  padding: var(--spacing-12) var(--spacing-20);
+}
+
+/* ======================================================
+   LOGO
+====================================================== */
+.logo {
+  width: 137.56px;
+  height: 52.02px;
+  object-fit: contain;
+}
+
+/* ======================================================
+   NAV PILLS
+====================================================== */
+.nav-pills {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  background: var(--nav-menu-wrapper-bg);
+  border-radius: var(--nav-menu-wrapper-border-radius);
+  padding: var(--spacing-12);
+  position: relative;
+}
+
+.nav-pills a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ======================================================
+   NAV ITEM
+====================================================== */
+.nav-item {
+  padding: var(--nav-link-padding);
+  border-radius: var(--nav-link-border-radius);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--nav-link-gap);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.nav-item[data-active="Yes"] {
+  background: var(--nav-link-active-bg);
+}
+
+.nav-item[data-active="Yes"] .nav-text {
+  color: var(--nav-link-active-text);
+}
+
+.nav-item[data-active="No"] .nav-text {
+  color: var(--nav-text-default);
+}
+
+.nav-item[data-active="No"]:hover {
+  background: rgba(1, 126, 106, 0.1);
+}
+
+/* ======================================================
+   NAV TEXT
+====================================================== */
+.nav-text {
+  font: var(--body-medium);
+}
+
+/* ======================================================
+   DROPDOWN ICON
+====================================================== */
+.dropdown-icon {
+  width: 16px;
+  height: 16px;
+  position: relative;
+}
+
+.dropdown-icon-inner {
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--gray-600);
+  border-bottom: 2px solid var(--gray-600);
+  transform: rotate(45deg);
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  transition: transform 0.3s ease;
+}
+
+.nav-item.open .dropdown-icon-inner {
+  transform: rotate(-135deg);
+  top: 6px;
+}
+
+/* ======================================================
+   USER ACTIONS
+====================================================== */
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-16);
+}
+
+.user-actions a {
+  text-decoration: none;
+}
+
+.action-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  padding: var(--spacing-8);
+  border-radius: var(--nav-link-border-radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--nav-text-hover);
+}
+
+.action-item:hover {
+  background: rgba(1, 126, 106, 0.1);
+  transform: translateY(-2px);
+}
+
+.action-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.action-text {
+  font: var(--body-medium);
+  color: var(--nav-text-hover);
+}
+
+.cart-item {
+  padding: var(--spacing-8) var(--spacing-12);
+}
+
+/* ======================================================
+   DROPDOWN CONTENT
+====================================================== */
+.dropdown-content {
+  position: fixed;
+  top: calc(var(--nav-height) + var(--spacing-32));
+  left: 0;
+  right: 0;
+  background: transparent;
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-10px);
+  transition: all 0.25s ease;
+  padding: 0 var(--spacing-120);
+}
+
+.dropdown-content.show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* ======================================================
+   MENU PANEL
+====================================================== */
+.menu-panel {
+  padding: var(--spacing-24);
+  background: var(--green-50);
+  border-radius: var(--border-radius-12);
+  box-shadow: 0 12px 30px rgba(2, 24, 18, 0.08);
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  gap: 30px;
+}
+
+/* ======================================================
+   MENU COLUMNS
+====================================================== */
+.menu-columns {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-16);
+}
+
+.menu-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-24);
+}
+
+.menu-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.menu-title {
+  font: var(--footnote-semibold);
+  color: var(--text-black);
+  margin-bottom: var(--spacing-8);
+}
+
+.menu-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.menu-item {
+  color: var(--nav-text-default);
+  text-decoration: none;
+  font: var(--footnote-regular);
+  transition: all 0.2s ease;
+  display: block;
+  padding: var(--spacing-4) var(--spacing-8);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.menu-item:hover {
+  color: var(--nav-text-hover);
+  background: rgba(1, 126, 106, 0.05);
+  transform: translateX(3px);
+}
+
+.menu-item.active {
+  color: var(--nav-text-hover);
+  font-weight: 500;
+  background: rgba(1, 126, 106, 0.1);
+}
+
+.see-all-link {
+  color: var(--nav-text-hover);
+  font: var(--footnote-semibold);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  display: inline-block;
+  margin-top: var(--spacing-8);
+}
+
+.see-all-link:hover {
+  transform: translateX(5px);
+}
+
+/* ======================================================
+   FEATURED CARD
+====================================================== */
+.featured-card {
+  width: 280px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-12);
+  opacity: 0;
+  transform: scale(0.95);
+  transition: all 0.3s ease;
+}
+
+.featured-card.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.featured-image {
+  width: 100%;
+  height: 180px;
+  border-radius: var(--border-radius-12);
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.featured-card:hover .featured-image {
+  transform: scale(1.05);
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+}
+
+.card-title {
+  color: var(--text-black);
+  font: var(--body-large-semibold);
+}
+
+.card-subtitle {
+  color: var(--text-subtitle);
+  font: var(--footnote-regular);
+}
+
+/* ======================================================
+   UTILITY
+====================================================== */
+.inline-flex-center {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ======================================================
+   RESPONSIVE BREAKPOINTS
+====================================================== */
+
+/* Desktop - 993px to 1200px */
+@media (max-width: 1200px) {
+  .main-container {
+    padding: var(--spacing-24) var(--spacing-60) var(--spacing-32);
+  }
+  
+  .dropdown-content {
+    padding: 0 var(--spacing-60);
+  }
+  .header-nav {
+    gap: var(--spacing-12);
+  }
+  .nav-pills {
+    padding: var(--spacing-8);
+    gap: 6px;
+  }
+  .nav-text {
+    font-size: 14px;
+  }
+  .action-text {
+    font-size: 14px;
+  }
+  .menu-panel {
+    flex-direction: column;
+  }
+  .featured-card {
+    width: 100%;
+  }
+  .menu-row {
+    grid-template-columns: repeat(2,1fr);
+    gap: var(--spacing-16);
+  }
+  .menu-item {
+    font-size: 13px;
+  }
+  .card-title {
+    font-size: 26px;
+    font-weight: 600;
+  }
+  .card-subtitle {
+    font-size: 13px;
+  }
+}
+
+/* Mobile Large - 481px to 768px */
+@media (max-width: 768px) {
+  .main-container {
+    padding: var(--spacing-16);
+  }
+  
+  .dropdown-content {
+    padding: 0 var(--spacing-16);
+    top: calc(var(--nav-height) + var(--spacing-16));
+  }
+
+  .header-nav {
+    gap: var(--spacing-8);
+  }
+
+  .logo {
+    width: 100px;
+    height: auto;
+  }
+
+  .nav-pills {
+    flex-wrap: wrap;
+    padding: 6px;
+    gap: var(--spacing-4);
+  }
+
+  .nav-item {
+    padding: 6px 10px;
+  }
+
+  .nav-text {
+    font-size: 12px;
+  }
+
+  .user-actions {
+    gap: var(--spacing-8);
+  }
+
+  .action-item {
+    padding: 6px;
+  }
+
+  .action-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .menu-row {
+    grid-template-columns: 1fr;
+  }
+
+  .menu-panel {
+    padding: var(--spacing-16);
+  }
+  .menu-title {
+    font-size: 13px;
+    margin-bottom: var(--spacing-4);
+  }
+  .menu-item {
+    font-size: 12px;
+    padding: 3px 6px;
+  }
+  .card-title {
+      font-size: 20px;
+      font-weight: 600;
+  }
+  .card-subtitle {
+    font-size: 12px;
+  }
+  .featured-image {
+    height: 140px;
+  }
+}
+

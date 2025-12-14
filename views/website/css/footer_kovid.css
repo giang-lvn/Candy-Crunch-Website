@@ -1,415 +1,25 @@
-/* ================================================
-   RESET STYLES - Các reset styles là những styles mặc định cho tất cả các element trong html của trình duyệt. Tốt nhất cứ reset để nó như trang giấy trắng - phạm trưởng
-   ================================================ */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Hide scrollbar for all browsers */
-html,
-body {
-  overflow-x: hidden !important; /* Hide horizontal scrollbar - force override */
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
-  width: 100%;
-  max-width: 100%;
-  font-family: var(--font-primary);
-}
-
-/* Hide scrollbar for Chrome, Safari and Opera */
-html::-webkit-scrollbar,
-body::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
-}
-
-button {
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-family: inherit;
-}
-body{
-   background: var(--body-background, #F8F5EE);
-   font-family: var(--font-primary);
-}
-
-/* Ensure all text elements inherit Poppins font */
-p, span, div, a, li, td, th, label, input, textarea, select, button {
-  font-family: inherit;
-}
-
-/* Headings that don't use Modak should use Poppins */
-h1, h2, h3, h4, h5, h6 {
-  font-family: inherit;
-}
-
-/* ======================================================
-   ROOT VARIABLES
-====================================================== */
-:root {
-  /* ========================================
-     1. FONT FAMILIES
-     ======================================== */
-  --font-primary: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-heading: 'Modak', cursive;
-
-  /* ========================================
-     2. DESKTOP/TABLET TEXT STYLES
-     Cú pháp của shorthand font: weight size/line-height family
-     ======================================== */
-
-  /* Headings */
-  --heading-1: 400 60px/120% var(--font-heading);
-  --heading-2: 400 50px/120% var(--font-heading);
-  --heading-3: 400 40px/120% var(--font-heading);
-  --heading-4: 400 30px/120% var(--font-heading);
-  --heading-5: 400 24px/120% var(--font-heading);
-
-  /* Body X-Large - 24px */
-  --body-xlarge-regular: 400 24px/120% var(--font-primary);
-  --body-xlarge-medium: 500 24px/120% var(--font-primary);
-  --body-xlarge-semibold: 600 24px/120% var(--font-primary);
-  --body-xlarge-bold: 700 24px/120% var(--font-primary);
-
-  /* Body Large - 18px */
-  --body-large-regular: 400 18px/27px var(--font-primary);
-  --body-large-medium: 500 18px/27px var(--font-primary);
-  --body-large-semibold: 600 18px/30px var(--font-primary);
-  --body-large-bold: 700 18px/30px var(--font-primary);
-
-  /* Body - 16px */
-  --body-regular: 400 16px/130% var(--font-primary);
-  --body-medium: 500 16px/130% var(--font-primary);
-  --body-semibold: 600 16px/130% var(--font-primary);
-  --body-bold: 700 16px/130% var(--font-primary);
-  --body-underline: 400 16px/130% var(--font-primary);
-  
-  /* Letter spacing for body text */
-  --body-letter-spacing: -0.038px;
-
-  /* Footnote - 14px */
-  --footnote-regular: 400 14px/130% var(--font-primary);
-  --footnote-medium: 500 14px/130% var(--font-primary);
-  --footnote-semibold: 600 14px/130% var(--font-primary);
-  --footnote-bold: 700 14px/130% var(--font-primary);
-
-  /* Caption - 13px */
-  --caption-regular: 400 13px/130% var(--font-primary);
-  --caption-medium: 500 13px/130% var(--font-primary);
-  --caption-semibold: 600 13px/130% var(--font-primary);
-  --caption-bold: 700 13px/130% var(--font-primary);
-
-  /* Small - 12px */
-  --small-regular: 400 12px/133% var(--font-primary);
-  --small-medium: 500 12px/133% var(--font-primary);
-  --small-semibold: 600 12px/133% var(--font-primary);
-  --small-bold: 700 12px/133% var(--font-primary);
-
-
-  /* ========================================
-     3. MOBILE TEXT STYLES (Không sử dụng nhưng cứ để vào biết đâu lại cần)
-     ======================================== */
-  --mobile-heading-1: 600 40px/120% var(--font-heading);
-  --mobile-heading-2: 600 30px/120% var(--font-heading);
-  --mobile-heading-3: 600 28px/121% var(--font-heading);
-  --mobile-heading-4: 600 24px/121% var(--font-heading);
-
-  /* ========================================
-     4. SPACING SYSTEM
-     Base: 4px (Bội số của 4) nhưng hãy ưu tiên sử dụng bội số của 8: 8,16,24,.., chỉ những khi nào túng lắm mới hãy dùng 4)
-     Đặt tên theo giá trị px
-     ======================================== */
-  --spacing-4: 4px;
-  --spacing-8: 8px;
-  --spacing-12: 12px;
-  --spacing-16: 16px;
-  --spacing-20: 20px;
-  --spacing-24: 24px;
-  --spacing-28: 28px;
-  --spacing-32: 32px;
-  --spacing-36: 36px;
-  --spacing-40: 40px;
-  --spacing-44: 44px;
-  --spacing-48: 48px;
-  --spacing-52: 52px;
-  --spacing-56: 56px;
-  --spacing-60: 60px;
-  --spacing-64: 64px;
-  --spacing-68: 68px;
-  --spacing-72: 72px;
-  --spacing-76: 76px;
-  --spacing-80: 80px;
-  --spacing-84: 84px;
-  --spacing-88: 88px;
-  --spacing-92: 92px;
-  --spacing-96: 96px;
-  --spacing-104: 104px;
-  --spacing-112: 112px;
-  --spacing-120: 120px;
-  --spacing-128: 128px;
-
-  --border-radius-12: var(--spacing-12);
-
-  /* ========================================
-     5. COLOR SYSTEM
-   Hệ thống màu sắc dựa trên Variables của Figma. Trong Figma có thay đổi gì thì vào đây thay đổi phát là xong.
-     ======================================== */
-
-  /* Yellow */
-  --yellow-50: #FFF8E6;
-  --yellow-100: #FEEAB2;
-  --yellow-200: #FEDF8C;
-  --yellow-300: #FED158;
-  --yellow-400: #FDC838;
-  --yellow-500: #FDBA06;
-  --yellow-600: #E6A905;
-  --yellow-700: #B48404;
-  --yellow-800: #8B6603;
-  --yellow-900: #6A4E03;
-
-  /* Teal */
-  --teal-50: #E0F2F1;
-  --teal-100: #B2DFDB;
-  --teal-200: #80CBC4;
-  --teal-300: #4DB6AC;
-  --teal-400: #26A69A;
-  --teal-500: #009688;
-  --teal-600: #00897B;
-  --teal-700: #00796B;
-  --teal-800: #00695C;
-  --teal-900: #004D40;
-
-  /* Red */
-  --red-50: #FFEDEB;
-  --red-100: #FFC7C0;
-  --red-200: #FFABA2;
-  --red-300: #FF8577;
-  --red-400: #FF6D5D;
-  --red-500: #FF4934;
-  --red-600: #E8422F;
-  --red-700: #B53425;
-  --red-800: #8C281D;
-  --red-900: #6B1F16;
-
-  /* Purple */
-  --purple-50: #F3E5F5;
-  --purple-100: #E1BEE7;
-  --purple-200: #CE93D8;
-  --purple-300: #BA68C8;
-  --purple-400: #AB47BC;
-  --purple-500: #9C27B0;
-  --purple-600: #8E24AA;
-  --purple-700: #7B1FA2;
-  --purple-800: #6A1B9A;
-  --purple-900: #4A148C;
-
-  /* Pink */
-  --pink-50: #FEF3F6;
-  --pink-100: #FDD8E3;
-  --pink-200: #FCC6D5;
-  --pink-300: #FBABC2;
-  --pink-400: #FA9BB6;
-  --pink-500: #F9B2A4;
-  --pink-600: #E37695;
-  --pink-700: #B15C74;
-  --pink-800: #89485A;
-  --pink-900: #693745;
-
-  /* Orange */
-  --orange-50: #FEF3EE;
-  --orange-100: #FDE7DC;
-  --orange-200: #FBD0B9;
-  --orange-300: #FABB97;
-  --orange-400: #F8A174;
-  --orange-500: #F68951;
-  --orange-600: #CD7244;
-  --orange-700: #A45B36;
-  --orange-800: #7B4529;
-  --orange-900: #522E1B;
-
-  /* Lime */
-  --lime-50: #F9FBE7;
-  --lime-100: #F0F4C3;
-  --lime-200: #E6EE9C;
-  --lime-300: #DCE775;
-  --lime-400: #D4E157;
-  --lime-500: #CDDC39;
-  --lime-600: #C0CA33;
-  --lime-700: #AFB42B;
-  --lime-800: #9E9D24;
-  --lime-900: #827717;
-
-  /* Light Green */
-  --light-green-50: #F1F8E9;
-  --light-green-100: #DCEDC8;
-  --light-green-200: #C5E1A5;
-  --light-green-300: #AED581;
-  --light-green-400: #9BC34A;
-  --light-green-500: #8BC34A;
-  --light-green-600: #7CB342;
-  --light-green-700: #689F38;
-  --light-green-800: #558B2F;
-  --light-green-900: #33691E;
-
-  /* Light Blue */
-  --light-blue-50: #F3F8FD;
-  --light-blue-100: #DBE9F8;
-  --light-blue-200: #C9DDF5;
-  --light-blue-300: #B1D0F1;
-  --light-blue-400: #A1C7EE;
-  --light-blue-500: #8AB9EA;
-  --light-blue-600: #7EA8D5;
-  --light-blue-700: #6283A6;
-  --light-blue-800: #4C6681;
-  --light-blue-900: #3A4E62;
-
-  /* Gray */
-  --gray-50: #FAFAFA;
-  --gray-100: #F5F5F5;
-  --gray-200: #EEEEEE;
-  --gray-300: #E0E0E0;
-  --gray-400: #BDBDBD;
-  --gray-500: #9E9E9E;
-  --gray-600: #757575;
-  --gray-700: #616161;
-  --gray-800: #424242;
-  --gray-900: #212121;
-
-  /* Green */
-  --green-50: #E6F2F0;
-  --green-100: #80D7D1;
-  --green-200: #8AC4BA;
-  --green-300: #55A99B;
-  --green-400: #349888;
-  --green-500: #017E6A;
-  --green-600: #017360;
-  --green-700: #01594B;
-  --green-800: #01453A;
-  --green-900: #00352D;
-
-  /* Blue */
-  --blue-50: #E3F2FD;
-  --blue-100: #BBDEFB;
-  --blue-200: #90CAF9;
-  --blue-300: #64B5F6;
-  --blue-400: #42A5F5;
-  --blue-500: #2196F3;
-  --blue-600: #1E88E5;
-  --blue-700: #0057B2;
-  --blue-800: #1565C0;
-  --blue-900: #0D47A1;
-
-  /* Amber */
-  --amber-50: #FFF8E1;
-  --amber-100: #FFECB3;
-  --amber-200: #FFE082;
-  --amber-300: #FFD54F;
-  --amber-400: #FFCA28;
-  --amber-500: #FFC107;
-  --amber-600: #FFB300;
-  --amber-700: #FFA000;
-  --amber-800: #FF8F00;
-  --amber-900: #FF6F00;
-
-  /* Beige */
-  --beige-50: #FFFEFD;
-  --beige-100: #FDFCFA;
-  --beige-200: #FCFAF7;
-  --beige-300: #FAF8F4;
-  --beige-400: #F9F7F1;
-  --beige-500: #F8F5EE;
-  --beige-600: #E2DFD9;
-  --beige-700: #B0AEA9;
-  --beige-800: #888783;
-  --beige-900: #686764;
-
-
-  /* 6. Component Color System */
-
-  /* Effect Styles - Ring Effects */
-  --invalid-ring: 0 0 4px 12px var(--red-400);
-  --focus-ring: 0 0 4px 12px var(--light-blue-300);
-
-  /* ========================================
-     7. Component Design System - Tất cả các component style và layout sẽ được định nghĩa ở đây và có gì thay đổi trong figma thì dô đây đổi.
-     ======================================== */
-
-  /* Text */
-  --text-black: var(--gray-900);
-  --text-white: var(--gray-50);
-  --text-subtitle: var(--gray-700);
-  --text-disabled: var(--gray-500);
-
-  /*=============================
-    PRIMARY COMPONENTS
-   =============================*/
-
-
-  /* Primary button*/
-  --primary-button-default-background: var(--green-500);
-  --primary-button-hover-background: var(--green-600);
-  --primary-button-pressed-border: var(--green-700);
-  --primary-button-outline-text: var(--green-500);
-  --primary-button-outline-hovered-background: var(--green-100);
-  --primary-button-outline-pressed-background: var(--green-200);
-
-  /*=============================
-    NAVIGATION COMPONENTS
-   =============================*/
-  
-  /* Navigation Colors */
-  --nav-background: var(--beige-500);
-  --nav-container-border-radius: var(--border-radius-12);
-  --nav-menu-wrapper-bg: #FFF;
-  --nav-text-default: var(--gray-600);
-  --nav-text-hover: var(--green-500);
-  --nav-link-active-bg: var(--green-500);
-  --nav-link-active-text: var(--text-white);
-  
-  /* Auth Button Colors */
-  --btn-login-bg: var(--orange-500);
-  --btn-login-text: var(--text-white);
-  --btn-login-hover: var(--orange-600);
-  --btn-signup-border: var(--orange-500);
-  --btn-signup-text: var(--orange-500);
-  --btn-signup-hover-bg: var(--orange-50);
-  
-  /* Navigation Spacing */
-  --nav-height: 80px;
-  --nav-padding-x: var(--spacing-64);
-  --nav-padding-y: var(--spacing-16);
-  --nav-menu-wrapper-padding: var(--spacing-8);
-  --nav-menu-gap: var(--spacing-16);
-  --nav-link-padding: var(--spacing-8) var(--spacing-12);
-  --nav-link-gap: var(--spacing-4);
-  --nav-link-border-radius: 16px;
-  --nav-menu-wrapper-border-radius: 999px;
-  --btn-auth-padding: var(--spacing-8) var(--spacing-16);
-  
-  /* Navigation Effects */
-  --nav-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
+@import url('https://fonts.googleapis.com/css2?family=Modak&display=swap');
 .footer {
   width: 100%;
   padding: var(--spacing-48) var(--spacing-120);
   position: relative;
-  display: flex;
+  display: flex;  
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-64);
   overflow: hidden;
   background-color: var(--green-500);
+  justify-content: center;
+  margin-top: auto;
 }
-
+.footer-top, .brand-title, .footer-bottom .footer-content {
+  width: 100%;
+  margin: 0 auto; /* Đảm bảo căn giữa */
+}
 /* ======================================================
    FOOTER CONTENT 
 ====================================================== */
 .footer-content {
-  width: 100%;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-48);
@@ -421,7 +31,6 @@ h1, h2, h3, h4, h5, h6 {
    FOOTER TOP SECTION
 ====================================================== */
 .footer-top {
-  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -504,9 +113,10 @@ h1, h2, h3, h4, h5, h6 {
 .links-grid {
   flex: 1;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: flex-start;
   gap: var(--spacing-48);
+  max-width: 50%;
 }
 
 .link-column {
@@ -527,6 +137,24 @@ h1, h2, h3, h4, h5, h6 {
   position: relative;
   padding: var(--spacing-4) 0;
   cursor: pointer;
+}
+.link-column.contact-info {
+  padding-left: 0;
+  border-left: none;
+  max-width: 250px;
+}
+.link-item.column-title {
+  font: var(--body-semibold);
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
+  cursor: default;
+  padding: 0;
+  margin-bottom: var(--spacing-4);
+}
+.link-column.link-column.contact-info .contact-detail {
+  color: var(--text-white);
+  font: var(--caption-regular);
+  line-height: 1.4;
+  margin: 0;
 }
 
 /* Hover effect với underline animation */
@@ -591,61 +219,40 @@ h1, h2, h3, h4, h5, h6 {
 /* ======================================================
    RESPONSIVE
 ====================================================== */
-/* Desktop Large - > 1200px */
-@media (min-width: 1201px) {
-  .footer {
-    padding: var(--spacing-48) var(--spacing-120);
-  }
-}
 
 /* Desktop - 993px to 1200px */
 @media (max-width: 1200px) {
   .footer {
     padding: var(--spacing-48) var(--spacing-60);
   }
+  .links-grid {
+    gap: var(--spacing-32);
+  }
+  .newsletter-text {
+    font: var(--body-regular);
+  }
+  .email-input {
+    font: var(--body-regular);
+  }
+  .link-item {
+    font: var(--footnote-regular);
+  }
+  .link-item.column-title {
+    font: var(--body-semibold);
+  }
+  .link-column.contact-info .contact-detail {
+    font: var(--caption-regular);
+  }
 
   .brand-text {
     font-size: 120px;
     line-height: 110px;
   }
-}
-
-/* Tablet - 769px to 992px */
-@media (max-width: 992px) {
-  .footer {
-    padding: var(--spacing-40) var(--spacing-32);
-  }
-
-  .footer-top {
-    flex-direction: column;
-    gap: var(--spacing-32);
-  }
-
-  .newsletter-section {
-    width: 100%;
-  }
-
-  .newsletter-form {
-    max-width: 100%;
-  }
-
-  .links-grid {
-    width: 100%;
-    justify-content: flex-start;
-    gap: var(--spacing-32);
-  }
-
-  .brand-text {
-    font-size: 80px;
-    line-height: 75px;
-  }
-
-  .footer-bottom {
-    flex-direction: column;
-    gap: var(--spacing-12);
-    text-align: center;
+  .copyright-text {
+    font: var(--caption-regular);
   }
 }
+
 
 /* Mobile Large - 481px to 768px */
 @media (max-width: 768px) {
@@ -663,157 +270,46 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .newsletter-section {
+    width: 100%;
     gap: var(--spacing-16);
   }
-
-  .newsletter-text {
-    font: var(--body-regular);
-    max-width: 100%;
-  }
-
-  .newsletter-form {
-    padding: var(--spacing-8);
-  }
-
-  .email-input {
-    font: var(--footnote-regular);
-  }
-
-  .submit-btn {
-    width: 36px;
-    height: 36px;
-    padding: 6px;
-  }
-
-  .submit-icon {
-    width: 20px;
-    height: 20px;
-  }
-
   .links-grid {
+    width: 100%;
     flex-direction: column;
     gap: var(--spacing-24);
   }
-
-  .link-column {
-    padding-left: var(--spacing-12);
-  }
-
-  .link-item {
-    font: var(--footnote-regular);
-  }
-
-  .link-column:nth-child(2) .link-item,
-  .link-column:nth-child(3) .link-item {
-    font: var(--body-regular);
-  }
-
-  .brand-text {
-    font-size: 48px;
-    line-height: 48px;
-    letter-spacing: 2px;
-  }
-
-  .footer-bottom {
-    padding: var(--spacing-12) 0;
-  }
-
-  .copyright-text {
+  .newsletter-text {
     font: var(--small-regular);
   }
-}
-
-/* Mobile Small - ≤ 480px */
-@media (max-width: 480px) {
-  .footer {
-    padding: var(--spacing-24) var(--spacing-12);
-    gap: var(--spacing-32);
-  }
-
-  .footer-content {
-    gap: var(--spacing-24);
-  }
-
-  .footer-top {
-    gap: var(--spacing-20);
-  }
-
-  .newsletter-section {
-    gap: var(--spacing-12);
-  }
-
-  .newsletter-text {
-    font: var(--footnote-regular);
-  }
-
   .newsletter-form {
     padding: var(--spacing-8);
-    gap: var(--spacing-4);
   }
 
   .email-input {
     font: var(--small-regular);
-    min-width: 0;
   }
-
-  .submit-btn {
-    width: 32px;
-    height: 32px;
-    padding: var(--spacing-4);
-  }
-
-  .submit-icon {
-    width: 18px;
-    height: 18px;
-  }
-
-  .links-grid {
-    gap: var(--spacing-20);
-  }
-
-  .link-column {
-    padding-left: var(--spacing-8);
-    gap: var(--spacing-12);
-    border-left-width: 1px;
-  }
-
   .link-item {
     font: var(--small-regular);
-    padding: 2px 0;
   }
-
-  .link-column:nth-child(2) .link-item,
-  .link-column:nth-child(3) .link-item {
-    font: var(--footnote-regular);
+  .link-item.link-item.column-title {
+    font: var(--footnote-semibold);
+    margin-bottom: var(--spacing-8);
   }
-
-  .link-item:hover {
-    transform: translateX(var(--spacing-4));
+  .link-column.contact-detail .contact-info{
+    font: var(--small-regular);
   }
-
-  .link-item:active {
-    transform: translateX(var(--spacing-4)) scale(0.95);
-  }
-
-  .brand-title {
-    padding: var(--spacing-16) 0;
-  }
-
   .brand-text {
-    font-size: 32px;
-    line-height: 32px;
-    letter-spacing: 1px;
+    font-size: 48px;
+    line-height: 48px;
+    letter-spacing: 2px;;
   }
-
   .footer-bottom {
-    padding: var(--spacing-8) 0;
+    flex-direction: column;
     gap: var(--spacing-8);
-    max-width: 100%;
+    padding: var(--spacing-12) 0;
+  }
+  .copyright-text {
+    font: var(--small-regular);
   }
 
-  .copyright-text {
-    font-size: 10px;
-    line-height: 14px;
-    text-align: center;
-  }
 }

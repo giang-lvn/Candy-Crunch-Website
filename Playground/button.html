@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Button Components Demo - Candy Crunch Design System</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Modak&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="../views/website/css/main.css">
+  
+  <style>
+    .demo-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--spacing-64) var(--spacing-32);
+      background: var(--beige-500);
+      min-height: 100vh;
+    }
+    
+    .demo-header {
+      text-align: center;
+      margin-bottom: var(--spacing-64);
+    }
+    
+    .demo-title {
+      font: var(--heading-1);
+      color: var(--text-black);
+      margin-bottom: var(--spacing-16);
+    }
+    
+    .demo-subtitle {
+      font: var(--body-large-regular);
+      color: var(--text-subtitle);
+    }
+    
+    .demo-section {
+      background: white;
+      border-radius: var(--spacing-24);
+      padding: var(--spacing-48);
+      margin-bottom: var(--spacing-48);
+    }
+    
+    .section-title {
+      font: var(--heading-3);
+      color: var(--text-black);
+      margin-bottom: var(--spacing-32);
+      padding-bottom: var(--spacing-16);
+      border-bottom: 2px solid var(--gray-200);
+    }
+    
+    .component-group {
+      margin-bottom: var(--spacing-48);
+    }
+    
+    .group-title {
+      font: var(--heading-5);
+      color: var(--green-500);
+      margin-bottom: var(--spacing-24);
+    }
+    
+    /* Two Column Layout - Demo + Code */
+    .demo-code-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-32);
+      margin-bottom: var(--spacing-32);
+    }
+    
+    .demo-preview {
+      background: var(--beige-100);
+      padding: var(--spacing-24);
+      border-radius: var(--border-radius-12);
+      border: 1px solid var(--gray-200);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-16);
+      align-items: flex-start;
+    }
+    
+    .code-snippet {
+      position: relative;
+    }
+    
+    .code-snippet pre {
+      background: var(--gray-900);
+      color: var(--gray-50);
+      padding: var(--spacing-16);
+      border-radius: var(--border-radius-12);
+      overflow-x: auto;
+      overflow-y: auto;
+      max-height: 200px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-width: 100%;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      margin: 0;
+    }
+    
+    .code-snippet-label {
+      font: var(--footnote-semibold);
+      color: var(--text-black);
+      margin-bottom: var(--spacing-8);
+      display: block;
+    }
+    
+    .copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      padding: 6px 12px;
+      background: var(--green-500);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .copy-btn:hover {
+      background: var(--green-600);
+    }
+    
+    .copy-btn:active {
+      transform: scale(0.95);
+    }
+    
+    @media (max-width: 968px) {
+      .demo-code-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="demo-container">
+    
+    <!-- Header -->
+    <div class="demo-header">
+      <h1 class="demo-title">Button Components</h1>
+      <p class="demo-subtitle">Design System with Ready-to-Use Classes</p>
+    </div>
+    
+    <!-- ========================================
+         PRIMARY BUTTONS
+         ======================================== -->
+    <section class="demo-section">
+      <h2 class="section-title">Primary Buttons</h2>
+      
+      <!-- Solid Buttons -->
+      <div class="component-group">
+        <h3 class="group-title">Solid Primary Buttons</h3>
+        
+        <div class="demo-code-layout">
+          <!-- Demo -->
+          <div class="demo-preview">
+            <button class="btn-primary-large">Primary Large</button>
+            <button class="btn-primary-medium">Primary Medium</button>
+            <button class="btn-primary-small">Primary Small</button>
+          </div>
+          
+          <!-- Code -->
+          <div class="code-snippet">
+            <span class="code-snippet-label">HTML Code (Copy & Paste)</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code>&lt;button class="btn-primary-large"&gt;Primary Large&lt;/button&gt;
+&lt;button class="btn-primary-medium"&gt;Primary Medium&lt;/button&gt;
+&lt;button class="btn-primary-small"&gt;Primary Small&lt;/button&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Outline Buttons -->
+      <div class="component-group">
+        <h3 class="group-title">Outline Primary Buttons</h3>
+        
+        <div class="demo-code-layout">
+          <!-- Demo -->
+          <div class="demo-preview">
+            <button class="btn-primary-outline-large">Primary Outline Large</button>
+            <button class="btn-primary-outline-medium">Primary Outline Medium</button>
+            <button class="btn-primary-outline-small">Primary Outline Small</button>
+          </div>
+          
+          <!-- Code -->
+          <div class="code-snippet">
+            <span class="code-snippet-label">HTML Code (Copy & Paste)</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code>&lt;button class="btn-primary-outline-large"&gt;Outline Large&lt;/button&gt;
+&lt;button class="btn-primary-outline-medium"&gt;Outline Medium&lt;/button&gt;
+&lt;button class="btn-primary-outline-small"&gt;Outline Small&lt;/button&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- ========================================
+         SECONDARY BUTTONS
+         ======================================== -->
+    <section class="demo-section">
+      <h2 class="section-title">Secondary Buttons</h2>
+      
+      <!-- Solid Buttons -->
+      <div class="component-group">
+        <h3 class="group-title">Solid Secondary Buttons</h3>
+        
+        <div class="demo-code-layout">
+          <!-- Demo -->
+          <div class="demo-preview">
+            <button class="btn-secondary-large">Secondary Large</button>
+            <button class="btn-secondary-medium">Secondary Medium</button>
+            <button class="btn-secondary-small">Secondary Small</button>
+          </div>
+          
+          <!-- Code -->
+          <div class="code-snippet">
+            <span class="code-snippet-label">HTML Code (Copy & Paste)</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code>&lt;button class="btn-secondary-large"&gt;Secondary Large&lt;/button&gt;
+&lt;button class="btn-secondary-medium"&gt;Secondary Medium&lt;/button&gt;
+&lt;button class="btn-secondary-small"&gt;Secondary Small&lt;/button&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Outline Buttons -->
+      <div class="component-group">
+        <h3 class="group-title">Outline Secondary Buttons</h3>
+        
+        <div class="demo-code-layout">
+          <!-- Demo -->
+          <div class="demo-preview">
+            <button class="btn-secondary-outline-large">Secondary Outline Large</button>
+            <button class="btn-secondary-outline-medium">Secondary Outline Medium</button>
+            <button class="btn-secondary-outline-small">Secondary Outline Small</button>
+          </div>
+          
+          <!-- Code -->
+          <div class="code-snippet">
+            <span class="code-snippet-label">HTML Code (Copy & Paste)</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code>&lt;button class="btn-secondary-outline-large"&gt;Outline Large&lt;/button&gt;
+&lt;button class="btn-secondary-outline-medium"&gt;Outline Medium&lt;/button&gt;
+&lt;button class="btn-secondary-outline-small"&gt;Outline Small&lt;/button&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- ========================================
+         ERROR BUTTONS
+         ======================================== -->
+    <section class="demo-section">
+      <h2 class="section-title">Error / Danger Buttons</h2>
+      
+      <!-- Solid Buttons -->
+      <div class="component-group">
+        <h3 class="group-title">Solid Error Buttons</h3>
+        
+        <div class="demo-code-layout">
+          <!-- Demo -->
+          <div class="demo-preview">
+            <button class="btn-error-large">Error Large</button>
+            <button class="btn-error-medium">Error Medium</button>
+            <button class="btn-error-small">Error Small</button>
+          </div>
+          
+          <!-- Code -->
+          <div class="code-snippet">
+            <span class="code-snippet-label">HTML Code (Copy & Paste)</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code>&lt;button class="btn-error-large"&gt;Error Large&lt;/button&gt;
+&lt;button class="btn-error-medium"&gt;Error Medium&lt;/button&gt;
+&lt;button class="btn-error-small"&gt;Error Small&lt;/button&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Outline Buttons -->
+      <div class="component-group">
+        <h3 class="group-title">Outline Error Buttons</h3>
+        
+        <div class="demo-code-layout">
+          <!-- Demo -->
+          <div class="demo-preview">
+            <button class="btn-error-outline-large">Error Outline Large</button>
+            <button class="btn-error-outline-medium">Error Outline Medium</button>
+            <button class="btn-error-outline-small">Error Outline Small</button>
+          </div>
+          
+          <!-- Code -->
+          <div class="code-snippet">
+            <span class="code-snippet-label">HTML Code (Copy & Paste)</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code>&lt;button class="btn-error-outline-large"&gt;Outline Large&lt;/button&gt;
+&lt;button class="btn-error-outline-medium"&gt;Outline Medium&lt;/button&gt;
+&lt;button class="btn-error-outline-small"&gt;Outline Small&lt;/button&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- ========================================
+         BUTTONS WITH ICONS
+         ======================================== -->
+    <section class="demo-section">
+      <h2 class="section-title">Buttons with Icons</h2>
+      
+      <div class="component-group">
+        <h3 class="group-title">Button with Icon + Text</h3>
+        
+        <div class="demo-code-layout">
+          <!-- Demo -->
+          <div class="demo-preview">
+            <button class="btn-primary-medium">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M4 12H20M20 12L14 6M20 12L14 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Button with Icon
+            </button>
+            
+            <button class="btn-secondary-outline-medium">
+              Download
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M12 4V20M12 20L6 14M12 20L18 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+          
+          <!-- Code -->
+          <div class="code-snippet">
+            <span class="code-snippet-label">HTML Code (Copy & Paste)</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code>&lt;button class="btn-primary-medium"&gt;
+  &lt;svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"&gt;
+    &lt;path d="M4 12H20M20 12L14 6M20 12L14 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/&gt;
+  &lt;/svg&gt;
+  Button with Icon
+&lt;/button&gt;</code></pre>
+          </div>
+        </div>
+        
+        <p style="font: var(--footnote-regular); color: var(--text-subtitle); margin-top: var(--spacing-16);">
+          💡 <strong>Note:</strong> Icons use <code>stroke="currentColor"</code> to automatically match button text color.
+        </p>
+      </div>
+    </section>
+    
+    <!-- ========================================
+         ICON-ONLY BUTTONS
+         ======================================== -->
+    <section class="demo-section">
+      <h2 class="section-title">Icon-Only Buttons</h2>
+      
+      <!-- Primary Icon Buttons -->
+      <div class="component-group">
+        <h3 class="group-title">Primary Icon Buttons (Round & Square)</h3>
+        
+        <div class="demo-code-layout">
+          <!-- Demo -->
+          <div class="demo-preview">
+            <button class="btn-icon-primary-large-round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M12 4V20M12 20L6 14M12 20L18 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            
+            <button class="btn-icon-primary-large-square">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M12 4V20M12 20L6 14M12 20L18 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            
+            <button class="btn-icon-primary-medium-round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            
+            <button class="btn-icon-primary-small-square">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+          
+          <!-- Code -->
+          <div class="code-snippet">
+            <span class="code-snippet-label">HTML Code (Copy & Paste)</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code>&lt;!-- Round --&gt;
+&lt;button class="btn-icon-primary-large-round"&gt;
+  &lt;svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"&gt;
+    &lt;path d="M12 4V20M12 20L6 14M12 20L18 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/&gt;
+  &lt;/svg&gt;
+&lt;/button&gt;
+
+&lt;!-- Square --&gt;
+&lt;button class="btn-icon-primary-large-square"&gt;
+  &lt;svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"&gt;
+    &lt;path d="M12 4V20M12 20L6 14M12 20L18 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/&gt;
+  &lt;/svg&gt;
+&lt;/button&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Secondary Icon Buttons -->
+      <div class="component-group">
+        <h3 class="group-title">Secondary Icon Buttons</h3>
+        
+        <div class="demo-code-layout">
+          <!-- Demo -->
+          <div class="demo-preview">
+            <button class="btn-icon-secondary-large-round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M19 9L12 16L5 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            
+            <button class="btn-icon-secondary-outline-medium-round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            
+            <button class="btn-icon-secondary-small-square">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+          
+          <!-- Code -->
+          <div class="code-snippet">
+            <span class="code-snippet-label">HTML Code (Copy & Paste)</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code>&lt;button class="btn-icon-secondary-large-round"&gt;
+  &lt;svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"&gt;
+    &lt;path d="M19 9L12 16L5 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/&gt;
+  &lt;/svg&gt;
+&lt;/button&gt;
+
+&lt;button class="btn-icon-secondary-outline-medium-round"&gt;
+  &lt;svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"&gt;
+    &lt;path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/&gt;
+  &lt;/svg&gt;
+&lt;/button&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Error Icon Buttons -->
+      <div class="component-group">
+        <h3 class="group-title">Error Icon Buttons</h3>
+        
+        <div class="demo-code-layout">
+          <!-- Demo -->
+          <div class="demo-preview">
+            <button class="btn-icon-error-large-round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            
+            <button class="btn-icon-error-outline-medium-square">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M19 7L5 17M5 7L19 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            
+            <button class="btn-icon-error-small-round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+          
+          <!-- Code -->
+          <div class="code-snippet">
+            <span class="code-snippet-label">HTML Code (Copy & Paste)</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code>&lt;button class="btn-icon-error-large-round"&gt;
+  &lt;svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"&gt;
+    &lt;path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/&gt;
+  &lt;/svg&gt;
+&lt;/button&gt;
+
+&lt;button class="btn-icon-error-outline-medium-square"&gt;
+  &lt;svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"&gt;
+    &lt;path d="M19 7L5 17M5 7L19 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/&gt;
+  &lt;/svg&gt;
+&lt;/button&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Quick Reference -->
+    <section class="demo-section">
+      <h2 class="section-title">Quick Reference</h2>
+      
+      <div style="font: var(--body-regular); color: var(--text-black); line-height: 1.8;">
+        <h3 style="font: var(--heading-5); margin-bottom: var(--spacing-16);">Button Classes</h3>
+        
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: var(--spacing-24);">
+          <thead>
+            <tr style="background: var(--gray-100);">
+              <th style="padding: 12px; text-align: left; border: 1px solid var(--gray-300);">Type</th>
+              <th style="padding: 12px; text-align: left; border: 1px solid var(--gray-300);">Class Pattern</th>
+              <th style="padding: 12px; text-align: left; border: 1px solid var(--gray-300);">Sizes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding: 12px; border: 1px solid var(--gray-300);">Primary Solid</td>
+              <td style="padding: 12px; border: 1px solid var(--gray-300);"><code>btn-primary-{size}</code></td>
+              <td style="padding: 12px; border: 1px solid var(--gray-300);">large | medium | small</td>
+            </tr>
+            <tr>
+              <td style="padding: 12px; border: 1px solid var(--gray-300);">Primary Outline</td>
+              <td style="padding: 12px; border: 1px solid var(--gray-300);"><code>btn-primary-outline-{size}</code></td>
+              <td style="padding: 12px; border: 1px solid var(--gray-300);">large | medium | small</td>
+            </tr>
+            <tr>
+              <td style="padding: 12px; border: 1px solid var(--gray-300);">Secondary Solid</td>
+              <td style="padding: 12px; border: 1px solid var(--gray-300);"><code>btn-secondary-{size}</code></td>
+              <td style="padding: 12px; border: 1px solid var(--gray-300);">large | medium | small</td>
+            </tr>
+            <tr>
+              <td style="padding: 12px; border: 1px solid var(--gray-300);">Icon Only</td>
+              <td style="padding: 12px; border: 1px solid var(--gray-300);"><code>btn-icon-{type}-{size}-{shape}</code></td>
+              <td style="padding: 12px; border: 1px solid var(--gray-300);">large | medium | small + round | square</td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <h3 style="font: var(--heading-5); margin-bottom: var(--spacing-16);">States</h3>
+        <ul style="margin-left: var(--spacing-24);">
+          <li>✅ <strong>:hover</strong> - Darker background color</li>
+          <li>✅ <strong>:active</strong> - Border added, slight scale down</li>
+          <li>✅ All transitions are smooth (0.3s ease)</li>
+        </ul>
+      </div>
+    </section>
+    
+  </div>
+  
+  <!-- Copy to Clipboard Script -->
+  <script>
+    function copyCode(btn) {
+      const codeBlock = btn.parentElement.querySelector('pre code');
+      if (!codeBlock) {
+        console.error('Code block not found');
+        return;
+      }
+      
+      const text = codeBlock.textContent;
+      
+      // Fallback for older browsers or non-HTTPS
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          const originalText = btn.textContent;
+          btn.textContent = 'Copied!';
+          btn.style.background = 'var(--green-600)';
+          
+          setTimeout(() => {
+            btn.textContent = originalText;
+            btn.style.background = 'var(--green-500)';
+          }, 2000);
+        }).catch(err => {
+          console.error('Failed to copy:', err);
+          alert('Copy failed. Please copy manually.');
+        });
+      } else {
+        // Fallback method
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        
+        try {
+          document.execCommand('copy');
+          btn.textContent = 'Copied!';
+          btn.style.background = 'var(--green-600)';
+          
+          setTimeout(() => {
+            btn.textContent = 'Copy';
+            btn.style.background = 'var(--green-500)';
+          }, 2000);
+        } catch (err) {
+          console.error('Fallback copy failed:', err);
+        }
+        
+        document.body.removeChild(textarea);
+      }
+    }
+  </script>
+  
+</body>
+</html>

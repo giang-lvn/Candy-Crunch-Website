@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Test - Password & Dropdown</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+     
+      .login-card { width: 300px;
+        display: flex; flex-direction: column; gap: 20px; }
+    </style>
+
+</head>
+<body>
+<div class="login-card">
+  <div class="input" data-type="dropdown" data-size="medium">
+    <label class="input-label">Choose an option</label>
+    <div class="input-field">
+      <div class="dropdown-trigger">
+        <span class="dropdown-text">Select option</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="dropdown-arrow">
+          <path d="M18 9L12 15L6 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="dropdown-menu">
+        <button class="dropdown-option" data-value="1">Option 1</button>
+        <button class="dropdown-option" data-value="2">Option 2</button>
+        <button class="dropdown-option" data-value="3">Option 3</button>
+      </div>
+    </div>
+  </div>
+  <div class="input" data-type="password" data-size="medium">
+    <label class="input-label">Password</label>
+    <div class="input-field">
+      <input type="password" placeholder="Enter your password">
+      <button class="input-icon password-toggle" type="button">
+        <img src="/views/website/img/eye-closed.svg" alt="Toggle password" class="eye-icon">
+      </button>
+    </div>
+  </div>
+</div>
+    <!-- Load script at end of body -->
+    <script src="../js/main.js"></script>
+</body>
+
+
+</html>

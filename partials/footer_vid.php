@@ -1,10 +1,15 @@
 <?php
-// footer có video
+$ROOT = '/Candy-Crunch-Website';
 ?>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Modak&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+<link rel = "stylesheet" href = "<?php echo $ROOT; ?>/views/website/css/footer_vid.css">
+<link rel = "stylesheet" href = "<?php echo $ROOT; ?> /views/website/css/main/css">
 
 <footer class="footer">
     <video class="footer-video" autoplay muted loop playsinline>
-        <source src="views/img/footervideo.mp4" type="video/mp4">
+        <source src="<?php echo $ROOT; ?>/views/img/footervideo.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
     
@@ -40,15 +45,7 @@
                 <div class="link-column">
                     <a href="about.php" class="link-item">About us</a>
                     <a href="shop.php" class="link-item">Shop</a>
-                    <a href="contact.php" class="link-item">Contact</a>
                     <a href="policy.php" class="link-item">Policy</a>
-                </div>
-
-                <div class="link-column">
-                    <a href="faq.php" class="link-item">FAQ</a>
-                    <a href="shipping.php" class="link-item">Shipping Policy</a>
-                    <a href="refund.php" class="link-item">Refund Policy</a>
-                    <a href="journal.php" class="link-item">Journal</a>
                 </div>
 
                 <div class="link-column">
@@ -56,10 +53,15 @@
                     <a href="https://instagram.com" target="_blank" class="link-item">Instagram</a>
                     <a href="https://facebook.com" target="_blank" class="link-item">Facebook</a>
                 </div>
-
+                
+                <div class = "link-column contact-info">
+                    <span class = "link-item column-title"> Contact </span>
+                    <p class = "contact-detail"> <strong>Address:</strong> 279 Nguyen Tri Phuong Street, Dien Hong Ward, Ho Chi Minh City </p>
+                    <p class = "contact-detail"> <strong>Phone Number:</strong> +84 886258467 </p>
+                    <p class = "contact-detail"> <strong>Working Hours</strong>: 8 am - 5 pm, Monday - Friday </p>
             </div>
         </div>
-
+</div>
         <div class="brand-title">
             <h1 class="brand-text">CANDY CRUNCH</h1>
         </div>
@@ -73,4 +75,4 @@
     </div>
 </footer>
 
-<script src="views/js/footer.js"></script>
+<script src="<?php echo $ROOT; ?>/views/website/js/footer.css"></script>
