@@ -1,0 +1,230 @@
+/* ================================================
+   RESET STYLES 
+   ================================================ */
+   * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+/* ================================================
+   OVERLAY 
+   ================================================ */
+.cart-overlay {
+    position: fixed;
+    inset: 0;
+    opacity: 0.5;
+    background: var(--grey-700);
+    /*display: none;*/
+}
+
+.cart-overlay.active {
+    display: block;
+}
+
+/* ================================================
+   ĐỊNH DẠNG CART CHUNG 
+   ================================================ */
+.cart-panel {
+    position: absolute;
+    top: 40px;
+    right: 40px;
+    width: calc(100vw / 3);
+    background: var(--body-background);
+    border-radius: var(--border-radius-8);
+    /*transform: translateX(120%);*/
+    transition: transform 0.3s ease;
+}
+
+.cart-panel.active {
+    transform: translateX(0);
+}
+
+/* ================================================
+   ĐỊNH DẠNG TIÊU ĐỀ + SẢN PHẨM TRONG GIỎ 
+   ================================================ */
+/* ========== CART TITLE ========== */
+.cart-title {
+    display: flex;
+    padding: 16px 24px 0 24px;
+    justify-content: space-between;
+    align-items: center;
+    align-self: stretch;
+    border-bottom: 1px solid var(--green-500);
+}
+
+.cart-title h3 {
+    font: var(--heading-3);
+    color: var(--green-500);
+}
+
+.cart-count {
+    color: var(--light-green-500);
+    font: var(--heading-4);
+}
+
+.cart-close {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+/* ========== CART PRODUCT ========== */
+.cart-product {
+    display: flex;
+    padding: 0 var(--spacing-24);
+    align-items: flex-start;
+    gap: var(--spacing-20);
+    align-self: stretch;
+    padding-top: 28px;
+}
+
+/* EMPTY STATE */
+.cart-empty {
+    text-align: center;
+    color: var(--text-black);
+    font: var(--body-medium);
+}
+
+/* ========== FREE SHIPPING ========== */
+.free-shipping p {
+    color: var(--text-black);
+    font: var(--body-medium);
+    padding-bottom: 12px;
+}
+
+.shipping-bar {
+    display: flex;
+    height: 4px;
+    border-radius: 2px;
+    overflow: hidden;
+    width: 464px;
+}
+
+.bar-green {
+    width: 20%;
+    background: var(--green-800);
+}
+
+.bar-yellow {
+    width: 80%;
+    background: var(--yellow-600);
+}
+
+/* ========== PRODUCT LIST ========== */
+.product-list {
+    display: flex;
+    height: 218px;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    align-self: stretch;
+    padding-top: 20px;
+}
+
+.product-item {
+    display: flex;
+    padding-bottom: var(--spacing-20);
+    align-items: flex-start;
+    gap: var(--spacing-20);
+    align-self: stretch;
+    border-bottom: 2px solid var(--grey-300);
+}
+
+/* LEFT */
+.product-left {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-24);
+}
+
+.product-image {
+    aspect-ratio: 1/1;
+    border-radius: var(--border-radius-12);
+    width: 77px;
+    height: 77px;
+}
+
+.product-name {
+    font: var(--body-large-medium);
+    color: #000;
+}
+
+.product-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-12);
+    align-self: stretch;
+}
+
+.product-attribute {
+    cursor: pointer;
+    display: flex;
+    padding: 8px var(--spacing-8);
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-8);
+    align-self: stretch;
+    border-radius: 4px;
+    background: var(--grey-200);
+}
+
+.quantity-control {
+    display: flex;
+    padding: 0 12px;
+    align-items: center;
+    gap: 12px;
+    align-self: stretch;
+    border-radius: 333px;
+    background: var(--yellow-200);
+}
+
+.quantity-control button {
+    align-self: stretch;
+    color: #000;
+    font: var(--body-large-regular);
+    cursor: pointer;
+}
+
+/* RIGHT */
+.product-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--spacing-12);
+    flex: 1 0 0;
+    align-self: stretch;
+}
+
+.remove-product {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.product-price {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    flex: 1 0 0;
+    align-self: stretch;
+}
+
+.price-old {
+    color: var(--text-subtitle, #616161);
+    text-align: right;
+    font-family: Poppins;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 130%; /* 16.9px */
+    letter-spacing: -0.01px;
+    text-decoration-line: line-through;
+}
+
+.price-new {
+    color: #000;
+    text-align: right;
+    font: var(--body-large-medium);
+}

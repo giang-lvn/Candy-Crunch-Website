@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart</title>
+    <!-- Preload Google Fonts for faster loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Modak&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/cart.css">
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+<body>
+    <!-- OVERLAY -->
+    <div class="cart-overlay">
+        <!-- GIỎ HÀNG -->
+        <aside class="cart-panel">
+            <!-- TIÊU ĐỀ + SẢN PHẨM TRONG GIỎ-->
+            <div class="cart-info">
+
+                <!-- CART TITLE -->
+                <div class="cart-title">
+                    <h3>Your cart <span class="cart-count">(1)</span></h3>
+            
+                    <button class="cart-close" aria-label="Close cart">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M15.8333 5.34199L14.6583 4.16699L9.99996 8.82533L5.34163 4.16699L4.16663 5.34199L8.82496 10.0003L4.16663 14.6587L5.34163 15.8337L9.99996 11.1753L14.6583 15.8337L15.8333 14.6587L11.175 10.0003L15.8333 5.34199Z" fill="black"/>
+                        </svg>
+                    </button>
+                </div>
+            
+                <!-- CART PRODUCT -->
+                <div class="cart-product">
+            
+                    <!-- EMPTY STATE -->
+                    <!--
+                    <div class="cart-empty">
+                        Your shopping cart is empty
+                    </div>
+                    -->
+            
+                    <!-- HAS PRODUCT STATE -->
+                    <div class="cart-has-product">
+            
+                        <!-- FREE SHIPPING INFO -->
+                        <div class="free-shipping">
+                            <p>Spend <strong>50.000 VND</strong> more for FREE SHIPPING</p>
+            
+                            <div class="shipping-bar">
+                                <span class="bar-yellow"></span>
+                                <span class="bar-green"></span>
+                            </div>
+                        </div>
+            
+                        <!-- PRODUCT LIST -->
+                        <div class="product-list">
+            
+                            <!-- SINGLE PRODUCT -->
+                            <div class="product-item">
+            
+                                <!-- LEFT -->
+                                <div class="product-left">
+                                    <img class="product-image" src="../img/about_story.jpg" alt="Product name" />
+
+                                    <div class="product-info">
+                                        <h4 class="product-name">Fruit-Filled Candy</h4>
+            
+                                        <div class="product-meta">
+                                            <button class="product-attribute">
+                                                175g
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                    <path d="M14.4 5.5998C14.4 5.81647 14.3208 6.00397 14.1625 6.1623L8.56248 11.7623C8.40414 11.9206 8.21664 11.9998 7.99998 11.9998C7.78331 11.9998 7.59581 11.9206 7.43748 11.7623L1.83748 6.1623C1.67914 6.00397 1.59998 5.81647 1.59998 5.5998C1.59998 5.38314 1.67914 5.19564 1.83748 5.0373C1.99581 4.87897 2.18331 4.7998 2.39998 4.7998H13.6C13.8166 4.7998 14.0041 4.87897 14.1625 5.0373C14.3208 5.19564 14.4 5.38314 14.4 5.5998Z" fill="#9E9E9E"/>
+                                                </svg>
+                                            </button>
+            
+                                            <div class="quantity-control">
+                                                <button>-</button>
+                                                <span>1</span>
+                                                <button>+</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+            
+                                <!-- RIGHT -->
+                                <div class="product-right">
+                                    <button class="remove-product" aria-label="Remove product">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <path d="M4 7H20M10 11V17M14 11V17M5 7L6 19C6 19.5304 6.21071 20.0391 6.58579 20.4142C6.96086 20.7893 7.46957 21 8 21H16C16.5304 21 17.0391 20.7893 17.4142 20.4142C17.7893 20.0391 18 19.5304 18 19L19 7M9 7V4C9 3.73478 9.10536 3.48043 9.29289 3.29289C9.48043 3.10536 9.73478 3 10 3H14C14.2652 3 14.5196 3.10536 14.7071 3.29289C14.8946 3.48043 15 3.73478 15 4V7" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </button>
+            
+                                    <div class="product-price">
+                                        <span class="price-old">150.000 VND</span>
+                                        <span class="price-new">120.000 VND</span>
+                                    </div>
+                                </div>
+            
+                            </div>
+            
+                            <!-- DIVIDER -->
+                            <div class="product-divider"></div>
+            
+                        </div>
+            
+                    </div>
+                </div>
+            
+            </div>
+            
+
+            <!-- UPSELL PRODUCT -->
+            <div class="upsell-section">
+
+            </div>
+
+            <!-- THANH TOÁN -->
+            <div class="payment-section">
+
+            </div>
+        </aside>
+
+    </div>
+</body>
+</html>
