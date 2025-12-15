@@ -77,6 +77,18 @@ h1, h2, h3, h4, h5, h6 {
   --heading-4: 400 30px/120% var(--font-heading);
   --heading-5: 400 24px/120% var(--font-heading);
 
+   /* Body XXX-Large - 30px */
+   --body-xxxlarge-regular: 400 30px/120% var(--font-primary);
+   --body-xxxlarge-medium: 500 30px/120% var(--font-primary);
+   --body-xxxlarge-semibold: 600 30px/120% var(--font-primary);
+   --body-xxxlarge-bold: 700 30px/130% var(--font-primary);
+ 
+   /* Body XX-Large - 24px */
+   --body-xxlarge-regular: 400 24px/120% var(--font-primary);
+   --body-xxlarge-medium: 500 24px/120% var(--font-primary);
+   --body-xxlarge-semibold: 600 24px/120% var(--font-primary);
+   --body-xxlarge-bold: 700 24px/120% var(--font-primary);
+
   /* Body X-Large - 24px */
   --body-xlarge-regular: 400 24px/120% var(--font-primary);
   --body-xlarge-medium: 500 24px/120% var(--font-primary);

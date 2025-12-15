@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop - Candy Crunch</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Modak&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../website/css/main.css">
+    <link rel="stylesheet" href="../../website/css/shop.css">
+</head>
+<body>
+  <!-- Banner -->
+  <section class="banner" aria-label="Product listing banner">
+    <img
+      class="banner-image"
+      src="https://images.unsplash.com/photo-1581798459219-318e76aecc7b?q=80&w=2400&auto=format&fit=crop"
+      alt="Candy banner"
+    />
+  </section>
+
+  <!-- Main section -->
+  <main class="main-section">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h2 class="sidebar-title">Filter Options</h2>
+      <div class="sidebar-card">
+
+        <!-- Filter section: Categories -->
+        <section class="filter-section" aria-label="Filter by categories">
+          <h3 class="filter-title">By categories</h3>
+
+          <div class="filter-options">
+            <label class="filter-option">
+              <input class="filter-checkbox" type="checkbox" />
+              <span class="filter-text">Hard Candy</span>
+            </label>
+
+            <label class="filter-option">
+              <input class="filter-checkbox" type="checkbox" />
+              <span class="filter-text">Filled-Hard Candy</span>
+            </label>
+
+            <label class="filter-option">
+              <input class="filter-checkbox" type="checkbox" />
+              <span class="filter-text">Gummy</span>
+            </label>
+
+            <label class="filter-option">
+              <input class="filter-checkbox" type="checkbox" />
+              <span class="filter-text">Chewing Gum</span>
+            </label>
+
+            <label class="filter-option">
+              <input class="filter-checkbox" type="checkbox" />
+              <span class="filter-text">Marshmallow</span>
+            </label>
+
+            <label class="filter-option">
+              <input class="filter-checkbox" type="checkbox" />
+              <span class="filter-text">Tet Collection</span>
+            </label>
+
+            <label class="filter-option">
+              <input class="filter-checkbox" type="checkbox" />
+              <span class="filter-text">Christmas Collection</span>
+            </label>
+          </div>
+        </section>
+
+        <!-- Filter section: Ingredients -->
+        <section class="filter-section" aria-label="Filter by ingredients">
+          <h3 class="filter-title">Ingredients</h3>
+
+          <div class="filter-options">
+            <label class="filter-option">
+              <input class="filter-checkbox" type="checkbox" />
+              <span class="filter-text">Milk</span>
+            </label>
+
+            <label class="filter-option">
+              <input class="filter-checkbox" type="checkbox" />
+              <span class="filter-text">Nuts</span>
+            </label>
+
+            <label class="filter-option">
+              <input class="filter-checkbox" type="checkbox" />
+              <span class="filter-text">Fruit</span>
+            </label>
+
+            <label class="filter-option">
+              <input class="filter-checkbox" type="checkbox" />
+              <span class="filter-text">Sugar-free</span>
+            </label>
+          </div>
+        </section>
+
+        <!-- Filter section: Flavor -->
+        <section class="filter-section" aria-label="Filter by flavor">
+          <h3 class="filter-title">Flavor</h3>
+
+          <div class="filter-options">
+            <label class="filter-option">
+              <input class="filter-checkbox" type="checkbox" />
+              <span class="filter-text">Strawberry</span>
+            </label>
+
+            <label class="filter-option">
+              <input class="filter-checkbox" type="checkbox" />
+              <span class="filter-text">Orange</span>
+            </label>
+
+            <label class="filter-option">
+              <input class="filter-checkbox" type="checkbox" />
+              <span class="filter-text">Mint</span>
+            </label>
+
+            <label class="filter-option">
+              <input class="filter-checkbox" type="checkbox" />   
+              <span class="filter-text">Coffee</span>
+            </label>
+          </div>
+        </section>
+
+        <!-- Filter section: Rating -->
+        <section class="filter-section" aria-label="Filter by rating">
+          <h3 class="filter-title">Rating</h3>
+
+          <div class="rating-row" aria-label="Rating stars">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path d="M13.8688 20.7906L8.57302 23.9551C8.33907 24.1028 8.09448 24.1661 7.83926 24.145C7.58404 24.1239 7.36073 24.0395 7.16931 23.8918C6.9779 23.7441 6.82902 23.5598 6.72268 23.3387C6.61634 23.1176 6.59507 22.8695 6.65888 22.5944L8.06258 16.6135L3.37294 12.5946C3.16026 12.4047 3.02755 12.1883 2.9748 11.9452C2.92206 11.7022 2.9378 11.4651 3.02202 11.2339C3.10624 11.0026 3.23385 10.8128 3.40485 10.6643C3.57584 10.5157 3.80979 10.4208 4.1067 10.3795L10.2957 9.84149L12.6884 4.2087C12.7948 3.95554 12.9598 3.76567 13.1835 3.63909C13.4073 3.51251 13.6357 3.44922 13.8688 3.44922C14.1019 3.44922 14.3303 3.51251 14.5541 3.63909C14.7778 3.76567 14.9428 3.95554 15.0492 4.2087L17.4418 9.84149L23.6309 10.3795C23.9286 10.4216 24.1626 10.5166 24.3327 10.6643C24.5029 10.8119 24.6305 11.0018 24.7156 11.2339C24.8006 11.4659 24.8168 11.7035 24.7641 11.9465C24.7113 12.1895 24.5782 12.4056 24.3646 12.5946L19.675 16.6135L21.0787 22.5944C21.1425 22.8686 21.1212 23.1167 21.0149 23.3387C20.9086 23.5606 20.7597 23.745 20.5683 23.8918C20.3769 24.0387 20.1535 24.123 19.8983 24.145C19.6431 24.1669 19.3985 24.1036 19.1646 23.9551L13.8688 20.7906Z" fill="#BDBDBD"/>
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path d="M13.8688 20.7906L8.57302 23.9551C8.33907 24.1028 8.09448 24.1661 7.83926 24.145C7.58404 24.1239 7.36073 24.0395 7.16931 23.8918C6.9779 23.7441 6.82902 23.5598 6.72268 23.3387C6.61634 23.1176 6.59507 22.8695 6.65888 22.5944L8.06258 16.6135L3.37294 12.5946C3.16026 12.4047 3.02755 12.1883 2.9748 11.9452C2.92206 11.7022 2.9378 11.4651 3.02202 11.2339C3.10624 11.0026 3.23385 10.8128 3.40485 10.6643C3.57584 10.5157 3.80979 10.4208 4.1067 10.3795L10.2957 9.84149L12.6884 4.2087C12.7948 3.95554 12.9598 3.76567 13.1835 3.63909C13.4073 3.51251 13.6357 3.44922 13.8688 3.44922C14.1019 3.44922 14.3303 3.51251 14.5541 3.63909C14.7778 3.76567 14.9428 3.95554 15.0492 4.2087L17.4418 9.84149L23.6309 10.3795C23.9286 10.4216 24.1626 10.5166 24.3327 10.6643C24.5029 10.8119 24.6305 11.0018 24.7156 11.2339C24.8006 11.4659 24.8168 11.7035 24.7641 11.9465C24.7113 12.1895 24.5782 12.4056 24.3646 12.5946L19.675 16.6135L21.0787 22.5944C21.1425 22.8686 21.1212 23.1167 21.0149 23.3387C20.9086 23.5606 20.7597 23.745 20.5683 23.8918C20.3769 24.0387 20.1535 24.123 19.8983 24.145C19.6431 24.1669 19.3985 24.1036 19.1646 23.9551L13.8688 20.7906Z" fill="#BDBDBD"/>
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path d="M13.8688 20.7906L8.57302 23.9551C8.33907 24.1028 8.09448 24.1661 7.83926 24.145C7.58404 24.1239 7.36073 24.0395 7.16931 23.8918C6.9779 23.7441 6.82902 23.5598 6.72268 23.3387C6.61634 23.1176 6.59507 22.8695 6.65888 22.5944L8.06258 16.6135L3.37294 12.5946C3.16026 12.4047 3.02755 12.1883 2.9748 11.9452C2.92206 11.7022 2.9378 11.4651 3.02202 11.2339C3.10624 11.0026 3.23385 10.8128 3.40485 10.6643C3.57584 10.5157 3.80979 10.4208 4.1067 10.3795L10.2957 9.84149L12.6884 4.2087C12.7948 3.95554 12.9598 3.76567 13.1835 3.63909C13.4073 3.51251 13.6357 3.44922 13.8688 3.44922C14.1019 3.44922 14.3303 3.51251 14.5541 3.63909C14.7778 3.76567 14.9428 3.95554 15.0492 4.2087L17.4418 9.84149L
+          </div>
+        </section>
+      </div>
+    </aside>
+
+    <!-- Right container -->
+    <div class="right-container">
+    <section class="right-container" aria-label="Products area">
+      <!-- Filter result -->
+      <div class="filter-result">
+        <!-- row 1: result text + search + sort -->
+        <div class="filter-result-top">
+          <p class="filter-result-text">Showing 6 of 32 Products</p>
+
+          <div class="filter-controls">
+            <div class="search-box">
+              <input class="search-input" type="search" placeholder="Search products..." />
+              <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M21 21L16.65 16.65M10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5C18 14.6421 14.6421 18 10.5 18Z"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+              </svg>
+            </div>
+
+            <div class="sort-box">
+              <span class="sort-label">Sort by:</span>
+              <select class="sort-select">
+                <option>Waiting payment</option>
+                <option>Newest</option>
+                <option>Price: Low to High</option>
+                <option>Price: High to Low</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- row 2: tags -->
+        <div class="filter-tags" aria-label="Active filter tags">
+          <button class="filter-tag" type="button">
+            Candy <span class="tag-x" aria-hidden="true">×</span>
+          </button>
+          <button class="filter-tag" type="button">
+            Nuts <span class="tag-x" aria-hidden="true">×</span>
+          </button>
+          <button class="filter-tag" type="button">
+            Strawberry <span class="tag-x" aria-hidden="true">×</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Product listing -->
+      <div class="product-listing" aria-label="Product listing grid">
+        <!-- Product card x9 -->
+        <article class="product-card">
+          <img class="product-image" src="https://images.unsplash.com/photo-1580915411954-282cb1a5c08f?q=80&w=1200&auto=format&fit=crop" alt="KitKat" />
+          <div class="product-info">
+            <div class="product-top">
+              <h4 class="product-name">KitKat</h4>
+              <div class="product-rating"><span class="rating-number">4.9</span> <span class="rating-star">★</span></div>
+            </div>
+
+            <div class="product-price">
+              <span class="old-price">150.000 VND</span>
+              <span class="new-price">150.000 VND</span>
+            </div>
+
+            <div class="product-actions">
+              <button class="btn-add-to-cart" type="button">Add to cart</button>
+              <button class="btn-favorite" type="button" aria-label="Add to wishlist">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M12 21s-7-4.35-9.33-8.1C.9 9.98 2.4 6.7 5.7 5.82c1.78-.48 3.6.1 4.8 1.5 1.2-1.4 3.02-1.98 4.8-1.5 3.3.88 4.8 4.16 3.03 7.08C19 16.65 12 21 12 21z"
+                    stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- duplicate cards (demo) -->
+        <article class="product-card">
+          <img class="product-image" src="https://images.unsplash.com/photo-1607083206968-13611e3d76db?q=80&w=1200&auto=format&fit=crop" alt="KitKat" />
+          <div class="product-info">
+            <div class="product-top">
+              <h4 class="product-name">KitKat</h4>
+              <div class="product-rating"><span class="rating-number">4.9</span> <span class="rating-star">★</span></div>
+            </div>
+            <div class="product-price">
+              <span class="old-price">150.000 VND</span>
+              <span class="new-price">150.000 VND</span>
+            </div>
+            <div class="product-actions">
+              <button class="btn-add-to-cart" type="button">Add to cart</button>
+              <button class="btn-favorite" type="button" aria-label="Add to wishlist">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M12 21s-7-4.35-9.33-8.1C.9 9.98 2.4 6.7 5.7 5.82c1.78-.48 3.6.1 4.8 1.5 1.2-1.4 3.02-1.98 4.8-1.5 3.3.88 4.8 4.16 3.03 7.08C19 16.65 12 21 12 21z"
+                    stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <img class="product-image" src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=1200&auto=format&fit=crop" alt="KitKat" />
+          <div class="product-info">
+            <div class="product-top">
+              <h4 class="product-name">KitKat</h4>
+              <div class="product-rating"><span class="rating-number">4.9</span> <span class="rating-star">★</span></div>
+            </div>
+            <div class="product-price">
+              <span class="old-price">150.000 VND</span>
+              <span class="new-price">150.000 VND</span>
+            </div>
+            <div class="product-actions">
+              <button class="btn-add-to-cart" type="button">Add to cart</button>
+              <button class="btn-favorite" type="button" aria-label="Add to wishlist">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M12 21s-7-4.35-9.33-8.1C.9 9.98 2.4 6.7 5.7 5.82c1.78-.48 3.6.1 4.8 1.5 1.2-1.4 3.02-1.98 4.8-1.5 3.3.88 4.8 4.16 3.03 7.08C19 16.65 12 21 12 21z"
+                    stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- 6 cards more -->
+        <article class="product-card"><img class="product-image" src="https://images.unsplash.com/photo-1580913428735-bd3c269d6a82?q=80&w=1200&auto=format&fit=crop" alt="KitKat" /><div class="product-info"><div class="product-top"><h4 class="product-name">KitKat</h4><div class="product-rating"><span class="rating-number">4.9</span> <span class="rating-star">★</span></div></div><div class="product-price"><span class="old-price">150.000 VND</span><span class="new-price">150.000 VND</span></div><div class="product-actions"><button class="btn-add-to-cart" type="button">Add to cart</button><button class="btn-favorite" type="button" aria-label="Add to wishlist"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s-7-4.35-9.33-8.1C.9 9.98 2.4 6.7 5.7 5.82c1.78-.48 3.6.1 4.8 1.5 1.2-1.4 3.02-1.98 4.8-1.5 3.3.88 4.8 4.16 3.03 7.08C19 16.65 12 21 12 21z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button></div></div></article>
+        <article class="product-card"><img class="product-image" src="https://images.unsplash.com/photo-1580913428706-c311e67898b3?q=80&w=1200&auto=format&fit=crop" alt="KitKat" /><div class="product-info"><div class="product-top"><h4 class="product-name">KitKat</h4><div class="product-rating"><span class="rating-number">4.9</span> <span class="rating-star">★</span></div></div><div class="product-price"><span class="old-price">150.000 VND</span><span class="new-price">150.000 VND</span></div><div class="product-actions"><button class="btn-add-to-cart" type="button">Add to cart</button><button class="btn-favorite" type="button" aria-label="Add to wishlist"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s-7-4.35-9.33-8.1C.9 9.98 2.4 6.7 5.7 5.82c1.78-.48 3.6.1 4.8 1.5 1.2-1.4 3.02-1.98 4.8-1.5 3.3.88 4.8 4.16 3.03 7.08C19 16.65 12 21 12 21z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button></div></div></article>
+        <article class="product-card"><img class="product-image" src="https://images.unsplash.com/photo-1580913428091-017d4c0b7b5f?q=80&w=1200&auto=format&fit=crop" alt="KitKat" /><div class="product-info"><div class="product-top"><h4 class="product-name">KitKat</h4><div class="product-rating"><span class="rating-number">4.9</span> <span class="rating-star">★</span></div></div><div class="product-price"><span class="old-price">150.000 VND</span><span class="new-price">150.000 VND</span></div><div class="product-actions"><button class="btn-add-to-cart" type="button">Add to cart</button><button class="btn-favorite" type="button" aria-label="Add to wishlist"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s-7-4.35-9.33-8.1C.9 9.98 2.4 6.7 5.7 5.82c1.78-.48 3.6.1 4.8 1.5 1.2-1.4 3.02-1.98 4.8-1.5 3.3.88 4.8 4.16 3.03 7.08C19 16.65 12 21 12 21z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button></div></div></article>
+        <article class="product-card"><img class="product-image" src="https://images.unsplash.com/photo-1600195077909-46e573870d99?q=80&w=1200&auto=format&fit=crop" alt="KitKat" /><div class="product-info"><div class="product-top"><h4 class="product-name">KitKat</h4><div class="product-rating"><span class="rating-number">4.9</span> <span class="rating-star">★</span></div></div><div class="product-price"><span class="old-price">150.000 VND</span><span class="new-price">150.000 VND</span></div><div class="product-actions"><button class="btn-add-to-cart" type="button">Add to cart</button><button class="btn-favorite" type="button" aria-label="Add to wishlist"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s-7-4.35-9.33-8.1C.9 9.98 2.4 6.7 5.7 5.82c1.78-.48 3.6.1 4.8 1.5 1.2-1.4 3.02-1.98 4.8-1.5 3.3.88 4.8 4.16 3.03 7.08C19 16.65 12 21 12 21z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button></div></div></article>
+        <article class="product-card"><img class="product-image" src="https://images.unsplash.com/photo-1607083207634-734c7b7f3bd0?q=80&w=1200&auto=format&fit=crop" alt="KitKat" /><div class="product-info"><div class="product-top"><h4 class="product-name">KitKat</h4><div class="product-rating"><span class="rating-number">4.9</span> <span class="rating-star">★</span></div></div><div class="product-price"><span class="old-price">150.000 VND</span><span class="new-price">150.000 VND</span></div><div class="product-actions"><button class="btn-add-to-cart" type="button">Add to cart</button><button class="btn-favorite" type="button" aria-label="Add to wishlist"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s-7-4.35-9.33-8.1C.9 9.98 2.4 6.7 5.7 5.82c1.78-.48 3.6.1 4.8 1.5 1.2-1.4 3.02-1.98 4.8-1.5 3.3.88 4.8 4.16 3.03 7.08C19 16.65 12 21 12 21z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button></div></div></article>
+        <article class="product-card"><img class="product-image" src="https://images.unsplash.com/photo-1606312619070-d48b4c652d6f?q=80&w=1200&auto=format&fit=crop" alt="KitKat" /><div class="product-info"><div class="product-top"><h4 class="product-name">KitKat</h4><div class="product-rating"><span class="rating-number">4.9</span> <span class="rating-star">★</span></div></div><div class="product-price"><span class="old-price">150.000 VND</span><span class="new-price">150.000 VND</span></div><div class="product-actions"><button class="btn-add-to-cart" type="button">Add to cart</button><button class="btn-favorite" type="button" aria-label="Add to wishlist"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s-7-4.35-9.33-8.1C.9 9.98 2.4 6.7 5.7 5.82c1.78-.48 3.6.1 4.8 1.5 1.2-1.4 3.02-1.98 4.8-1.5 3.3.88 4.8 4.16 3.03 7.08C19 16.65 12 21 12 21z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button></div></div></article>
+      </div>
+    </section>
+  </main>
+
+</body>
+</html>
