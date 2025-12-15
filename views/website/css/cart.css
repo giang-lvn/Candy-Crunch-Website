@@ -29,6 +29,7 @@
     position: absolute;
     top: 40px;
     right: 40px;
+    bottom: 40px;
     width: calc(100vw / 3);
     background: var(--body-background);
     border-radius: var(--border-radius-8);
@@ -227,19 +228,128 @@
     font: var(--body-large-medium);
 }
 
-.product-divider {
-    margin-top: 20px;
-    display: flex;
-    height: 4px;
-    border-radius: 2px;
-    overflow: hidden;
-    background: var(--grey-300);
+@media (max-width: 1200px) {
+    .cart-panel {
+        width: calc((100vw / 5)*2);
+    }
+
+    .cart-title {
+        padding: 16px;
+    }
+
+    /* CART TITLE */
+    .cart-title h3 {
+        font-size: 26px;
+    }
+
+    .cart-count {
+        font-size: 24px;
+    }
+
+    .free-shipping p {
+        font-size: 16px;
+    }
+
+    .cart-product {
+        padding: 24px 16px 0 16px;
+    }
+
+    .product-item {
+        gap: 16px;
+    }
+
+    .product-left {
+        gap: 16px;
+    }
+
+    .product-image {
+        width: 64px;
+        height: 64px;
+    }
+
+    .product-name {
+        font-size: 15px;
+        margin-bottom: 8px;
+    }
+
+    .product-meta {
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .quantity-control {
+        padding: 0 10px;
+        gap: 8px;
+    }
+
+    .price-old {
+        font-size: 12px;
+    }
+
+    .price-new {
+        font-size: 14px;
+    }
 }
 
-.bar-grey {
-    width: 20%;
-    background: var(--grey-300);
+@media (max-width: 768px) {
+    .cart-panel {
+        width: calc(100vw / 2);
+    }
+
+    /* CART TITLE */
+    .cart-title h3 {
+        font-size: 20px;
+    }
+
+    .cart-count {
+        font-size: 18px;
+    }
+
+    .free-shipping p {
+        font-size: 15px;
+    }
+
+    /* PRODUCT ITEM */
+    .product-item {
+        gap: 16px;
+    }
+
+    .product-list {
+        margin-top: 0;
+    }
+
+    /* LEFT */
+    .product-left {
+        gap: 12px;
+    }
+
+    .product-image {
+        width: 72px;
+        height: 72px;
+    }
+
+    .product-meta {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .product-attribute {
+        font-size: 13px;
+    }
+
+    .quantity-control {
+        height: 32px;
+    }
+
+    .price-old {
+        font-size: 12px;
+    }
+
+    .price-new {
+        font-size: 14px;
+    }
 }
+
 
 /* ================================================
    ĐỊNH DẠNG UPSELL SECTION 
@@ -308,8 +418,7 @@
 .upsell-item {
     background: var(--light-blue-100); 
     border-radius: 12px;
-    padding: 0 16px;
-    width: 385px;
+    padding: 0 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -398,6 +507,130 @@
     background: var(--primary-button-outline-background);
 }
 
+@media (max-width: 1200px) {
+
+    .upsell-section {
+        padding: 0 16px;
+    }
+
+    .upsell-title {
+        font-size: 16px;
+    }
+
+    .upsell-track {
+        gap: 16px;
+    }
+
+    .upsell-item {
+        padding: 0 24px;
+        gap: 12px;
+    }
+
+    .upsell-left {
+        gap: 12px;
+    }
+
+    .upsell-image {
+        width: 70px;
+        height: 70px;
+        object-fit: cover;
+    }
+
+    .upsell-name {
+        font-size: 14px;
+        margin-bottom: 6px;
+    }
+
+    .upsell-attribute {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+
+    .upsell-price {
+        gap: 4px;
+    }
+
+    .upsell-price .price-old {
+        font-size: 12px;
+    }
+
+    .upsell-price .price-new {
+        font-size: 14px;
+    }
+
+    .upsell-add {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    /* SECTION */
+    .upsell-section {
+        padding: 0 12px;
+    }
+
+    .upsell-title {
+        font-size: 15px;
+    }
+
+    .upsell-track {
+        gap: 12px;
+    }
+
+    /* ITEM */
+    .upsell-item {
+        padding: 0 16px;
+        gap: 12px;
+    }
+
+    /* LEFT */
+    .upsell-left {
+        width: 100%;
+        gap: 10px;
+    }
+
+    .upsell-image {
+        width: 70px;
+        height: 70px;
+    }
+
+    .upsell-info {
+        width: 100%;
+    }
+
+    .upsell-name {
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    .upsell-attribute {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+
+    .upsell-price {
+        margin-top: 6px;
+    }
+
+    .upsell-price .price-old {
+        font-size: 11px;
+    }
+
+    .upsell-price .price-new {
+        font-size: 14px;
+    }
+
+    /* ADD BUTTON */
+    .upsell-add {
+        width: 40px;
+        height: 40px;
+    }
+
+}
+
+
 /* ================================================
    ĐỊNH DẠNG PAYMENT SECTION 
    ================================================ */
@@ -457,40 +690,47 @@
 
 /* PROMO INPUT */
 .promo-input {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-8);
-    align-self: stretch;
-    
+    width: 100%;
 }
 
-.promo-input input {
-    flex: 1;
-    padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
+/* INPUT + BUTTON CONTAINER */
+.promo-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+/* INPUT */
+.promo-input-field {
+    width: 100%;
+    padding: 12px 90px 12px 12px; 
+    border-radius: var(--border-radius-12);
+    border: 1px solid var(--neutral-border);
     font-size: 14px;
+    outline: none;
 }
 
-/* APPLY BUTTON - DEFAULT HIDDEN */
+/* APPLY BUTTON */
 .promo-apply {
-    display: none;
-    padding: var(--spacing-8) var(--spacing-16);
-    justify-content: center;
-    align-items: center;
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    padding: 6px 12px;
     border-radius: var(--border-radius-12);
     border: 1px solid var(--primary-button-pressed-border);
     background: var(--primary-button-outline-background);
-    cursor: pointer;
     color: var(--primary-button-outline-text);
+    cursor: pointer;
+    display: none;
 }
 
-/* WHEN INPUT HAS VALUE */
+/* SHOW BUTTON WHEN INPUT HAS VALUE */
 .promo-input.has-value .promo-apply {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
 }
+
 
 /* TOTAL */
 .payment-total {
@@ -527,5 +767,105 @@
     transition: background 0.3s ease;
     &:hover {
         background: var(--primary-button-hover-background);
+    }
+}
+
+@media (max-width: 1200px) {
+
+    .payment-section {
+        padding: 20px 16px;
+        gap: 16px;
+    }
+
+    .payment-info {
+        gap: 12px;
+    }
+
+    .payment-row .label {
+        font-size: 14px;
+    }
+
+    .payment-row .value {
+        font-size: 14px;
+    }
+
+    .promo-input-field {
+        font-size: 13px;
+        padding: 10px 80px 10px 12px;
+    }
+
+    .promo-apply {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+
+    .payment-total {
+        padding-top: 16px;
+    }
+
+    .payment-total .label,
+    .payment-total .value {
+        font-size: 15px;
+    }
+
+    .checkout-btn {
+        font-size: 15px;
+        padding: 10px 16px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .payment-section {
+        padding: 16px 12px;
+        gap: 16px;
+        border-radius: 0; /* thường dùng cho bottom cart mobile */
+    }
+
+    /* INFO */
+    .payment-info {
+        gap: 12px;
+    }
+
+    .payment-row {
+        font-size: 14px;
+    }
+
+    .payment-row .label {
+        font-size: 14px;
+    }
+
+    .payment-row .value {
+        font-size: 14px;
+    }
+
+    /* PROMO INPUT */
+    .promo-input-field {
+        font-size: 14px;
+        padding: 12px 88px 12px 12px;
+    }
+
+    .promo-apply {
+        font-size: 14px;
+        padding: 6px 12px;
+    }
+
+    /* TOTAL */
+    .payment-total {
+        padding-top: 16px;
+    }
+
+    .payment-total .label {
+        font-size: 15px;
+    }
+
+    .payment-total .value {
+        font-size: 16px;
+    }
+
+    /* CHECKOUT BUTTON */
+    .checkout-btn {
+        font-size: 16px;
+        border-radius: 12px;
     }
 }
