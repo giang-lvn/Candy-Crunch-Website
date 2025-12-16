@@ -150,12 +150,12 @@ height: 24px;
   }
   
   .filter-option:hover .checkbox-ui{
-    border-color: var(--gray-400);
+    border-color: var(--green-300);
   }
   
   .filter-checkbox:checked + .checkbox-ui{
-    border-color: var(--pl-green);
-    background: var(--pl-green);
+    border-color: var(--green-300);
+    background: var(--green-300);
   }
   
   .filter-checkbox:checked + .checkbox-ui::after{
@@ -180,18 +180,38 @@ font: var(--body-regular);
 
   .filter-section.rating{
     border-bottom: none;
+    
   }
   
   .rating-row{
     display: flex;
+  flex-direction: row-reverse; /* Hiển thị lại thành 1 2 3 4 5 từ trái sang phải */
     gap: 6px;
-    align-items: center;
-    align-self: stretch;
+    justify-content: flex-end;
   }
-  
-  .svg-star{
+
+  .rating-star-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     width: 28px;
     height: 28px;
+    padding: 0;
+    color: var(--gray-300);
+    transition: color 0.15s ease, transform 0.15s ease;
+  }
+
+  .rating-star-btn .svg-star{
+    width: 28px;
+    height: 28px;
+    pointer-events: none;
+  }
+
+  .rating-star-btn:hover,
+  .rating-star-btn:focus,
+  .rating-star-btn.is-active,
+  .rating-star-btn:hover ~ .rating-star-btn {
+    color: var(--yellow-500);
   }
   /* =======================
      Right container
@@ -277,13 +297,38 @@ align-self: stretch;
   
   .sort-select{
     display: flex;
-  padding: 8px 16px;
+  padding: 8px 32px 8px 16px;
   justify-content: center;
   align-items: center;
   cursor: pointer;
   border-radius: var(--border-radius-12);
   background: var(--green-500);
   color: var(--text-white);
+  gap: var(--spacing-16);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  }
+
+  .sort-select-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  .dropdown-arrow {
+    position: absolute;
+  right: 1px;
+  pointer-events: none;
+  color: #FAFAFA;
+  z-index: 2;
+  transition: transform 0.25s ease;
+  }
+
+/* khi open: xoay 180deg */
+  .sort-select-wrapper.is-open .dropdown-arrow {
+    transform: rotate(180deg);
   }
 
   .select .option{
@@ -465,7 +510,7 @@ align-items: center;
   .pagination {
     display: flex;
     align-items: center;
-    justify-content: center;      /* đổi sang end nếu muốn lệch phải */
+    justify-content: flex-end;
     gap: 16px;
     padding: 8px 0;
     flex-wrap: wrap;
@@ -479,7 +524,7 @@ align-items: center;
     border: 1px solid var(--gray-300);
     background: #fff;
     overflow: hidden;
-    height: 40px;
+    height: 30px;
   }
 
   /* Mỗi item trong thanh */
@@ -487,8 +532,9 @@ align-items: center;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0 22px;
-    min-width: 40px;
+    padding: 0 18px;
+    min-width: 30px;
+    height: 30px;
     font: var(--body-regular);
     color: var(--green-500);
     background: transparent;
@@ -536,12 +582,12 @@ align-items: center;
 
   .page-size select,
   .page-jump input {
-    height: 40px;
+    height: 30px;
     border: 1px solid #d0d5dd;
     border-radius: 10px;
     background: #fff;
     padding: 0 14px;
-    font: 500 14px/1 'Poppins', sans-serif;
+    font: var(--body-regular);
     color: #101828;
   }
 
@@ -555,7 +601,7 @@ align-items: center;
     align-items: center;
     gap: 4px;
     color: #101828;
-    font: 500 14px/1 'Poppins', sans-serif;
+    font: var(--body-regular);
   }
 
   .page-info-current {
@@ -563,7 +609,7 @@ align-items: center;
   }
 
   .page-info-total {
-    color: #98a2b3;
+    color: var(--text-subtitle);
   }
 
   .page-jump {
@@ -574,6 +620,10 @@ align-items: center;
   .page-jump label {
     color: #98a2b3;
     font: 500 14px/1 'Poppins', sans-serif;
+  }
+
+  .page-jump-input {
+    width: 72px;
   }
   
   .prev, .next { min-width: 28px; }
