@@ -1,183 +1,162 @@
+/**
+ * cart.js
+ * Handle cart actions with AJAX (no page reload)
+ */
+
 document.addEventListener('DOMContentLoaded', () => {
+    bindCartEvents();
+});
 
-    /* =======================
-       ELEMENTS
-    ======================= */
-    const cartOverlay = document.querySelector('.cart-overlay');
-    const cartCloseBtn = document.querySelector('.cart-close');
-    const cartCount = document.querySelector('.cart-count');
-
-    const productList = document.querySelector('.product-list');
-    const emptyCart = document.querySelector('.cart-empty');
-
-    const subtotalEl = document.querySelector('.payment-row.subtotal .value');
-    const discountEl = document.querySelector('.payment-row.discount .value');
-    const promoEl = document.querySelector('.payment-row.promo .value');
-    const totalEl = document.querySelector('.payment-total .value');
-
-    const promoWrapper = document.querySelector('.promo-input');
-    const promoInput = promoWrapper?.querySelector('input');
-    const promoApplyBtn = promoWrapper?.querySelector('.promo-apply');
-
-    /* =======================
-       DATA (mock)
-    ======================= */
-    let cart = [
-        {
-            id: 1,
-            name: 'Fruit-Filled Candy',
-            price: 150000,
-            salePrice: 120000,
-            qty: 1
-        }
-    ];
-
-    let promoDiscount = 0;
-
-    /* =======================
-       CART OPEN / CLOSE
-    ======================= */
-    cartCloseBtn?.addEventListener('click', () => {
-        cartOverlay.classList.remove('active');
-    });
-
-    /* =======================
-       UPDATE CART COUNT
-    ======================= */
-    function updateCartCount() {
-        const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
-        cartCount.textContent = `(${totalQty})`;
-    }
-
-    /* =======================
-       CALCULATE TOTAL
-    ======================= */
-    function calculateTotals() {
-        const subtotal = cart.reduce(
-            (sum, item) => sum + item.salePrice * item.qty,
-            0
-        );
-
-        const discount = promoDiscount;
-        const total = Math.max(subtotal - discount, 0);
-
-        subtotalEl.textContent = formatPrice(subtotal);
-        discountEl.textContent = discount ? `-${formatPrice(discount)}` : '0 VND';
-        promoEl.textContent = discount ? `-${formatPrice(discount)}` : '0 VND';
-        totalEl.textContent = formatPrice(total);
-    }
-
-    /* =======================
-       FORMAT PRICE
-    ======================= */
-    function formatPrice(value) {
-        return value.toLocaleString('vi-VN') + ' VND';
-    }
-
-    /* =======================
-       EMPTY CART STATE
-    ======================= */
-    function checkEmptyCart() {
-        if (cart.length === 0) {
-            productList.style.display = 'none';
-            emptyCart.style.display = 'block';
-        } else {
-            productList.style.display = 'block';
-            emptyCart.style.display = 'none';
-        }
-    }
-
-    /* =======================
-       QUANTITY CONTROL
-    ======================= */
-    productList?.addEventListener('click', (e) => {
-
-        const itemEl = e.target.closest('.product-item');
-        if (!itemEl) return;
-
-        const id = Number(itemEl.dataset.id);
-        const item = cart.find(p => p.id === id);
-
-        if (e.target.matches('.quantity-control button')) {
-            if (e.target.textContent === '+') {
-                item.qty++;
-            } else if (e.target.textContent === '-') {
-                item.qty = Math.max(1, item.qty - 1);
-            }
-
-            itemEl.querySelector('.quantity-control span').textContent = item.qty;
-            updateCartCount();
-            calculateTotals();
-        }
-
-        if (e.target.closest('.remove-product')) {
-            cart = cart.filter(p => p.id !== id);
-            itemEl.remove();
-
-            updateCartCount();
-            calculateTotals();
-            checkEmptyCart();
-        }
-    });
-
-    /* =======================
-       PROMO INPUT STATE
-    ======================= */
-    promoInput?.addEventListener('input', () => {
-        promoWrapper.classList.toggle(
-            'has-value',
-            promoInput.value.trim() !== ''
-        );
-    });
-
-    /* =======================
-       APPLY PROMO CODE (DEMO)
-    ======================= */
-    promoApplyBtn?.addEventListener('click', () => {
-        const code = promoInput.value.trim().toUpperCase();
-
-        if (code === 'CANDY10') {
-            promoDiscount = 10000;
-            alert('Promo code applied!');
-        } else if (code === 'FREESHIP') {
-            promoDiscount = 20000;
-            alert('Free shipping applied!');
-        } else {
-            promoDiscount = 0;
-            alert('Invalid promo code');
-        }
-
-        calculateTotals();
-    });
-
-    /* =======================
-       UPSELL ADD TO CART
-    ======================= */
-    document.querySelectorAll('.upsell-add').forEach(btn => {
+/* =========================
+   EVENT BINDING
+========================= */
+function bindCartEvents() {
+    document.querySelectorAll('.qty-plus').forEach(btn => {
         btn.addEventListener('click', () => {
-
-            const upsellItem = {
-                id: Date.now(),
-                name: 'Upsell Candy',
-                price: 100000,
-                salePrice: 85000,
-                qty: 1
-            };
-
-            cart.push(upsellItem);
-            updateCartCount();
-            calculateTotals();
-            checkEmptyCart();
-
-            alert('Product added to cart');
+            updateQuantity(btn.dataset.skuid, 'increase');
         });
     });
 
-    /* =======================
-       INIT
-    ======================= */
-    updateCartCount();
-    calculateTotals();
-    checkEmptyCart();
+    document.querySelectorAll('.qty-minus').forEach(btn => {
+        btn.addEventListener('click', () => {
+            updateQuantity(btn.dataset.skuid, 'decrease');
+        });
+    });
 
-});
+    document.querySelectorAll('.remove-product').forEach(btn => {
+        btn.addEventListener('click', () => {
+            removeCartItem(btn.dataset.skuid, btn);
+        });
+    });
+
+    const promoBtn = document.querySelector('.promo-apply');
+    if (promoBtn) {
+        promoBtn.addEventListener('click', applyVoucher);
+    }
+}
+
+/* =========================
+   UPDATE QUANTITY
+========================= */
+function updateQuantity(skuid, action) {
+    fetch('/index.php?controller=cart&action=updateQuantity', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ skuid, action })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (!data.success) return;
+
+        if (data.cartEmpty) {
+            renderEmptyCart();
+        } else {
+            updateCartUI(data);
+        }
+    });
+}
+
+
+/* =========================
+   REMOVE ITEM
+========================= */
+function removeCartItem(skuid, btn) {
+    if (!confirm('Remove this product from cart?')) return;
+
+    fetch('/cart/remove-item', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ skuid })
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) return;
+
+            // Remove item DOM
+            const productItem = btn.closest('.product-item');
+            if (productItem) productItem.remove();
+
+            if (data.cartEmpty) {
+                renderEmptyCart();
+            } else {
+                updateCartUI(data);
+            }
+        })
+        .catch(console.error);
+}
+
+/* =========================
+   APPLY VOUCHER
+========================= */
+function applyVoucher() {
+    const input = document.querySelector('.promo-input-field');
+    const code = input.value.trim();
+    if (!code) return;
+
+    fetch('/cart/apply-voucher', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code })
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                alert(data.message || 'Invalid voucher');
+                return;
+            }
+            updateCartUI(data);
+        })
+        .catch(console.error);
+}
+
+/* =========================
+   UPDATE UI (TOTALS + QTY)
+========================= */
+function updateCartUI(data) {
+    // Update quantity
+    if (data.items) {
+        data.items.forEach(item => {
+            const qtySpan = document.querySelector(
+                `.qty-plus[data-skuid="${item.SKUID}"]`
+            )?.previousElementSibling;
+
+            if (qtySpan) qtySpan.innerText = item.CartQuantity;
+        });
+    }
+
+    // Update payment section
+    updatePaymentRow('.payment-row.subtotal .value', data.subtotal);
+    updatePaymentRow('.payment-row.discount .value', data.discount, true);
+    updatePaymentRow('.payment-row.promo .value', data.promo, true);
+    updatePaymentRow('.payment-total .value', data.total);
+}
+
+function updatePaymentRow(selector, value, isMinus = false) {
+    const el = document.querySelector(selector);
+    if (!el) return;
+
+    const formatted = formatMoney(value);
+    el.innerText = isMinus && value > 0 ? `-${formatted}` : formatted;
+}
+
+/* =========================
+   EMPTY CART RENDER
+========================= */
+function renderEmptyCart() {
+    const cartProduct = document.querySelector('.cart-product');
+    if (!cartProduct) return;
+
+    cartProduct.innerHTML = `
+        <p class="empty-cart">Your cart is empty.</p>
+    `;
+
+    const paymentSection = document.querySelector('.payment-section');
+    if (paymentSection) paymentSection.remove();
+}
+
+/* =========================
+   HELPERS
+========================= */
+function formatMoney(value) {
+    return new Intl.NumberFormat('vi-VN').format(value) + ' VND';
+}
