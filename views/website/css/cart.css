@@ -165,7 +165,7 @@
     gap: var(--spacing-8);
     align-self: stretch;
     border-radius: 4px;
-    background-color: var(--grey-200);
+    background-color: var(--gray-200) !important;
 }
 
 .quantity-control {
@@ -422,20 +422,20 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 12px;
+    gap: 24px;
     flex-shrink: 0;
 }
 
 /* LEFT */
 .upsell-left {
     display: flex;
-    gap: 24px;
+    gap: 18px;
     align-items: center;
 }
 
 .upsell-image {
-    width: 80px;
-    height: 80px;
+    width: 90px;
+    height: 90px;
     aspect-ratio: 1/1;
     border-radius: 12px;
 }
@@ -446,6 +446,7 @@
     flex-direction: column;
     align-items: flex-start;    
     padding: 8px 0;
+    gap: 10px;
 }
 
 .upsell-name {
@@ -461,7 +462,7 @@
     align-items: center;
     gap: var(--spacing-8);
     border-radius: 4px;
-    background: var(--grey-50);
+    background: var(--gray-50) !important;
 }
 
 /* PRICE */
