@@ -56,6 +56,7 @@
                             <div class="product-list">
 
                                 <?php foreach ($cartItems as $item): ?>
+                                <!-- SINGLE PRODUCT -->
                                 <div class="product-item">
 
                                     <!-- LEFT -->

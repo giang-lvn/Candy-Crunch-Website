@@ -1,3 +1,6 @@
+<?php
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,47 +32,59 @@
             <!-- CART PRODUCT -->
             <div class="cart-product">
         
-                <!-- EMPTY STATE -->
-                <!--
-                <div class="cart-empty">
-                    Your wishlist is empty.
-                </div>
-                -->
+                <?php if (empty($wishlistItems)): ?>
+                    <!-- EMPTY STATE -->
+                    <p class="empty-cart">Your wishlist is empty.</p>
+
+                <?php else: ?>
         
                 <!-- HAS PRODUCT STATE -->
                 <div class="cart-has-product">
 
                     <!-- PRODUCT LIST -->
                     <div class="product-list">
-        
+
+                        <?php foreach ($wishlistItems as $item): ?>
                         <!-- SINGLE PRODUCT -->
                         <div class="wishlist-product-item">
         
                             <!-- LEFT -->
                             <div class="wishlist-product-left">
-                                <img class="wishlist-upsell-image" src="../img/about_story.jpg" alt="Product name" />
+                                <img
+                                    class="product-image"
+                                    src="<?= htmlspecialchars($item['Image']) ?>"
+                                    alt="<?= htmlspecialchars($item['ProductName']) ?>"
+                                />
 
                                 <div class="product-info">
-                                    <h4 class="product-name">Fruit-Filled Candy</h4>
+                                    <h4 class="product-name">
+                                        <?= htmlspecialchars($item['ProductName']) ?>
+                                    </h4>
         
                                     <div class="product-meta">
-                                        <button class="product-attribute">
-                                            175g
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                                <path d="M14.4 5.5998C14.4 5.81647 14.3208 6.00397 14.1625 6.1623L8.56248 11.7623C8.40414 11.9206 8.21664 11.9998 7.99998 11.9998C7.78331 11.9998 7.59581 11.9206 7.43748 11.7623L1.83748 6.1623C1.67914 6.00397 1.59998 5.81647 1.59998 5.5998C1.59998 5.38314 1.67914 5.19564 1.83748 5.0373C1.99581 4.87897 2.18331 4.7998 2.39998 4.7998H13.6C13.8166 4.7998 14.0041 4.87897 14.1625 5.0373C14.3208 5.19564 14.4 5.38314 14.4 5.5998Z" fill="#9E9E9E"/>
-                                            </svg>
+                                        <button class="product-attribute" disabled>
+                                            <?= htmlspecialchars($item['Attribute']) ?>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="8" viewBox="0 0 13 8" fill="none">
+                                                    <path d="M12.8 0.8C12.8 1.01667 12.7208 1.20417 12.5625 1.3625L6.9625 6.9625C6.80417 7.12083 6.61667 7.2 6.4 7.2C6.18333 7.2 5.99583 7.12083 5.8375 6.9625L0.2375 1.3625C0.0791667 1.20417 0 1.01667 0 0.8C0 0.583333 0.0791667 0.395833 0.2375 0.2375C0.395833 0.0791667 0.583333 0 0.8 0H12C12.2167 0 12.4042 0.0791667 12.5625 0.2375C12.7208 0.395833 12.8 0.583333 12.8 0.8Z" fill="#9E9E9E"/>
+                                                </svg>
                                         </button>
-        
-                                        <div class="quantity-control">
-                                            <button>-</button>
-                                            <span>1</span>
-                                            <button>+</button>
-                                        </div>
                                     </div>
 
                                     <div class="upsell-price">
-                                        <span class="price-old">150.000 VND</span>
-                                        <span class="price-new">120.000 VND</span>
+                                        <?php if (!empty($upsell['PromotionPrice'])): ?>
+                                            <span class="price-old">
+                                                <?= number_format($upsell['OriginalPrice'], 0, ',', '.') ?> VND
+                                            </span>
+                                        <?php endif; ?>
+
+                                        <span class="price-new">
+                                            <?= number_format(
+                                                $upsell['PromotionPrice'] ?? $upsell['OriginalPrice'],
+                                                0,
+                                                ',',
+                                                '.'
+                                            ) ?> VND
+                                        </span>
                                     </div>
                                 </div>
                                 
@@ -78,13 +93,21 @@
         
                             <!-- RIGHT -->
                             <div class="wishlist-product-right">
-                                <button class="remove-product" aria-label="Remove product">
+                                <button
+                                    class="remove-product"
+                                    data-skuid="<?= $item['SKUID'] ?>"
+                                    aria-label="Remove product"
+                                >
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                         <path d="M4 7H20M10 11V17M14 11V17M5 7L6 19C6 19.5304 6.21071 20.0391 6.58579 20.4142C6.96086 20.7893 7.46957 21 8 21H16C16.5304 21 17.0391 20.7893 17.4142 20.4142C17.7893 20.0391 18 19.5304 18 19L19 7M9 7V4C9 3.73478 9.10536 3.48043 9.29289 3.29289C9.48043 3.10536 9.73478 3 10 3H14C14.2652 3 14.5196 3.10536 14.7071 3.29289C14.8946 3.48043 15 3.73478 15 4V7" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>
                                 </button>
         
-                                <button class="wishlist-add" aria-label="Wishlist-Add to cart">
+                                <button
+                                    class="wishlist-add"
+                                    data-skuid="<?= $item['SKUID'] ?>"
+                                    aria-label="Wishlist-Add to cart"
+                                >
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                         <mask id="path-1-inside-1_1663_5327" fill="white">
                                           <path d="M10.3085 13.0568C10.1402 13.0568 9.97883 13.1236 9.85984 13.2426C9.74085 13.3616 9.67401 13.523 9.67401 13.6912C9.67401 13.8595 9.74085 14.0209 9.85984 14.1399C9.97883 14.2589 10.1402 14.3257 10.3085 14.3257H13.6923C13.8606 14.3257 14.0219 14.2589 14.1409 14.1399C14.2599 14.0209 14.3268 13.8595 14.3268 13.6912C14.3268 13.523 14.2599 13.3616 14.1409 13.2426C14.0219 13.1236 13.8606 13.0568 13.6923 13.0568H10.3085Z"/>
@@ -98,15 +121,17 @@
                             </div>
         
                         </div>
+                        <?php endforeach; ?>
                     </div>
         
                 </div>
+                <?php endif; ?>
             </div>
         </div>
     </aside>
     
     <!-- Script -->
     <script src="../js/main.js"></script>
-    <script src="../js/cart.js"></script>
+    <script src="../js/wishlist.js"></script>
 </body>
 </html>
