@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rating Product</title>
+    <!-- Preload Google Fonts for faster loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Modak&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/rating.css">
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+<body>
+    <!-- Popup -->
+    <div id="rating-overlay" class="overlay hidden">
+        <div class="rating-popup">
+            <!-- Nút đóng popup -->
+            <button class="close-btn" id="cancelPopupClose">&times;</button>
+        
+            <!-- Title -->
+            <h2 class="rating-title">Rating</h2>
+
+            <!-- Description -->
+            <p class="rating-desc">
+                Share your thoughts and help Candy Crunch get even sweeter!
+            </p>
+
+            <!-- Sản phẩm -->
+            <div class="input" data-size="medium">
+                <label class="input-label">Product Name</label>
+                <div class="input-field">
+                    Fruit-Filled Candy
+                </div>
+            </div>
+
+            <!-- Rating -->
+            <div class="input">
+                <label class="input-label">Your Rating</label>
+
+                <div class="star-rating" data-rating="0">
+                    <span class="star" data-value="1">&#9733;</span>
+                    <span class="star" data-value="2">&#9733;</span>
+                    <span class="star" data-value="3">&#9733;</span>
+                    <span class="star" data-value="4">&#9733;</span>
+                    <span class="star" data-value="5">&#9733;</span>
+                </div>
+            </div>
+
+            <!-- Viết mô tả -->
+            <div class="input" data-optional="true" data-size="medium">
+                <label class="input-label">Product Review</label>
+                <div class="input-field">
+                  <input type="text" placeholder="Provide a detailed review...">
+                </div>
+            </div>
+
+            <!-- Nút submit-->
+            <div class="return-submit">
+                <button class="btn-primary-medium">Submit</button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Script -->
+    <script src="../js/main.js"></script>
+    <script src="../js/rating.js"></script>
+</body>
+</html>

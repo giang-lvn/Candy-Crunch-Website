@@ -1,0 +1,81 @@
+/* ================================================
+   RESET STYLES 
+   ================================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.cancel-title {
+    color: var(--green-500);
+    font: var(--heading-3);
+    text-align: center;
+}
+
+/* Overlay xám */
+.cancel-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 9998;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+  
+/* Ẩn popup */
+.hidden {
+    display: none;
+}
+  
+/* Popup box */
+.cancel-popup {
+    width: calc(100%/3);
+    max-width: 90%;
+    border-radius: 8px;
+    padding: 24px;
+    position: relative;
+    animation: fadeIn 0.25s ease;
+    border-radius: var(--border-radius-8, 8px);
+    background: var(--body-background, #F8F5EE);; 
+    display: flex;
+    flex-direction: column;
+    gap: 20px;   
+    align-items: center;
+    z-index: 9999; /* 👈 cao hơn overlay */
+}
+
+  
+/* Close button */
+.close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+  
+
+/* Description */
+.cancel-desc {
+    color: #000;
+    text-align: center;
+    font: var(--body-regular);
+    padding: 10px 20px;
+}
+
+  /* Animation */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }

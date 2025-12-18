@@ -1,0 +1,197 @@
+/* ================================================
+   POLICY PAGE STYLES (GENERAL POLICY)
+   ================================================ */
+
+/* --- LAYOUT --- */
+.policy-section {
+    width: 100%;
+    min-height: 80vh;
+    background-color: var(--body-background, #F8F5EE);
+    padding: 60px 0 100px;
+    font-family: var(--font-primary, 'Poppins', sans-serif);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* --- HEADER --- */
+.page-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.page-title {
+    color: var(--green-500, #017E6A);
+    text-align: center;
+    /* Headings/Heading 2 */
+    font-family: Modak;
+    font-size: 50px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 120%; /* 60px */
+    letter-spacing: 0.2px;
+}
+
+.page-subtitle {
+    font-size: 16px;
+    color: var(--text-color, #757575);
+    opacity: 0.9;
+}
+
+/* --- GRID LAYOUT --- */
+.policy-layout {
+    display: flex;
+    gap: 60px;
+    align-items: flex-start; /* Quan trọng để Sticky hoạt động */
+    position: relative;
+}
+
+/* --- SIDEBAR --- */
+.policy-sidebar {
+    width: 280px;
+    flex-shrink: 0;
+    
+    /* === NEW: STICKY & BOX STYLE (Làm sidebar đi theo màn hình & có hộp) === */
+    position: -webkit-sticky; /* Cho Safari */
+    position: sticky;
+    top: 20px; /* Cách mép trên màn hình 20px khi cuộn */
+    z-index: 10;
+    height: fit-content; /* Bắt buộc để sticky hoạt động đúng */
+    
+    /* Tạo hình cái hộp */
+    background-color: #ffffff; /* Màu nền hộp */
+    padding: 15px;             /* Khoảng cách lề trong hộp */
+    border-radius: 16px;       /* Bo góc hộp */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* Đổ bóng nhẹ cho hộp */
+}
+
+.sidebar-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.sidebar-item {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    /* Giữ nguyên shadow cũ của item, hoặc bỏ đi nếu muốn phẳng hơn */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    transition: all 0.3s ease;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text-color, #333);
+    background-color: #fff;
+    transition: background-color 0.3s;
+}
+
+.sidebar-header:hover,
+.sidebar-item.active .sidebar-header {
+    color: var(--green-500, #017E6A);
+    background-color: var(--green-50, #E6F2F0);
+}
+
+/* Mũi tên */
+.arrow-icon {
+    transition: transform 0.3s ease;
+    color: #999;
+}
+.sidebar-item.open .arrow-icon {
+    transform: rotate(180deg);
+    color: var(--green-500, #017E6A);
+}
+
+/* Submenu */
+.sidebar-submenu {
+    list-style: none;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+    background-color: #fff;
+}
+
+.sidebar-item.open .sidebar-submenu {
+    max-height: 500px; /* Đủ lớn để chứa nội dung */
+}
+
+.sidebar-submenu li a {
+    display: block;
+    padding: 10px 20px 10px 32px;
+    font-size: 14px;
+    color: #666;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.sidebar-submenu li a:hover,
+.sidebar-submenu li a.active-link {
+    color: var(--green-500, #017E6A);
+    font-weight: 500;
+}
+
+/* --- MAIN CONTENT --- */
+.policy-content {
+    flex-grow: 1;
+    background: #fff;
+    padding: 48px;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.content-block {
+    scroll-margin-top: 100px; /* Để khi click link không bị che bởi header */
+}
+
+.content-title {
+    color: var(--teal-600, #00897B);
+    /* Body Large/Semibold */
+    font-family: Poppins;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 130%; /* 23.4px */
+    letter-spacing: -0.022px;
+    margin-bottom: 16px; /* Thêm khoảng cách dưới tiêu đề */
+}
+
+/* Text Content Styling */
+.text-content {
+    color: #000;
+    /* Body/Regular */
+    font-family: Poppins;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 160%; /* Tăng line-height lên chút cho dễ đọc (130% hơi xít) */
+    letter-spacing: -0.038px;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 900px) {
+    .policy-layout {
+        flex-direction: column;
+    }
+    
+    .policy-sidebar {
+        width: 100%;
+        position: relative; /* Mobile thì không cần sticky */
+        top: 0;
+        margin-bottom: 30px;
+    }
+
+    .policy-content {
+        padding: 24px;
+    }
+}
