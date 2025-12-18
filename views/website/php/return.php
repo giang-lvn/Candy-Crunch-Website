@@ -126,9 +126,9 @@
             </div>
         
             <!-- Viết mô tả -->
-            <div class="input" data-optional="true">
+            <div class="input" data-optional="true" data-size="medium">
                 <label class="input-label">Description</label>
-                <div class="input-field-des">
+                <div class="input-field">
                   <input type="text" placeholder="Describe your problem">
                 </div>
             </div>

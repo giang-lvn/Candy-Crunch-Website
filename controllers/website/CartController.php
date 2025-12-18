@@ -99,6 +99,25 @@ class CartController
         require 'views/website/php/cart.php';
     }
 
+    //Lấy số lượng sản phẩm trong giỏ
+    public function getQuantity(int $cartId, int $skuId): int
+    {
+        $sql = "
+            SELECT CartQuantity
+            FROM CART_DETAIL
+            WHERE CartID = ? AND SKUID = ?
+            LIMIT 1
+        ";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$cartId, $skuId]);
+
+        $qty = $stmt->fetchColumn();
+
+        return $qty !== false ? (int)$qty : 0;
+    }
+
+
     //Cập nhật số lượng giỏ hàng
     public function updateQuantity()
     {

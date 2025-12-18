@@ -68,14 +68,6 @@
     padding: 10px 20px;
 }
 
-
-.cancel-title h2 {
-    color: var(--green-500);
-    font: var(--heading-3);
-    text-align: center;
-}
-
-
   /* Animation */
   @keyframes fadeIn {
     from {

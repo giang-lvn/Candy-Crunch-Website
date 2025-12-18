@@ -1,6 +1,6 @@
 document.getElementById("cancelOrderBtn").addEventListener("click", function () {
     openCancelOrderPopup();
-  });
+});
   
 
 // Mở popup
@@ -8,7 +8,7 @@ function openCancelOrderPopup() {
     document
       .getElementById("cancel-order-overlay")
       .classList.remove("hidden");
-  }
+}
   
 // Đóng popup
 function closeCancelOrderPopup() {
@@ -17,10 +17,10 @@ function closeCancelOrderPopup() {
       .classList.add("hidden");
 }
   
-  // Gắn sự kiện sau khi popup load
-  document.addEventListener("click", function (e) {
+// Gắn sự kiện sau khi popup load
+document.addEventListener("click", function (e) {
     if (e.target.id === "cancelPopupClose") {
-      closeCancelOrderPopup();
+        closeCancelOrderPopup();
     }
   
     if (e.target.id === "cancel-order-overlay") {
