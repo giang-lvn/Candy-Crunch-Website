@@ -105,6 +105,10 @@ align-self: stretch;
 border-bottom: 1px solid var(--gray-400);
   }
   
+  .filter-section:last-child {
+    border-bottom: none;
+  }
+
   .filter-title{
     color: var(--text-black);
     font: var(--body-large-medium);
@@ -178,10 +182,7 @@ color: var(--text-subtitle);
 font: var(--body-regular);
   }
 
-  .filter-section.rating{
-    border-bottom: none;
-    
-  }
+  
   
   .rating-row{
     display: flex;
