@@ -1,0 +1,257 @@
+<?php include '../../../partials/header.php'; ?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Detail</title>
+    <!-- Preload Google Fonts for faster loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Modak&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/order_detail.css">
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+<body>
+    <!-- TITLE -->
+    <div class="title">
+        <h2>ORDER DETAIL</h2>
+    </div>
+
+    <!-- THÔNG TIN ĐƠN HÀNG -->
+    <div class="order-detail">
+
+        <!-- ORDER + SHIPPING -->
+        <div class="order-info">
+            <!-- ORDER INFORMATION -->
+            <div class="detail">
+                <!-- TITLE -->
+                <div class="section-title">
+                    <h3>Order Infomation</h3>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Order ID:</span>
+                    <span class="value order-id">CTH-987829</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Order Status:</span>
+                    <span class="value order-id">Complete</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Order Date:</span>
+                    <span class="value">30/4/2025</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Payment Method:</span>
+                    <span class="value">Credit Card (Visa)</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Shipping Method:</span>
+                    <span class="value">Standard Delivery</span>
+                </div>
+            </div>
+
+            <!-- SHIPPING INFORMATION -->
+            <div class="detail">
+                <!-- TITLE -->
+                <div class="section-title">
+                    <h3>Shipping Infomation</h3>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Full Name:</span>
+                    <span class="value">John Doe</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Phone Number:</span>
+                    <span class="value">+1 202 555 0192</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Shipping Address:</span>
+                    <span class="value">
+                        1243 Sunset Boulevard, Los Angeles, United States
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Postal Code:</span>
+                    <span class="value">123456</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATUS -->
+        <div class="status-detail">
+    
+            <!-- TITLE -->
+            <div class="status-title">
+                <h3>Order Status</h3>
+            </div>
+
+            <!-- STATUS LIST -->
+            <div class="status-list">
+
+                <!-- STATUS ITEM -->
+                <div class="status-item active">
+                    <div class="status-icon"></div>
+
+                    <div class="time">08:39</div>
+                    <div class="date">14-11-2025</div>
+
+                    <div class="status-text">Waiting Payment</div>
+                </div>
+
+                <div class="status-item active">
+                    <div class="status-icon"></div>
+
+                    <div class="time">08:42</div>
+                    <div class="date">14-11-2025</div>
+
+                    <div class="status-text">Preparing Order</div>
+                </div>
+
+                <div class="status-item active">
+                    <div class="status-icon"></div>
+
+                    <div class="time">07:35</div>
+                    <div class="date">17-11-2025</div>
+
+                    <div class="status-text">Shipping</div>
+                </div>
+
+                <div class="status-item active">
+                    <div class="status-icon"></div>
+
+                    <div class="time">10:47</div>
+                    <div class="date">17-11-2025</div>
+
+                    <div class="status-text">Delivered</div>
+                </div>
+
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="order-actions">
+                <button class="btn-primary-medium">Pay Now</button>
+                <button class="btn-primary-outline-medium">Change Method</button>
+                <button class="btn-primary-medium">Buy Again</button>
+                <button class="btn-primary-outline-medium">Rating</button>
+                <button class="btn-secondary-outline-medium">Return</button>
+                <button class="btn-secondary-medium">Cancel</button>
+                <button class="btn-secondary-outline-medium">Contact</button>
+            </div>
+
+        </div>
+        
+        <!-- PRODUCTS -->
+        <div class="detail">
+    
+            <!-- TITLE -->
+            <div class="section-title">
+                <h3>Product</h3>
+            </div>
+        
+            <!-- PRODUCT GRID -->
+            <div class="products-list">
+                
+                    <!-- Sản phẩm -->
+                    <div class="single-product">
+                        <!-- INFO -->
+                        <div class="product-info">
+                        
+                            <!-- IMAGE -->
+                            <div class="product-image">
+                                <img src="../img/about_story.jpg" alt="Product">
+                            </div>
+                        
+                            <!-- DETAILS -->
+                            <div class="product-details">
+                                <!-- NAME -->
+                                <div class="product-name">Fruit-Filled Candy</div>
+                        
+                                <!-- ATTRIBUTE -->
+                                <div class="product-attribute">175g</div>
+                        
+                                <!-- PRICE + QTY -->
+                                <div class="product-price-qty">
+                                    <div class="product-quantity">Quantity: <strong>1</strong></div>
+                                    <div class="product-price">
+                                        <span class="price-old">150.000 VND</span>
+                                        <span class="price-new">150.000 VND</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                </div>
+        </div>
+        <!-- SUMMARY -->
+        <!-- PAYMENT -->
+            <div class="summary-detail">
+
+                <!-- TITLE -->
+                <div class="section-title">
+                    <h3>Order Summary</h3>
+                </div>
+
+                <!-- INFO -->
+                <div class="payment-info">
+
+                    <!-- SUBTOTAL -->
+                    <div class="payment-row subtotal">
+                        <span class="label">Subtotal</span>
+                        <span class="value">
+                            <?= number_format($subtotal, 0, ',', '.') ?> VND
+                        </span>
+                    </div>
+
+                    <!-- DISCOUNT -->
+                    <div class="payment-row discount">
+                        <span class="label">Discount</span>
+                        <span class="value">
+                            <?= $discount > 0 ? '-' : '' ?>
+                            <?= number_format($discount, 0, ',', '.') ?> VND
+                        </span>
+                    </div>
+
+                    <!-- PROMO -->
+                    <div class="payment-row promo">
+                        <span class="label">Promo</span>
+                        <span class="value">
+                            <?= $promo > 0 ? '-' : '' ?>
+                            <?= number_format($promo, 0, ',', '.') ?> VND
+                        </span>
+                    </div>
+                </div>
+
+                <!-- TOTAL -->
+                <div class="payment-total">
+                    <span class="label">Total</span>
+                    <span class="value">
+                        <?= number_format($total, 0, ',', '.') ?> VND
+                    </span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Script -->
+    <script src="../js/main.js"></script>
+    <script src="../js/order_detail.js"></script>
+
+</body>
+</html>
+
+<?php include '../../../partials/footer_kovid.php'; ?>

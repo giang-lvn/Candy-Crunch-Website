@@ -224,9 +224,7 @@
                 </div>
 
                 <?php endif; ?>
-            </div>
-
-            
+            </div>            
 
             <!-- PAYMENT -->
             <div class="payment-section">
