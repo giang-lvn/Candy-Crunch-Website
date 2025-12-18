@@ -185,7 +185,7 @@ font: var(--body-regular);
   
   .rating-row{
     display: flex;
-  flex-direction: row-reverse; /* Hiển thị lại thành 1 2 3 4 5 từ trái sang phải */
+  flex-direction: row; 
     gap: 6px;
     justify-content: flex-end;
   }
@@ -207,12 +207,17 @@ font: var(--body-regular);
     pointer-events: none;
   }
 
-  .rating-star-btn:hover,
-  .rating-star-btn:focus,
-  .rating-star-btn.is-active,
-  .rating-star-btn:hover ~ .rating-star-btn {
+  .rating-star-btn {
+    color: var(--gray-300);
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .rating-star-btn.is-active {
     color: var(--yellow-500);
   }
+  
   /* =======================
      Right container
   ======================= */
@@ -228,7 +233,6 @@ flex: 1 0 0;
   .filter-result{
     display: flex;
 flex-direction: column;
-align-items: flex-start;
 gap: 12px;
 align-self: stretch;
   }
@@ -280,7 +284,7 @@ align-self: stretch;
     display: flex;
 justify-content: center;
 align-items: center;
-gap: 16px;
+gap: 8px;
   }
   
   .sort-label{
@@ -297,7 +301,7 @@ align-self: stretch;
   
   .sort-select{
     display: flex;
-  padding: 8px 32px 8px 16px;
+  padding: 8px 40px 8px 16px;
   justify-content: center;
   align-items: center;
   cursor: pointer;
@@ -319,16 +323,24 @@ align-self: stretch;
   
   .dropdown-arrow {
     position: absolute;
-  right: 1px;
-  pointer-events: none;
-  color: #FAFAFA;
-  z-index: 2;
-  transition: transform 0.25s ease;
+    right: 1px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
   }
 
-/* khi open: xoay 180deg */
-  .sort-select-wrapper.is-open .dropdown-arrow {
-    transform: rotate(180deg);
+  .dropdown-arrow .icon-up {
+    display: none;
+  }
+
+  .sort-select-wrapper.is-open .icon-down {
+    display: none;
+  }
+
+  .sort-select-wrapper.is-open .icon-up {
+    display: block;
   }
 
   .select .option{
@@ -394,7 +406,7 @@ align-self: center;
   .product-listing{
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--spacing-16);
+    gap: var(--spacing-32);
   }
   
   .product-card{
@@ -405,11 +417,13 @@ flex: 1 0 0;
 border-radius: var(--border-radius-12);
 border: 1px solid var(--gray-300);
 background: var(--text-white);
+overflow: hidden;
   }
   
   .product-image{
-    height: 167px;
-align-self: stretch;
+    height: 160px;
+width: 100%;
+object-fit: cover;
   }
   
   .product-info{
