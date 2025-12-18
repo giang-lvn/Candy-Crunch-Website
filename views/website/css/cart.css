@@ -9,18 +9,18 @@
 
 /* ================================================
    OVERLAY 
-   ================================================ 
+   ================================================ */
 .cart-overlay {
     position: fixed;
     inset: 0;
-    opacity: 0.5;
-    background: var(--grey-700);
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 9998;
     /*display: none;*/
+}
 
-
-/*.cart-overlay.active {
+.cart-overlay.active {
     display: block;
-}*/
+}
 
 /* ================================================
    ĐỊNH DẠNG CART CHUNG 
@@ -29,12 +29,12 @@
     position: absolute;
     top: 40px;
     right: 40px;
-    bottom: 40px;
     width: calc(100vw / 3);
-    background: var(--body-background);
-    border-radius: var(--border-radius-8);
+    border-radius: var(--border-radius-8, 8px);
+    background: var(--body-background, #F8F5EE);
     /*transform: translateX(120%);*/
     transition: transform 0.3s ease;
+    z-index: 9999;
 }
 
 .cart-panel.active {
@@ -72,15 +72,14 @@
 
 /* ========== CART PRODUCT ========== */
 .cart-product {
-    padding: 0 var(--spacing-24);
+    padding: 24px;
     align-items: flex-start;
     gap: var(--spacing-20);
     align-self: stretch;
-    padding-top: 28px;
 }
 
 /* EMPTY STATE */
-.cart-empty {
+.cart-empty p {
     text-align: center;
     color: var(--text-black);
     font: var(--body-medium);
@@ -251,7 +250,7 @@
     }
 
     .cart-product {
-        padding: 24px 16px 0 16px;
+        padding: 24px 16px;
     }
 
     .product-item {
@@ -643,6 +642,8 @@
     gap: var(--spacing-20);
     border-radius: var(--border-radius-8);
     background: var(--green-50);
+    border-bottom-right-radius: var(--border-radius-8);
+    border-bottom-left-radius: var(--border-radius-8);
 }
 
 /* INFO */

@@ -1,0 +1,405 @@
+/* ================================================
+   RESET STYLES 
+   ================================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* =========================
+   TITLE
+========================= */
+.title h2 {
+    color: var(--green-500);
+    text-align: center;
+    font: var(--heading-2);
+}
+
+/* =========================
+   LAYOUT
+========================= */
+.order-detail {
+    display: flex;
+    padding: 40px 120px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 48px;
+}
+
+.detail {
+    display: flex;
+    align-items: flex-start;
+    align-self: stretch;
+    padding: 40px 60px;
+    flex-direction: column;
+    border-radius: 32px;
+    border: 1px solid var(--gray-300);
+    background: var(--beige-300);
+}
+  
+.section-title h3 {
+    color: #000;
+    text-align: center;
+    font: var(--body-xxlarge-semibold);
+    margin-bottom: 30px;
+}
+
+/* =========================
+   PRODUCT ITEM
+========================= */
+.products-list {
+    display: flex;
+    gap: 30px;
+    width: 100%;
+}
+
+.single-product {
+    flex: 1;
+    border-radius: 12px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    /*border-bottom: 2px solid var(--gray-300);*/
+}
+
+/* Thông tin sản phẩm */
+.product-info {
+    display: flex;
+    gap: 30px;
+}
+
+/* Hình ảnh */
+.product-image {
+    flex-shrink: 0;
+}
+
+.product-image img {
+    width: 200px;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+/* Chi tiết sản phẩm */
+.product-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Tên sản phẩm */
+.product-name {
+    font: var(--body-large-medium);
+    color: #000;
+}
+
+/* Thuộc tính */
+.product-attribute {
+    display: inline-flex;
+    width: fit-content;
+    padding: 8px 12px;
+    align-items: center;
+    gap: var(--spacing-16, 16px);
+    border-radius: 6px;
+    background-color: var(--gray-200) !important;
+}
+
+/* Giá và số lượng */
+.product-price-qty {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: auto;
+    gap: 40px;
+}
+
+.product-quantity {
+    font: var(--body-regular);
+    color: #000;
+    margin-bottom: 3px;
+}
+
+.product-price {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 0;
+    align-self: stretch;
+}
+
+.price-old {
+    color: var(--text-subtitle);
+    text-align: right;
+    font-family: Poppins;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 130%; /* 16.9px */
+    text-decoration-line: line-through;
+}
+
+.price-new {
+    color: #000;
+    text-align: right;
+    font: var(--body-large-medium);
+}
+
+/* =========================
+   ORDER + SHIPPING
+========================= */
+.order-info {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+.info-row {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.label {
+    min-width: 170px;
+    color: var(--text-subtitle);
+    font: var(--body-regular);
+}
+
+.value {
+    color: #000;
+    font: var(--body-regular);
+}
+
+/* =========================
+   STATUS
+========================= */
+.status-detail {
+    display: flex;
+    align-items: flex-start;
+    align-self: stretch;
+    flex-direction: column;
+    border-radius: 32px;
+    border: 1px solid var(--gray-300);
+    background: var(--beige-300);
+}
+
+.status-title h3 {
+    padding: 40px 60px;
+    color: #000;
+    text-align: center;
+    font: var(--body-xxlarge-semibold);
+}
+/* STATUS LIST */
+.status-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-bottom: 30px;
+    padding: 0 60px;
+}
+
+/* STATUS ITEM */
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 14px;
+    position: relative;
+}
+
+.status-item::before {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 20px;
+    bottom: -18px;
+    width: 2px;
+    background: #55A99B;
+}
+
+.status-item:last-child::before {
+    display: none;
+}
+
+/* ICON */
+.status-icon {
+    width: 16px;
+    height: 16px;
+    background: #dcdcdc;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.status-item.active .status-icon {
+    background: #55A99B;
+}
+
+/* TIME */
+.time {
+    width: 50px;
+    font: var(--body-regular);
+    color: var(--gray-600);
+}
+
+.date {
+    width: 100px;
+    font: var(--body-regular);
+    color: var(--gray-600);
+}
+
+/* TEXT */
+.status-text {
+    font: var(--body-regular);
+    color: #222;
+}
+
+/* ACTION BUTTONS */
+.order-actions {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    background: var(--gray-300);
+    padding: 20px 60px;
+    border-radius: 12px;
+    align-self: stretch;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.btn {
+    padding: 8px 14px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn.primary {
+    background: #0d8f78;
+    color: #fff;
+}
+
+.btn.outline {
+    background: #fff;
+    border: 1px solid #0d8f78;
+    color: #0d8f78;
+}
+
+.btn.gray {
+    background: #e6e6e6;
+    color: #333;
+}
+
+.btn.dark {
+    background: #7a7a7a;
+    color: #fff;
+}
+
+/*
+        @media (max-width: 768px) {
+            .order-status-container {
+                padding: 20px;
+            }
+
+            .timeline {
+                padding-left: 35px;
+            }
+
+            .timeline-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .action-buttons {
+                gap: 8px;
+            }
+
+            .btn {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+        }*/
+
+/* ================================================
+   ĐỊNH DẠNG PAYMENT SECTION 
+   ================================================ */
+.summary-detail {
+    display: flex;
+    align-items: flex-start;
+    align-self: stretch;
+    padding: 0 60px;
+    flex-direction: column;
+    border-radius: 32px;
+    background: var(--body-background);
+}
+
+/* INFO */
+.payment-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: stretch;
+}
+
+.payment-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    align-self: stretch;
+    margin: 20px 0;
+}
+
+/* COLORS */
+.payment-row.subtotal .label {
+    font: var(--body-medium);
+    color: #000;
+}
+.payment-row.subtotal .value {
+    font: var(--body-semibold);
+    color: var(--green-500);
+}
+
+.payment-row.discount .label {
+    font: var(--body-medium);
+    color: #000;
+}
+.payment-row.discount .value {
+    font: var(--body-semibold);
+    color: var(--red-500);
+}
+
+.payment-row.promo .label {
+    font: var(--body-medium);
+    color: #000;
+}
+.payment-row.promo .value {
+    font: var(--body-semibold);
+    color: #000;
+}
+
+
+/* TOTAL */
+.payment-total {
+    display: flex;
+    padding-top: 20px;
+    justify-content: space-between;
+    align-items: center;
+    align-self: stretch;
+    border-top: 2px solid var(--gray-300);
+}
+
+.payment-total .label {
+    font: var(--body-semibold);
+    color: #000;
+}
+
+.payment-total .value {
+    font: var(--body-semibold);
+    color: var(--green-500);
+}

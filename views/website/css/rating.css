@@ -38,7 +38,7 @@
     position: relative;
     animation: fadeIn 0.25s ease;
     border-radius: var(--border-radius-8, 8px);
-    background: var(--body-background, #F8F5EE);; 
+    background: var(--body-background, #F8F5EE);
     display: flex;
     flex-direction: column;
     gap: 20px;   
