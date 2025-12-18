@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="../css/main.css">
 </head>
 <body>
-    <!-- BREADCRUMB -->
+    <!-- BREADCRUMB 
     <div class="breadcrumb">
         <nav>
             <a href="index.html">
@@ -35,7 +35,7 @@
             </span>
             <span>Return</span>
         </nav>
-    </div>
+    </div> -->
     
     <!-- TITLE -->
     <div class="return-title">
@@ -53,11 +53,11 @@
                 <h3>Product</h3>
             </div>
         
-            <!-- PRODUCTS GRID -->
+            <!-- PRODUCT GRID -->
             <div class="return-products-grid" id="returnProductsGrid">
                 <!-- JS render product rows -->
                 <div class="return-product-item">
-
+                    <!-- Sản phẩm 1 -->
                     <div class="single-product">
                         <!-- CHECK -->
                         <div class="product-select">
@@ -69,7 +69,7 @@
                         
                             <!-- IMAGE -->
                             <div class="product-image">
-                                <img src="../img/about_alex.png" alt="Product">
+                                <img src="../img/about_story.jpg" alt="Product">
                             </div>
                         
                             <!-- DETAILS -->
@@ -91,12 +91,15 @@
                             </div>
                         </div>
                     </div>
+
+                    
                 </div>
             </div>
+
         </div>
     
         <!-- RETURN INFO -->
-        <div class="return-products">
+        <div class="refurn">
     
             <div class="return-products-title">
                 <h3>Return Request Form</h3>
@@ -118,24 +121,34 @@
                     <button class="dropdown-option" data-value="3">Option 3</button>
                   </div>
                 </div>
-              </div>
-        
-            <div class="return-field return-description">
-                <label>Description</label>
-                <textarea placeholder="Describe your problem"></textarea>
             </div>
+        
             <!-- Viết mô tả -->
             <div class="input" data-optional="true">
                 <label class="input-label">Description</label>
-                <div class="input-field">
+                <div class="input-field-des">
                   <input type="text" placeholder="Describe your problem">
                 </div>
-              </div>
-        
-            <div class="return-field return-upload">
-                <label>Upload image</label>
-                <input type="file">
             </div>
+        
+            <!-- Upload ảnh (Ngôn ngữ hiển thị theo trình duyệt )-->
+             <div class="input" data-type="upload" data-size="medium">
+                <label class="input-label">Upload image</label>
+                <div class="input-field">
+                    <input type="file" class="file-input">
+                </div>
+            </div>
+
+            <!-- Tùy chỉnh phần chữ hiển thị 
+            <div class="input" data-type="upload" data-size="medium">
+                <label class="input-label">Upload image</label>
+                <div class="input-field">
+                    <label class="custom-upload">
+                        <span class="upload-text">No file selected</span>
+                        <input type="file" accept="image/*" hidden>
+                    </label>
+                </div>
+            </div> -->
         
             <!-- Chọn phương thức hoàn trả -->
             <div class="input" data-type="dropdown" data-size="medium">
@@ -153,9 +166,9 @@
                     <button class="dropdown-option" data-value="3">Option 3</button>
                   </div>
                 </div>
-              </div>
+            </div>
         
-            <div class="return-field return-submit">
+            <div class="return-submit">
                 <button class="btn-primary-large">Send Request</button>
             </div>
     
