@@ -2,9 +2,9 @@
 // config/database.php
 
 $host = 'localhost';        // hoặc localhost
-$dbname = 'candy_crunch2'; // ĐÚNG tên database bạn đang dùng
-$username = 'root';        
-$password = 'giangne060705';            // XAMPP mặc định
+$dbname = ''; // ĐÚNG tên database bạn đang dùng
+$username = '';        
+$password = '';            // XAMPP mặc định
 
 try {
     $db = new PDO(
