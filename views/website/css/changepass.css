@@ -1,0 +1,185 @@
+/* Loại bỏ gạch chân cho tất cả link trong sidebar menu */
+.breadcrumb-container {
+    width: 100%;
+    background-color: transparent;
+    padding: var(--spacing-32) 0;
+    margin-bottom: var(--spacing-32);
+    margin-top: var(--spacing-120);
+}
+
+.breadcrumb {
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    text-align: left;
+    padding: 0 var(--spacing-120);
+    font-family: var(--font-primary);
+    color: var(--gray-500);
+    gap: var(--spacing-8);
+    overflow-x: auto;
+    white-space: nowrap;
+}
+.breadcrumb-item {
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--gray-600);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+}
+.breadcrumb-item:hover {
+    color: var(--green-500);
+}
+.breadcrumb-item.home-icon {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+}
+.breadcrumb-item.active {
+    color: var(--text-black);
+    font-weight: 600;
+    cursor: default;
+    pointer-events: none;
+}
+.breadcrumb-item.active:hover {
+    color: var(--text-black);
+}
+.separator {
+    font-size: 18px;
+    color: var(--gray-400);
+    margin: 0 var(--spacing-4);
+}
+.separator::before {
+    content: '›';
+}
+.menus a {
+    color: var(--gray-700);
+    font-weight: 400;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.menus a:hover {
+    color: var(--green-500);
+    font-weight: 500;
+}
+
+.menus a.active {
+    color: var(--green-500);
+    font-weight: 600;
+}
+
+.profile2 .button {
+    margin-top: 10px; /* giảm khoảng cách từ 20px xuống 10px */
+    text-align: left; /* hoặc center nếu muốn căn giữa */
+}
+button:focus{
+    outline: none;
+}
+button:focus:not(:focus-visible) {
+    outline: none;
+}
+
+.profile2 {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-20); /* khoảng cách giữa các input và nút */
+}
+.input-field {
+    width: 100%;
+}
+.input-field input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: var(--spacing-12);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+}
+@media (max-width: 1200px) {
+    .breadcrumb {
+        padding: 0 var(--spacing-60);
+    }
+    .breadcrumb-item, .separator {
+        font-size: 16px;
+    }
+    .breadcrumb-item.home-icon i {
+        font-size: 18px;
+    }
+
+    .menus a {
+        font-size: 15px;
+    }
+
+    .profile2 {
+        gap: var(--spacing-16);
+    }
+
+    .input-field input {
+        padding: var(--spacing-10);
+        font-size: 16px;
+    }
+
+    .profile2 .button {
+        margin-top: 8px;
+    }
+}
+
+/* =========================
+   MOBILE (≤768px)
+========================= */
+@media (max-width: 768px) {
+    .breadcrumb {
+        padding: 0 var(--spacing-24);
+    }
+    .breadcrumb-item,.separator {
+        font-size: 14px;
+    }
+    .breadcrumb-item.home-icon i {
+        font-size: 16px;
+    }
+
+    /* Sidebar menu full width */
+    .menus {
+        width: 100%;
+    }
+
+    .menus a {
+        display: block;
+        width: 100%;
+        padding: var(--spacing-12) var(--spacing-16);
+        font-size: 14px;
+    }
+
+    .menus a:hover,
+    .menus a.active {
+        background-color: var(--green-50);
+        border-radius: 8px;
+    }
+
+    /* Form */
+    .profile2 {
+        gap: var(--spacing-14);
+    }
+
+    .input-field input {
+        padding: var(--spacing-12);
+        font-size: 14px;
+    }
+
+    /* Button dễ bấm hơn */
+    .profile2 .button {
+        width: 100%;
+        margin-top: 12px;
+    }
+
+    .profile2 .button button {
+        width: 100%;
+        justify-content: center;
+    }
+}

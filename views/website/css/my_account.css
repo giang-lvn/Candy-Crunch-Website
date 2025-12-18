@@ -1,0 +1,1525 @@
+@import url('https://fonts.googleapis.com/css2?family=Modak&display=swap');
+
+/* ================================================
+   ROOT & RESET
+   ================================================ */
+   .breadcrumb-container {
+    width: 100%;
+    background-color: transparent;
+    padding: var(--spacing-32) 0;
+    margin-bottom: var(--spacing-32);
+    margin-top: var(--spacing-120);
+}
+
+.breadcrumb {
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    text-align: left;
+    padding: 0 var(--spacing-120);
+    font-family: var(--font-primary);
+    color: var(--gray-500);
+    gap: var(--spacing-8);
+    overflow-x: auto;
+    white-space: nowrap;
+}
+.breadcrumb-item {
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--gray-600);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+}
+
+.breadcrumb-item.home-icon {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+}
+.breadcrumb-item.active {
+    color: var(--text-black);
+    font-weight: 600;
+    cursor: default;
+    pointer-events: none;
+}
+
+.separator {
+    font-size: 18px;
+    color: var(--gray-400);
+    margin: 0 var(--spacing-4);
+}
+.separator::before {
+    content: '›';
+}
+   * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    line-height: normal;
+    background: var(--body-background, #f8f5ee);
+    font-family: var(--font-primary);
+}
+
+/* ================================================
+   MAIN CONTAINER
+   ================================================ */
+.my-account-profile {
+    width: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: var(--spacing-16) var(--spacing-120) var(--spacing-60);
+    box-sizing: border-box;
+    gap: var(--spacing-48);
+    text-align: center;
+    font: var(--heading-2);
+    color: var(--green-500);
+}
+
+/* ================================================
+   HEADER SECTION
+   ================================================ */
+.title {
+    align-self: stretch;
+    display: flex;
+    align-items: flex-start;
+}
+
+.my-account {
+    height: 43px;
+    flex: 1;
+    position: relative;
+    line-height: 120%;
+    display: inline-block;
+}
+
+/* ================================================
+   MAIN CONTENT LAYOUT
+   ================================================ */
+.content {
+    align-self: stretch;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;    
+    gap: var(--spacing-32);
+    text-align: left;
+    font: var(--body-large-regular);
+    color: var(--gray-50);
+}
+
+/* ================================================
+   SIDEBAR CARD
+   ================================================ */
+.card-account {
+    flex: 1;
+    border-radius: var(--border-radius-12);
+    background-color: var(--gray-50);
+    border: 2px solid var(--gray-200);
+    box-sizing: border-box;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    max-width: 500px;
+    height: fit-content; /* FIX: Cho phép sidebar co giãn theo nội dung */
+    position: sticky; /* NEW: Làm sidebar sticky khi scroll */
+    top: 20px;
+    flex-shrink:0;
+    align-self: flex-start;
+}
+
+/* User Card Header */
+.user-card {
+    align-self: stretch;
+    background-color: var(--teal-500);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-16) var(--spacing-24);
+    gap: var(--spacing-16);
+}
+
+.avatar-icon {
+    width: 48px; /* IMPROVED: Tăng kích thước avatar */
+    height: 48px;
+    position: relative;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-name {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.john-doe {
+    align-self: stretch;
+    position: relative;
+    font: var(--body-large-medium);
+}
+
+/* Menu Items */
+.menus {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    color: var(--gray-700);
+}
+.menus a {
+    color: var(--gray-700);
+    font-weight: 400;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.menus a:hover {
+    color: var(--green-500);
+    font-weight: 500;
+}
+
+.menus a.active {
+    color: var(--green-500);
+    font-weight: 600;
+}
+
+/* ================================================
+   ACCOUNT MENU 
+   ================================================ */
+
+/* Base Menu Item Styles */
+.account-menu {
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-16) var(--spacing-24);
+    gap: var(--spacing-16);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    border-left: 3px solid transparent;
+    background-color: transparent;
+}
+
+/* Default Text Styles */
+.my-orders,
+.my-orders2 {
+    color: var(--gray-700);
+    font-weight: 400;
+    transition: all 0.3s ease;
+}
+
+/* ================================================
+   NOT ACTIVE STATES
+   ================================================ */
+
+/* Not Active - Default */
+.account-menu:not(.active) {
+    background-color: transparent;
+    border-left-color: transparent;
+}
+
+.account-menu:not(.active) .my-orders,
+.account-menu:not(.active) .my-orders2 {
+    color: var(--gray-700);
+    font-weight: 400;
+}
+
+/* Not Active - Hover */
+.account-menu:not(.active):hover {
+    background-color: var(--gray-100, #f3f4f6);
+    border-left-color: var(--green-500);
+}
+
+.account-menu:not(.active):hover .my-orders,
+.account-menu:not(.active):hover .my-orders2 {
+    color: var(--green-500);
+    font-weight: 500;
+}
+
+/* ================================================
+   ACTIVE STATES
+   ================================================ */
+
+/* Active - Default & Hover */
+.account-menu.active,
+.account-menu.active:hover {
+    background-color: var(--gray-100, #f3f4f6);
+    border-left-color: var(--green-500);
+}
+
+.account-menu.active .my-orders,
+.account-menu.active .my-orders2 {
+    color: var(--green-500);
+    font-weight: 600;
+}
+
+/* ================================================
+   LOGOUT SPECIAL STYLES
+   ================================================ */
+
+/* Logout - Default */
+.account-menu:last-child .my-orders,
+.account-menu:last-child .my-orders2 {
+    color: var(--red-500);
+}
+
+.account-menu:last-child:hover {
+    background-color: var(--red-50, rgba(239, 68, 68, 0.1));
+    border-left-color: var(--red-500);
+}
+
+.account-menu:last-child:hover .my-orders,
+.account-menu:last-child:hover .my-orders2 {
+    color: var(--red-600);
+}
+
+/* Menu Icons */
+.icon-account-outline,
+.icon-key {
+    width: 24px;
+    height: 24px;
+    position: relative;
+    flex-shrink: 0; /* IMPROVED: Ngăn icon bị co */
+}
+
+.sidebar-ele {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+.profile-parent {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-32);
+    color: var(--text-white);
+}
+.profile {
+    border-radius: var(--spacing-32);
+    border: 1px solid var(--gray-300);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+.profile:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.title2 {
+    background-color: var(--green-500);
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-16) var(--spacing-32);
+}
+.heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-20);
+    flex-wrap: wrap;
+}
+
+.text {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.my-orders {
+    flex: 1;
+    position: relative;
+    font: var(--body-large-medium);
+}
+
+.my-orders2 {
+    flex: 1;
+    position: relative;
+    font: var(--body-large-regular);
+}
+
+/* ================================================
+   PROFILE CONTENT AREA
+   ================================================ */
+.profile-parent {
+    flex: 2; /* IMPROVED: Tỷ lệ linh hoạt hơn */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start; /* FIX: Thay đổi từ space-between */
+    gap: var(--spacing-32); /* IMPROVED: Gap nhất quán */
+    font: var(--body-xxxlarge-regular);
+    color: var(--text-white);
+}
+
+.profile,
+.shipping {
+    align-self: stretch;
+    border-radius: var(--spacing-32);
+    border: 1px solid var(--gray-300);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* NEW: Thêm shadow nhẹ */
+    transition: box-shadow 0.3s ease; /* NEW: Transition cho shadow */
+}
+
+.profile:hover,
+.shipping:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* NEW: Shadow đậm hơn khi hover */
+}
+
+/* Section Header */
+.title2 {
+    align-self: stretch;
+    background-color: var(--green-500);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--spacing-16) var(--spacing-32);
+}
+
+.heading {
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-20);
+    flex-wrap: wrap; /* NEW: Cho phép wrap trên mobile */
+}
+
+.title3 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.text {
+    position: relative;
+    font: var(--body-xxxlarge-semibold);
+}
+
+/* ================================================
+   BUTTONS
+   ================================================ */
+.button,
+.button3,
+.button6 {
+    border-radius: var(--border-radius-12);
+    background-color: var(--green-50, rgba(34, 197, 94, 0.1));
+    border: 1px solid var(--green-700);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-8) var(--spacing-16);
+    font: var(--body-medium);
+    color: var(--green-500);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap; /* NEW: Ngăn text wrap */
+}
+
+.button:hover,
+.button3:hover,
+.button6:hover {
+    background-color: var(--green-100, rgba(34, 197, 94, 0.2));
+    border-color: var(--green-800);
+    transform: translateY(-1px); /* NEW: Hiệu ứng nâng lên */
+}
+
+.button:active,
+.button3:active,
+.button6:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.button2,
+.button4,
+.button5 {
+    border-radius: var(--border-radius-12);
+    background-color: var(--green-500);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-8) var(--spacing-16);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--gray-50);
+    border: none;
+}
+
+.button2:hover,
+.button5:hover {
+    background-color: var(--green-600);
+    transform: translateY(-1px);
+}
+
+.button4 {
+    background-color: var(--orange-500);
+}
+
+.button4:hover {
+    background-color: var(--orange-600, #ea580c);
+    transform: translateY(-1px);
+}
+
+.button-group {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--spacing-16);
+    font: var(--body-regular);
+    color: var(--green-500);
+}
+
+.texttitle {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.text2 {
+    display: flex;
+    align-items: center;
+}
+
+.text4 {
+    position: relative;
+    font: var(--body-medium);
+}
+
+/* ================================================
+   PROFILE SECTIONS
+   ================================================ */
+.profile2,
+.profile3,
+.profile4 {
+    align-self: stretch;
+    background-color: var(--gray-50);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--spacing-32);
+    font: var(--body-regular);
+    color: var(--gray-400);
+}
+
+/* Frame Divs */
+.frame-div {
+    align-self: stretch; /* FIX: Thêm để đảm bảo chiều rộng đầy đủ */
+    display: flex;
+    align-items: flex-start; /* FIX: Thay đổi từ center để linh hoạt hơn */
+    gap: var(--spacing-32);
+}
+
+/* Info Container */
+.info {
+    flex: 1; /* IMPROVED: Cho phép co giãn */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-32);
+    min-width: 0; /* NEW: Fix truncation issues */
+}
+
+.info2 {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-32);
+    max-width: 100%;
+}
+
+/* Info Lines */
+.line {
+    width: 100%; /* FIX: Thay đổi từ fixed width */
+    display: flex; /* FIX: Thay đổi từ none */
+    align-items: center;
+    gap: var(--spacing-40);
+}
+
+.line2 {
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-40);
+}
+
+.label {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* FIX: Thay đổi từ center */
+    min-width: 100px;
+    flex-shrink: 0; /* NEW: Ngăn label bị co */
+}
+
+.label7,
+.label8 {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: 176px;
+    font: var(--body-regular);
+    flex-shrink: 0;
+}
+
+.value,
+.value6,
+.value7,
+.value9 {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* FIX: Thay đổi từ center */
+    color: var(--text-black);
+    font: var(--body-regular);
+    min-width: 0; /* NEW: Allow text truncation */
+    word-break: break-word; /* NEW: Cho phép break word nếu cần */
+}
+
+.gender {
+    flex: 1;
+    position: relative;
+    font: var(--body-regular);
+}
+
+/* Radio Buttons */
+.radio {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* FIX: Thay đổi từ space-between */
+    gap: var(--spacing-16); /* NEW: Thêm gap */
+    color: var(--text-black);
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-8);
+    cursor: pointer;
+    position: relative;
+}
+
+.radio-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.custom-radio-icon {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--gray-400);
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.radio-option input[type="radio"]:checked + .custom-radio-icon {
+    border-color: var(--teal-500);
+}
+
+.radio-option input[type="radio"]:checked + .custom-radio-icon::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: var(--teal-500);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.radio-option:hover .custom-radio-icon {
+    border-color: var(--teal-400);
+}
+
+.male,
+.female,
+.other {
+    position: relative;
+    font: var(--body-regular);
+}
+
+/* Toggle Icons for Banking Info */
+.icon-toggle {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    flex-shrink: 0; /* NEW: Ngăn icon bị co */
+    display: block; /* Ensure visible by default */
+}
+
+.icon-toggle:hover {
+    opacity: 0.7;
+}
+
+/* Hidden icon state - use display instead of class */
+#toggleAccountClose {
+    display: none;
+}
+
+.icon-eye-open2 {
+    height: 24px;
+    width: 24px;
+    position: relative;
+    display: none;
+}
+
+/* ================================================
+   AVATAR SECTION
+   ================================================ */
+.avatar,
+.avatar2 {
+    flex: 0 0 auto; /* IMPROVED: Không co giãn */
+    width: 250px; /* IMPROVED: Fixed width rõ ràng hơn */
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 0 0 var(--spacing-32); /* IMPROVED: Padding tốt hơn */
+    gap: var(--spacing-24);
+    color: var(--gray-50);
+}
+
+.avatar2 {
+    display: none; /* Hidden by default */
+}
+
+.avatar-icon2 {
+    width: 159px;
+    height: 159px;
+    position: relative;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--gray-200); /* NEW: Thêm border cho avatar */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* NEW: Thêm shadow */
+}
+
+.caption {
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font: var(--footnote-regular);
+    color: var(--gray-400);
+    line-height: 1.4; /* NEW: Line height tốt hơn */
+}
+
+/* ================================================
+   CONTENT3 - BANKING INFO LAYOUT
+   ================================================ */
+.content3 {
+    align-self: stretch;
+    display: flex;
+    align-items: flex-start; /* FIX: Thay đổi từ center */
+    justify-content: space-between; /* IMPROVED: Better spacing */
+    gap: var(--spacing-32);
+}
+
+/* ================================================
+   SHIPPING ADDRESSES
+   ================================================ */
+.frame-parent {
+    align-self: stretch; /* FIX: Thay đổi để co giãn */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-32);
+}
+
+.frame-group {
+    align-self: stretch; /* FIX: Thay đổi để co giãn */
+    display: flex;
+    align-items: stretch; /* FIX: Đảm bảo các card cùng chiều cao */
+    gap: var(--spacing-32);
+}
+
+.frame-container {
+    flex: 1;
+    border-radius: var(--border-radius-12);
+    background-color: var(--beige-500, #fef3c7);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--spacing-24);
+    gap: var(--spacing-16); /* IMPROVED: Gap nhỏ hơn */
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 2px solid transparent; /* NEW: Thêm border transparent */
+    min-width: 0; /* NEW: Allow shrinking */
+}
+
+.frame-container:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    border-color: var(--green-500); /* NEW: Border color khi hover */
+}
+
+.frame-parent2,
+.frame-parent5 {
+    align-self: stretch;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-16);
+    flex-wrap: wrap; /* NEW: Cho phép wrap */
+}
+
+.john-doe-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600; /* NEW: Làm nổi bật tên */
+}
+
+.wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: right;
+    color: var(--gray-600); /* NEW: Màu nhẹ hơn cho số điện thoại */
+}
+
+.status-tag {
+    height: 29px;
+    min-width: 93px; /* FIX: Thay đổi từ width */
+    border-radius: 30px;
+    background-color: var(--light-green-50, rgba(134, 239, 172, 0.3));
+    border: 1px solid var(--light-green-500);
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-8) var(--spacing-16);
+    text-align: center;
+    color: var(--light-green-600);
+    font: var(--body-semibold);
+    white-space: nowrap; /* NEW: Ngăn text wrap */
+}
+
+.status-tag2 {
+    height: 29px;
+    width: 93px;
+    border-radius: 30px;
+    background-color: var(--light-green-50);
+    border: 1px solid var(--light-green-500);
+    box-sizing: border-box;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-8) var(--spacing-16);
+}
+
+.completed {
+    position: relative;
+    font: var(--body-semibold);
+}
+
+.sunset-boulevard-los-angeles-wrapper {
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* FIX: Thay đổi từ center */
+    font: var(--body-regular);
+    line-height: 1.5; /* NEW: Line height tốt hơn */
+}
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-overlay.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.new-address {
+    width: 90%;
+    max-width: 600px;
+    border-radius: 12px;
+    background-color: #f8f5ee;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px;
+    gap: 32px;
+    text-align: left;
+    font-size: 24px;
+    color: #017e6a;
+    animation: slideUp 0.3s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.edit-my-profile-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-my-profile {
+    position: relative;
+    line-height: 120%;
+    font-weight: 600;
+}
+
+.frame-parent-modal {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    font-size: 16px;
+    color: #212121;
+}
+
+.input-parent {
+    align-self: stretch;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.input {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.input3 {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.head {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.label-edit {
+    align-self: stretch;
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.label3 {
+    align-self: stretch;
+    display: flex;
+    align-items: flex-start;
+}
+
+.texttitle-edit {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.text-edit {
+    display: flex;
+    align-items: center;
+}
+
+.texttitle2 {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    text-align: right;
+    font-size: 12px;
+    color: #616161;
+}
+
+.text4 {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.text6 {
+    position: relative;
+    line-height: 133%;
+}
+
+.field {
+    align-self: stretch;
+    border-radius: 8px;
+    background-color: #fafafa;
+    border: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    color: #bdbdbd;
+}
+
+.field input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-family: inherit;
+    font-size: inherit;
+    color: #212121;
+}
+
+.field input::placeholder {
+    color: #bdbdbd;
+}
+
+.texttitle3 {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    max-width: 100%;
+}
+
+.text7 {
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+}
+
+.text8 {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.line-edit {
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.label5 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 100px;
+}
+
+.radio-edit {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0px;
+}
+
+.icon-radio-picked-parent {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.icon-radio-picked {
+    height: 24px;
+    width: 24px;
+    position: relative;
+    border: 2px solid #9ca3af;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.icon-radio-picked.checked {
+    border-color: #14b8a6;
+}
+
+.icon-radio-picked.checked::after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background-color: #14b8a6;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.vector-icon {
+    position: absolute;
+    top: calc(50% - 7px);
+    left: calc(50% - 7px);
+    width: 14px;
+    height: 14px;
+    display: none;
+}
+
+.button-parent {
+    align-self: stretch;
+    display: flex;
+    align-items: flex-start;
+    gap: 32px;
+    font-size: 18px;
+    color: #fafafa;
+}
+
+.button-save {
+    flex: 1;
+    border-radius: 12px;
+    background-color: #017e6a;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.button-save:hover {
+    background-color: #01594b;
+    transform: translateY(-1px);
+}
+
+.button-cancel {
+    flex: 1;
+    border-radius: 12px;
+    background-color: #e6f2f0;
+    border: 1px solid #01594b;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    color: #017e6a;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.button-cancel:hover {
+    background-color: #d1e7e4;
+    transform: translateY(-1px);
+}
+
+.text33 {
+    position: relative;
+    line-height: 27px;
+    font-weight: 500;
+}
+#ShippingModal .new-address {
+    max-width: 520px;
+}
+
+/* Container chính của form */
+#ShippingModal .frame-parent-modal {
+    width: 100%;
+}
+
+/* INPUT GROUP CHÍNH → GRID 2 CỘT */
+#ShippingModal .frame-parent-modal > .input-parent {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    width: 100%;
+}
+
+/* Input thường chiếm 1 cột */
+#ShippingModal .input {
+    width: 100%;
+}
+
+/* Address → full width */
+#ShippingModal .input3 {
+    grid-column: span 2;
+}
+
+/* City + Country wrapper → grid con */
+#ShippingModal .input-parent .input-parent {
+    grid-column: span 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* Field input height đồng đều */
+#ShippingModal .field {
+    height: 44px;
+    padding: 0 12px;
+    justify-content: flex-start;
+}
+
+/* Label spacing giống Figma */
+#ShippingModal .label-edit .male {
+    font-size: 14px;
+    font-weight: 500;
+    color: #616161;
+}
+
+/* Input text */
+#ShippingModal input.gender {
+    font-size: 14px;
+    color: #212121;
+}
+
+/* ===========================
+   BUTTON GROUP – FIX THỨ TỰ
+   =========================== */
+
+#ShippingModal .button-parent {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+/* Save + Cancel cùng hàng */
+#ShippingModal .button-parent button:nth-child(1),
+#ShippingModal .button-parent button:nth-child(2) {
+    width: 100%;
+}
+
+/* Nhóm Save + Cancel */
+#ShippingModal .button-parent {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+/* Delete → full row */
+#ShippingModal #deleteShippingBtn {
+    grid-column: span 2;
+    margin-top: 12px;
+}
+button, .button-save, .button-cancel {
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+@media (max-width: 1200px) {
+    .breadcrumb {
+        padding: 0 var(--spacing-60);
+    }
+    .my-account-profile {
+        padding: var(--spacing-16) var(--spacing-60) var(--spacing-60);
+        gap: var(--spacing-32);
+    }
+
+    .content {
+        gap: var(--spacing-24);
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .card-account {
+        max-width: 100%;
+        width: 100%;
+        position: static; /* FIX: Bỏ sticky trên tablet */
+    }
+
+    .profile-parent {
+        width: 100%;
+        font: var(--body-xxlarge-regular);
+    }
+
+    .text {
+        font: var(--body-xxlarge-semibold);
+    }
+
+    .content3 {
+        gap: var(--spacing-24);
+        flex-direction: column; /* IMPROVED: Stack vertical */
+    }
+
+    .info2 {
+        width: 100%;
+    }
+
+    .avatar {
+        width: 100%;
+        border-left: none;
+        border-top: 1px solid rgba(0, 0, 0, 0.1); /* NEW: Border top thay vì left */
+        padding: var(--spacing-32) 0 0 0;
+    }
+
+    .line2 {
+        gap: var(--spacing-16);
+    }
+
+    .frame-group {
+        gap: var(--spacing-24);
+        flex-wrap: wrap;
+    }
+
+    .frame-container {
+        flex: 1 1 calc(50% - var(--spacing-12)); /* IMPROVED: 2 columns với gap */
+        min-width: 280px;
+    }
+}
+
+/* ================================================
+   RESPONSIVE - MOBILE
+   ================================================ */
+@media (max-width: 768px) {
+    .breadcrumb {
+        padding: 0 var(--spacing-24);
+        gap: var(--spacing-4);
+    }
+    .breadcrumb-item, .separator {
+        font-size: 14px;
+    }
+    .breadcrumb-item.home-icon {
+        font-size: 18px;
+    }
+    
+    .my-account-profile {
+        padding: var(--spacing-16) var(--spacing-24) var(--spacing-48);
+        gap: var(--spacing-24);
+        font: var(--heading-3);
+    }
+
+    .my-account {
+        height: auto;
+        font-size: 24px; /* NEW: Fixed size cho mobile */
+    }
+
+    .content {
+        gap: var(--spacing-16);
+    }
+
+    .card-account {
+        border-radius: var(--border-radius-12);
+    }
+
+    .avatar-icon {
+        width: 40px; /* IMPROVED: Điều chỉnh cho mobile */
+        height: 40px;
+    }
+
+    .user-card {
+        padding: var(--spacing-12) var(--spacing-16);
+    }
+
+    .account-menu, .account-menu2, .account-menu5 {
+        padding: var(--spacing-12) var(--spacing-16);
+        gap: var(--spacing-12);
+    }
+
+    .icon-account-outline,
+    .icon-key {
+        width: 20px; /* IMPROVED: Icon nhỏ hơn trên mobile */
+        height: 20px;
+    }
+
+    .profile-parent {
+        font: var(--body-large-regular);
+    }
+
+    .title2 {
+        padding: var(--spacing-12) var(--spacing-16);
+    }
+
+    .text {
+        font: var(--body-large-semibold);
+    }
+
+    .heading {
+        flex-direction: column; /* NEW: Stack vertical trên mobile */
+        align-items: flex-start;
+        gap: var(--spacing-12);
+    }
+
+    .button,
+    .button3,
+    .button6 {
+        padding: var(--spacing-6) var(--spacing-12);
+        font: var(--footnote-medium);
+        font-size: 12px; /* NEW: Smaller font */
+    }
+
+    .button-group {
+        width: 100%;
+        gap: var(--spacing-8);
+        flex-direction: row; /* IMPROVED: Keep horizontal */
+    }
+
+    .button3,
+    .button4,
+    .button6 {
+        flex: 1;
+    }
+
+    .profile2,
+    .profile3,
+    .profile4 {
+        padding: var(--spacing-16);
+    }
+
+    .frame-div {
+        gap: var(--spacing-16);
+    }
+
+    .info,
+    .info2 {
+        gap: var(--spacing-20);
+        width: 100%;
+    }
+
+    .line,
+    .line2 {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-4);
+    }
+
+    .label,
+    .label7,
+    .label8 {
+        min-width: unset;
+        width: 100%;
+        justify-content: flex-start;
+        font: var(--footnote-medium);
+        font-weight: 500; /* NEW: Làm nổi bật label */
+    }
+
+    .value,
+    .value6,
+    .value7,
+    .value9 {
+        min-width: unset;
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .radio {
+        width: 100%;
+        justify-content: flex-start;
+        gap: var(--spacing-12);
+    }
+
+    .avatar {
+        width: 100%;
+        padding: var(--spacing-24) 0 0 0;
+    }
+
+    .avatar-icon2 {
+        width: 120px; /* IMPROVED: Smaller avatar on mobile */
+        height: 120px;
+    }
+
+    .frame-group {
+        flex-direction: column;
+        gap: var(--spacing-16);
+        width: 100%;
+    }
+
+    .frame-container {
+        flex: 1 1 100%;
+        padding: var(--spacing-16);
+    }
+
+    .frame-div {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-8);
+    }
+
+    .frame-parent2,
+    .frame-parent5 {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-8);
+    }
+
+    .john-doe-wrapper,
+    .wrapper {
+        justify-content: flex-start;
+        text-align: left;
+    }
+
+    .status-tag {
+        align-self: flex-start; /* NEW: Align left on mobile */
+    }
+}
+
+/* ================================================
+   UTILITY CLASSES
+   ================================================ */
+.button7 {
+    display: flex; 
+}
+
+/* Focus styles for accessibility */
+button:focus,
+.button:focus,
+.button2:focus,
+.button3:focus,
+.button4:focus,
+.button5:focus,
+.button6:focus {
+    outline: 2px solid var(--green-500);
+    outline-offset: 2px;
+}
+
+/* Loading state (optional) */
+.button.loading {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+}

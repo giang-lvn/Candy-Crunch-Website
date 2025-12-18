@@ -1,0 +1,610 @@
+/* Reset cơ bản */
+body {
+    margin: 0;
+    font-family: var(--font-primary);
+    line-height: normal;
+    background: var(--body-background, var(--beige-500));
+}
+.breadcrumb-container {
+    width: 100%;
+    background-color: transparent;
+    padding: var(--spacing-32) 0;
+    margin-bottom: var(--spacing-32);
+    margin-top: var(--spacing-120);
+}
+
+.breadcrumb {
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    text-align: left;
+    padding: 0 var(--spacing-120);
+    font-family: var(--font-primary);
+    color: var(--gray-500);
+    gap: var(--spacing-8);
+    overflow-x: auto;
+    white-space: nowrap;
+}
+.breadcrumb-item {
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--gray-600);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+}
+.breadcrumb-item:hover {
+    color: var(--green-500);
+}
+.breadcrumb-item.home-icon {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+}
+.breadcrumb-item.active {
+    color: var(--text-black);
+    font-weight: 600;
+    cursor: default;
+    pointer-events: none;
+}
+.breadcrumb-item.active:hover {
+    color: var(--text-black);
+}
+.separator {
+    font-size: 18px;
+    color: var(--gray-400);
+    margin: 0 var(--spacing-4);
+}
+.separator::before {
+    content: '›';
+}
+/* ===============================
+   ACCOUNT MENU STYLES
+   =============================== */
+.account-menu {
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-16) var(--spacing-24);
+    gap: var(--spacing-16);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    border-left: 3px solid transparent;
+    background-color: transparent;
+}
+
+.account-menu div {
+    color: #4b5563;
+    font-weight: 400;
+    transition: all 0.3s ease;
+}
+
+/* Not Active State */
+.account-menu:not(.active) {
+    background-color: transparent;
+    border-left-color: transparent;
+}
+
+.account-menu:not(.active) div {
+    color: var(--gray-700);
+    font-weight: 400;
+}
+
+.account-menu:not(.active):hover {
+    background-color:var(--gray-100);
+    border-left-color:var(--green-500);
+}
+
+.account-menu:not(.active):hover div {
+    color: var(--green-500);
+    font-weight: 500;
+}
+
+/* Active State */
+.account-menu.active,
+.account-menu.active:hover {
+    background-color: var(--gray-100);
+    border-left-color: var(--green-500);
+}
+
+.account-menu.active div {
+    color: var(--green-500);
+    font-weight: 600;
+}
+
+/* Logout Special Style */
+.account-menu:last-child div {
+    color: var(--red-500);
+}
+
+.account-menu:last-child:hover {
+    background-color: var(--red-50, rgba(239, 68, 68, 0.1));
+    border-left-color: var(--red-500);
+}
+
+.account-menu:last-child:hover div {
+    color: var(--red-600);
+}
+
+/* ===============================
+   VOUCHER SECTION
+   =============================== */
+.profile-parent {
+    display: flex !important;
+    flex-direction: column;
+    gap: var(--spacing-32);
+    background-color: var(--gray-50);
+    border-radius: 32px;
+    padding: var(--spacing-32);
+    width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+/* ===============================
+   FILTER & DROPDOWN
+   =============================== */
+.filter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 250px;
+    font: var(--body-medium);
+    gap: var(--spacing-16);
+}
+
+.filter span:first-child {
+    color: var(--text-black);
+    font-weight: 500;
+}
+
+/* Status Dropdown Container */
+.status-dropdown {
+    position: relative;
+    cursor: pointer;
+}
+
+/* Selected Display - FIXED WIDTH */
+.status-dropdown .selected {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-8);
+    padding: var(--spacing-8) var(--spacing-16);
+    width: 150px;
+    min-width: 150px;
+    max-width: 150px;
+    background-color: var(--green-500) !important;
+    color: var(--text-white) !important;
+    border-radius: 50px;
+    font: var(--footnote-medium);
+    text-align: center;
+    box-sizing: border-box;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.status-dropdown .selected:hover {
+    background-color: var(--green-600) !important;
+    box-shadow: 0 2px 8px rgba(1, 126, 106, 0.3);
+}
+
+/* Dropdown Icon */
+.icon-dropdown {
+    width: 12px;
+    height: 12px;
+    margin-left: auto;
+    transition: transform 0.3s ease;
+}
+
+.status-dropdown .selected:hover .icon-dropdown {
+    transform: rotate(180deg);
+}
+
+/* Dropdown List */
+.status-dropdown .status-list {
+    display: block;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 150px;
+    background-color: var(--gray-50);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--border-radius-12);
+    list-style: none;
+    padding: var(--spacing-8) 0;
+    margin: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+
+.status-dropdown .status-list.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Dropdown List Items */
+.status-dropdown .status-list li {
+    padding: 10px var(--spacing-16);
+    cursor: pointer;
+    color: var(--text-black);
+    font: var(--footnote-regular);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.status-dropdown .status-list li:hover {
+    background-color: rgba(1, 126, 106, 0.1);
+    color: var(--green-500);
+}
+
+.status-dropdown .status-list li.selected {
+    background-color: rgba(1, 126, 106, 0.15);
+    color: var(--green-500);
+    font-weight: 600;
+}
+
+/* ===============================
+   VOUCHER CARDS
+   =============================== */
+.vouchers-line {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-48);
+    width: 100%;
+}
+
+.line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-32);
+    justify-content: flex-start;
+}
+
+/* Voucher Card */
+.voucher-card {
+    position: relative;
+    background-color: var(--body-background, var(--beige-500));
+    border: 1px solid var(--gray-300);
+    border-radius: var(--border-radius-12);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: var(--spacing-16);
+    gap: var(--spacing-16);
+    width: 235px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.voucher-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.voucher-card img {
+    width: 100%;
+    height: 115px;
+    border-radius: 12px 12px 0 0;
+    object-fit: cover;
+}
+
+.voucher-card > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-8);
+    width: 100%;
+    text-align: center;
+    padding: 0 var(--spacing-16);
+}
+
+.voucher-card div div:first-child {
+
+    font: var(--body-large-semibold);
+    color: var(--text-black);
+}
+
+.voucher-card div div:nth-child(2) {
+    font: var(--footnote-regular);
+    color: var(--gray-700);
+}
+
+.voucher-card > div > div:last-child {
+    font: var(--small-medium);
+    color: var(--green-500);
+}
+
+/* Apply Button */
+.voucher-card button {
+    width: calc(100% - var(--spacing-32));
+    max-width: 150px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--green-500);
+    color: var(--text-white);
+    font: var(--footnote-semibold);
+    padding: 10px 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.voucher-card button:hover {
+    background-color: var(--green-600);
+    transform: scale(1.05);
+}
+
+.voucher-card button:active {
+    transform: scale(0.98);
+}
+
+.voucher-card button:disabled {
+    background-color: var(--gray-400);
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Expiring Soon Badge */
+.expire-badge {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    background: linear-gradient(135deg, #ff9800 0%, #ff5722 100%);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 10px;
+    font-weight: 700;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ===============================
+   ANIMATIONS
+   =============================== */
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.6);
+    transform: scale(0);
+    animation: ripple-animation 0.6s ease-out;
+    pointer-events: none;
+}
+
+@keyframes ripple-animation {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* ===============================
+   NOTIFICATION
+   =============================== */
+.notification {
+    position: fixed;
+    top: var(--spacing-20);
+    right: var(--spacing-20);
+    padding: var(--spacing-16) var(--spacing-24);
+    background: #28a745;
+    color: var(--text-white);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 9999;
+    animation: slideIn 0.3s ease;
+    font-family: var(--font-primary);
+    font-size: 14px;
+}
+
+.notification.error {
+    background: var(--red-500);
+}
+@media (max-width: 1200px) {
+    .breadcrumb-container {
+        padding: var(--spacing-24) 0; 
+        margin-bottom: var(--spacing-24);
+        margin-top: var(--spacing-24);
+    }
+    .breadcrumb {
+        padding: 0 var(--spacing-40); 
+    }
+
+    .account-menu {
+        padding: var(--spacing-12) var(--spacing-20);
+    }
+    
+    .profile-parent {
+        padding: var(--spacing-24);
+        gap: var(--spacing-24);
+    }
+    
+    .vouchers-line {
+        gap: var(--spacing-32);
+    }
+
+    .line {
+        gap: var(--spacing-24);
+        justify-content: center;
+    }
+    
+    .voucher-card {
+        /* Cho phép card co giãn nhẹ */
+        width: 220px; 
+        flex-basis: calc(25% - var(--spacing-18)); /* Ưu tiên 4 cột/hàng */
+        min-width: 200px;
+        flex-grow: 1; /* Cho phép giãn ra nếu không đủ 4 card */
+        gap: var(--spacing-12);
+    }
+    
+    .voucher-card img {
+        height: 100px;
+    }
+
+    .voucher-card div div:first-child {
+        font-size: 15px; 
+        font-weight: 600;
+    }
+
+    .voucher-card div div:nth-child(2) {
+        font-size: 12px; 
+    }
+
+    .voucher-card > div > div:last-child {
+        font-size: 12px;
+    }
+    
+    .voucher-card button {
+        /* Giảm padding nút */
+        padding: 8px 0;
+        max-width: 130px;
+        font-size: 13px;
+    }
+}
+
+/* --- Màn hình <= 768px (Tablet Dọc/Mobile) --- */
+@media (max-width: 768px) {
+    .breadcrumb-container {
+        padding: var(--spacing-16) 0;
+        margin-bottom: var(--spacing-16);
+        margin-top: var(--spacing-16);
+    }
+    .breadcrumb {
+        padding: 0 var(--spacing-16);
+        gap: var(--spacing-4);
+    }
+    .breadcrumb-item {
+        font-size: 14px; 
+    }
+    .breadcrumb-item.home-icon i {
+        font-size: 16px;
+    }
+    .separator {
+        font-size: 14px; 
+        margin: 0 var(--spacing-2); 
+    }
+
+    .account-menu {
+        padding: var(--spacing-12) var(--spacing-16);
+    }
+
+    .profile-parent {
+        padding: var(--spacing-16);
+        gap: var(--spacing-20);
+        border-radius: var(--spacing-24);
+    }
+    
+    .filter {
+        width: 100%;
+        justify-content: space-between;
+        font: var(--footnote-regular); 
+    }
+
+    .status-dropdown .selected {
+        padding: 6px 12px; 
+        width: 130px; 
+        min-width: 130px;
+        max-width: 130px;
+        font: var(--footnote-regular);
+    }
+
+    .status-dropdown .status-list {
+        width: 130px;
+        padding: var(--spacing-4) 0;
+    }
+
+    .vouchers-line {
+        gap: var(--spacing-24); 
+    }
+    
+    .line {
+        gap: var(--spacing-16);
+        justify-content: space-around; 
+    }
+
+    .voucher-card {
+        width: calc(50% - var(--spacing-8));
+        min-width: 150px; /* Giới hạn min-width để tránh quá nhỏ */
+        flex-basis: calc(50% - var(--spacing-8)); 
+        padding-bottom: var(--spacing-12);
+        gap: var(--spacing-8); /* Giảm gap nội dung */
+    }
+    
+    .voucher-card img {
+        height: 80px; 
+    }
+    
+    .voucher-card > div {
+        gap: var(--spacing-4); 
+        padding: 0 var(--spacing-8);
+    }
+    
+    .voucher-card div div:first-child {
+        font-size: 14px; 
+        font-weight: 500;
+    }
+
+    .voucher-card div div:nth-child(2) {
+        font-size: 11px; 
+    }
+
+    .voucher-card > div > div:last-child {
+        font-size: 11px;
+    }
+
+    .voucher-card button {
+        font-size: 12px;
+        padding: 6px 0;
+        max-width: 100px;
+    }
+
+    .expire-badge {
+        font-size: 9px;
+        padding: 4px 10px;
+        top: 0px; 
+        right: 0px;
+    }
+    
+    .notification {
+        top: auto;
+        bottom: var(--spacing-16);
+        right: var(--spacing-16);
+        left: var(--spacing-16);
+        width: auto;
+        text-align: center;
+    }
+}
