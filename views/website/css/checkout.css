@@ -523,4 +523,168 @@ font: var(--body-large-medium);
 }
 
 
+/* =========================
+   RESPONSIVE ≤ 1200px
+========================= */
+@media (max-width: 1200px) {
 
+    .checkout-container {
+      padding: 16px 48px 48px;
+      gap: 32px;
+    }
+  
+    /* Scale typography nhẹ */
+    .delivery-address-header h1,
+    .delivery-method h1,
+    .payment-method h1,
+    .cart-info h1 {
+      font-size: 18px;
+    }
+  
+    .radio,
+    .checkbox-item,
+    .delivery-address-card-content,
+    .bank-account-name,
+    .bank-account-number {
+      font-size: 14px;
+    }
+  
+    .cart-card .left .product-info .product-name {
+      font-size: 16px;
+    }
+  
+    .cart-card .right .price-new {
+      font-size: 16px;
+    }
+  
+    .summary-header .label,
+    .total-label {
+      font-size: 15px;
+    }
+  
+    .summary-header .value,
+    .total-value {
+      font-size: 16px;
+    }
+  
+    /* Giảm padding card */
+    .delivery-address,
+    .cart-info,
+    .summary-container {
+      padding: 20px;
+    }
+
+    .summary-container .checkbox-item {
+        font-size: 11px;
+        line-height: 1.4;
+  
+      }
+    
+      .summary-container .checkbox-item a {
+        margin: 0 4px;
+        font-size: 11px;
+      }
+  
+    .order-summary {
+      padding: 0 16px;
+    }
+  }
+  
+/* =========================
+   MOBILE SUMMARY ≤ 768px
+========================= */
+@media (max-width: 768px) {
+
+    body {
+      padding-bottom: 36vh;
+    }
+  
+    .summary-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+  
+      height: 36vh; /* đủ chứa full content */
+      z-index: 1000;
+  
+      padding: 12px 16px;
+      border-radius: 16px 16px 0 0;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+    }
+  
+    /* ===== SUMMARY HEADER ===== */
+  
+    .summary-header {
+      gap: 6px;
+    }
+  
+    .summary-header .label {
+      font-size: 13px !important;
+      line-height: 1.4;
+    }
+  
+    .summary-header .value {
+      font-size: 12px;
+      font-weight: 500;
+    }
+  
+    .subtotal .value {
+      font-size: 13px;
+    }
+  
+    .discount .value {
+      font-size: 13px;
+    }
+  
+    /* Promo input */
+    .summary-header .input-field {
+      gap: 8px;
+    }
+  
+    .summary-header input {
+      font-size: 12px;
+      padding: 6px 8px;
+    }
+  
+    .summary-header .btn-primary-outline-small {
+      font-size: 12px;
+      padding: 6px 10px;
+    }
+  
+    /* ===== SUMMARY FOOTER ===== */
+  
+    .summary-footer {
+      padding-top: 10px;
+    }
+  
+    .total-label {
+      font-size: 14px;
+    }
+  
+    .total-value {
+      font-size: 16px;
+      font-weight: 600;
+    }
+  
+    /* ===== CHECKBOX ===== */
+  
+    .summary-container .checkbox-item {
+      font-size: 12px;
+      line-height: 1.4;
+      white-space: normal;
+    }
+  
+    .summary-container .checkbox-item a {
+      font-size: 12px;
+    }
+  
+    /* ===== CTA BUTTON ===== */
+  
+    .summary-container .btn-primary-large {
+      font-size: 14px;
+      padding: 12px;
+    }
+  }
+  
+  
