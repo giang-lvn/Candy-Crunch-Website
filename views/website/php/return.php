@@ -129,7 +129,7 @@
                 </div>
             </div>
 
-            <!-- Tùy chỉnh phần chữ hiển thị 
+            <!-- Tùy chỉnh phần chữ hiển thị  
             <div class="input" data-type="upload" data-size="medium">
                 <label class="input-label">Upload image</label>
                 <div class="input-field">
