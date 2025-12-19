@@ -80,12 +80,7 @@ function is_active($page_name, $current_page_file) {
             </div>
         </a>
 
-        <!-- Contact -->
-        <a href="contact.php" class="nav-item" data-active="<?php echo is_active('contact.php', $current_page_file); ?>" data-dropdown="false">
-            <div class="inline-flex-center">
-                <div class="nav-text">Contact</div>
-            </div>
-        </a>
+
 
         <!-- Policy -->
         <a href="policy.php" class="nav-item" data-active="<?php echo is_active('policy.php', $current_page_file); ?>" data-dropdown="false">
