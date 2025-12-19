@@ -13,6 +13,7 @@ $username = 'root';
 $password = 'giangne060705';            
 >>>>>>> Stashed changes
 
+
 try {
     $db = new PDO(
         "mysql:host=$host;dbname=$dbname;charset=utf8mb4",
