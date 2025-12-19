@@ -9,6 +9,7 @@ class AccountModel
         $this->db = $db;
     }
 
+<<<<<<< Updated upstream
     /* =====================================================
        ACCOUNT + CUSTOMER (PROFILE)
        ===================================================== */
@@ -29,6 +30,8 @@ class AccountModel
         return $account ?: null;
     }
 
+=======
+>>>>>>> Stashed changes
     public function getCustomerByAccountId(string $accountId): array
     {
         $sql = "
@@ -52,27 +55,54 @@ class AccountModel
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
     }
 
-    public function updateCustomerProfile(string $customerId, array $data): bool
+    // ✅ FIX: Update cả ACCOUNT (email) và CUSTOMER (profile)
+    public function updateCustomerProfile(string $accountId, string $customerId, array $data): bool
     {
-        $sql = "
-            UPDATE CUSTOMER
-            SET 
-                FirstName = :firstName,
-                LastName = :lastName,
-                CustomerBirth = :birth,
-                CustomerGender = :gender
-            WHERE CustomerID = :customerId
-        ";
+        try {
+            $this->db->beginTransaction();
 
-        $stmt = $this->db->prepare($sql);
+            // ✅ 1. Update Email trong bảng ACCOUNT
+            if (!empty($data['email'])) {
+                $sqlAccount = "
+                    UPDATE ACCOUNT
+                    SET Email = :email
+                    WHERE AccountID = :accountId
+                ";
+                $stmtAccount = $this->db->prepare($sqlAccount);
+                $stmtAccount->execute([
+                    'email' => $data['email'],
+                    'accountId' => $accountId
+                ]);
+            }
 
-        return $stmt->execute([
-            'firstName'  => $data['first_name'],
-            'lastName'   => $data['last_name'],
-            'birth'      => $data['birth'],
-            'gender'     => $data['gender'],
-            'customerId' => $customerId
-        ]);
+            // ✅ 2. Update thông tin trong bảng CUSTOMER
+            $sqlCustomer = "
+                UPDATE CUSTOMER
+                SET 
+                    FirstName = :firstName,
+                    LastName = :lastName,
+                    CustomerBirth = :birth,
+                    CustomerGender = :gender
+                WHERE CustomerID = :customerId
+            ";
+
+            $stmtCustomer = $this->db->prepare($sqlCustomer);
+            $stmtCustomer->execute([
+                'firstName'  => $data['first_name'],
+                'lastName'   => $data['last_name'],
+                'birth'      => $data['birth'],
+                'gender'     => $data['gender'],
+                'customerId' => $customerId
+            ]);
+
+            $this->db->commit();
+            return true;
+
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            error_log("Update profile error: " . $e->getMessage());
+            return false;
+        }
     }
 
     public function updateAvatar(string $customerId, string $avatarPath): bool
@@ -84,16 +114,13 @@ class AccountModel
         ";
 
         $stmt = $this->db->prepare($sql);
-
         return $stmt->execute([
             'avatar'     => $avatarPath,
             'customerId' => $customerId
         ]);
     }
 
-    /* =====================================================
-       ADDRESS (SHIPPING)
-       ===================================================== */
+    /* ===================================================== ADDRESS ===================================================== */
 
     public function getAddresses(string $customerId): array
     {
@@ -104,10 +131,10 @@ class AccountModel
                 Phone,
                 Alias,
                 Address,
-                CityState,
+                CityState AS City,
                 Country,
-                PostalCode,
-                AddressDefault
+                PostalCode AS Postal,
+                AddressDefault AS IsDefault
             FROM ADDRESS
             WHERE CustomerID = :customerId
             ORDER BY AddressDefault DESC
@@ -119,8 +146,16 @@ class AccountModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // ✅ FIX: Tự động tạo AddressID
     public function addAddress(string $customerId, array $data): bool
     {
+        // ✅ Tạo AddressID tự động
+        $stmt = $this->db->query("
+            SELECT MAX(CAST(SUBSTRING(AddressID, 4) AS UNSIGNED)) FROM ADDRESS
+        ");
+        $next = ((int)$stmt->fetchColumn()) + 1;
+        $addressId = 'ADD' . str_pad($next, 3, '0', STR_PAD_LEFT);
+
         $sql = "
             INSERT INTO ADDRESS (
                 AddressID, CustomerID, Fullname, Phone, Alias,
@@ -135,20 +170,20 @@ class AccountModel
         $stmt = $this->db->prepare($sql);
 
         return $stmt->execute([
-            'id'         => $data['address_id'],
+            'id'         => $addressId,  // ✅ Dùng ID tự tạo
             'customerId' => $customerId,
             'fullname'   => $data['fullname'],
             'phone'      => $data['phone'],
-            'alias'      => $data['alias'],
+            'alias'      => $data['alias'] ?? '',
             'address'    => $data['address'],
             'city'       => $data['city'],
             'country'    => $data['country'],
-            'postal'     => $data['postal'],
-            'isDefault'  => $data['is_default']
+            'postal'     => $data['postal'] ?? '',
+            'isDefault'  => $data['is_default'] ?? 'No'
         ]);
     }
 
-    public function updateAddress(string $addressId, string $customerId, array $data): bool
+    public function updateAddress(string $customerId, array $data): bool
     {
         $sql = "
             UPDATE ADDRESS
@@ -170,18 +205,18 @@ class AccountModel
         return $stmt->execute([
             'fullname'   => $data['fullname'],
             'phone'      => $data['phone'],
-            'alias'      => $data['alias'],
+            'alias'      => $data['alias'] ?? '',
             'address'    => $data['address'],
             'city'       => $data['city'],
             'country'    => $data['country'],
-            'postal'     => $data['postal'],
-            'isDefault'  => $data['is_default'],
-            'addressId'  => $addressId,
+            'postal'     => $data['postal'] ?? '',
+            'isDefault'  => $data['is_default'] ?? 'No',
+            'addressId'  => $data['address_id'],
             'customerId' => $customerId
         ]);
     }
 
-    public function deleteAddress(string $addressId, string $customerId): bool
+    public function deleteAddress(string $customerId, string $addressId): bool
     {
         $sql = "
             DELETE FROM ADDRESS
@@ -190,16 +225,13 @@ class AccountModel
         ";
 
         $stmt = $this->db->prepare($sql);
-
         return $stmt->execute([
             'addressId'  => $addressId,
             'customerId' => $customerId
         ]);
     }
 
-    /* =====================================================
-       BANKING
-       ===================================================== */
+    /* ===================================================== BANKING ===================================================== */
 
     public function getBankingInfo(string $customerId): array
     {
@@ -211,60 +243,98 @@ class AccountModel
                 AccountHolderName,
                 BankName,
                 BankBranchName,
-                BankDefault
+                BankDefault AS IsDefault
             FROM BANKING
             WHERE CustomerID = :customerId
+            ORDER BY BankDefault DESC, BankingID ASC
         ";
-
+    
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['customerId' => $customerId]);
-
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
+    
     public function addBanking(string $customerId, array $data): bool
     {
+        $stmt = $this->db->query("
+            SELECT MAX(CAST(SUBSTRING(BankingID, 4) AS UNSIGNED)) FROM BANKING
+        ");
+        $next = ((int)$stmt->fetchColumn()) + 1;
+        $bankingId = 'BAN' . str_pad($next, 3, '0', STR_PAD_LEFT);
+    
+        $check = $this->db->prepare("
+            SELECT COUNT(*) FROM BANKING WHERE CustomerID = :customerId
+        ");
+        $check->execute(['customerId' => $customerId]);
+        $isDefault = $check->fetchColumn() == 0 ? 'Yes' : 'No';
+    
         $sql = "
             INSERT INTO BANKING (
                 BankingID, CustomerID, IDNumber,
                 AccountNumber, AccountHolderName,
                 BankName, BankBranchName, BankDefault
-            )
-            VALUES (
+            ) VALUES (
                 :id, :customerId, :idNumber,
                 :accountNumber, :holder,
                 :bankName, :branch, :isDefault
             )
         ";
-
+    
         $stmt = $this->db->prepare($sql);
-
         return $stmt->execute([
-            'id'            => $data['banking_id'],
+            'id'            => $bankingId,
             'customerId'    => $customerId,
             'idNumber'      => $data['id_number'],
             'accountNumber' => $data['account_number'],
             'holder'        => $data['holder_name'],
             'bankName'      => $data['bank_name'],
             'branch'        => $data['branch_name'],
-            'isDefault'     => $data['is_default']
+            'isDefault'     => $isDefault
         ]);
     }
-    public function test()
+    
+    public function updateBanking(string $customerId, array $data): bool
     {
-    $sql = "
-        SELECT 
-            a.AccountID, a.Email,
-            c.CustomerID, c.FirstName, c.LastName,
-            ad.Address, ad.CityState,
-            b.BankName
-        FROM ACCOUNT a
-        JOIN CUSTOMER c ON a.AccountID = c.AccounntID
-        LEFT JOIN ADDRESS ad ON c.CustomerID = ad.CustomerID
-        LEFT JOIN BANKING b ON c.CustomerID = b.CustomerID
-        WHERE a.AccountID = 'ACC001'
-    ";
-
-    return $this->db->query($sql)->fetch(PDO::FETCH_ASSOC);
+        if (($data['is_default'] ?? 'No') === 'Yes') {
+            $this->db->prepare("
+                UPDATE BANKING SET BankDefault='No'
+                WHERE CustomerID = :customerId
+            ")->execute(['customerId' => $customerId]);
+        }
+    
+        $sql = "
+            UPDATE BANKING SET
+                IDNumber = :idNumber,
+                AccountNumber = :accountNumber,
+                AccountHolderName = :holder,
+                BankName = :bankName,
+                BankBranchName = :branch,
+                BankDefault = :isDefault
+            WHERE BankingID = :bankingId
+              AND CustomerID = :customerId
+        ";
+    
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            'idNumber'      => $data['id_number'],
+            'accountNumber' => $data['account_number'],
+            'holder'        => $data['holder_name'],
+            'bankName'      => $data['bank_name'],
+            'branch'        => $data['branch_name'],
+            'isDefault'     => $data['is_default'] ?? 'No',
+            'bankingId'     => $data['banking_id'],
+            'customerId'    => $customerId
+        ]);
+    }
+    
+    public function deleteBanking(string $customerId, string $bankingId): bool
+    {
+        return $this->db->prepare("
+            DELETE FROM BANKING
+            WHERE BankingID = :id AND CustomerID = :customerId
+        ")->execute([
+            'id' => $bankingId,
+            'customerId' => $customerId
+        ]);
     }
 }

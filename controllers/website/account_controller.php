@@ -1,4 +1,9 @@
 <?php
+// Ngăn chặn việc in lỗi ra màn hình làm hỏng chuỗi JSON khi gọi AJAX
+ini_set('display_errors', 0);
+error_reporting(E_ALL);
+ob_start();
+
 require_once __DIR__ . '/../../models/db.php';
 require_once __DIR__ . '/../../models/website/account_model.php';
 
@@ -11,16 +16,10 @@ class AccountController
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-
-        // TEST – khi làm login xong thì XÓA dòng này
         $_SESSION['AccountID'] = $_SESSION['AccountID'] ?? 'ACC001';
-
         $this->model = new AccountModel($db);
     }
 
-    /* ===============================
-       RENDER MY ACCOUNT PAGE
-       =============================== */
     public function index()
     {
         if (!isset($_SESSION['AccountID'])) {
@@ -29,101 +28,197 @@ class AccountController
         }
 
         $accountId = $_SESSION['AccountID'];
-
         $customer = $this->model->getCustomerByAccountId($accountId);
-        if (!$customer) {
-            die('Customer not found');
-        }
+        if (!$customer) die('Customer not found');
 
         $customerId = $customer['CustomerID'];
-
-        $addresses   = $this->model->getAddresses($customerId);
-        $bankingList = $this->model->getBankingInfo($customerId);
-        $banking     = !empty($bankingList) ? $bankingList[0] : [];
         $_SESSION['user_data']      = $customer;
-        $_SESSION['user_addresses'] = $addresses;
-        $_SESSION['user_banking']   = $banking;
+        $_SESSION['user_addresses'] = $this->model->getAddresses($customerId);
+        $_SESSION['user_banking']   = $this->model->getBankingInfo($customerId);
 
-        // ⚠️ QUAN TRỌNG: include view TẠI ĐÂY
-        header('Location: ../../views/website/php/my_account.php');
+        if (ob_get_length()) ob_end_clean();
+        require_once __DIR__ . '/../../views/website/php/my_account.php';
         exit;
     }
 
-    /* ===============================
-       API: UPDATE PROFILE
-       =============================== */
+    private function sendJSON($data) {
+        if (ob_get_length()) ob_clean(); 
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($data);
+        exit;
+    }
+
+    // ✅ FIX: Thêm xử lý email
     public function updateProfile()
     {
-        header('Content-Type: application/json');
-
+        // 🔍 DEBUG
+        error_log("🔵 updateProfile() called");
+        error_log("📦 POST data: " . print_r($_POST, true));
+        error_log("🔑 Session AccountID: " . ($_SESSION['AccountID'] ?? 'NOT SET'));
+        
         if (!isset($_SESSION['AccountID'])) {
-            http_response_code(401);
-            echo json_encode(['success' => false]);
-            exit;
+            error_log("❌ No AccountID in session");
+            $this->sendJSON(['success'=>false,'message'=>'Unauthorized']);
         }
 
         $customer = $this->model->getCustomerByAccountId($_SESSION['AccountID']);
-
+        error_log("👤 Customer found: " . print_r($customer, true));
+        
+        if (!$customer) {
+            error_log("❌ Customer not found");
+            $this->sendJSON(['success'=>false,'message'=>'Customer not found']);
+        }
+        
+        // ✅ Thêm email vào data
         $data = [
             'first_name' => $_POST['first_name'] ?? '',
             'last_name'  => $_POST['last_name'] ?? '',
-            'birth'      => $_POST['birth'] ?? '',
-            'gender'     => $_POST['gender'] ?? 'Other'
+            'birth'      => $_POST['birth'] ?? null,
+            'gender'     => $_POST['gender'] ?? 'Other',
+            'email'      => $_POST['email'] ?? ''
         ];
 
+        error_log("📝 Data to update: " . print_r($data, true));
+
+        // ✅ Gọi hàm update đã fix
         $success = $this->model->updateCustomerProfile(
-            $customer['CustomerID'],
+            $_SESSION['AccountID'], 
+            $customer['CustomerID'], 
             $data
         );
 
-        echo json_encode(['success' => $success]);
-        exit;
+        error_log("✅ Update result: " . ($success ? 'SUCCESS' : 'FAILED'));
+
+        if ($success) {
+            // ✅ Lấy lại customer data mới từ DB
+            $updatedCustomer = $this->model->getCustomerByAccountId($_SESSION['AccountID']);
+            
+            $_SESSION['user_data'] = $updatedCustomer;
+            error_log("✅ Session updated with fresh data");
+            
+            // ✅ Trả về data mới cho JavaScript
+            $this->sendJSON([
+                'success' => true,
+                'data' => [
+                    'firstName' => $updatedCustomer['FirstName'],
+                    'lastName' => $updatedCustomer['LastName'],
+                    'email' => $updatedCustomer['Email'],
+                    'dob' => $updatedCustomer['CustomerBirth'],
+                    'gender' => $updatedCustomer['CustomerGender']
+                ]
+            ]);
+        }
+        
+        $this->sendJSON(['success'=>false, 'message'=>'Update failed']);
     }
 
-    /* ===============================
-       API: ADDRESS
-       =============================== */
-    public function addAddress()
-    {
-        header('Content-Type: application/json');
+    public function addBanking() { $this->saveBanking('add'); }
+    public function editBanking() { $this->saveBanking('edit'); }
 
+    private function saveBanking(string $mode)
+    {
+        if (!isset($_SESSION['AccountID'])) {
+            $this->sendJSON(['success' => false, 'message' => 'Unauthorized']);
+        }
+
+        $customer = $this->model->getCustomerByAccountId($_SESSION['AccountID']);
         $data = [
-            'address_id' => uniqid('ADDR'),
-            'fullname'   => $_POST['fullname'],
-            'phone'      => $_POST['phone'],
-            'alias'      => $_POST['alias'],
-            'address'    => $_POST['address'],
-            'city'       => $_POST['city'],
-            'country'    => $_POST['country'],
-            'postal'     => $_POST['postal'],
-            'is_default' => $_POST['is_default'] ?? 'No'
+            'account_number' => $_POST['account_number'] ?? '',
+            'holder_name'    => $_POST['holder_name'] ?? '',
+            'bank_name'      => $_POST['bank_name'] ?? '',
+            'branch_name'    => $_POST['bank_branch'] ?? '',
+            'id_number'      => $_POST['id_number'] ?? '',
+            'is_default'     => $_POST['is_default'] ?? 'No'
         ];
 
-        $success = $this->model->addAddress($_POST['customer_id'], $data);
-        echo json_encode(['success' => $success]);
-        exit;
+        if ($mode === 'edit') {
+            $data['banking_id'] = $_POST['banking_id'] ?? '';
+            if (empty($data['banking_id'])) {
+                $this->sendJSON(['success' => false, 'message' => 'ID required']);
+            }
+            $success = $this->model->updateBanking($customer['CustomerID'], $data);
+        } else {
+            $success = $this->model->addBanking($customer['CustomerID'], $data);
+        }
+
+        $this->sendJSON(['success' => $success]);
+    }
+
+    public function deleteBanking()
+    {
+        $bankingId = $_POST['banking_id'] ?? '';
+        if (!$bankingId) {
+            $this->sendJSON(['success' => false, 'message' => 'ID required']);
+        }
+
+        $customer = $this->model->getCustomerByAccountId($_SESSION['AccountID']);
+        $success  = $this->model->deleteBanking($customer['CustomerID'], $bankingId);
+        $this->sendJSON(['success' => $success]);
+    }
+
+    public function addAddress() {
+        $this->saveAddress('add');
+    }
+    
+    public function updateAddress() {
+        $this->saveAddress('edit');
+    }
+    
+    public function deleteAddress() {
+        if (!isset($_SESSION['AccountID'])) {
+            $this->sendJSON(['success'=>false,'message'=>'Unauthorized']);
+        }
+        $customer = $this->model->getCustomerByAccountId($_SESSION['AccountID']);
+        $addressId = $_POST['address_id'] ?? '';
+        if (!$addressId) $this->sendJSON(['success'=>false,'message'=>'ID required']);
+        $success = $this->model->deleteAddress($customer['CustomerID'], $addressId);
+        $this->sendJSON(['success'=>$success]);
+    }
+    
+    private function saveAddress($mode) {
+        if (!isset($_SESSION['AccountID'])) $this->sendJSON(['success'=>false,'message'=>'Unauthorized']);
+        $customer = $this->model->getCustomerByAccountId($_SESSION['AccountID']);
+        
+        $data = [
+            'fullname' => $_POST['fullname'] ?? '',
+            'phone'    => $_POST['phone'] ?? '',
+            'address'  => $_POST['address'] ?? '',
+            'city'     => $_POST['city'] ?? '',
+            'country'  => $_POST['country'] ?? ''
+        ];
+    
+        if ($mode === 'edit') {
+            $data['address_id'] = $_POST['address_id'] ?? '';
+            if (!$data['address_id']) $this->sendJSON(['success'=>false,'message'=>'ID required']);
+            $success = $this->model->updateAddress($customer['CustomerID'], $data);
+        } else {
+            // ✅ Model sẽ tự tạo address_id
+            $success = $this->model->addAddress($customer['CustomerID'], $data);
+        }
+    
+        $this->sendJSON(['success'=>$success]);
     }
 }
 
-/* ===============================
-   ROUTER NHỎ TRONG FILE
-   =============================== */
+// ROUTER
 $controller = new AccountController($db);
+$action = $_POST['action'] ?? '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    switch ($_POST['action']) {
-        case 'updateProfile':
-            $controller->updateProfile();
-            break;
-        case 'addAddress':
-            $controller->addAddress();
-            break;
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    switch ($action) {
+        case 'updateProfile': $controller->updateProfile(); break;
+        case 'addBanking':    $controller->addBanking(); break;
+        case 'updateBanking': $controller->editBanking(); break;
+        case 'editBanking':   $controller->editBanking(); break;
+        case 'deleteBanking': $controller->deleteBanking(); break;
+        case 'addAddress':     $controller->addAddress(); break;
+        case 'updateAddress':  $controller->updateAddress(); break;
+        case 'deleteAddress':  $controller->deleteAddress(); break;
         default:
-            echo json_encode(['success' => false, 'message' => 'Unknown action']);
+            if (ob_get_length()) ob_clean();
+            echo json_encode(['success' => false, 'message' => 'Invalid action']);
+            exit;
     }
-    exit;
+} else {
+    $controller->index();
 }
-
-// ⬅️ CHỈ CHỖ NÀY render view
-$controller = new AccountController($db);
-$controller->index();

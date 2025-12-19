@@ -55,6 +55,13 @@
   border-radius: var(--nav-menu-wrapper-border-radius);
   padding: var(--spacing-12);
   position: relative;
+  backdrop-filter: blur(0px);
+  transition: 
+  background 0.35s ease,
+  backdrop-filter 0.35s ease,
+  box-shadow 0.35s ease,
+  transform 0.35s ease;
+  z-index: 1000;
 }
 
 .nav-pills a {
@@ -62,6 +69,11 @@
   color: inherit;
 }
 
+.nav-pills.scrolled {
+  background: transparent;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
 /* ======================================================
    NAV ITEM
 ====================================================== */

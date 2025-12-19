@@ -727,16 +727,25 @@ body {
     line-height: 1.4; /* NEW: Line height tốt hơn */
 }
 
-/* ================================================
-   CONTENT3 - BANKING INFO LAYOUT
-   ================================================ */
+
+
+.frame-div {
+    align-self: stretch; /* FIX: Thêm để đảm bảo chiều rộng đầy đủ */
+    display: flex;
+    align-items: flex-start; /* FIX: Thay đổi từ center để linh hoạt hơn */
+    gap: var(--spacing-32);
+}
 .content3 {
     align-self: stretch;
     display: flex;
-    align-items: flex-start; /* FIX: Thay đổi từ center */
-    justify-content: space-between; /* IMPROVED: Better spacing */
-    gap: var(--spacing-32);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    width: 100%;
 }
+
+
+
 
 /* ================================================
    SHIPPING ADDRESSES
@@ -754,6 +763,8 @@ body {
     display: flex;
     align-items: stretch; /* FIX: Đảm bảo các card cùng chiều cao */
     gap: var(--spacing-32);
+    flex-wrap: wrap;
+    align-items: flex-start;
 }
 
 .frame-container {
@@ -770,7 +781,20 @@ body {
     border: 2px solid transparent; /* NEW: Thêm border transparent */
     min-width: 0; /* NEW: Allow shrinking */
 }
-
+.frame-container.banking-item {
+    flex: 1 1 calc(50% - 20px);
+    min-width: 280px;              
+    max-width: 350px;
+    min-height: 220px;            
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.2s ease-in-out;
+    box-sizing: border-box;
+}
 .frame-container:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     transform: translateY(-2px);
@@ -1229,11 +1253,24 @@ body {
 }
 
 /* Save + Cancel cùng hàng */
+#BankingModal .button-parent button:nth-child(1),
+#BankingModal .button-parent button:nth-child(2) {
+    width: 100%;
+}
+
 #ShippingModal .button-parent button:nth-child(1),
 #ShippingModal .button-parent button:nth-child(2) {
     width: 100%;
 }
-
+#BankingModal .button-parent {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    flex-wrap: wrap;
+}
+#BankingModal #deleteBankingBtn {
+    grid-column: span 2;
+    margin-top: 4px;
+}
 /* Nhóm Save + Cancel */
 #ShippingModal .button-parent {
     display: grid;
@@ -1251,6 +1288,27 @@ button, .button-save, .button-cancel {
     justify-content: center;
 }
 
+/* ✅ Error styling */
+input.error,
+textarea.error,
+select.error {
+    border-color: #dc3545 !important;
+    background-color: #fff5f5 !important;
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+}
+
+/* ✅ Success styling (optional) */
+input.success,
+textarea.success,
+select.success {
+    border-color: #28a745 !important;
+}
 
 @media (max-width: 1200px) {
     .breadcrumb {

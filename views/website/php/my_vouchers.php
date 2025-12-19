@@ -1,7 +1,21 @@
 <?php
+<<<<<<< Updated upstream
 
 $ROOT = 'Candy-Crunch-Website';
 require_once('../../partials/header.php');
+=======
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$customer = $_SESSION['user_data'] ?? null;
+if (!$customer) {
+    // Chuyển hướng ngược lại Controller để nạp dữ liệu vào Session
+    header('Location: /../../controllers/website/account_controller.php'); 
+    exit;
+}
+$ROOT = ''; // hoặc '' nếu chạy ở root domain
+require_once('../../../partials/header.php');
+>>>>>>> Stashed changes
 ?>
 
 <!DOCTYPE html>
@@ -45,7 +59,7 @@ require_once('../../partials/header.php');
 <div class="my-account-profile">
 
     <div class="title">
-        <div class="my-account">My Vouchers</div>
+        <div class="my-account">MY VOUCHERS</div>
     </div>
 
     <div class="content">
@@ -59,7 +73,10 @@ require_once('../../partials/header.php');
 
                 <div class="user-name">
                     <div class="john-doe">
-                        <?= $_SESSION['username'] ?? 'John Doe'; ?>
+                        <?php
+                        $fullName = trim(($customer['FirstName'] ?? '') . ' ' . ($customer['LastName'] ?? ''));
+                        echo htmlspecialchars($fullName ?: 'Guest User'); 
+                        ?>
                     </div>
                 </div>
             </div>

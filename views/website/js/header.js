@@ -290,7 +290,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // ==============================
   // ACCESSIBILITY: Focus Management
   // ==============================
-  const headerNav = document.querySelector('.header-nav');
+  const headerNav = document.querySelector('.nav-pills');
   window.addEventListener('scroll', function() {
     const currentScroll = window.pageYOffset;
     if (currentScroll > 20) {

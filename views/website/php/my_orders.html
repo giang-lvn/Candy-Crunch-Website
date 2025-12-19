@@ -1,89 +1,73 @@
-<?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-$customer = $_SESSION['user_data'] ?? null;
-if (!$customer) {
-    // Chuyển hướng ngược lại Controller để nạp dữ liệu vào Session
-    header('Location: /../../controllers/website/account_controller.php'); 
-    exit;
-}
-$ROOT = ''; // hoặc '' nếu chạy ở root domain
-require_once('../../../partials/header.php');
-?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, width=device-width">
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/main.css">
-    <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/my_account.css">
-    <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/my_orders.css">
-
-    <!-- Fonts -->
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/my_account.css">
+    <link rel = "stylesheet" href="../css/my_orders.css">
     <link href="https://fonts.googleapis.com/css2?family=Modak&family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <title>My Orders</title>
 </head>
+
 <body>
-    <!-- BREADCRUMB -->
     <div class="breadcrumb-container">
         <div class="breadcrumb">
-            <a href="<?php echo $ROOT; ?>/index.php" class="breadcrumb-item home-icon">
-            <i class="fas fa-home"></i>
+            <a href="index.html" class="breadcrumb-item home-icon">
+                <img src="../img/home.svg">
+                <i class="fas fa-home"></i>
             </a>
             <span class="separator"></span>
-            <a href="<?php echo $ROOT; ?>/views/website/my_account.php" class="breadcrumb-item">
+            <a href="my_account.html" class="breadcrumb-item">
                 My Account
             </a>
             <span class="separator"></span>
             <span class="breadcrumb-item active">
                 My Orders
             </span>
-        </div>
+        </div>          
     </div>
-
     <div class="my-account-profile">
         <div class="title">
-            <div class="my-account">MY ORDERS</div>
+            <div class="my-account">My Orders</div>
         </div>
-
         <div class="content">
-            <!-- SIDEBAR -->
             <div class="card-account">
                 <div class="user-card">
-                    <img class="avatar-icon" src="<?php echo $ROOT; ?>/views/website/img/ot-longvo.png" alt="avatar">
+                    <img class="avatar-icon" src="../img/ot-longvo.png" alt="avatar">
                     <div class="user-name">
-                        <div class="john-doe">
-                            <?php
-                            $fullName = trim(($customer['FirstName'] ?? '') . ' ' . ($customer['LastName'] ?? ''));
-                            echo htmlspecialchars($fullName ?: 'Guest User'); 
-                            ?>
-                        </div>
+                        <div class="john-doe">John Doe</div>
                     </div>
                 </div>
                 <div class="menus">
-                    <a href="<?php echo $ROOT; ?>/views/website/my_account.php" class="account-menu">
-                        <img class="icon-account-outline" src="<?php echo $ROOT; ?>/views/website/img/account.svg" alt="my account">
-                        <div class="sidebar-ele"><div class="my-orders2">My Account</div></div>
+                    <a href="my_account.html" class="account-menu">
+                        <img class="icon-account-outline" src="../img/account.svg" alt="my account">
+                        <div class="sidebar-ele">
+                            <div class="my-orders2">My Account</div>
+                        </div>
                     </a>
-                    <a href="<?php echo $ROOT; ?>/views/website/changepass.php" class="account-menu">
-                        <img class="icon-key" src="<?php echo $ROOT; ?>/views/website/img/key.svg" alt="change password">
-                        <div class="sidebar-ele"><div class="my-orders2">Change Password</div></div>
+                    <a href="changepass.html" class="account-menu">
+                        <img class="icon-key" src="../img/key.svg" alt="change">
+                        <div class="sidebar-ele">
+                            <div class="my-orders2">Change Password</div>
+                        </div>
                     </a>
-                    <a href="<?php echo $ROOT; ?>/views/website/my_orders.php" class="account-menu">
-                        <img class="icon-account-outline" src="<?php echo $ROOT; ?>/views/website/img/order.svg" alt="orders">
-                        <div class="sidebar-ele"><div class="my-orders2">My Orders</div></div>
+                    <a href="my_vouchers.html" class="account-menu">
+                        <img class="icon-account-outline" src="../img/order.svg" alt="orders">
+                        <div class="sidebar-ele">
+                            <div class="my-orders2">My Orders</div>
+                        </div>
                     </a>
-                    <a href="<?php echo $ROOT; ?>/views/website/my_vouchers.php" class="account-menu">
-                        <img class="icon-key" src="<?php echo $ROOT; ?>/views/website/img/voucher.svg" alt="voucher">
-                        <div class="sidebar-ele"><div class="my-orders2">My Vouchers</div></div>
+                    <a href="my_vouchers.html" class="account-menu">
+                        <img class="icon-key" src="../img/voucher.svg" alt="voucher">
+                        <div class="sidebar-ele">
+                            <div class="my-orders2">My Vouchers</div>
+                        </div>
                     </a>
-                    <a href="<?php echo $ROOT; ?>/views/website/logout.php" class="account-menu">
-                        <img class="icon-account-outline" src="<?php echo $ROOT; ?>/views/website/img/logout.svg" alt="logout">
-                        <div class="sidebar-ele"><div class="my-orders2">Log out</div></div>
+                    <a href="#" class="account-menu">
+                        <img class="icon-account-outline" src="../img/logout.svg" alt="logout">
+                        <div class="sidebar-ele">
+                            <div class="my-orders2">Log out</div>
+                        </div>
                     </a>
                 </div>
             </div>
@@ -100,12 +84,11 @@ require_once('../../../partials/header.php');
                         <div class="filter2" id="statusFilter">
                             <span>Status:</span>
                             <div class="attribute2">
-                                <span id="statusLabel">All</span>
+                                <span id="statusLabel">Pending Confirmation</span>
                                 <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E">
                             </div>
                             <ul class="dropdown-menu" id="statusMenu">
                                 <li data-value="all">All</li>
-                                <li data-value="pending-confirm">Pending Confirmation</li>
                                 <li data-value="waiting-payment">Waiting Payment</li>
                                 <li data-value="pending">Pending</li>
                                 <li data-value="on-shipping">On Shipping</li>
@@ -137,10 +120,6 @@ require_once('../../../partials/header.php');
         </div>
     </div>
 
-    <!-- JS -->
-    <script src="<?php echo $ROOT; ?>/views/website/js/my_orders.js"></script>
+    <script src="../js/my_orders.js"></script>
 </body>
 </html>
-<?php
-include '../../../partials/footer_kovid.php';
-?>
