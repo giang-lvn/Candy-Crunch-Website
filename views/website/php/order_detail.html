@@ -1,5 +1,6 @@
 <?php include '../../../partials/header.php'; ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,7 +34,7 @@
 
                 <div class="info-row">
                     <span class="label">Order ID:</span>
-                    <span class="value order-id">CTH-987829</span>
+                    <span class="value order-id"><?php echo htmlspecialchars($order['OrderID']); ?></span>
                 </div>
 
                 <div class="info-row">
@@ -43,17 +44,17 @@
 
                 <div class="info-row">
                     <span class="label">Order Date:</span>
-                    <span class="value">30/4/2025</span>
+                    <span class="value"><?php echo formatDate($order['OrderDate']); ?></span>
                 </div>
 
                 <div class="info-row">
                     <span class="label">Payment Method:</span>
-                    <span class="value">Credit Card (Visa)</span>
+                    <span class="value"><?php echo htmlspecialchars($order['PaymentMethod']); ?></span>
                 </div>
 
                 <div class="info-row">
                     <span class="label">Shipping Method:</span>
-                    <span class="value">Standard Delivery</span>
+                    <span class="value"><?php echo htmlspecialchars($order['ShippingMethod']); ?></span>
                 </div>
             </div>
 
@@ -159,9 +160,12 @@
                 <h3>Product</h3>
             </div>
         
-            <!-- PRODUCT GRID -->
+            <!-- PRODUCT LIST -->
             <div class="products-list">
-                
+                <?php foreach ($items as $item): 
+                    $price = $item['PromotionPrice'] ?? $item['OriginalPrice'];
+                    $hasDiscount = isset($item['PromotionPrice']) && $item['PromotionPrice'] < $item['OriginalPrice'];
+                ?>
                     <!-- Sản phẩm -->
                     <div class="single-product">
                         <!-- INFO -->
@@ -196,7 +200,6 @@
                 </div>
         </div>
         <!-- SUMMARY -->
-        <!-- PAYMENT -->
             <div class="summary-detail">
 
                 <!-- TITLE -->
@@ -227,6 +230,15 @@
                     <!-- PROMO -->
                     <div class="payment-row promo">
                         <span class="label">Promo</span>
+                        <span class="value">
+                            <?= $promo > 0 ? '-' : '' ?>
+                            <?= number_format($promo, 0, ',', '.') ?> VND
+                        </span>
+                    </div>
+
+                    <!-- SHIPPING FEE -->
+                    <div class="payment-row shipping">
+                        <span class="label">Shipping fee</span>
                         <span class="value">
                             <?= $promo > 0 ? '-' : '' ?>
                             <?= number_format($promo, 0, ',', '.') ?> VND

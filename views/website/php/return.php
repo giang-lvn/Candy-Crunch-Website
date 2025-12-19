@@ -1,4 +1,3 @@
-<?php include '../../../partials/header.php'; ?>
 
 
 <!DOCTYPE html>
@@ -45,7 +44,7 @@
     </div>
   
     <!-- FORM -->
-    <form class="return-form">
+    <form class="return-form" method="POST" action="/index.php?controller=return&action=submitReturn" enctype="multipart/form-data">
     
         <!-- PRODUCTS -->
         <div class="return-products">
@@ -57,45 +56,47 @@
         
             <!-- PRODUCT GRID -->
             <div class="return-products-grid" id="returnProductsGrid">
-                <!-- JS render product rows -->
-                <div class="return-product-item">
-                    <!-- Sản phẩm 1 -->
-                    <div class="single-product">
-                        <!-- CHECK -->
-                        <div class="product-select">
-                            <input type="checkbox">
-                        </div>
-                    
-                        <!-- INFO -->
-                        <div class="product-info">
+            
+                    <!-- JS render product rows -->
+                    <div class="return-product-item">
+                        <!-- Sản phẩm -->
+                        <div class="single-product">
+                            <!-- CHECK 
+                            <div class="product-select">
+                                <input type="checkbox">
+                            </div>-->
                         
-                            <!-- IMAGE -->
-                            <div class="product-image">
-                                <img src="../img/about_story.jpg" alt="Product">
-                            </div>
-                        
-                            <!-- DETAILS -->
-                            <div class="product-details">
-                                <!-- NAME -->
-                                <div class="product-name">Fruit-Filled Candy</div>
-                        
-                                <!-- ATTRIBUTE -->
-                                <div class="product-attribute">175g</div>
-                        
-                                <!-- PRICE + QTY -->
-                                <div class="product-price-qty">
-                                    <div class="product-quantity">Qty: 1</div>
-                                    <div class="product-price">
-                                        <span class="price-old">150.000 VND</span>
-                                        <span class="price-new">150.000 VND</span>
+                            <!-- INFO -->
+                            <div class="product-info">
+                            
+                                <!-- IMAGE -->
+                                <div class="product-image">
+                                    <img src="../img/about_story.jpg" alt="Product">
+                                </div>
+                            
+                                <!-- DETAILS -->
+                                <div class="product-details">
+                                    <!-- NAME -->
+                                    <div class="product-name">Fruit-Filled Candy</div>
+                            
+                                    <!-- ATTRIBUTE -->
+                                    <div class="product-attribute">175g</div>
+                            
+                                    <!-- PRICE + QTY -->
+                                    <div class="product-price-qty">
+                                        <div class="product-quantity">Qty: 1</div>
+                                        <div class="product-price">
+                                            <span class="price-old">150.000 VND</span>
+                                            <span class="price-new">150.000 VND</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    
-                </div>
+                        
+                    </div>
+                   
             </div>
 
         </div>
@@ -163,9 +164,11 @@
                     </svg>
                   </div>
                   <div class="dropdown-menu">
-                    <button class="dropdown-option" data-value="1">Option 1</button>
-                    <button class="dropdown-option" data-value="2">Option 2</button>
-                    <button class="dropdown-option" data-value="3">Option 3</button>
+                    <button class="dropdown-option" data-value="Product is crushed or deformed">Product is crushed or deformed</button>
+                    <button class="dropdown-option" data-value="Product is expired">Product is expired</button>
+                    <button class="dropdown-option" data-value="Wrong Item Received">Wrong Item Received</button>
+                    <button class="dropdown-option" data-value="Packaging has been tampered with">Packaging has been tampered with</button>
+                    <button class="dropdown-option" data-value="Other">Other</button>
                   </div>
                 </div>
             </div>

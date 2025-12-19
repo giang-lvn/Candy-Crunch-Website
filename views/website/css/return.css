@@ -229,7 +229,7 @@
     padding: 40px 60px;
     flex-direction: column;
     border-radius: 32px;
-    border: 1px solid var(--grey-300);
+    border: 1px solid var(--gray-300);
     background: var(--beige-300);
 }
 
