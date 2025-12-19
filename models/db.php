@@ -2,9 +2,9 @@
 // config/database.php
 
 $host = 'localhost';       
-$dbname = 'candy_crunch2'; 
-$username = 'root';        
-$password = 'giangne060705';
+$dbname = ''; 
+$username = '';        
+$password = '';
 
 
 
