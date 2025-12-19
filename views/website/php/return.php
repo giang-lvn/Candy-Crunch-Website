@@ -1,4 +1,4 @@
-
+<?php include '../../../partials/header.php'; ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -52,7 +52,7 @@
         <!-- PRODUCTS -->
         <div class="return-products">
             <div class="return-products-title">
-                <h3>Product (Order #<?= htmlspecialchars($data['orderId']) ?>)</h3>
+                <h3>Product</h3>
             </div>
         
             <div class="return-products-grid">
