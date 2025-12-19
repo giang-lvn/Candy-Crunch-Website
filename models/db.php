@@ -1,17 +1,10 @@
 <?php
 // config/database.php
 
-<<<<<<< Updated upstream
-$host = 'localhost';        // hoặc localhost
-$dbname = ''; // ĐÚNG tên database bạn đang dùng
-$username = '';        
-$password = '';            // XAMPP mặc định
-=======
 $host = 'localhost';       
 $dbname = 'candy_crunch2'; 
 $username = 'root';        
-$password = 'giangne060705';            
->>>>>>> Stashed changes
+$password = 'giangne060705';
 
 
 try {

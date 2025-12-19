@@ -1,9 +1,4 @@
 <?php
-<<<<<<< Updated upstream
-
-$ROOT = 'Candy-Crunch-Website';
-require_once('../../partials/header.php');
-=======
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -15,7 +10,6 @@ if (!$customer) {
 }
 $ROOT = ''; // hoặc '' nếu chạy ở root domain
 require_once('../../../partials/header.php');
->>>>>>> Stashed changes
 ?>
 
 <!DOCTYPE html>
