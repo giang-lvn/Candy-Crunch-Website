@@ -304,4 +304,31 @@ class CartModel
         return $this->conn->insert_id;
     }
 
+    //Thêm sản phẩm vào giỏ hàng
+    public function addToCart(int $customerId, int $skuId, int $quantity = 1): bool
+    {
+        // Lấy hoặc tạo cart cho customer
+        $cart = $this->findActiveCartByCustomer($customerId);
+        $cartId = $cart ? $cart['CartID'] : $this->createCart($customerId);
+
+        // Kiểm tra xem sản phẩm đã có trong giỏ chưa
+        $existingQty = $this->getQuantity($cartId, $skuId);
+
+        if ($existingQty > 0) {
+            // Nếu đã có, cập nhật số lượng (cộng thêm)
+            $newQty = $existingQty + $quantity;
+            return $this->updateQuantity($cartId, $skuId, $newQty);
+        } else {
+            // Nếu chưa có, thêm mới
+            $sql = "
+                INSERT INTO CART_DETAIL (CartID, SKUID, CartQuantity)
+                VALUES (?, ?, ?)
+            ";
+
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("iii", $cartId, $skuId, $quantity);
+            return $stmt->execute();
+        }
+    }
+
 }

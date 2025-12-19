@@ -9,9 +9,26 @@ class ReturnModel
     public function __construct()
     {
         global $db;
+        $this->conn = $db;
     }
 
-    //Lấy các đơn hàng đã hoàn thành của customer
+    // ← THÊM: Lấy thông tin đơn hàng theo OrderID
+    public function getOrderById($orderId)
+    {
+        $sql = "
+            SELECT OrderID, CustomerID, OrderDate, OrderStatus
+            FROM ORDERS
+            WHERE OrderID = ?
+            LIMIT 1
+        ";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$orderId]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Lấy các đơn hàng đã hoàn thành của customer 
     public function getCompletedOrdersByCustomer($customerId)
     {
         $sql = "
@@ -28,7 +45,7 @@ class ReturnModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    //Lấy danh sách sản phẩm trong đơn hàng
+    // Lấy danh sách sản phẩm trong đơn hàng
     public function getOrderProducts($orderId)
     {
         $sql = "
@@ -52,7 +69,7 @@ class ReturnModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    //Lấy OrderID từ SKUID
+    /*
     public function getOrderIdBySku($skuId)
     {
         $sql = "
@@ -67,8 +84,9 @@ class ReturnModel
 
         return $stmt->fetchColumn();
     }
+    */
 
-    //Kiểm tra đơn hàng có thuộc customer không
+    // Kiểm tra đơn hàng có thuộc customer không 
     public function checkOrderOwnership($orderId, $customerId)
     {
         $sql = "
@@ -84,7 +102,7 @@ class ReturnModel
         return $stmt->fetchColumn() > 0;
     }
 
-    //Kiểm tra đơn hàng đã có refund chưa
+    // Kiểm tra đơn hàng đã có refund chưa
     public function checkRefundExistByOrder($orderId)
     {
         $sql = "
@@ -99,11 +117,29 @@ class ReturnModel
         return $stmt->fetchColumn() > 0;
     }
 
-    //Tạo yêu cầu refund
+    // Tạo RefundID tự động 
+    private function generateRefundId()
+    {
+        $sql = "SELECT RefundID FROM REFUND ORDER BY RefundID DESC LIMIT 1";
+        $stmt = $this->conn->query($sql);
+        $lastId = $stmt->fetchColumn();
+
+        if ($lastId) {
+            $num = intval(substr($lastId, 2)) + 1;
+            return 'RF' . str_pad($num, 3, '0', STR_PAD_LEFT);
+        }
+
+        return 'RF001';
+    }
+
+    // Tạo yêu cầu refund 
     public function createRefundRequest($data)
     {
+        $refundId = $this->generateRefundId();
+
         $sql = "
             INSERT INTO REFUND (
+                RefundID,
                 OrderID,
                 RefundDate,
                 RefundReason,
@@ -111,6 +147,7 @@ class ReturnModel
                 RefundImage,
                 RefundStatus
             ) VALUES (
+                :refund_id,
                 :order_id,
                 NOW(),
                 :refund_reason,
@@ -123,16 +160,17 @@ class ReturnModel
         $stmt = $this->conn->prepare($sql);
 
         $success = $stmt->execute([
+            ':refund_id'          => $refundId,
             ':order_id'           => $data['order_id'],
             ':refund_reason'      => $data['refund_reason'],
             ':refund_description' => $data['refund_description'],
             ':refund_image'       => $data['refund_image']
         ]);
 
-        return $success ? $this->conn->lastInsertId() : false;
+        return $success ? $refundId : false;
     }
 
-    //Upload ảnh refund
+    // Upload ảnh refund
     public function uploadRefundImage($file)
     {
         $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
@@ -140,7 +178,7 @@ class ReturnModel
             return null;
         }
 
-        $uploadDir = __DIR__ . '/../../public/uploads/refund/';
+        $uploadDir = __DIR__ . '/../../views/website/img/refund/';
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0777, true);
         }
@@ -149,7 +187,7 @@ class ReturnModel
         $filePath = $uploadDir . $fileName;
 
         if (move_uploaded_file($file['tmp_name'], $filePath)) {
-            return '/public/uploads/refund/' . $fileName;
+            return '../img/refund/' . $fileName;
         }
 
         return null;

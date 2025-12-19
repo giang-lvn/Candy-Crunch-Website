@@ -1,44 +1,56 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // ================================================
-    // MENU NAVIGATION - WITHOUT CHANGE PASSWORD
-    // ================================================
-    initMenuNavigation();
+/*********************************
+ * GLOBAL STATE
+ *********************************/
+let ordersData = [];
+let currentStatusFilter = 'all';
+let currentTimeFilter = '30';
 
-    // ===============================
-    // ORDERS SECTION
-    // ===============================
+/*********************************
+ * INIT
+ *********************************/
+document.addEventListener('DOMContentLoaded', () => {
+    initMenuNavigation();
     setupDropdowns();
-    renderOrders();
+    loadOrders();
 });
 
-/* ===============================
-   MENU NAVIGATION
-   =============================== */
+/*********************************
+ * LOAD ORDERS FROM API
+ *********************************/
+function loadOrders() {
+    fetch('/../controllers/website/orders_controller.php')
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                console.error('API error:', data.message);
+                return;
+            }
+            ordersData = data.orders;
+            renderOrders();
+        })
+        .catch(err => console.error('Fetch orders failed:', err));
+}
+
+/*********************************
+ * MENU NAVIGATION
+ *********************************/
 function initMenuNavigation() {
     const menus = document.querySelectorAll('.account-menu');
 
-    // Click handler
     menus.forEach(menu => {
         menu.addEventListener('click', e => {
             e.preventDefault();
-            const text = menu.querySelector('.my-orders, .my-orders2')?.textContent.trim();
+            const text = menu.querySelector('.my-orders2')?.textContent.trim();
             handleMenuAction(text);
         });
     });
 
-    // Set active menu based on current URL
     const currentPage = window.location.pathname;
-
     menus.forEach(m => m.classList.remove('active'));
 
     menus.forEach(menu => {
-        const text = menu.querySelector('.my-orders, .my-orders2')?.textContent.trim();
-
+        const text = menu.querySelector('.my-orders2')?.textContent.trim();
         if (text === 'My Orders' && currentPage.includes('orders')) {
-            menu.classList.add('active');
-        } else if (text === 'My Vouchers' && currentPage.includes('vouchers')) {
-            menu.classList.add('active');
-        } else if (text === 'My Account' && (currentPage.includes('account') || currentPage.includes('my_account'))) {
             menu.classList.add('active');
         }
     });
@@ -47,140 +59,28 @@ function initMenuNavigation() {
 function handleMenuAction(action) {
     switch (action) {
         case 'My Account':
-            window.location.href = '../php/my_account.php';
+            window.location.href = 'my_account.php';
             break;
         case 'Change Password':
-            window.location.href = '../php/changepass.php';
+            window.location.href = 'changepass.php';
             break;
         case 'My Orders':
-            window.location.href = '../php/my_orders.php';
+            window.location.href = 'my_orders.php';
             break;
         case 'My Vouchers':
-            window.location.href = '../php/my_vouchers.php';
+            window.location.href = 'my_vouchers.php';
             break;
         case 'Log out':
-            if (confirm('Are you sure you want to log out?')) window.location.href = '../php/login.html';
+            if (confirm('Are you sure you want to log out?')) {
+                window.location.href = 'logout.php';
+            }
             break;
     }
 }
 
-/* ===============================
-   ORDERS DATA
-   =============================== */
-const ordersData = [
-    {
-        id: 'CTH-984399',
-        status: 'waiting-payment',
-        statusText: 'Waiting Payment',
-        date: '26 December 2025',
-        product: 'Fruit-Filled Candy',
-        weight: '175g',
-        quantity: 1,
-        oldPrice: '150.000 VND',
-        newPrice: '150.000 VND',
-        total: '150.000 VND',
-        buttons: ['Pay Now', 'Change Method']
-    },
-    {
-        id: 'CTH-984400',
-        status: 'completed',
-        statusText: 'Completed',
-        date: '20 December 2025',
-        product: 'Fruit Filled Candy',
-        weight: '175g',
-        quantity: 2,
-        oldPrice: '300.000 VND',
-        newPrice: '280.000 VND',
-        total: '280.000 VND',
-        buttons: ['Buy Again', 'Return', 'Write Review']
-    },
-    {
-        id: 'CTH-984401',
-        status: 'pending',
-        statusText: 'Pending',
-        date: '25 December 2025',
-        product: 'Fruit Filled Candy',
-        weight: '175g',
-        quantity: 3,
-        oldPrice: '200.000 VND',
-        newPrice: '180.000 VND',
-        total: '540.000 VND',
-        buttons: ['Cancel', 'Contact']
-    },
-    {
-        id: 'CTH-984402',
-        status: 'on-shipping',
-        statusText: 'On Shipping',
-        date: '24 December 2025',
-        product: 'Fruit Filled Candy',
-        weight: '175g',
-        quantity: 1,
-        oldPrice: '400.000 VND',
-        newPrice: '350.000 VND',
-        total: '350.000 VND',
-        buttons: ['Cancel', 'Contact']
-    },
-    {
-        id: 'CTH-984403',
-        status: 'return',
-        statusText: 'Return',
-        date: '15 December 2025',
-        product: 'Fruit Filled Candy',
-        weight: '175g',
-        quantity: 2,
-        oldPrice: '300.000 VND',
-        newPrice: '250.000 VND',
-        total: '500.000 VND',
-        buttons: ['Contact']
-    },
-    {
-        id: 'CTH-984404',
-        status: 'cancel',
-        statusText: 'Cancel',
-        date: '10 December 2025',
-        product: 'Fruit Filled Candy',
-        weight: '175g',
-        quantity: 1,
-        oldPrice: '200.000 VND',
-        newPrice: '180.000 VND',
-        total: '180.000 VND',
-        buttons: ['Contact', 'Buy Again']
-    }
-];
-
-/* ===============================
-   STATE
-   =============================== */
-let currentStatusFilter = 'all';
-let currentTimeFilter = '30';
-
-/* ===============================
-   BUTTON CLASS MAP
-   =============================== */
-const buttonClassMap = {
-    'Pay Now': 'btn-error-outline-small',
-    'Buy Again': 'btn-primary-medium',
-    'Change Method': 'btn-primary-outline-small',
-    'Return': 'btn-secondary-outline-small',
-    'Cancel': 'btn-secondary-small',
-    'Contact': 'btn-error-outline-small'
-};
-
-/* ===============================
-   RENDER BUTTONS
-   =============================== */
-function renderButtons(buttons) {
-    return buttons
-        .map(text => {
-            const className = buttonClassMap[text] || 'btn-outline';
-            return `<button class="${className}" data-action="${text}">${text}</button>`;
-        })
-        .join('');
-}
-
-/* ===============================
-   RENDER ORDERS
-   =============================== */
+/*********************************
+ * RENDER ORDERS
+ *********************************/
 function renderOrders() {
     const orderList = document.getElementById('orderList');
     if (!orderList) return;
@@ -189,8 +89,7 @@ function renderOrders() {
         currentStatusFilter === 'all' || order.status === currentStatusFilter
     );
 
-    orderList.innerHTML = filteredOrders
-        .map(order => `
+    orderList.innerHTML = filteredOrders.map(order => `
         <article class="card-order">
             <header class="header2">
                 <div>
@@ -206,7 +105,7 @@ function renderOrders() {
             <div class="details">
                 <div class="product">
                     <img class="product-img" src="../img/pr2.svg">
-                    
+
                     <div class="product-info">
                         <div class="fruit-filled-candy">${order.product}</div>
 
@@ -215,8 +114,6 @@ function renderOrders() {
                                 <div class="g-wrapper">
                                     <span class="g">${order.weight}</span>
                                 </div>
-
-                                <img class="icon-drop-down" src="../img/Icon _ Drop down.svg" alt="dropdown">
                             </div>
                             <div class="quantity-text">
                                 Quantity: <b>${order.quantity}</b>
@@ -225,8 +122,7 @@ function renderOrders() {
                     </div>
 
                     <div class="price">
-                        <div class="old">${order.oldPrice}</div>
-                        <div class="new">${order.newPrice}</div>
+                        <div class="new">${order.total}</div>
                     </div>
                 </div>
             </div>
@@ -236,13 +132,12 @@ function renderOrders() {
                     ${renderButtons(order.buttons)}
                 </div>
                 <div class="order-action-right">
-                   <span class="total-label">Total:</span>
-                   <span class="total-price">${order.total}</span>
+                    <span class="total-label">Total:</span>
+                    <span class="total-price">${order.total}</span>
                 </div>
             </footer>
         </article>
-    `)
-        .join('');
+    `).join('');
 
     const totalOrders = document.getElementById('totalOrders');
     if (totalOrders) {
@@ -250,9 +145,30 @@ function renderOrders() {
     }
 }
 
-/* ===============================
-   DROPDOWN SETUP
-   =============================== */
+/*********************************
+ * BUTTONS
+ *********************************/
+const buttonClassMap = {
+    'Pay Now': 'btn-error-outline-small',
+    'Buy Again': 'btn-primary-medium',
+    'Change Method': 'btn-primary-outline-small',
+    'Return': 'btn-secondary-outline-small',
+    'Cancel': 'btn-secondary-small',
+    'Contact': 'btn-error-outline-small',
+    'Confirmed': 'btn-error-small',
+    'Write Review': 'btn-primary-outline-small'
+};
+
+function renderButtons(buttons = []) {
+    return buttons.map(text => {
+        const className = buttonClassMap[text] || 'btn-outline';
+        return `<button class="${className}">${text}</button>`;
+    }).join('');
+}
+
+/*********************************
+ * DROPDOWNS
+ *********************************/
 function setupDropdowns() {
     setupDropdown('statusFilter', 'statusMenu', 'statusLabel', value => {
         currentStatusFilter = value;
@@ -263,7 +179,6 @@ function setupDropdowns() {
         currentTimeFilter = value;
     });
 
-    // Close dropdowns on outside click
     document.addEventListener('click', () => {
         document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
         document.querySelectorAll('.filter2').forEach(f => f.classList.remove('active'));

@@ -1,10 +1,10 @@
 <?php
 // config/database.php
 
-$host = 'localhost';        // hoặc localhost
-$dbname = ''; // ĐÚNG tên database bạn đang dùng
-$username = '';        
-$password = '';            // XAMPP mặc định
+$host = 'localhost';       
+$dbname = 'Candy_Crunch'; 
+$username = 'root';        
+$password = '';
 
 try {
     $db = new PDO(
@@ -16,6 +16,10 @@ try {
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
         ]
     );
+
+    // Kết nối thành công
+    echo "Đã kết nối thành công db Candy Crunch";
+
 } catch (PDOException $e) {
     die('Database connection failed: ' . $e->getMessage());
 }

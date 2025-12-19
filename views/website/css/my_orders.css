@@ -279,7 +279,14 @@
     color: var(--gray-700);
 }
 .status.cancel::before { background-color: var(--gray-700); }
-
+.status.pending-confirm {
+    background-color: var(--purple-50);
+    border: 1px solid var(--purple-100);
+    color: var(--purple-300);
+}
+.status.pending-confirm::before{
+    background-color: var(--purple-400);
+}
 /* Product */
 .details {
     padding: var(--spacing-24) var(--spacing-32);

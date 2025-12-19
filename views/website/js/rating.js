@@ -1,5 +1,6 @@
 const stars = document.querySelectorAll(".star");
 const starRating = document.querySelector(".star-rating");
+const skuID = document.getElementById("skuID").value;
 
 let currentRating = 0;
 
@@ -61,3 +62,43 @@ document.getElementById("rating-overlay").addEventListener("click", function (e)
         closeRatingPopup();
     }
 });
+
+// ===== SUBMIT RATING =====
+document.querySelector(".btn-primary-medium").addEventListener("click", function() {
+    const rating = currentRating;
+    const comment = document.querySelector(".input-field input").value.trim();
+    const skuID = "SKU001"; // TODO: Lấy từ data attribute hoặc hidden input
+
+    // Validate
+    if (rating === 0) {
+        alert("Please select a rating!");
+        return;
+    }
+
+    // Gửi AJAX
+    fetch('../../controllers/website/RatingController.php?action=submit', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `sku_id=${skuID}&rating=${rating}&comment=${encodeURIComponent(comment)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            closeRatingPopup();
+            // Reset form
+            currentRating = 0;
+            updateStars(0);
+            document.querySelector(".input-field input").value = "";
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+    });
+});
+

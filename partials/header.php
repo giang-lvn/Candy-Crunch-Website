@@ -1,12 +1,10 @@
 <?php
-$ROOT = '/Candy-Crunch-Website';
+$ROOT =  '';
 if (session_status() === PHP_SESSION_NONE) {
     session_start();    
 }
-
 // Check trạng thái đăng nhập
 $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true;
-
 // Tính số lượng sản phẩm trong giỏ hàng (chỉ hiển thị khi đã login)
 $cart_item_count = 0;
 if ($is_logged_in && isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
@@ -82,12 +80,7 @@ function is_active($page_name, $current_page_file) {
             </div>
         </a>
 
-        <!-- Contact -->
-        <a href="contact.php" class="nav-item" data-active="<?php echo is_active('contact.php', $current_page_file); ?>" data-dropdown="false">
-            <div class="inline-flex-center">
-                <div class="nav-text">Contact</div>
-            </div>
-        </a>
+
 
         <!-- Policy -->
         <a href="policy.php" class="nav-item" data-active="<?php echo is_active('policy.php', $current_page_file); ?>" data-dropdown="false">

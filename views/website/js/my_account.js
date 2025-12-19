@@ -4,6 +4,10 @@
 let selectedGender = 'female';
 let activeMenu = null;
 let currentShippingCard = null;
+let currentShippingId = null;
+let currentBankingCard = null;
+let currentBankingId = null;
+let currentBankingMode = null;
 const ROOT = '';
 
 // ==================================================
@@ -13,8 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initMenuNavigation();
     initEditProfile();
     initEditModalOverlay();
-    initImageUpload();
     initBankingToggle();
+    initBanking();
     initShipping();
     handleResize();
 });
@@ -24,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==================================================
 function initMenuNavigation() {
     const menus = document.querySelectorAll('.account-menu');
-
     menus.forEach(menu => {
         menu.addEventListener('click', e => {
             e.preventDefault();
@@ -35,10 +38,8 @@ function initMenuNavigation() {
 
     const currentPage = window.location.pathname;
     menus.forEach(m => m.classList.remove('active'));
-
     menus.forEach(menu => {
         const text = menu.querySelector('.my-orders, .my-orders2')?.textContent.trim();
-
         if (text === 'Change Password' && currentPage.includes('changepass')) menu.classList.add('active');
         else if (text === 'My Orders' && currentPage.includes('orders')) menu.classList.add('active');
         else if (text === 'My Vouchers' && currentPage.includes('vouchers')) menu.classList.add('active');
@@ -71,6 +72,49 @@ function handleMenuAction(action) {
 }
 
 // ==================================================
+// VALIDATION HELPERS
+// ==================================================
+function showError(inputId, message) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    
+    const oldError = input.parentElement.querySelector('.error-message');
+    if (oldError) oldError.remove();
+    
+    input.classList.add('error');
+    const error = document.createElement('div');
+    error.className = 'error-message';
+    error.style.color = 'red';
+    error.style.fontSize = '12px';
+    error.style.marginTop = '4px';
+    error.textContent = message;
+    input.parentElement.appendChild(error);
+}
+
+function clearError(inputId) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    
+    input.classList.remove('error');
+    const error = input.parentElement.querySelector('.error-message');
+    if (error) error.remove();
+}
+
+function clearAllErrors(fieldIds) {
+    fieldIds.forEach(id => clearError(id));
+}
+
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+function validatePhone(phone) {
+    const re = /^[0-9]{10,11}$/;
+    return re.test(phone.replace(/\s/g, ''));
+}
+
+// ==================================================
 // EDIT PROFILE
 // ==================================================
 function initEditProfile() {
@@ -78,10 +122,13 @@ function initEditProfile() {
     document.getElementById('cancelBtn')?.addEventListener('click', closeEditModal);
     document.getElementById('saveBtn')?.addEventListener('click', saveProfile);
 
-    // GENDER RADIO BUTTON
     ['male','female','other'].forEach(g => {
         const el = document.getElementById(`radio-${g}`);
         el?.parentElement.addEventListener('click', () => selectGender(g));
+    });
+
+    ['editFirstName', 'editLastName', 'editEmail', 'editDOB'].forEach(id => {
+        document.getElementById(id)?.addEventListener('input', () => clearError(id));
     });
 }
 
@@ -93,11 +140,13 @@ function initEditModalOverlay() {
 
 function openEditModal() {
     loadProfileToModal();
+    clearAllErrors(['editFirstName', 'editLastName', 'editEmail', 'editDOB']);
     document.getElementById('editModal').style.display = 'flex';
 }
 
 function closeEditModal() {
     document.getElementById('editModal').style.display = 'none';
+    clearAllErrors(['editFirstName', 'editLastName', 'editEmail', 'editDOB']);
 }
 
 function loadProfileToModal() {
@@ -125,13 +174,51 @@ function updateGenderUI() {
 }
 
 function saveProfile() {
+    console.log('🔵 saveProfile() called');
+    
     const data = {
-        firstName: getValue('editFirstName'),
-        lastName: getValue('editLastName'),
-        email: getValue('editEmail'),
-        dob: getValue('editDOB'),
+        firstName: getValue('editFirstName').trim(),
+        lastName: getValue('editLastName').trim(),
+        email: getValue('editEmail').trim(),
+        dob: getValue('editDOB').trim(),
         gender: selectedGender
     };
+
+    console.log('📦 Data to send:', data);
+
+    clearAllErrors(['editFirstName', 'editLastName', 'editEmail', 'editDOB']);
+
+    let hasError = false;
+
+    if (!data.firstName) {
+        showError('editFirstName', 'First name is required');
+        hasError = true;
+    }
+
+    if (!data.lastName) {
+        showError('editLastName', 'Last name is required');
+        hasError = true;
+    }
+
+    if (!data.email) {
+        showError('editEmail', 'Email is required');
+        hasError = true;
+    } else if (!validateEmail(data.email)) {
+        showError('editEmail', 'Invalid email format');
+        hasError = true;
+    }
+
+    if (!data.dob) {
+        showError('editDOB', 'Date of birth is required');
+        hasError = true;
+    }
+
+    if (hasError) {
+        console.log('❌ Validation failed');
+        return;
+    }
+
+    console.log('✅ Validation passed, sending request...');
 
     const formData = new FormData();
     formData.append('action', 'updateProfile');
@@ -141,28 +228,52 @@ function saveProfile() {
     formData.append('birth', data.dob);
     formData.append('gender', data.gender);
 
-    // Gửi AJAX tới controller
-    fetch(ROOT + '/controllers/website/account_controller.php', {
-        method: 'POST',
-        body: formData
+    // 🔍 DEBUG: Log FormData
+    console.log('📤 FormData contents:');
+    for (let pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+    }
+
+    fetch('/controllers/website/account_controller.php', { 
+        method: 'POST', 
+        body: formData 
     })
-    .then(res => res.json())
     .then(res => {
-        if (res.success) {
-            setText('displayFirstName', data.firstName);
-            setText('displayLastName', data.lastName);
-            setText('displayEmail', data.email);
-            setText('displayDOB', data.dob);
-            setText('displayGender', capitalize(data.gender));
-            alert('Profile updated successfully!');
-            closeEditModal();
-        } else {
-            alert('Update failed: ' + (res.message || 'Unknown error'));
+        console.log('📥 Response status:', res.status);
+        return res.text(); // Đổi sang .text() để xem raw response
+    })
+    .then(text => {
+        console.log('📄 Raw response:', text);
+        try {
+            const res = JSON.parse(text);
+            console.log('✅ Parsed JSON:', res);
+            
+            if (res.success) {
+                // ✅ Update UI với data từ server
+                if (res.data) {
+                    setText('displayFirstName', res.data.firstName || data.firstName);
+                    setText('displayLastName', res.data.lastName || data.lastName);
+                    setText('displayEmail', res.data.email || data.email);
+                    setText('displayDOB', res.data.dob || data.dob);
+                    setText('displayGender', capitalize(res.data.gender || data.gender));
+                }
+                alert('Profile updated successfully!');
+                closeEditModal();
+            } else {
+                console.error('❌ Update failed:', res.message);
+                alert('Update failed: ' + (res.message || 'Unknown error'));
+            }
+        } catch (e) {
+            console.error('❌ JSON Parse Error:', e);
+            console.error('Response was not valid JSON. Raw text:', text);
+            alert('Server error: Invalid response format');
         }
     })
-    .catch(err => console.error(err));
+    .catch(err => {
+        console.error('❌ Network error:', err);
+        alert('Network error. Please try again.');
+    });
 }
-
 
 // ==================================================
 // BANKING TOGGLE
@@ -172,224 +283,405 @@ function initBankingToggle() {
         const value = line.querySelector('.value6 .gender, .value9 .gender');
         const showBtn = line.querySelector('#toggleAccountButton');
         const hideBtn = line.querySelector('#toggleAccountClose');
-
         if (!value || !showBtn || !hideBtn) return;
-
         const original = value.textContent.trim();
         value.textContent = mask(original);
-
-        showBtn.onclick = () => {
-            value.textContent = original;
-            showBtn.style.display = 'none';
-            hideBtn.style.display = 'inline';
-        };
-
-        hideBtn.onclick = () => {
-            value.textContent = mask(original);
-            hideBtn.style.display = 'none';
-            showBtn.style.display = 'inline';
-        };
+        showBtn.onclick = () => { value.textContent = original; showBtn.style.display = 'none'; hideBtn.style.display = 'inline'; };
+        hideBtn.onclick = () => { value.textContent = mask(original); hideBtn.style.display = 'none'; showBtn.style.display = 'inline'; };
     });
 }
 
 const mask = txt => '•'.repeat(txt.length);
 
 // ==================================================
-// IMAGE UPLOAD
+// BANKING INFORMATION
 // ==================================================
-function initImageUpload() {
-    document.querySelectorAll('.button2').forEach(btn => {
-        btn.onclick = () => {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
+function initBanking() {
+    document.querySelectorAll('.banking-item').forEach(card => {
+        card.addEventListener('click', () => {
+            document.querySelectorAll('.banking-item').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            currentBankingCard = card;
+            currentBankingId = card.dataset.bankingId;
+        });
+    });
 
-            input.onchange = e => {
-                const file = e.target.files[0];
-                if (!file || file.size > 1024 * 1024) return alert('Max 1MB');
-                const reader = new FileReader();
-                reader.onload = ev => btn.previousElementSibling.src = ev.target.result;
-                reader.readAsDataURL(file);
-            };
-            input.click();
-        };
+    document.getElementById('editBankingInfoBtn')?.addEventListener('click', () => {
+        if (!currentBankingCard) return alert('Please select a banking card to edit');
+        currentBankingMode = 'edit';
+        loadBankingToModal(currentBankingCard);
+        document.getElementById('deleteBankingBtn').style.display = 'block';
+        openBankingModal();
+    });
+
+    document.getElementById('addBankingBtn')?.addEventListener('click', () => {
+        currentBankingMode = 'add';
+        currentBankingId = null;
+        currentBankingCard = null;
+        setValue('bankAccountNumber','');
+        setValue('bankName','');
+        setValue('bankBranch','');
+        setValue('holderName','');
+        setValue('idNumber','');
+        clearAllErrors(['bankAccountNumber', 'bankName', 'bankBranch', 'holderName', 'idNumber']);
+        document.getElementById('deleteBankingBtn').style.display = 'none';
+        openBankingModal();
+    });
+
+    document.getElementById('saveBankingBtn')?.addEventListener('click', saveBanking);
+    document.getElementById('cancelBankingBtn')?.addEventListener('click', closeBankingModal);
+    document.getElementById('deleteBankingBtn')?.addEventListener('click', deleteBanking);
+
+    ['bankAccountNumber', 'bankName', 'bankBranch', 'holderName', 'idNumber'].forEach(id => {
+        document.getElementById(id)?.addEventListener('input', () => clearError(id));
     });
 }
 
+function loadBankingToModal(card) {
+    setValue('bankAccountNumber', card.dataset.accountNumber);
+    setValue('bankName', card.dataset.bankName);
+    setValue('bankBranch', card.dataset.bankBranch);
+    setValue('holderName', card.dataset.holderName);
+    setValue('idNumber', card.dataset.idNumber);
+}
+
+function saveBanking() {
+    console.log('🔵 saveBanking() called');
+    
+    const data = {
+        accountNumber: getValue('bankAccountNumber').trim(),
+        bankName: getValue('bankName').trim(),
+        bankBranch: getValue('bankBranch').trim(),
+        holderName: getValue('holderName').trim(),
+        idNumber: getValue('idNumber').trim()
+    };
+
+    console.log('📦 Banking data:', data);
+
+    clearAllErrors(['bankAccountNumber', 'bankName', 'bankBranch', 'holderName', 'idNumber']);
+
+    let hasError = false;
+
+    if (!data.accountNumber) {
+        showError('bankAccountNumber', 'Account number is required');
+        hasError = true;
+    } else if (!/^[0-9]+$/.test(data.accountNumber)) {
+        showError('bankAccountNumber', 'Account number must contain only numbers');
+        hasError = true;
+    }
+
+    if (!data.bankName) {
+        showError('bankName', 'Bank name is required');
+        hasError = true;
+    }
+
+    if (!data.bankBranch) {
+        showError('bankBranch', 'Bank branch is required');
+        hasError = true;
+    }
+
+    if (!data.holderName) {
+        showError('holderName', 'Account holder name is required');
+        hasError = true;
+    }
+
+    if (!data.idNumber) {
+        showError('idNumber', 'ID number is required');
+        hasError = true;
+    } else if (!/^[0-9]+$/.test(data.idNumber)) {
+        showError('idNumber', 'ID number must contain only numbers');
+        hasError = true;
+    }
+
+    if (hasError) {
+        console.log('❌ Banking validation failed');
+        return;
+    }
+
+    console.log('✅ Banking validation passed');
+
+    const formData = new FormData();
+    formData.append('action', currentBankingMode === 'edit' ? 'updateBanking' : 'addBanking');
+    if (currentBankingMode === 'edit') formData.append('banking_id', currentBankingId);
+
+    formData.append('account_number', data.accountNumber);
+    formData.append('bank_branch', data.bankBranch);
+    formData.append('bank_name', data.bankName);
+    formData.append('holder_name', data.holderName);
+    formData.append('id_number', data.idNumber);
+    formData.append('is_default', 'No');
+
+    console.log('📤 Sending banking request...');
+    for (let pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+    }
+
+    fetch('/controllers/website/account_controller.php', { method: 'POST', body: formData })
+    .then(res => {
+        console.log('📥 Banking response status:', res.status);
+        return res.text();
+    })
+    .then(text => {
+        console.log('📄 Banking raw response:', text);
+        try {
+            const res = JSON.parse(text);
+            console.log('✅ Banking parsed:', res);
+            if(res.success) {alert('Banking information saved!');window.location.reload();}
+            else alert('Error: ' + (res.message || 'Unknown error'));
+        } catch(e) {
+            console.error('❌ Banking JSON parse error:', e);
+            alert('Server error: Invalid response');
+        }
+    })
+    .catch(err => {
+        console.error('❌ Banking network error:', err);
+        alert('Server error: ' + err);
+    });
+}
+
+function deleteBanking() {
+    if (!currentBankingId) return alert('Please select a banking card to delete.');
+    if (!confirm('Are you sure you want to delete this bank account?')) return;
+
+    const formData = new FormData();
+    formData.append('action','deleteBanking');
+    formData.append('banking_id', currentBankingId);
+
+    fetch('/controllers/website/account_controller.php', { method:'POST', body:formData })
+    .then(res=>res.json())
+    .then(res=>{ if(res.success){alert('Banking information saved!'); window.location.reload();} else alert('Error: '+(res.message||'Unknown error')); })
+    .catch(err=>alert('Server error: '+err));
+}
+
 // ==================================================
-// SHIPPING
+// SHIPPING INFORMATION
 // ==================================================
 function initShipping() {
-    document.querySelectorAll('.frame-container').forEach(card => {
-        card.onclick = () => {
+    document.querySelectorAll('.address-item').forEach(card=>{
+        card.addEventListener('click', ()=>{
+            document.querySelectorAll('.address-item').forEach(c=>c.classList.remove('selected'));
+            card.classList.add('selected');
             currentShippingCard = card;
-
-            document.querySelectorAll('.frame-container .status-tag').forEach(t => {
-                t.classList.remove('status-tag');
-                t.classList.add('status-tag2');
-                t.textContent = '';
-            });
-
-            const tag = card.querySelector('.status-tag2');
-            if (tag) {
-                tag.classList.remove('status-tag2');
-                tag.classList.add('status-tag');
-                tag.textContent = 'Default';
-            }
-        };
+            currentShippingId = card.dataset.addressId;
+        });
     });
 
-    document.querySelectorAll('.shipping .button6').forEach(btn => {
-        btn.onclick = e => {
-            e.stopPropagation();
-            if (!currentShippingCard) return alert('Please select an address first');
-            openShippingModal('edit');
-        };
+    document.getElementById('editAddressBtn')?.addEventListener('click', ()=>{
+        if(!currentShippingCard) return alert('Please select an address to edit');
+        loadShippingFromCard(currentShippingCard);
+        document.getElementById('deleteShippingBtn').style.display='block';
+        openShippingModal();
     });
 
-    document.querySelector('.shipping .button4')?.addEventListener('click', () => {
+    document.getElementById('addAddressBtn')?.addEventListener('click', ()=>{
         currentShippingCard = null;
-        openShippingModal('add');
+        currentShippingId = null;
+        setValue('shipName','');   
+        setValue('shipPhone','');
+        setValue('shipAddress','');
+        setValue('shipCity','');
+        setValue('shipCountry','');
+        clearAllErrors(['shipName', 'shipPhone', 'shipAddress', 'shipCity', 'shipCountry']);
+        document.getElementById('deleteShippingBtn').style.display='none';
+        openShippingModal();
     });
 
     document.getElementById('saveShippingBtn')?.addEventListener('click', saveShipping);
     document.getElementById('cancelShippingBtn')?.addEventListener('click', closeShippingModal);
     document.getElementById('deleteShippingBtn')?.addEventListener('click', deleteShipping);
 
-    document.getElementById('ShippingModal')?.addEventListener('click', e => {
-        if (e.target.id === 'ShippingModal') closeShippingModal();
+    ['shipName', 'shipPhone', 'shipAddress', 'shipCity', 'shipCountry'].forEach(id => {
+        document.getElementById(id)?.addEventListener('input', () => clearError(id));
     });
 }
 
-function openShippingModal(mode) {
-    document.getElementById('shippingModalTitle').textContent =
-        mode === 'add' ? 'Add New Address' : 'Edit Shipping Address';
-
-    if (mode === 'edit') loadShippingFromCard();
-    else clearShippingForm();
-
-    document.getElementById('ShippingModal').style.display = 'flex';
-}
-
-function closeShippingModal() {
-    document.getElementById('ShippingModal').style.display = 'none';
-    currentShippingCard = null;
+function loadShippingFromCard(card) {
+    currentShippingId = card.dataset.addressId;
+    setValue('shipName', card.querySelector('.ship-name').textContent);
+    const addrElement = card.querySelector('.ship-address');
+    const fullText = addrElement.textContent.trim();
+    const phone = addrElement.dataset.phone;
+    const parts = fullText.split(',').map(p=>p.trim());
+    setValue('shipAddress', parts[0]||'');
+    setValue('shipCity', parts[1]||'');
+    setValue('shipCountry', parts[2]||'');
+    setValue('shipPhone', phone||'');
 }
 
 function saveShipping() {
-    const d = getShippingFormData();
-    if (!d.address || !d.city || !d.country) return alert('Address, City, Country are required');
+    console.log('🔵 saveShipping() called');
+    
+    const data = {
+        fullname: getValue('shipName').trim(),
+        phone: getValue('shipPhone').trim(),
+        address: getValue('shipAddress').trim(),
+        city: getValue('shipCity').trim(),
+        country: getValue('shipCountry').trim()
+    };
 
-    currentShippingCard ? updateShippingCard(d) : createShippingCard(d);
-    closeShippingModal();
+    console.log('📦 Shipping data:', data);
+
+    clearAllErrors(['shipName', 'shipPhone', 'shipAddress', 'shipCity', 'shipCountry']);
+
+    let hasError = false;
+
+    if (!data.fullname) {
+        showError('shipName', 'Full name is required');
+        hasError = true;
+    }
+
+    if (!data.phone) {
+        showError('shipPhone', 'Phone number is required');
+        hasError = true;
+    } else if (!validatePhone(data.phone)) {
+        showError('shipPhone', 'Phone number must be 10-11 digits');
+        hasError = true;
+    }
+
+    if (!data.address) {
+        showError('shipAddress', 'Address is required');
+        hasError = true;
+    }
+
+    if (!data.city) {
+        showError('shipCity', 'City is required');
+        hasError = true;
+    }
+
+    if (!data.country) {
+        showError('shipCountry', 'Country is required');
+        hasError = true;
+    }
+
+    if (hasError) {
+        console.log('❌ Shipping validation failed');
+        return;
+    }
+
+    console.log('✅ Shipping validation passed');
+
+    const formData = new FormData();
+    formData.append('action', currentShippingCard ? 'updateAddress' : 'addAddress');
+    if (currentShippingCard) formData.append('address_id', currentShippingId);
+
+    formData.append('fullname', data.fullname);
+    formData.append('phone', data.phone);
+    formData.append('address', data.address);
+    formData.append('city', data.city);
+    formData.append('country', data.country);
+
+    console.log('📤 Sending shipping request...');
+    for (let pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+    }
+
+    fetch('/controllers/website/account_controller.php', { method:'POST', body:formData })
+    .then(res=>{
+        console.log('📥 Shipping response status:', res.status);
+        return res.text();
+    })
+    .then(text=>{
+        console.log('📄 Shipping raw response:', text);
+        try {
+            const res = JSON.parse(text);
+            console.log('✅ Shipping parsed:', res);
+            if(res.success){alert('Shipping information saved!'); window.location.reload();}
+            else alert('Error: ' + (res.message||'Unknown error'));
+        } catch(e) {
+            console.error('❌ Shipping JSON parse error:', e);
+            alert('Server error: Invalid response');
+        }
+    })
+    .catch(err=>{
+        console.error('❌ Shipping network error:', err);
+        alert('Server error: '+err);
+    });
 }
 
 function deleteShipping() {
-    if (!currentShippingCard) return alert('No address selected to delete');
-    if (!confirm('Are you sure you want to delete this address?')) return;
+    if (!currentShippingId) return alert('Please select a shipping address to delete.');
+    if (!confirm('Are you sure you want to delete this shipping address?')) return;
 
-    currentShippingCard.remove();
-    currentShippingCard = null;
-    closeShippingModal();
-}
+    const formData = new FormData();
+    formData.append('action', 'deleteAddress');
+    formData.append('address_id', currentShippingId);
 
-function getShippingFormData() {
-    return {
-        name: getValue('shipName'),
-        phone: getValue('shipPhone'),
-        address: getValue('shipAddress'),
-        city: getValue('shipCity'),
-        country: getValue('shipCountry'),
-    };
-}
+    console.log('🗑️ Deleting address ID:', currentShippingId);
 
-function clearShippingForm() {
-    ['shipName','shipPhone','shipAddress','shipCity','shipCountry']
-        .forEach(id => setValue(id, ''));
-}
+    fetch('/controllers/website/account_controller.php', { 
+        method: 'POST', 
+        body: formData 
+    })
+    .then(res => res.json())
+    .then(res => {
+        console.log('Delete response:', res);
 
-function loadShippingFromCard() {
-    if (!currentShippingCard) return;
+        if (res.success) {
+            alert('Address deleted successfully!');
 
-    setValue('shipName', currentShippingCard.querySelector('.ship-name')?.textContent || '');
-    const addrEl = currentShippingCard.querySelector('.ship-address');
-    if (addrEl) {
-        const parts = addrEl.textContent.split(',').map(p => p.trim());
-        setValue('shipAddress', parts[0] || '');
-        setValue('shipCity', parts[1] || '');
-        setValue('shipCountry', parts[2] || '');
-    }
-}
+            // 1️⃣ Xóa thẻ DOM tương ứng
+            if (currentShippingCard) {
+                currentShippingCard.remove();
+            }
 
-function updateShippingCard(d) {
-    if (!currentShippingCard) return;
-    currentShippingCard.querySelector('.ship-name').textContent = d.name || 'Unnamed';
-    currentShippingCard.querySelector('.ship-address').textContent = `${d.address}, ${d.city}, ${d.country}`;
-}
+            // 2️⃣ Reset state
+            currentShippingCard = null;
+            currentShippingId = null;
 
-function createShippingCard(d) {
-    const groups = document.querySelectorAll('.shipping .frame-group');
-    let target = [...groups].find(g => g.children.length < 2) || groups[0];
-
-    const card = document.createElement('div');
-    card.className = 'frame-container';
-    card.innerHTML = `
-        <div class="frame-div">
-            <div class="frame-parent5">
-                <div class="john-doe-wrapper">
-                    <div class="text4 ship-name">${d.name}</div>
-                </div>
-            </div>
-            <div class="status-tag2"></div>
-        </div>
-        <div class="sunset-boulevard-los-angeles-wrapper">
-            <div class="gender ship-address" data-city="${d.city}" data-country="${d.country}">
-                ${d.address}, ${d.city}, ${d.country}
-            </div>
-        </div>
-    `;
-    target.appendChild(card);
-
-    card.onclick = () => {
-        currentShippingCard = card;
-        document.querySelectorAll('.frame-container .status-tag').forEach(t => {
-            t.classList.remove('status-tag');
-            t.classList.add('status-tag2');
-            t.textContent = '';
-        });
-
-        const tag = card.querySelector('.status-tag2');
-        if (tag) {
-            tag.classList.remove('status-tag2');
-            tag.classList.add('status-tag');
-            tag.textContent = 'Default';
+            // 3️⃣ (Tuỳ chọn) Cập nhật session địa chỉ nếu controller trả về addresses
+            if (res.addresses) {
+                // ví dụ bạn lưu session vào JS array để render lại
+                // window.userAddresses = res.addresses; 
+            }
+        } else {
+            alert('Error: ' + (res.message || 'Unknown error'));
         }
-    };
+    })
+    .catch(err => {
+        console.error('❌ Delete error:', err);
+        alert('Server error: ' + err);
+    });
+}
+
+
+// ==================================================
+// MODAL HELPERS
+// ==================================================
+function openBankingModal() { 
+    document.getElementById('BankingModal').style.display='flex';
+    clearAllErrors(['bankAccountNumber', 'bankName', 'bankBranch', 'holderName', 'idNumber']);
+}
+
+function closeBankingModal() { 
+    document.getElementById('BankingModal').style.display='none';
+    clearAllErrors(['bankAccountNumber', 'bankName', 'bankBranch', 'holderName', 'idNumber']);
+}
+
+function openShippingModal() { 
+    document.getElementById('ShippingModal').style.display='flex';
+    clearAllErrors(['shipName', 'shipPhone', 'shipAddress', 'shipCity', 'shipCountry']);
+}
+
+function closeShippingModal() { 
+    document.getElementById('ShippingModal').style.display='none';
+    clearAllErrors(['shipName', 'shipPhone', 'shipAddress', 'shipCity', 'shipCountry']);
 }
 
 // ==================================================
 // RESPONSIVE
 // ==================================================
-window.addEventListener('resize', debounce(handleResize, 200));
+window.addEventListener('resize', debounce(handleResize,200));
 function handleResize() {
     const sidebar = document.querySelector('.card-account');
-    if (sidebar) sidebar.style.position = window.innerWidth < 1200 ? 'static' : 'sticky';
+    if(sidebar) sidebar.style.position = window.innerWidth < 1200 ? 'static':'sticky';
 }
 
 // ==================================================
 // UTIL
 // ==================================================
-const getText = id => document.getElementById(id)?.textContent.trim() || '';
-const setText = (id, v) => document.getElementById(id) && (document.getElementById(id).textContent = v);
-const getValue = id => document.getElementById(id)?.value || '';
-const setValue = (id, v) => document.getElementById(id) && (document.getElementById(id).value = v);
-const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
-function debounce(fn, t) {
-    let timer;
-    return (...a) => {
-        clearTimeout(timer);
-        timer = setTimeout(() => fn(...a), t);
-    };
-}
-
-console.log('✅ My Account JS loaded – FULL CLEAN');
+const getText = id => document.getElementById(id)?.textContent.trim()||'';
+const setText = (id,v)=>document.getElementById(id)&&(document.getElementById(id).textContent=v);
+const getValue = id => document.getElementById(id)?.value||'';
+const setValue = (id,v)=>document.getElementById(id)&&(document.getElementById(id).value=v);
+const capitalize = s=>s.charAt(0).toUpperCase()+s.slice(1);
+function debounce(fn,t){let timer; return (...a)=>{clearTimeout(timer); timer=setTimeout(()=>fn(...a),t);}}

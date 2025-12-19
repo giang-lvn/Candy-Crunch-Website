@@ -1,5 +1,5 @@
 <?php
-$ROOT = '/Candy-Crunch-Website';
+$ROOT = '';
 
 ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
