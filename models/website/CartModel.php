@@ -253,7 +253,6 @@ class CartModel
         //    return 0;
         //}
         
-
         $today = date('Y-m-d');
 
         if ($today < $voucher['StartDate'] || $today > $voucher['EndDate']) {
@@ -269,6 +268,40 @@ class CartModel
         }
 
         return 0;
+    }
+
+    //Tìm giỏ hàng đang hoạt động của khách hàng
+    public function findActiveCartByCustomer(int $customerId): ?array
+    {
+        $sql = "
+            SELECT CartID
+            FROM CART
+            WHERE CustomerID = ?
+            LIMIT 1
+        ";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $customerId);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $cart = $result->fetch_assoc();
+        return $cart ?: null;
+    }
+
+    //Tạo giỏ hàng mới
+    public function createCart(int $customerId): int
+    {
+        $sql = "
+            INSERT INTO CART (CustomerID)
+            VALUES (?)
+        ";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $customerId);
+        $stmt->execute();
+
+        return $this->conn->insert_id;
     }
 
 }

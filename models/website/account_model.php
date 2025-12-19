@@ -13,6 +13,22 @@ class AccountModel
        ACCOUNT + CUSTOMER (PROFILE)
        ===================================================== */
 
+    public function findById(string $accountId): ?array
+    {
+        $sql = "
+            SELECT AccountID, Email, AccountStatus
+            FROM ACCOUNT
+            WHERE AccountID = :accountId
+            LIMIT 1
+        ";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['accountId' => $accountId]);
+
+        $account = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $account ?: null;
+    }
+
     public function getCustomerByAccountId(string $accountId): array
     {
         $sql = "

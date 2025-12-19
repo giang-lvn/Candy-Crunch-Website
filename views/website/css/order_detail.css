@@ -383,6 +383,15 @@
     color: #000;
 }
 
+.payment-row.shipping .label {
+    font: var(--body-medium);
+    color: #000;
+}
+
+.payment-row.shipping .value {
+    font: var(--body-semibold);
+    color: #000;
+}
 
 /* TOTAL */
 .payment-total {

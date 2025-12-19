@@ -1,5 +1,8 @@
 <?php
 
+require_once __DIR__ . '/../../models/db.php';
+require_once __DIR__ . '/../../models/website/account_model.php';
+
 class CartController
 {
     protected $accountModel;
@@ -14,7 +17,8 @@ class CartController
         }
 
         // Load model
-        $this->accountModel  = new AccountModel();
+        global $db;
+        $this->accountModel  = new AccountModel($db);
         $this->customerModel = new CustomerModel();
         $this->cartModel     = new CartModel();
 
@@ -102,21 +106,20 @@ class CartController
     //Lấy số lượng sản phẩm trong giỏ
     public function getQuantity(int $cartId, int $skuId): int
     {
-        $sql = "
-            SELECT CartQuantity
-            FROM CART_DETAIL
-            WHERE CartID = ? AND SKUID = ?
-            LIMIT 1
-        ";
-
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([$cartId, $skuId]);
-
-        $qty = $stmt->fetchColumn();
-
-        return $qty !== false ? (int)$qty : 0;
+        return $this->cartModel->getQuantity($cartId, $skuId);
     }
 
+
+    //Tính subtotal từ cart items
+    private function calculateSubtotal(array $cartItems): float
+    {
+        $subtotal = 0;
+        foreach ($cartItems as $item) {
+            $price = $item['PromotionPrice'] ?? $item['OriginalPrice'];
+            $subtotal += $price * $item['CartQuantity'];
+        }
+        return $subtotal;
+    }
 
     //Cập nhật số lượng giỏ hàng
     public function updateQuantity()

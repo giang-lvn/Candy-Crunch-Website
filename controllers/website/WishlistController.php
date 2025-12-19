@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../models/db.php';
 require_once __DIR__ . '/../../models/website/wishlistmodel.php';
 
 class WishlistController {
