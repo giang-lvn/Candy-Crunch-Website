@@ -8,6 +8,7 @@ class AccountModel
     {
         $this->db = $db;
     }
+
     public function getCustomerByAccountId(string $accountId): array
     {
         $sql = "

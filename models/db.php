@@ -7,6 +7,7 @@ $username = 'root';
 $password = 'giangne060705';
 
 
+
 try {
     $db = new PDO(
         "mysql:host=$host;dbname=$dbname;charset=utf8mb4",
