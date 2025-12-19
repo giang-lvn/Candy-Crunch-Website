@@ -34,14 +34,14 @@
       </label>
     <header class="header-section">
         <div class="logo-img">
-            <img src="../img/logo.svg" alt="Candy Crunch Logo" class="logo-img">
+            <img src="../img/logo.svg" alt="Candy Crunch Logo" class="logo-img" >
         </div>
     </header>
 
     <section class="login-section">
         
         <div class="login-card">
-            <button class="close-btn" onclick="window.location.href='index.html'">&times;</button>
+            <button class="close-btn" onclick="window.location.href='index.php'">&times;</button>
 
             <div class="login-header-content">
                 <h1 class="login-title">Login</h1>

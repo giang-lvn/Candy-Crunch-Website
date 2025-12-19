@@ -8,8 +8,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Modak&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/new password.css">
-    <script src="../js/new password.js"></script>
+    <link rel="stylesheet" href="../css/new_password.css">
+    <script src="../js/new_password.js"></script>
 </head>
 <body>
     <header class="header-section">
