@@ -1,7 +1,7 @@
 <?php
-// my_vouchers.php
-$ROOT = '';
-require_once('../../../partials/header.php');
+
+$ROOT = 'Candy-Crunch-Website';
+require_once('../../partials/header.php');
 ?>
 
 <!DOCTYPE html>

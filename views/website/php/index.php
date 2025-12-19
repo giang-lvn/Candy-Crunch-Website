@@ -1,3 +1,54 @@
+<?php
+$uri = $_SERVER['REQUEST_URI'];
+$path = parse_url($uri, PHP_URL_PATH);
+$file = basename($path);
+
+/*
+|--------------------------------------------------------------------------
+| ROUTER
+|--------------------------------------------------------------------------
+*/
+
+// Nếu truy cập trực tiếp folder hoặc index.php → landing
+if ($file === '' || $file === 'index.php') {
+    // Không require gì cả
+    // Chạy HTML landing phía dưới
+} else {
+    switch ($file) {
+        case 'shop.php':
+            require 'shop.php';
+            exit;
+
+        case 'checkout.php':
+            require 'checkout.php';
+            exit;
+
+        case 'my_account.php':
+            require 'my_account.php';
+            exit;
+        
+        case 'changepass.php':
+            require 'changepass.php';
+            exit;
+        
+        case 'my_orders.php':
+            require 'my_orders.php';
+            exit;
+        
+        case 'my_vouchers.php':
+            require 'my_vouchers.php';
+            exit;
+        
+        case 'login.php':
+
+        default:
+            http_response_code(404);
+            echo '404 - Page not found';
+            exit;
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -83,7 +134,7 @@
                     </div>
                 </div>
 
-                <button class="btn-primary-large">Check it out now</button>
+                <button onclick="window.location.href='/views/website/php/shop.html'" class="btn-primary-large">Check it out now</button>
             </div>
 
             <p class="hero-tagline">
@@ -173,11 +224,11 @@
             <div class="joy-stats">
                 <div class="joy-stat">
                     <span class="joy-stat-number">100%</span>
-                    <span class="joy-stat-label">Artifactual</span>
+                    <span class="joy-stat-label">Sugar</span>
                 </div>
                 <div class="joy-stat">
                     <span class="joy-stat-number">100%</span>
-                    <span class="joy-stat-label">Artifactual</span>
+                    <span class="joy-stat-label">Gluten</span>
                 </div>
                 <div class="joy-stat">
                     <span class="joy-stat-number">100%</span>
