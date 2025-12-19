@@ -30,8 +30,10 @@
             <div class="input" data-size="medium">
                 <label class="input-label">Product Name</label>
                 <div class="input-field">
-                    Fruit-Filled Candy
+                    <?php echo htmlspecialchars($productName); ?>
                 </div>
+                <!-- Hidden input để lưu SKUID -->
+                <input type="hidden" id="skuID" value="<?php echo htmlspecialchars($skuID); ?>">
             </div>
 
             <!-- Rating -->

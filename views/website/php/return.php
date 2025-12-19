@@ -42,65 +42,52 @@
     <div class="return-title">
         <h2>RETURN ORDER</h2>
     </div>
-  
+
     <!-- FORM -->
     <form class="return-form" method="POST" action="/index.php?controller=return&action=submitReturn" enctype="multipart/form-data">
-    
+        
+        <!-- ← THÊM: Hidden input chứa OrderID -->
+        <input type="hidden" name="order_id" value="<?= htmlspecialchars($data['orderId']) ?>">
+        
         <!-- PRODUCTS -->
         <div class="return-products">
-    
-            <!-- TITLE -->
             <div class="return-products-title">
-                <h3>Product</h3>
+                <h3>Product (Order #<?= htmlspecialchars($data['orderId']) ?>)</h3>
             </div>
         
-            <!-- PRODUCT GRID -->
-            <div class="return-products-grid" id="returnProductsGrid">
-            
-                    <!-- JS render product rows -->
-                    <div class="return-product-item">
-                        <!-- Sản phẩm -->
-                        <div class="single-product">
-                            <!-- CHECK 
-                            <div class="product-select">
-                                <input type="checkbox">
-                            </div>-->
-                        
-                            <!-- INFO -->
-                            <div class="product-info">
-                            
-                                <!-- IMAGE -->
-                                <div class="product-image">
-                                    <img src="../img/about_story.jpg" alt="Product">
-                                </div>
-                            
-                                <!-- DETAILS -->
-                                <div class="product-details">
-                                    <!-- NAME -->
-                                    <div class="product-name">Fruit-Filled Candy</div>
-                            
-                                    <!-- ATTRIBUTE -->
-                                    <div class="product-attribute">175g</div>
-                            
-                                    <!-- PRICE + QTY -->
-                                    <div class="product-price-qty">
-                                        <div class="product-quantity">Qty: 1</div>
-                                        <div class="product-price">
-                                            <span class="price-old">150.000 VND</span>
-                                            <span class="price-new">150.000 VND</span>
+            <div class="return-products-grid">
+                <?php if (!empty($data['products'])): ?>
+                    <?php foreach ($data['products'] as $product): ?>
+                        <div class="return-product-item">
+                            <div class="single-product">
+                                <!-- ← XÓA: Bỏ checkbox -->
+                                
+                                <div class="product-info">
+                                    <div class="product-image">
+                                        <img src="<?= htmlspecialchars($product['Image'] ?? '../img/default.jpg') ?>" alt="Product">
+                                    </div>
+                                
+                                    <div class="product-details">
+                                        <div class="product-name"><?= htmlspecialchars($product['ProductName']) ?></div>
+                                        <div class="product-attribute"><?= htmlspecialchars($product['Attribute']) ?>g</div>
+                                        <div class="product-price-qty">
+                                            <div class="product-quantity">Qty: <?= htmlspecialchars($product['OrderQuantity']) ?></div>
+                                            <div class="product-price">
+                                                <span class="price-old"><?= number_format($product['OriginalPrice'], 0, ',', '.') ?> VND</span>
+                                                <span class="price-new"><?= number_format($product['PromotionPrice'], 0, ',', '.') ?> VND</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        
-                    </div>
-                   
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p>No products found in this order.</p>
+                <?php endif; ?>
             </div>
-
         </div>
-    
+        
         <!-- RETURN INFO -->
         <div class="refurn">
     
@@ -178,7 +165,6 @@
             </div>
 
         </div>
-    
     </form>
     
     <!-- Script -->
