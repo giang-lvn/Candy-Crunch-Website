@@ -20,7 +20,7 @@
 
     <section class="newpw-section">
         <div class="newpw-card">
-            <button class="close-btn" onclick="window.location.href='../php/login.html'">&times;</button>
+            <button class="close-btn" onclick="window.location.href='../php/login.php'">&times;</button>
 
             <div class="newpw-header-content">
                 <h1 class="newpw-title">New Password</h1>

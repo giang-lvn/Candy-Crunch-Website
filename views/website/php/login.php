@@ -46,7 +46,7 @@
             <div class="login-header-content">
                 <h1 class="login-title">Login</h1>
                 <p class="login-subtitle">Welcome back! Nice to meet you again!</p>
-                <p class="login-desc">Don't have an account? <a href="../php/sign up.html" class="signup-link">Sign up</a></p>
+                <p class="login-desc">Don't have an account? <a href="../php/sign_up.php" class="signup-link">Sign up</a></p>
             </div>
             <form id="loginForm" class="login-form">
                 
@@ -68,7 +68,7 @@
                 </div>
 
                 <div class="login-footer-links">
-                    <a href="../php/forgot password.html" class="forgot-link">Forgot your password?</a>
+                    <a href="../php/forgot_password.php" class="forgot-link">Forgot your password?</a>
                 </div>
             </form>
         </div>

@@ -8,8 +8,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Modak&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/verify email.css">
-    <script src="../js/verify email.js"></script>
+    <link rel="stylesheet" href="../css/verify_email.css">
+    <script src="../js/verify_email.js"></script>
 </head>
 <body>
     <header class="header-section">
@@ -20,7 +20,7 @@
 
     <section class="verify-section">
         <div class="verify-card">
-            <button class="close-btn" onclick="window.location.href='../php/login.html'">&times;</button>
+            <button class="close-btn" onclick="window.location.href='../php/login.php'">&times;</button>
 
             <div class="verify-header-content">
                 <h1 class="verify-title">Verify Code</h1>

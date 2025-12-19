@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Hành động khi bấm nút X. 
             // Ví dụ: Quay về trang chủ hoặc ẩn form
             if(confirm("Bạn có muốn thoát trang đăng ký không?")) {
-                window.location.href = "index.html"; // Chuyển hướng về trang chủ (tùy chỉnh link này)
+                window.location.href = "index.php"; // Chuyển hướng về trang chủ (tùy chỉnh link này)
             }
         });
     }
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Xóa trắng form để nhập người tiếp theo
             form.reset();
             // Chuyển hướng đến trang login để đăng nhập lại;
-            window.location.href = 'login.html'; 
+            window.location.href = '../php/login.php'; 
         });
     }
 });

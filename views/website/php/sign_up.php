@@ -11,7 +11,7 @@
     
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/sign_up.css">
-    <script src="../js/sign_up.js"></script>
+    <script src="js/sign_up.js"></script>
 </head>
 <body>
 
@@ -25,7 +25,7 @@
         <div class="signup-container">
             
             <div class="signup-card">
-                <button class="close-btn"onclick="window.location.href='index.html'">&times;</button>
+                <button class="close-btn"onclick="window.location.href='index.php'">&times;</button>
 
                 <div class="signup-header">
                     <h1 class="signup-title">Sign up</h1>
@@ -76,7 +76,5 @@
             </div>
         </div>
     </section>
-
-    <script src="js/signup.js"></script>
 </body>
 </html>

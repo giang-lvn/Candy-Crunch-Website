@@ -8,8 +8,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Modak&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/forgot password.css">
-    <script src="../js/forgot password.js"></script>
+    <link rel="stylesheet" href="../css/forgot_password.css">
+    <script src="../js/forgot_password.js"></script>
 </head>
 <body>
     <header class="header-section">
@@ -20,7 +20,7 @@
 
     <section class="forgotpw-section">
         <div class="forgotpw-card">
-            <button class="close-btn" onclick="window.location.href='../php/login.html'">&times;</button>
+            <button class="close-btn" onclick="window.location.href='../php/login.php'">&times;</button>
 
             <div class="forgotpw-header-content">
                 <h1 class="forgotpw-title">Forgot Password</h1>
@@ -41,7 +41,7 @@
                 </div>
                 
                 <div class="forgotpw-footer-links">
-                    <a href="../php/login.html" class="back-link">&larr; Back to Login</a>
+                    <a href="../php/login.php" class="back-link">&larr; Back to Login</a>
                 </div>
             </form>
         </div>
