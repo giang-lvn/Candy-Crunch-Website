@@ -1,7 +1,9 @@
 <?php
+$ROOT = '/Candy-Crunch-Website';
+include('../../../partials/header.php');
 $uri = $_SERVER['REQUEST_URI'];
-$path = parse_url($uri, PHP_URL_PATH);
-$file = basename($path);
+// $path = parse_url($uri, PHP_URL_PATH);
+// $file = basename($path);
 
 /*
 |--------------------------------------------------------------------------
@@ -39,7 +41,9 @@ if ($file === '' || $file === 'index.php') {
             require 'my_vouchers.php';
             exit;
         
-        case 'login.php':
+        case '':
+
+
 
         default:
             http_response_code(404);
@@ -63,44 +67,16 @@ if ($file === '' || $file === 'index.php') {
         href="https://fonts.googleapis.com/css2?family=Modak&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&display=swap"
         rel="stylesheet">
     <!-- Preload critical hero images for faster loading -->
-    <link rel="preload" href="/views/website/img/hero-thumbnail.svg" as="image" fetchpriority="high">
-    <link rel="preload" href="/views/website/img/hero-line1.webp" as="image">
-    <link rel="preload" href="/views/website/img/hero-line2.webp" as="image">
-    <link rel="preload" href="/views/website/img/hero-line3.webp" as="image">
-    <link rel="preload" href="/views/website/img/hero-line4.webp" as="image">
-    <link rel="stylesheet" href="/views/website/css/main.css">
-    <link rel="stylesheet" href="/views/website/css/index.css">
+    <link rel="preload" href="<?php echo $ROOT; ?>/views/website/img/hero-thumbnail.svg" as="image" fetchpriority="high">
+    <link rel="preload" href="<?php echo $ROOT; ?>/views/website/img/hero-line1.webp" as="image">
+    <link rel="preload" href="<?php echo $ROOT; ?>/views/website/img/hero-line2.webp" as="image">
+    <link rel="preload" href="<?php echo $ROOT; ?>/views/website/img/hero-line3.webp" as="image">
+    <link rel="preload" href="<?php echo $ROOT; ?>/views/website/img/hero-line4.webp" as="image">
+    <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/main.css">
+    <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/index.css">
 </head>
 
 <body id="top">
-    <!-- Navigation-->
-    <nav>
-        <div class="nav-container">
-            <div class="logo">
-                <a href="#top" class="logo-link">
-                    <img src="/views/website/img/logo.svg" alt="Candy Crunch logo">
-                </a>
-            </div>
-
-            <div class="menu-wrapper">
-                <ul class="menu">
-                    <li><a href="#" class="nav-link active">Homepage</a></li>
-                    <li><a href="#" class="nav-link">About us</a></li>
-                    <li><a href="#" class="nav-link">Shop <img src="/views/website/img/Icon _ Drop down.svg"
-                                alt="dropdown"></a></li>
-                    <li><a href="#" class="nav-link">Checkout</a></li>
-                    <li><a href="#" class="nav-link">Contact</a></li>
-                    <li><a href="#" class="nav-link">Policy</a></li>
-                </ul>
-            </div>
-
-            <div class="nav-actions">
-                <button class="btn-login">Log in</button>
-                <button class="btn-signup">Sign up</button>
-            </div>
-        </div>
-    </nav>
-    <!-- End Navigation -->
 
     <!-- Hero Section -->
 
@@ -114,22 +90,22 @@ if ($file === '' || $file === 'index.php') {
                 <div class="hero-heading">
                     <div class="hero-line">
                         <h1 class="hero-text hero-text-pink">CHRISTMAS</h1>
-                        <img src="/views/website/img/hero-line1.webp" alt="badge" class="hero-badge" loading="eager"
+                        <img src="<?php echo $ROOT; ?>/views/website/img/hero-line1.webp" alt="badge" class="hero-badge" loading="eager"
                             width="48" height="48">
                     </div>
                     <div class="hero-line">
-                        <img src="/views/website/img/hero-line2.webp" alt="badge" class="hero-badge" loading="eager"
+                        <img src="<?php echo $ROOT; ?>/views/website/img/hero-line2.webp" alt="badge" class="hero-badge" loading="eager"
                             width="48" height="48">
                         <h1 class="hero-text hero-text-teal">IS</h1>
-                        <img src="/views/website/img/hero-line2.webp" alt="badge" class="hero-badge" loading="eager"
+                        <img src="<?php echo $ROOT; ?>/views/website/img/hero-line2.webp" alt="badge" class="hero-badge" loading="eager"
                             width="48" height="48">
                         <h1 class="hero-text hero-text-teal">COMING</h1>
-                        <img src="/views/website/img/hero-line3.webp" alt="badge" class="hero-badge" loading="eager"
+                        <img src="<?php echo $ROOT; ?>/views/website/img/hero-line3.webp" alt="badge" class="hero-badge" loading="eager"
                             width="48" height="48">
                     </div>
                     <div class="hero-line">
                         <h1 class="hero-text hero-text-orange">All THE WAYS</h1>
-                        <img src="/views/website/img/hero-line4.webp" alt="badge" class="hero-badge" loading="eager"
+                        <img src="<?php echo $ROOT; ?>/views/website/img/hero-line4.webp" alt="badge" class="hero-badge" loading="eager"
                             width="48" height="48">
                     </div>
                 </div>
@@ -144,7 +120,7 @@ if ($file === '' || $file === 'index.php') {
         </div>
 
         <div class="hero-image">
-            <img src="/views/website/img/hero-thumbnails.webp" alt="Ice cream bowls" loading="eager"
+            <img src="<?php echo $ROOT; ?>/views/website/img/hero-thumbnails.webp" alt="Ice cream bowls" loading="eager"
                 fetchpriority="high" width="527" height="527">
         </div>
     </section>
@@ -174,25 +150,25 @@ if ($file === '' || $file === 'index.php') {
         <h3 class="values-main-text-2 values-text-state-2">ALSO IN FEAR</h3>
 
         <!-- Intro Images State 1 (intro1-6) -->
-        <img src="/views/website/img/intro1.svg" alt="Candy lover" class="values-img values-img-state-1 values-img-1">
-        <img src="/views/website/img/intro2.svg" alt="Candy lover" class="values-img values-img-state-1 values-img-2">
-        <img src="/views/website/img/intro3.svg" alt="Candy lover" class="values-img values-img-state-1 values-img-3">
-        <img src="/views/website/img/intro4.svg" alt="Candy lover" class="values-img values-img-state-1 values-img-4">
-        <img src="/views/website/img/intro5.svg" alt="Candy lover" class="values-img values-img-state-1 values-img-5">
-        <img src="/views/website/img/intro6.svg" alt="Candy lover" class="values-img values-img-state-1 values-img-6">
+        <img src="<?php echo $ROOT; ?>/views/website/img/intro1.svg" alt="Candy lover" class="values-img values-img-state-1 values-img-1">
+        <img src="<?php echo $ROOT; ?>/views/website/img/intro2.svg" alt="Candy lover" class="values-img values-img-state-1 values-img-2">
+        <img src="<?php echo $ROOT; ?>/views/website/img/intro3.svg" alt="Candy lover" class="values-img values-img-state-1 values-img-3">
+        <img src="<?php echo $ROOT; ?>/views/website/img/intro4.svg" alt="Candy lover" class="values-img values-img-state-1 values-img-4">
+        <img src="<?php echo $ROOT; ?>/views/website/img/intro5.svg" alt="Candy lover" class="values-img values-img-state-1 values-img-5">
+        <img src="<?php echo $ROOT; ?>/views/website/img/intro6.svg" alt="Candy lover" class="values-img values-img-state-1 values-img-6">
 
         <!-- Intro Images State 2 (intro7-12) -->
-        <img src="/views/website/img/intro7.svg" alt="Health concern"
+        <img src="<?php echo $ROOT; ?>/views/website/img/intro7.svg" alt="Health concern"
             class="values-img values-img-state-2 values-img-1">
-        <img src="/views/website/img/intro8.svg" alt="Health concern"
+        <img src="<?php echo $ROOT; ?>/views/website/img/intro8.svg" alt="Health concern"
             class="values-img values-img-state-2 values-img-2">
-        <img src="/views/website/img/intro9.svg" alt="Health concern"
+        <img src="<?php echo $ROOT; ?>/views/website/img/intro9.svg" alt="Health concern"
             class="values-img values-img-state-2 values-img-3">
-        <img src="/views/website/img/intro10.svg" alt="Health concern"
+        <img src="<?php echo $ROOT; ?>/views/website/img/intro10.svg" alt="Health concern"
             class="values-img values-img-state-2 values-img-4">
-        <img src="/views/website/img/intro11.svg" alt="Health concern"
+        <img src="<?php echo $ROOT; ?>/views/website/img/intro11.svg" alt="Health concern"
             class="values-img values-img-state-2 values-img-5">
-        <img src="/views/website/img/intro12.svg" alt="Health concern"
+        <img src="<?php echo $ROOT; ?>/views/website/img/intro12.svg" alt="Health concern"
             class="values-img values-img-state-2 values-img-6">
     </section>
     <!-- End Values Section -->
@@ -241,12 +217,12 @@ if ($file === '' || $file === 'index.php') {
 
         <div class="joy-products">
             <div class="joy-products-col">
-                <img src="/views/website/img/pl1.svg" alt="Product" class="joy-product-img">
-                <img src="/views/website/img/pl2.svg" alt="Product" class="joy-product-img">
+                <img src="<?php echo $ROOT; ?>/views/website/img/pl1.svg" alt="Product" class="joy-product-img">
+                <img src="<?php echo $ROOT; ?>/views/website/img/pl2.svg" alt="Product" class="joy-product-img">
             </div>
             <div class="joy-products-col">
-                <img src="/views/website/img/pr1.svg" alt="Product" class="joy-product-img">
-                <img src="/views/website/img/pr2.svg" alt="Product" class="joy-product-img">
+                <img src="<?php echo $ROOT; ?>/views/website/img/pr1.svg" alt="Product" class="joy-product-img">
+                <img src="<?php echo $ROOT; ?>/views/website/img/pr2.svg" alt="Product" class="joy-product-img">
             </div>
         </div>
     </section>
@@ -523,24 +499,24 @@ if ($file === '' || $file === 'index.php') {
         <div class="gallery-scroll">
             <div class="gallery-column gallery-left">
                 <div class="crew-member crew-member-1">
-                    <img src="/views/website/img/ot-thanhgiang.png" alt="Thanh Giang" class="gallery-item">
+                    <img src="<?php echo $ROOT; ?>/views/website/img/ot-thanhgiang.png" alt="Thanh Giang" class="gallery-item">
                     <div class="crew-name">THANH GIANG</div>
                 </div>
                 <div class="crew-member crew-member-2">
-                    <img src="/views/website/img/ot-giang.png" alt="Ngoc Giang" class="gallery-item">
+                    <img src="<?php echo $ROOT; ?>/views/website/img/ot-giang.png" alt="Ngoc Giang" class="gallery-item">
                     <div class="crew-name">NGOC GIANG</div>
                 </div>
             </div>
             <div class="gallery-column gallery-center">
-                <img src="/views/website/img/logo.svg" alt="Candy Crunch Logo" class="crew-logo">
+                <img src="<?php echo $ROOT; ?>/views/website/img/logo.svg" alt="Candy Crunch Logo" class="crew-logo">
             </div>
             <div class="gallery-column gallery-right">
                 <div class="crew-member crew-member-3">
-                    <img src="/views/website/img/ot-mananh.png" alt="Team Member" class="gallery-item">
+                    <img src="<?php echo $ROOT; ?>/views/website/img/ot-mananh.png" alt="Team Member" class="gallery-item">
                     <div class="crew-name">MAN ANH</div>
                 </div>
                 <div class="crew-member crew-member-4">
-                    <img src="/views/website/img/ot-longvo.png" alt="Team Member" class="gallery-item">
+                    <img src="<?php echo $ROOT; ?>/views/website/img/ot-longvo.png" alt="Team Member" class="gallery-item">
                     <div class="crew-name">LONG VO</div>
                 </div>
             </div>
@@ -548,20 +524,20 @@ if ($file === '' || $file === 'index.php') {
 
         <!-- Community Images - Appear during "A COMMUNITY" phase -->
         <div class="community-gallery">
-            <img src="/views/website/img/community_1.png" alt="Community" class="community-img community-img-1">
-            <img src="/views/website/img/community_2.png" alt="Community" class="community-img community-img-2">
-            <img src="/views/website/img/community_3.png" alt="Community" class="community-img community-img-3">
-            <img src="/views/website/img/community_4.png" alt="Community" class="community-img community-img-4">
-            <img src="/views/website/img/community_5.png" alt="Community" class="community-img community-img-5">
+            <img src="<?php echo $ROOT; ?>/views/website/img/community_1.png" alt="Community" class="community-img community-img-1">
+            <img src="<?php echo $ROOT; ?>/views/website/img/community_2.png" alt="Community" class="community-img community-img-2">
+            <img src="<?php echo $ROOT; ?>/views/website/img/community_3.png" alt="Community" class="community-img community-img-3">
+            <img src="<?php echo $ROOT; ?>/views/website/img/community_4.png" alt="Community" class="community-img community-img-4">
+            <img src="<?php echo $ROOT; ?>/views/website/img/community_5.png" alt="Community" class="community-img community-img-5">
         </div>
 
         <!-- Delight Images - Flip in during "A DELIGHT" phase -->
         <div class="delight-gallery">
-            <img src="/views/website/img/community_3.png" alt="Delight" class="delight-img delight-img-1">
-            <img src="/views/website/img/community_5.png" alt="Delight" class="delight-img delight-img-2">
-            <img src="/views/website/img/community_2.png" alt="Delight" class="delight-img delight-img-3">
-            <img src="/views/website/img/community_1.png" alt="Delight" class="delight-img delight-img-4">
-            <img src="/views/website/img/community_4.png" alt="Delight" class="delight-img delight-img-5">
+            <img src="<?php echo $ROOT; ?>/views/website/img/community_3.png" alt="Delight" class="delight-img delight-img-1">
+            <img src="<?php echo $ROOT; ?>/views/website/img/community_5.png" alt="Delight" class="delight-img delight-img-2">
+            <img src="<?php echo $ROOT; ?>/views/website/img/community_2.png" alt="Delight" class="delight-img delight-img-3">
+            <img src="<?php echo $ROOT; ?>/views/website/img/community_1.png" alt="Delight" class="delight-img delight-img-4">
+            <img src="<?php echo $ROOT; ?>/views/website/img/community_4.png" alt="Delight" class="delight-img delight-img-5">
         </div>
 
         <!-- Arc Wheel: Rotating container with 3 arc phrases positioned at 0°, 120°, 240° -->
@@ -728,8 +704,8 @@ if ($file === '' || $file === 'index.php') {
     <!-- Testimonials Section -->
     <section class="testimonials">
         <!-- Decorative Stars -->
-        <img src="/views/website/img/star1.svg" alt="Star decoration" class="testimonial-star testimonial-star-1">
-        <img src="/views/website/img/star2.svg" alt="Star decoration" class="testimonial-star testimonial-star-2">
+        <img src="<?php echo $ROOT; ?>/views/website/img/star1.svg" alt="Star decoration" class="testimonial-star testimonial-star-1">
+        <img src="<?php echo $ROOT; ?>/views/website/img/star2.svg" alt="Star decoration" class="testimonial-star testimonial-star-2">
 
         <!-- Section Header -->
         <div class="testimonials-header">
@@ -741,7 +717,7 @@ if ($file === '' || $file === 'index.php') {
         <div class="testimonials-cards">
             <!-- Card 1 -->
             <div class="testimonial-card testimonial-card-1">
-                <img src="/views/website/img/testimonial1.png" alt="Customer testimonial" class="testimonial-image">
+                <img src="<?php echo $ROOT; ?>/views/website/img/testimonial1.png" alt="Customer testimonial" class="testimonial-image">
                 <div class="testimonial-text-container">
                     <p class="testimonial-comment">Lorem ipsum dolor sit amet consectetur. Et amet sodales donec massa
                         aenean vestibulum sed nullam. Et donec bibendum egestas neque sed. Massa suspendisse nulla ut
@@ -752,7 +728,7 @@ if ($file === '' || $file === 'index.php') {
 
             <!-- Card 2 -->
             <div class="testimonial-card testimonial-card-2">
-                <img src="/views/website/img/testimonial1.png" alt="Customer testimonial" class="testimonial-image">
+                <img src="<?php echo $ROOT; ?>/views/website/img/testimonial1.png" alt="Customer testimonial" class="testimonial-image">
                 <div class="testimonial-text-container">
                     <p class="testimonial-comment">Lorem ipsum dolor sit amet consectetur. Et amet sodales donec massa
                         aenean vestibulum sed nullam. Et donec bibendum egestas neque sed. Massa suspendisse nulla ut
@@ -763,7 +739,7 @@ if ($file === '' || $file === 'index.php') {
 
             <!-- Card 3 -->
             <div class="testimonial-card testimonial-card-3">
-                <img src="/views/website/img/testimonial1.png" alt="Customer testimonial" class="testimonial-image">
+                <img src="<?php echo $ROOT; ?>/views/website/img/testimonial1.png" alt="Customer testimonial" class="testimonial-image">
                 <div class="testimonial-text-container">
                     <p class="testimonial-comment">Lorem ipsum dolor sit amet consectetur. Et amet sodales donec massa
                         aenean vestibulum sed nullam. Et donec bibendum egestas neque sed. Massa suspendisse nulla ut
@@ -779,7 +755,7 @@ if ($file === '' || $file === 'index.php') {
     <!-- Footer -->
     <footer class="footer">
         <video class="footer-video" autoplay loop muted playsinline>
-            <source src="/views/website/img/footervideo.mp4" type="video/mp4">
+            <source src="<?php echo $ROOT; ?>/views/website/img/footervideo.mp4" type="video/mp4">
         </video>
         <div class="footer-overlay"></div>
         <div class="upper">
@@ -794,7 +770,7 @@ if ($file === '' || $file === 'index.php') {
                                     <div class="text"><input class="div" placeholder="Your Email" type="email" /></div>
                                 </div>
                                 <div class="button"><img class="solar-arrow-right"
-                                        src="/views/website/img/solar-arrow-right-linear.svg" alt="Subscribe" /></div>
+                                        src="<?php echo $ROOT; ?>/views/website/img/solar-arrow-right-linear.svg" alt="Subscribe" /></div>
                             </div>
                         </div>
                     </div>
@@ -864,8 +840,8 @@ if ($file === '' || $file === 'index.php') {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
-    <script src="/views/website/js/main.js"></script>
-    <script src="/views/website/js/index.js"></script>
+    <script src="<?php echo $ROOT; ?>/views/website/js/main.js"></script>
+    <script src="<?php echo $ROOT; ?>/views/website/js/index.js"></script>
 </body>
 
 </html>

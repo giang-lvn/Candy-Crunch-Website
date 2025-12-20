@@ -1,3 +1,9 @@
+<?php
+$ROOT = '';
+include('../../../partials/header.php');
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,7 +23,7 @@
   <!-- Banner -->
   <section class="banner" aria-label="Product listing banner">
     <img class="banner-image"
-      alt="Candy banner" src="/views/website/img/shop-banner.webp"/>
+      alt="Candy banner" src="../../website/img/shop-banner.webp"/>
   </section>
 
   <!-- Main section -->
@@ -654,3 +660,7 @@
 </body>
 
 </html>
+
+<?php
+include '../../../partials/footer_kovid.php';
+?>

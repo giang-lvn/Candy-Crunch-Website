@@ -6,25 +6,30 @@ document.addEventListener('DOMContentLoaded', () => {
   gsap.registerPlugin(ScrollTrigger);
 
   // Navigation slide down after hero section loads
-  // Wait for hero animation to complete (1s) then slide down nav
-  setTimeout(() => {
-    document.querySelector('nav').classList.add('nav-visible');
+setTimeout(() => {
+  const nav = document.querySelector('nav') || document.querySelector('.header-nav');
+  if (nav) {
+    nav.classList.add('nav-visible');
+  }
 
-    // Show scroll indicators after navigation is visible
-    const scrollIndicators = document.querySelectorAll('.scroll-indicator');
-    scrollIndicators.forEach(indicator => {
-      indicator.classList.add('visible');
-    });
-  }, 1200); // 1s hero animation + 200ms extra delay
+  // Show scroll indicators after navigation is visible
+  const scrollIndicators = document.querySelectorAll('.scroll-indicator');
+  scrollIndicators.forEach(indicator => {
+    indicator.classList.add('visible');
+  });
+}, 1200);
 
   // Smooth scroll for logo link
-  document.querySelector('.logo-link').addEventListener('click', (e) => {
+const logoLink = document.querySelector('.logo-link') || document.querySelector('.header-nav .logo');
+if (logoLink) {
+  logoLink.addEventListener('click', (e) => {
     e.preventDefault();
     window.scrollTo({
       top: 0,
       behavior: 'smooth'
     });
   });
+}
 
   // Fade in images state-1 when scrolling to values section (independent animation)
   gsap.to('.values-img-state-1', {

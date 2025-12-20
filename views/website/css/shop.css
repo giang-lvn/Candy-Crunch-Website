@@ -408,6 +408,7 @@ align-self: center;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--spacing-32);
+    align-self: stretch;
   }
   
   .product-card{
