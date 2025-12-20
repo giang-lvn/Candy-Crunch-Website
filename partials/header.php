@@ -124,7 +124,7 @@ function is_active($page_name, $current_page_file) {
                 <span class="btn-text">Log in</span>
             </a>
 
-            <a href="signup.php" class="btn btn-signup">
+            <a href="sign_up.php" class="btn btn-signup">
                 <span class="btn-text">Sign up</span>
             </a>
         </div>
