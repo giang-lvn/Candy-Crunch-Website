@@ -1,10 +1,10 @@
 <?php
-$ROOT = '';
+$ROOT = '/Candy-Crunch-Website';
 include('../../../partials/header.php');
-
-
+$uri = $_SERVER['REQUEST_URI'];
+$path = parse_url($uri, PHP_URL_PATH);
+$file = basename($path);
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
