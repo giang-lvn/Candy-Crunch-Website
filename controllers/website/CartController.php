@@ -106,11 +106,25 @@ class CartController
             $discount = 0;
         }
 
-        $promo    = 0;
-        $shipping = 0;
-        $total    = $subtotal - $discount;
+        $promo = 0;
 
-        
+        // LOGIC SHIPPING
+        $baseAmount = $subtotal - $discount; // Số tiền sau discount
+        $freeShippingThreshold = 200000; // Ngưỡng freeship 200k
+
+        if ($baseAmount >= $freeShippingThreshold) {
+            $shipping = 0; // Freeship
+            $remainingForFreeShip = 0;
+        } else {
+            $shipping = 30000; // Phí ship 30k
+            $remainingForFreeShip = $freeShippingThreshold - $baseAmount; // Còn thiếu bao nhiêu
+        }
+
+        // Tính % cho shipping bar
+        $shippingProgress = ($baseAmount / $freeShippingThreshold) * 100;
+        $shippingProgress = min($shippingProgress, 100); // Tối đa 100%
+
+        $total = $baseAmount - $promo + $shipping;
 
         // Truyền dữ liệu sang view
         require 'views/website/php/cart.php';

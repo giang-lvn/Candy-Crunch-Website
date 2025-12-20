@@ -1,4 +1,4 @@
-ment.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     bindCartEvents();
 });
 

@@ -42,9 +42,13 @@
                         <!-- HAS PRODUCT STATE -->
                         <div class="cart-has-product">
 
-                            <!-- FREE SHIPPING INFO (optional static) -->
+                            <!-- FREE SHIPPING INFO -->
                             <div class="free-shipping">
-                                <p>Spend <strong>50.000 VND</strong> more for FREE SHIPPING</p>
+                                <?php if ($remainingForFreeShip > 0): ?>
+                                    <p>Spend <strong><?= number_format($remainingForFreeShip, 0, ',', '.') ?> VND</strong> more for FREE SHIPPING</p>
+                                <?php else: ?>
+                                    <p><strong>You've got FREE SHIPPING!</strong></p>
+                                <?php endif; ?>
 
                                 <div class="shipping-bar">
                                     <span class="bar-yellow"></span>
