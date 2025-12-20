@@ -110,7 +110,7 @@ function is_active($page_name, $current_page_file) {
             </a>
 
             <!-- Account -->
-            <a href="account.php" class="action-item">
+            <a href="my_account.php" class="action-item">
                 <img src="<?php echo $ROOT; ?>/views/website/img/person.svg" alt="User" class="action-icon"/>
             </a>
         </div>
