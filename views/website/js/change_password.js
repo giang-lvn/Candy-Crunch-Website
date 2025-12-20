@@ -106,7 +106,7 @@ function initChangePassword() {
             formData.append('currentPassword', current);
             formData.append('newPassword', newPass);
 
-            fetch('/controllers/website/changepass_controller.php', {
+            fetch('/Candy-Crunch-Website/controllers/website/changepass_controller.php', {
                 method: 'POST',
                 credentials: 'same-origin',
                 body: formData
