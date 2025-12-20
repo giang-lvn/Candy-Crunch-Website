@@ -183,6 +183,40 @@ class CartController
         ]);
     }
 
+    // Xử lý thêm sản phẩm vào giỏ hàng từ request
+    public function handleAddToCart()
+    {
+        header('Content-Type: application/json');
+
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        if (!isset($_SESSION['customer_id'], $data['skuid'])) {
+            echo json_encode(['success' => false, 'message' => 'Invalid request']);
+            return;
+        }
+
+        $customerId = $_SESSION['customer_id'];
+        $skuId = (int)$data['skuid'];
+        $quantity = (int)($data['quantity'] ?? 1);
+
+        // Gọi function addToCart() từ CartModel
+        $result = $this->cartModel->addToCart($customerId, $skuId, $quantity);
+
+        if ($result) {
+            // Lấy lại cart items sau khi thêm
+            $cartId = $_SESSION['cart_id'];
+            $cartItems = $this->cartModel->getCartItems($cartId);
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Product added to cart',
+                'items' => $cartItems,
+                'cartCount' => count($cartItems)
+            ]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Failed to add product']);
+        }
+    }
 
     // Xóa sản phẩm
     public function removeItem()

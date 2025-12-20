@@ -1,9 +1,10 @@
 <?php
-$ROOT = ''; 
-require_once('../../../partials/header.php');
-
-
-?> 
+$ROOT = '/Candy-Crunch-Website';
+include('../../../partials/header.php');
+$uri = $_SERVER['REQUEST_URI'];
+$path = parse_url($uri, PHP_URL_PATH);
+$file = basename($path);
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -30,7 +31,7 @@ require_once('../../../partials/header.php');
                     Here, every bite is made to lift your mood and add a spark of fun to your day.
                 </p>
     
-                <a href="#" class="cta-btn">EXPLORE NOW</a>
+                <a href="shop.php" class="cta-btn">EXPLORE NOW</a>
             </div>
         </div>
     </section>
@@ -193,7 +194,7 @@ require_once('../../../partials/header.php');
                 </div>
     
                 <div class="team-open">
-                    <img src="../img/about_alex.png" alt="">
+                    <img src="../img/about_mem4.jpg" alt="">
                     <div class="team-info">
                         <h3>Alex Nguyen</h3>
                         <p><strong>Founder & Chief Product Creator</strong></p>
@@ -211,7 +212,7 @@ require_once('../../../partials/header.php');
                     <span>Head of Brand & Creative</span>
                 </div>
                 <div class="team-open">
-                    <img src="../img/about_mia.jpg" alt="">
+                    <img src="../img/about_mem2.png" alt="">
                     <div class="team-info">
                         <h3>Mia Le</h3>
                         <p><strong>Head of Brand & Creative</strong></p>
@@ -229,7 +230,7 @@ require_once('../../../partials/header.php');
                     <span>Operations & Quality Manager</span>
                 </div>
                 <div class="team-open">
-                    <img src="../img/about_joelina.png" alt="">
+                    <img src="../img/about_mem3.jpg" alt="">
                     <div class="team-info">
                         <h3>Joelina Tran</h3>
                         <p><strong>Operations & Quality Manager</strong></p>
@@ -247,7 +248,7 @@ require_once('../../../partials/header.php');
                     <span>Marketing & Community Lead</span>
                 </div>
                 <div class="team-open">
-                    <img src="../img/about_lily.jpg" alt="">
+                    <img src="../img/about_mem4.jpg" alt="">
                     <div class="team-info">
                         <h3>Lily Ho</h3>
                         <p><strong>Marketing & Community Lead</strong></p>
@@ -268,4 +269,7 @@ require_once('../../../partials/header.php');
 </body>
 </html>
 
-<?php include '../../../partials/footer_kovid.php'; ?>
+<?php
+
+include __DIR__ . '/../../../partials/footer_kovid.php';
+?>

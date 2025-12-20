@@ -155,3 +155,24 @@ function renderEmptyCart() {
 function formatMoney(value) {
     return new Intl.NumberFormat('vi-VN').format(value) + ' VND';
 }
+
+function addToCartFromUpsell(skuid) {
+    fetch('/cart/handle-add-to-cart', {  
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ skuid, quantity: 1 })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert('Product added to cart!');
+            location.reload();
+        } else {
+            alert(data.message || 'Failed to add product');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('An error occurred');
+    });
+}
