@@ -194,7 +194,7 @@ $file = basename($path);
                 </div>
     
                 <div class="team-open">
-                    <img src="../img/about_mem4.jpg" alt="">
+                    <img src="../img/about_mem1.jpg" alt="">
                     <div class="team-info">
                         <h3>Alex Nguyen</h3>
                         <p><strong>Founder & Chief Product Creator</strong></p>
