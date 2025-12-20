@@ -121,4 +121,170 @@ checkboxes.forEach((checkbox) => {
   });
 });
 
+/* ========================================
+  WISHLIST + CART
+======================================== */
 // ========================================
+// ADD TO CART FROM SHOP PAGE
+// ========================================
+function addToCartFromShop(skuid) {
+  if (!skuid) {
+      showNotification('Thiếu thông tin sản phẩm', 'error');
+      return;
+  }
+
+  fetch('/index.php?controller=cart&action=handleAddToCart', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+          skuid: skuid, 
+          quantity: 1 
+      })
+  })
+  .then(res => res.json())
+  .then(data => {
+      if (data.success) {
+          showNotification('✓ Đã thêm vào giỏ hàng!', 'success');
+          
+          // Cập nhật số lượng cart badge nếu có
+          if (data.cartCount) {
+              updateCartBadge(data.cartCount);
+          }
+      } else {
+          showNotification(data.message || 'Không thể thêm sản phẩm', 'error');
+      }
+  })
+  .catch(err => {
+      console.error('Error adding to cart:', err);
+      showNotification('Có lỗi xảy ra, vui lòng thử lại', 'error');
+  });
+}
+
+// ========================================
+// TOGGLE WISHLIST (ADD/REMOVE)
+// ========================================
+function toggleWishlist(productId, buttonElement) {
+  if (!productId) {
+      showNotification('Thiếu thông tin sản phẩm', 'error');
+      return;
+  }
+
+  fetch('/index.php?controller=wishlist&action=toggle', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+          product_id: productId 
+      })
+  })
+  .then(res => res.json())
+  .then(data => {
+      if (data.success) {
+          // Toggle class active
+          if (data.action === 'added') {
+              buttonElement.classList.add('active');
+              showNotification('♥ Đã thêm vào wishlist!', 'success');
+          } else if (data.action === 'removed') {
+              buttonElement.classList.remove('active');
+              showNotification('Đã xóa khỏi wishlist', 'success');
+          }
+      } else {
+          showNotification(data.message || 'Có lỗi xảy ra', 'error');
+      }
+  })
+  .catch(err => {
+      console.error('Error toggling wishlist:', err);
+      showNotification('Có lỗi xảy ra, vui lòng thử lại', 'error');
+  });
+}
+
+// ========================================
+// HIỂN THỊ NOTIFICATION (TOAST)
+// ========================================
+function showNotification(message, type = 'success') {
+  // Xóa toast cũ nếu có
+  const existingToast = document.querySelector('.custom-toast');
+  if (existingToast) {
+      existingToast.remove();
+  }
+
+  // Tạo toast mới
+  const toast = document.createElement('div');
+  toast.className = `custom-toast toast-${type}`;
+  toast.textContent = message;
+  
+  // Style cho toast
+  const bgColor = type === 'success' ? '#10b981' : '#ef4444';
+  toast.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: ${bgColor};
+      color: white;
+      padding: 16px 24px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 9999;
+      font-weight: 500;
+      animation: slideInRight 0.3s ease;
+  `;
+  
+  document.body.appendChild(toast);
+  
+  // Tự động ẩn sau 3 giây
+  setTimeout(() => {
+      toast.style.animation = 'slideOutRight 0.3s ease';
+      setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// ========================================
+// CẬP NHẬT CART BADGE
+// ========================================
+function updateCartBadge(count) {
+  const badge = document.querySelector('.cart-badge');
+  if (badge) {
+      badge.textContent = count;
+      
+      // Animation nhấp nháy
+      badge.style.transform = 'scale(1.4)';
+      setTimeout(() => {
+          badge.style.transform = 'scale(1)';
+      }, 200);
+  }
+}
+
+// ========================================
+// CSS ANIMATIONS
+// ========================================
+if (!document.getElementById('shop-toast-styles')) {
+  const style = document.createElement('style');
+  style.id = 'shop-toast-styles';
+  style.textContent = `
+      @keyframes slideInRight {
+          from {
+              transform: translateX(400px);
+              opacity: 0;
+          }
+          to {
+              transform: translateX(0);
+              opacity: 1;
+          }
+      }
+      
+      @keyframes slideOutRight {
+          from {
+              transform: translateX(0);
+              opacity: 1;
+          }
+          to {
+              transform: translateX(400px);
+              opacity: 0;
+          }
+      }
+      
+      .cart-badge {
+          transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+  `;
+  document.head.appendChild(style);
+}
