@@ -11,7 +11,6 @@
     
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/sign_up.css">
-    <script src="js/sign_up.js"></script>
 </head>
 <body>
 
@@ -25,7 +24,7 @@
         <div class="signup-container">
             
             <div class="signup-card">
-                <button class="close-btn"onclick="window.location.href='index.php'">&times;</button>
+                <button class="close-btn" onclick="window.location.href='index.php'">&times;</button>
 
                 <div class="signup-header">
                     <h1 class="signup-title">Sign up</h1>
@@ -52,11 +51,6 @@
                     </div>
                     
                     <div class="form-group">
-                        <label>Phone number</label>
-                        <input type="text" id="username" placeholder="Phone number" required>
-                    </div>
-                    
-                    <div class="form-group">
                         <label>Password</label>
                         <input type="password" id="password" placeholder="Password" required>
                     </div>
@@ -76,5 +70,7 @@
             </div>
         </div>
     </section>
+
+    <script src="../js/MA_signup.js"></script>
 </body>
 </html>
