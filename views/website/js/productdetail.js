@@ -1,3 +1,5 @@
+// views/website/js/productdetail.js
+
 // ATTRIBUTE SELECT
 // ==============================
 
@@ -33,7 +35,8 @@ function updateSkuInfo() {
   const formData = new FormData();
   formData.append('skuid', skuId);
 
-  fetch('/Candy-Crunch-Website/index.php?controller=product-detail&action=getSkuInfo', {
+  // Sửa lại đường dẫn fetch
+  fetch('/Candy-Crunch-Website/views/website/php/productdetail.php?action=getSkuInfo', {
     method: 'POST',
     body: formData
   })
@@ -44,6 +47,15 @@ function updateSkuInfo() {
         return;
       }
 
+      // Cập nhật hình ảnh chính
+      if (data.image) {
+        const mainImage = document.getElementById('main-image');
+        if (mainImage) {
+          mainImage.src = (typeof ROOT !== 'undefined' ? ROOT : '') + data.image;
+        }
+      }
+
+      // Cập nhật giá
       if (data.price) {
         const newPrice = new Intl.NumberFormat('vi-VN').format(data.price.PromotionPrice);
         const oldPrice = new Intl.NumberFormat('vi-VN').format(data.price.OriginalPrice);
@@ -53,39 +65,26 @@ function updateSkuInfo() {
 
         let oldPriceEl = document.getElementById('price-old');
 
-        // If old price element doesn't exist but we need it (original > promotion)
-        if (!oldPriceEl && (parseInt(data.price.OriginalPrice) > parseInt(data.price.PromotionPrice))) {
-          // Create it if not exists, but simpler to just update if exists. 
-          // If the structure depends on it being there, it might be tricky.
-          // In the view, I added:
-          // <?php if ($price['OriginalPrice'] > $price['PromotionPrice']): ?>
-          //    <span class="old-price" id="price-old">...</span>
-          // <?php endif; ?>
-          // So if it wasn't there initially, it's not in the DOM.
-          // I should probably ensure it exists or inject it.
-          // For now, let's assume if it's hidden/shown it logic is safer if I always render it in PHP but hide with CSS if needed?
-          // But PHP `if` block removes it from DOM.
-          // I will just handle update if it exists, or maybe I should change logic in PHP to always render but display none.
-
-          // Re-visiting PHP View:
-          // It's inside an IF block.
-          // Change PHP View first? No, I already edited it.
-
-          // JS solution: just update if exists. If not and needed, creating it is better.
-          // Or better: The prompt asked to fix "hard codes".
-          // I will stick to updating existing elements.
-        }
-
-        if (oldPriceEl) {
-          if (parseInt(data.price.OriginalPrice) > parseInt(data.price.PromotionPrice)) {
-            oldPriceEl.innerText = oldPrice + ' VND';
-            oldPriceEl.style.display = 'inline-block';
-          } else {
+        // Nếu có giảm giá
+        if (parseInt(data.price.OriginalPrice) > parseInt(data.price.PromotionPrice)) {
+          if (!oldPriceEl) {
+            // Tạo element nếu chưa có
+            oldPriceEl = document.createElement('span');
+            oldPriceEl.className = 'old-price';
+            oldPriceEl.id = 'price-old';
+            priceNewEl.parentNode.insertBefore(oldPriceEl, priceNewEl.nextSibling);
+          }
+          oldPriceEl.innerText = oldPrice + ' VND';
+          oldPriceEl.style.display = 'inline-block';
+        } else {
+          // Không giảm giá thì ẩn
+          if (oldPriceEl) {
             oldPriceEl.style.display = 'none';
           }
         }
       }
 
+      // Cập nhật tồn kho
       if (data.stock) {
         const stockEl = document.getElementById('stock-display');
         if (stockEl) stockEl.innerText = data.stock.Stock + ' in stock';

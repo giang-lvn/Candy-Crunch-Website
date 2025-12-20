@@ -1,4 +1,6 @@
 <?php
+// controllers/website/productdetail-controller.php
+
 require_once __DIR__ . '/../../models/website/product-detail.php';
 require_once __DIR__ . '/../../models/db.php';
 
@@ -14,7 +16,6 @@ class ProductDetailController
 
     /**
      * Hiển thị trang chi tiết sản phẩm
-     * URL ví dụ: index.php?controller=product-detail&productId=P001
      */
     public function index()
     {
@@ -59,16 +60,27 @@ class ProductDetailController
             $stock = ['Stock' => 0, 'InventoryStatus' => 'Out of Stock'];
         }
 
+        // Đảm bảo $description không null
+        if (!$description) {
+            $description = 'No description available';
+        }
+
+        // Đảm bảo $filters là array
+        if (!is_array($filters)) {
+            $filters = [];
+        }
+
         // 7️⃣ Truyền dữ liệu sang View
         require_once __DIR__ . '/../../views/website/php/productdetail.php';
     }
 
     /**
      * AJAX: lấy giá + tồn kho khi đổi unit
-     * POST: skuid
      */
     public function getSkuInfo()
     {
+        header('Content-Type: application/json');
+
         if (!isset($_POST['skuid'])) {
             echo json_encode(['error' => 'SKUID is required']);
             return;
@@ -79,9 +91,17 @@ class ProductDetailController
         $price = $this->model->getProductPriceBySku($skuId);
         $stock = $this->model->getProductStockBySku($skuId);
 
+        // Lấy thông tin SKU để có Image
+        $sql = "SELECT Image FROM SKU WHERE SKUID = :skuId";
+        global $db;
+        $stmt = $db->prepare($sql);
+        $stmt->execute(['skuId' => $skuId]);
+        $skuInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+
         echo json_encode([
             'price' => $price ?: ['OriginalPrice' => 0, 'PromotionPrice' => 0],
-            'stock' => $stock ?: ['Stock' => 0, 'InventoryStatus' => 'Out of Stock']
+            'stock' => $stock ?: ['Stock' => 0, 'InventoryStatus' => 'Out of Stock'],
+            'image' => $skuInfo ? $skuInfo['Image'] : ''
         ]);
     }
 }

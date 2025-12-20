@@ -1,10 +1,8 @@
-<?
+<?php
+// views/website/php/productdetail.php
 $ROOT = '/Candy-Crunch-Website';
 include('../../../partials/header.php');
-
 ?>
-
-
 
 <!DOCTYPE html>
 <html>
@@ -24,54 +22,35 @@ include('../../../partials/header.php');
 <body>
 
 	<div class="product-detail">
-		<!-- Breadcrumb -->
-		<!-- <div class="breadcrumb">
-				  <img class="icon-home" alt="">
-				  
-				  <img class="icon-home" alt="">
-				  
-				  <div class="nav1-wrapper">
-						<div class="g">Nav1</div>
-				  </div>
-				  <img class="icon-home" alt="">
-				  
-				  <div class="nav1-wrapper">
-						<div class="g">Nav1</div>
-				  </div>
-				  <img class="icon-home" alt="">
-				  
-				  <div class="nav1-frame">
-						<div class="text">My Account</div>
-				  </div>
-			</div> -->
-		<!-- end Breadcrumb -->
-
 		<div class="product-detail-container">
 			<!-- Image -->
 			<div class="thumbnail">
 
 				<div class="main-thumb-image">
-					<img src="<?php echo $ROOT . $defaultSku['Image']; ?>" alt="Product Image" id="main-image">
+					<img src="<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png" alt="Product Image" id="main-image">
 					<section class="tag">
-						<?php if (!empty($filters)): ?>
-							<?php foreach ($filters as $filter): ?>
-								<span class="product-tag"><?php echo htmlspecialchars($filter); ?></span>
-							<?php endforeach; ?>
-						<?php endif; ?>
+						<span class="product-tag">Sugar-free</span>
 					</section>
 				</div>
 
-								<div class="gallery">
-					<?php if (isset($skuList) && !empty($skuList)): ?>
-										<?php foreach ($skuList as $skuItem): ?>
-											<img class="preview-image" src="<?php echo $ROOT . $skuItem['Image']; ?>" alt="Product Image"
-												onclick="changeImage('<?php echo $ROOT . $skuItem['Image']; ?>')">
-										<?php endforeach; ?>
-									<?php else: ?>
-										<!-- Fallback nếu không có SKU -->
-										<p>No images available</p>
-									<?php endif; ?>
-								</div>
+				<div class="gallery">
+						<img class="preview-image" 
+							     src="<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png" 
+							     alt="Product Image"
+							     onclick="changeImage('<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png')">
+						<img class="preview-image" 
+							     src="<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png" 
+							     alt="Product Image"
+							     onclick="changeImage('<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png')">
+						<img class="preview-image" 
+							     src="<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png" 
+							     alt="Product Image"
+							     onclick="changeImage('<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png')">
+						<img class="preview-image" 
+							     src="<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png" 
+							     alt="Product Image"
+							     onclick="changeImage('<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png')">
+				</div>
 			</div>
 			<!-- end Image -->
 
@@ -87,7 +66,7 @@ include('../../../partials/header.php');
 						<section class="title-rating-price">
 							<!-- Title and Rating -->
 							<section class="title-rating">
-								<h3 class="product-name"><?php echo $product['ProductName']; ?></h3>
+								<h3 class="product-name">Chocolate Filled Candies</h3>
 								<div class="review-rating">
 									<div class="rating-container">
 										<span class="rating-number">4.9</span>
@@ -107,20 +86,17 @@ include('../../../partials/header.php');
 
 							<!-- Price -->
 							<section class="product-price">
-								<?php if ($price): ?>
-									<span class="new-price"
-										id="price-new"><?php echo number_format($price['PromotionPrice'], 0, ',', '.'); ?>
-										VND</span>
-									<?php if ($price['OriginalPrice'] > $price['PromotionPrice']): ?>
-										<span class="old-price"
-											id="price-old"><?php echo number_format($price['OriginalPrice'], 0, ',', '.'); ?>
-											VND</span>
-									<?php endif; ?>
-								<?php endif; ?>
+									<span class="new-price" id="price-new">
+										150.000 VND
+									</span>
+									<span class="old-price" id="price-old">
+										150.000 VND
+									</span>
 							</section>
 						</section>
 
-						<p class="product-description-container"><?php echo nl2br(htmlspecialchars($description)); ?>
+						<p class="product-description-container">
+							Chocolate Filled Candies are a delicious and sweet treat that are perfect for any occasion. They are made with a rich and creamy chocolate filling that is encased in a crispy and crunchy candy shell. They are perfect for snacking or as a sweet treat after a meal.
 						</p>
 
 					</div>
@@ -134,17 +110,11 @@ include('../../../partials/header.php');
 
 							<div class="attribute-select-wrapper">
 
-							<select class="attribute-select" id="sku-select" onchange="updateSkuInfo()">
-	<?php if (isset($skuList) && !empty($skuList)): ?>
-									<?php foreach ($skuList as $skuItem): ?>
-										<option value="<?php echo $skuItem['SKUID']; ?>" <?php echo ($defaultSku['SKUID'] === $skuItem['SKUID']) ? 'selected' : ''; ?>>
-											<?php echo htmlspecialchars($skuItem['Attribute']); ?>
-										</option>
-									<?php endforeach; ?>
-								<?php else: ?>
+								<select class="attribute-select" id="sku-select" onchange="">
 									<option value="">No units available</option>
-								<?php endif; ?>
-							</select>
+									<option value="1">1</option>
+									<option value="2">2</option>
+								</select>
 
 								<span class="dropdown-arrow">
 									<!-- icon drop-down -->
@@ -179,8 +149,9 @@ include('../../../partials/header.php');
 								<button class="quantity-btn">+</button>
 
 							</div>
-							<span class="quantity-stock" id="stock-display"><?php echo $stock['Stock']; ?> in
-								stock</span>
+							<span class="quantity-stock" id="stock-display">
+								100 in stock
+							</span>
 						</div>
 
 					</div>
@@ -205,9 +176,6 @@ include('../../../partials/header.php');
 				</div>
 				<!-- end product info -->
 
-
-
-
 				<div class="social">
 					<span class="icon-earth">
 						<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
@@ -226,7 +194,7 @@ include('../../../partials/header.php');
 					<div class="social-content">
 						<h4 class="content-title">Sustainable Development and Nutrition Access</h4>
 						<p class="content-description">At no additional cost, for every purchase you make, we will
-							allocate 1% toward donations to UNICEF’s child support funds.</p>
+							allocate 1% toward donations to UNICEF's child support funds.</p>
 					</div>
 				</div>
 
@@ -238,7 +206,7 @@ include('../../../partials/header.php');
 		<div class="description-section">
 			<div class="description-content">
 				<h4 class="description-title">Description</h4>
-				<p class="description-text"><?php echo nl2br(htmlspecialchars($description)); ?></p>
+				<p class="description-text">Chocolate Filled Candies are a delicious and sweet treat that are perfect for any occasion. They are made with a rich and creamy chocolate filling that is encased in a crispy and crunchy candy shell. They are perfect for snacking or as a sweet treat after a meal.</p>
 			</div>
 			<button class="btn-secondary-outline-small">See more</button>
 
@@ -576,7 +544,11 @@ include('../../../partials/header.php');
 
 	</div>
 
-	<script src="../js/productdetail.js"></script>
+	<script>
+		// Truyền ROOT sang JavaScript
+		const ROOT = '<?php echo $ROOT; ?>';
+	</script>
+	<script src="<?php echo $ROOT; ?>/views/website/js/productdetail.js"></script>
 
 
 </body>
