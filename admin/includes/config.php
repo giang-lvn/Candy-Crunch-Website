@@ -2,12 +2,12 @@
 // admin/includes/config.php
 
 // Đường dẫn cơ sở
-define('BASE_URL', 'http://localhost/CodePTUD/admin/');
+define('BASE_URL', 'http://localhost/Candy-Crunch-Website/admin/');
 define('BASE_PATH', dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR);
 
 // Cấu hình database
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'PTUD_Final');
+define('DB_NAME', 'Candy_Crunch');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 
