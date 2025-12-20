@@ -45,6 +45,8 @@ function is_active($page_name, $current_page_file) {
 <?php endif; ?>
 <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/main.css">
 
+<?php include 'cart.php'; ?>
+<?php include 'wishlist.php'; ?>
 
 <!-- HEADER NAV -->
 <div class="header-nav">
@@ -98,16 +100,17 @@ function is_active($page_name, $current_page_file) {
         <!-- HEADER CHO NGƯỜI DÙNG ĐÃ ĐĂNG NHẬP -->
         <!-- ============================================ -->
         <div class="user-actions">
+
             <!-- Cart -->
-            <a href="cart.php" class="action-item cart-item">
+            <button class="action-item cart-item" id="openCartBtn">
                 <img src="<?php echo $ROOT; ?>/views/website/img/cart.svg" alt="Cart" class="action-icon"/>
                 <span class="action-text"> Cart (<span id="cartCount"><?php echo $cart_item_count; ?></span>) </span>
-            </a>
+            </button>
 
             <!-- Wishlist -->
-            <a href="wishlist.php" class="action-item">
+            <button class="action-item" id="openWishlistBtn">
                 <img src="<?php echo $ROOT;?>/views/website/img/wishlist.svg" alt="Wishlist" class="action-icon"/>
-            </a>
+            </button>
 
             <!-- Account -->
             <a href="my_account.php" class="action-item">
@@ -299,3 +302,5 @@ function is_active($page_name, $current_page_file) {
 
 <!-- Header JavaScript -->
 <script src="<?php echo $ROOT; ?>/views/website/js/header.js"></script>
+<script src="<?php echo $ROOT; ?>/views/website/js/cart.js"></script>
+<script src="<?php echo $ROOT; ?>/views/website/js/wishlist.js"></script>

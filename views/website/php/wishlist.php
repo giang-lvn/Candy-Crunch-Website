@@ -1,6 +1,3 @@
-<?php
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,14 +14,14 @@
 </head>
 <body>
     <!-- OVERLAY -->
-    <div class="cart-overlay">
+    <div class="wishlist-overlay hidden" id="wishlist-overlay">
         <aside class="cart-panel">
             <div class="cart-info">
                 <!-- CART TITLE -->
                 <div class="cart-title">
                     <h3>My Wishlist</h3>
             
-                    <button class="cart-close" aria-label="Close cart">
+                    <button class="wishlist-close" aria-label="Close wishlist">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                             <path d="M15.8333 5.34199L14.6583 4.16699L9.99996 8.82533L5.34163 4.16699L4.16663 5.34199L8.82496 10.0003L4.16663 14.6587L5.34163 15.8337L9.99996 11.1753L14.6583 15.8337L15.8333 14.6587L11.175 10.0003L15.8333 5.34199Z" fill="black"/>
                         </svg>

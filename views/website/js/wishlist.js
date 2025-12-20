@@ -1,4 +1,32 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // MỞ WISHLIST
+    const openWishlistBtn = document.getElementById('openWishlistBtn');
+    const wishlistOverlay = document.getElementById('wishlist-overlay');
+    
+    if (openWishlistBtn && wishlistOverlay) {
+        openWishlistBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            wishlistOverlay.classList.remove('hidden');
+        });
+    }
+
+    // ĐÓNG WISHLIST (giả sử có nút close với class .wishlist-close)
+    const closeWishlistBtn = document.querySelector('.wishlist-close');
+    if (closeWishlistBtn && wishlistOverlay) {
+        closeWishlistBtn.addEventListener('click', () => {
+            wishlistOverlay.classList.add('hidden');
+        });
+    }
+
+    // ĐÓNG KHI CLICK NGOÀI
+    if (wishlistOverlay) {
+        wishlistOverlay.addEventListener('click', (e) => {
+            if (e.target === wishlistOverlay) {
+                wishlistOverlay.classList.add('hidden');
+            }
+        });
+    }
+
     initWishlistEvents();
 });
 

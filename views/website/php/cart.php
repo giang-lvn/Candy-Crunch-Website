@@ -14,7 +14,7 @@
 </head>
 <body>
     <!-- OVERLAY -->
-    <div class="cart-overlay">
+    <div class="cart-overlay hidden" id="cart-overlay">
         <!-- GIỎ HÀNG -->
         <aside class="cart-panel">
             <!-- TIÊU ĐỀ + SẢN PHẨM TRONG GIỎ-->

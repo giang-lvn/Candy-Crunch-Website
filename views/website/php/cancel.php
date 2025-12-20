@@ -1,5 +1,8 @@
+
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 // Giả sử CustomerID được lưu trong session khi login
 $customerID = isset($_SESSION['CustomerID']) ? $_SESSION['CustomerID'] : 0;
 

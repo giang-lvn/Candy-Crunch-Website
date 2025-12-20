@@ -1,4 +1,32 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // MỞ CART
+    const openCartBtn = document.getElementById('openCartBtn');
+    const cartOverlay = document.getElementById('cart-overlay');
+    
+    if (openCartBtn && cartOverlay) {
+        openCartBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            cartOverlay.classList.remove('hidden');
+        });
+    }
+
+    // ĐÓNG CART
+    const closeCartBtn = document.querySelector('.cart-close');
+    if (closeCartBtn && cartOverlay) {
+        closeCartBtn.addEventListener('click', () => {
+            cartOverlay.classList.add('hidden');
+        });
+    }
+
+    // ĐÓNG KHI CLICK OVERLAY
+    if (cartOverlay) {
+        cartOverlay.addEventListener('click', (e) => {
+            if (e.target === cartOverlay) {
+                cartOverlay.classList.add('hidden');
+            }
+        });
+    }
+
     bindCartEvents();
 });
 
