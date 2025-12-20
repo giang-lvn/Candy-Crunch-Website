@@ -6,30 +6,30 @@ document.addEventListener('DOMContentLoaded', () => {
   gsap.registerPlugin(ScrollTrigger);
 
   // Navigation slide down after hero section loads
-setTimeout(() => {
-  const nav = document.querySelector('nav') || document.querySelector('.header-nav');
-  if (nav) {
-    nav.classList.add('nav-visible');
-  }
+  setTimeout(() => {
+    const nav = document.querySelector('nav') || document.querySelector('.header-nav');
+    if (nav) {
+      nav.classList.add('nav-visible');
+    }
 
-  // Show scroll indicators after navigation is visible
-  const scrollIndicators = document.querySelectorAll('.scroll-indicator');
-  scrollIndicators.forEach(indicator => {
-    indicator.classList.add('visible');
-  });
-}, 1200);
+    // Show scroll indicators after navigation is visible
+    const scrollIndicators = document.querySelectorAll('.scroll-indicator');
+    scrollIndicators.forEach(indicator => {
+      indicator.classList.add('visible');
+    });
+  }, 1200);
 
   // Smooth scroll for logo link
-const logoLink = document.querySelector('.logo-link') || document.querySelector('.header-nav .logo');
-if (logoLink) {
-  logoLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
+  const logoLink = document.querySelector('.logo-link') || document.querySelector('.header-nav .logo');
+  if (logoLink) {
+    logoLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
     });
-  });
-}
+  }
 
   // Fade in images state-1 when scrolling to values section (independent animation)
   gsap.to('.values-img-state-1', {
@@ -417,10 +417,9 @@ if (logoLink) {
       });
     }
 
-    // Stagger animation when section comes into view
-    // Use clearProps to ensure height is not affected after animation
+    // Animate cards position only (CSS handles opacity with !important)
+    // Cards slide up when scrolling into view
     gsap.from('.featured-card', {
-      opacity: 0,
       y: 50,
       duration: 0.8,
       stagger: 0.15,
@@ -431,12 +430,7 @@ if (logoLink) {
         once: true,
         markers: false
       },
-      onComplete: function () {
-        // Ensure cards maintain their height after animation
-        cards.forEach(card => {
-          gsap.set(card, { clearProps: 'y' }); // Clear y transform but keep height
-        });
-      }
+      clearProps: 'y' // Clear y transform after animation completes
     });
 
     // Animate header

@@ -904,49 +904,54 @@ nav.nav-visible {
   /* Card stays in place on hover - only slide-up content moves */
 }
 
+/* Force cards to be visible - override GSAP inline styles */
+.featured-card {
+  opacity: 1 !important;
+}
+
 /* Card Background Images */
 .featured-card-green {
-  background-image: url('/views/website/img/product2.png');
+  background-image: url('/Candy-Crunch-Website/views/website/img/product2.png');
   background-size: cover;
   background-position: center;
   transition: background-image 0.3s ease;
 }
 
 .featured-card-green:hover {
-  background-image: url('/views/website/img/product1.png');
+  background-image: url('/Candy-Crunch-Website/views/website/img/product1.png');
 }
 
 .featured-card-red {
-  background-image: url('/views/website/img/product2.png');
+  background-image: url('/Candy-Crunch-Website/views/website/img/product2.png');
   background-size: cover;
   background-position: center;
   transition: background-image 0.3s ease;
 }
 
 .featured-card-red:hover {
-  background-image: url('/views/website/img/product1.png');
+  background-image: url('/Candy-Crunch-Website/views/website/img/product1.png');
 }
 
 .featured-card-yellow {
-  background-image: url('/views/website/img/product2.png');
+  background-image: url('/Candy-Crunch-Website/views/website/img/product2.png');
   background-size: cover;
   background-position: center;
   transition: background-image 0.3s ease;
 }
 
 .featured-card-yellow:hover {
-  background-image: url('/views/website/img/product1.png');
+  background-image: url('/Candy-Crunch-Website/views/website/img/product1.png');
 }
 
 .featured-card-pink {
-  background-image: url('/views/website/img/product2.png');
+  background-image: url('/Candy-Crunch-Website/views/website/img/product2.png');
   background-size: cover;
   background-position: center;
   transition: background-image 0.3s ease;
 }
 
 .featured-card-pink:hover {
-  background-image: url('/views/website/img/product1.png');
+  background-image: url('/Candy-Crunch-Website/views/website/img/product1.png');
 }
 
 /* ===== Scalloped Edge SVG ===== */

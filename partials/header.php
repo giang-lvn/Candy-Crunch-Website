@@ -1,5 +1,8 @@
 <?php
-$ROOT =  '';
+// Chỉ set $ROOT nếu chưa được định nghĩa
+if (!isset($ROOT)) {
+    $ROOT = '';
+}
 if (session_status() === PHP_SESSION_NONE) {
     session_start();    
 }
