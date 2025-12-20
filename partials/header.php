@@ -46,7 +46,7 @@ function is_active($page_name, $current_page_file) {
 <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/main.css">
 
 <?php include 'cart.php'; ?>
-<?php include 'wishlist.php'; ?>
+
 
 <!-- HEADER NAV -->
 <div class="header-nav">
@@ -108,9 +108,9 @@ function is_active($page_name, $current_page_file) {
             </button>
 
             <!-- Wishlist -->
-            <button class="action-item" id="openWishlistBtn">
+            <a href="wishlist.php" class="action-item">
                 <img src="<?php echo $ROOT;?>/views/website/img/wishlist.svg" alt="Wishlist" class="action-icon"/>
-            </button>
+            </a>
 
             <!-- Account -->
             <a href="my_account.php" class="action-item">

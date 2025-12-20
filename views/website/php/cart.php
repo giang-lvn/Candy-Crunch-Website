@@ -1,19 +1,12 @@
+<?php
+// Cart Partial Component
+// This file should be included in header.php, not used as a standalone page
+?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cart</title>
-    <!-- Preload Google Fonts for faster loading -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Modak&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/cart.css">
-    <link rel="stylesheet" href="../css/main.css">
-</head>
-<body>
-    <!-- OVERLAY -->
+<!-- Cart CSS - loaded via header.php -->
+<link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/cart.css">
+
+<!-- OVERLAY -->
     <div class="cart-overlay hidden" id="cart-overlay">
         <!-- GIỎ HÀNG -->
         <aside class="cart-panel">
@@ -301,9 +294,4 @@
             
         </aside>
     </div>
-
-    <!-- Script -->
-    <script src="../js/main.js"></script>
-    <script src="../js/cart.js"></script>
-</body>
-</html>
+<!-- End Cart Partial -->
