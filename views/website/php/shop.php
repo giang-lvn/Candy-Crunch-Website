@@ -1,6 +1,8 @@
 <?php
 $ROOT = '';
 include('../../../partials/header.php');
+
+
 ?>
 
 
@@ -222,7 +224,7 @@ include('../../../partials/header.php');
 
      
      <div class="right-container">
-      <!-- Filter result -->
+      Filter result
       <div class="filter-result">
         <!-- row 1: result text + search + sort -->
         <div class="filter-result-top">
