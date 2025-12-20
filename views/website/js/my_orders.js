@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
  * LOAD ORDERS FROM API
  *********************************/
 function loadOrders() {
-    fetch('/../controllers/website/orders_controller.php')
+    fetch('/Candy-Crunch-Website/controllers/website/orders_controller.php')
         .then(res => res.json())
         .then(data => {
             if (!data.success) {

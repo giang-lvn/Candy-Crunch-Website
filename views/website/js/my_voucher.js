@@ -1,7 +1,7 @@
 // ===============================
 // CONFIG
 // ===============================
-const VOUCHER_API = '/controllers/website/voucher_controller.php';
+const VOUCHER_API = '/Candy-Crunch-Website/controllers/website/voucher_controller.php';
 
 // ===============================
 // INIT
@@ -26,19 +26,32 @@ function initMenuNavigation() {
     });
     highlightActiveMenu();
 }
-
+const ROOT = '/Candy-Crunch-Website/views/website/php';
 function handleMenuAction(action) {
     const routes = {
         'My Account': 'my_account.php',
         'Change Password': 'changepass.php',
         'My Orders': 'my_orders.php',
         'My Vouchers': 'my_vouchers.php',
-        'Log out': 'login.html'
+        'Log out': 'login.php'
     };
+
     if (action === 'Log out') {
-        if (confirm('Log out?')) location.href = routes[action];
-    } else if (routes[action]) {
-        location.href = routes[action];
+        if (confirm('Log out?')) location.href = ROOT + '/' + routes[action];
+        return;
+    }
+
+    const targetFile = routes[action];
+    const currentFile = window.location.pathname.split('/').pop(); // lấy file hiện tại
+
+    if (currentFile === targetFile) {
+        // Nếu đang ở chính trang đó, không reload
+        console.log('Already on page:', currentFile);
+        return;
+    }
+
+    if (targetFile) {
+        location.href = ROOT + '/' + targetFile;
     }
 }
 
