@@ -11,7 +11,6 @@ if (!$customer) {
 $ROOT = ''; // hoặc '' nếu chạy ở root domain
 require_once('../../../partials/header.php');
 ?>
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
