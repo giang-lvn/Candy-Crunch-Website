@@ -71,6 +71,6 @@
         </div>
     </section>
 
-    <script src="../js/MA_signup.js"></script>
+    <script src="../js/sign_up.js"></script>
 </body>
 </html>

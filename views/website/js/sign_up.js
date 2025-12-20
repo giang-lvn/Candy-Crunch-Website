@@ -1,112 +1,151 @@
+// views/website/js/MA_signup.js
+
 document.addEventListener('DOMContentLoaded', function() {
-    
-    // 1. KHAI BÁO CÁC ELEMENT
-    const form = document.getElementById('signupForm');
-    const btnSignup = document.getElementById('btnSignup');
-    const closeBtn = document.querySelector('.close-btn');
+    const signupForm = document.getElementById('signupForm');
 
-    // 2. HIỆU ỨNG RIPPLE (SÓNG NƯỚC) CHO NÚT SIGN UP
-    // Tự động thêm thẻ span hiệu ứng vào vị trí click chuột
-    if (btnSignup) {
-        btnSignup.addEventListener('click', function(e) {
-            // Tạo phần tử sóng
-            let ripple = document.createElement('span');
-            ripple.classList.add('ripple-effect');
-            
-            // Tính toán vị trí con trỏ chuột trong nút
-            let rect = btnSignup.getBoundingClientRect();
-            let x = e.clientX - rect.left;
-            let y = e.clientY - rect.top;
-            
-            // Đặt vị trí cho sóng
-            ripple.style.left = `${x}px`;
-            ripple.style.top = `${y}px`;
-            
-            // Thêm vào nút
-            this.appendChild(ripple);
-
-            // Xóa sóng sau khi animation kết thúc (600ms khớp với CSS)
-            setTimeout(() => {
-                ripple.remove();
-            }, 600);
-        });
-    }
-
-    // 3. XỬ LÝ NÚT ĐÓNG (X)
-    if (closeBtn) {
-        closeBtn.addEventListener('click', function() {
-            // Hành động khi bấm nút X. 
-            // Ví dụ: Quay về trang chủ hoặc ẩn form
-            if(confirm("Bạn có muốn thoát trang đăng ký không?")) {
-                window.location.href = "index.php"; // Chuyển hướng về trang chủ (tùy chỉnh link này)
-            }
-        });
-    }
-
-    // 4. XỬ LÝ SUBMIT FORM VÀ LƯU LOCAL STORAGE
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            // Ngăn chặn hành vi load lại trang mặc định của form
+    if (signupForm) {
+        signupForm.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // Lấy giá trị từ các ô input
-            const firstname = document.getElementById('firstname').value.trim();
-            const lastname = document.getElementById('lastname').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            const confirmPass = document.getElementById('confirm_password').value;
-
-            // --- VALIDATION (KIỂM TRA DỮ LIỆU) ---
-
-            // Kiểm tra độ dài mật khẩu
-            if (password.length < 6) {
-                alert('Mật khẩu quá ngắn! Vui lòng nhập ít nhất 6 ký tự.');
-                return; // Dừng lại, không lưu
-            }
-
-            // Kiểm tra mật khẩu nhập lại
-            if (password !== confirmPass) {
-                alert('Mật khẩu xác nhận không khớp! Vui lòng kiểm tra lại.');
-                return; // Dừng lại
-            }
-
-            // --- LƯU DỮ LIỆU (LOCAL STORAGE) ---
-
-            // Tạo đối tượng User mới
-            const newUser = {
-                id: Date.now(), // Tạo ID ngẫu nhiên dựa trên thời gian
-                firstname: firstname,
-                lastname: lastname,
-                email: email,
-                username: username,
-                password: password, // Lưu ý: Thực tế nên mã hóa password trước khi lưu
-                createdAt: new Date().toLocaleString() // Ngày tạo
+            // Lấy dữ liệu từ form
+            const formData = {
+                firstname: document.getElementById('firstname').value.trim(),
+                lastname: document.getElementById('lastname').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                password: document.getElementById('password').value,
+                confirm_password: document.getElementById('confirm_password').value
             };
 
-            // Lấy danh sách user cũ từ Local Storage (nếu có)
-            let usersList = JSON.parse(localStorage.getItem('candy_crunch_users')) || [];
-
-            // Kiểm tra xem Username hoặc Email đã tồn tại chưa (Giả lập check trùng)
-            const exists = usersList.some(u => u.username === username || u.email === email);
-            if (exists) {
-                alert('Tên đăng nhập hoặc Email này đã được sử dụng!');
+            // Validate trước khi gửi
+            if (!validateForm(formData)) {
                 return;
             }
 
-            // Thêm user mới vào danh sách
-            usersList.push(newUser);
+            // Disable nút submit để tránh double click
+            const btnSubmit = document.getElementById('btnSignup');
+            btnSubmit.disabled = true;
+            btnSubmit.textContent = 'Processing...';
 
-            // Lưu danh sách mới ngược lại vào Local Storage
-            localStorage.setItem('candy_crunch_users', JSON.stringify(usersList));
-
-            // --- THÔNG BÁO VÀ RESET FORM ---
-            alert('🎉 Đăng ký thành công! Chào mừng ' + firstname + ' đến với Candy Crunch.');
+            // ĐƯỜNG DẪN TUYỆT ĐỐI - Sửa lại cho đúng với cấu trúc thư mục của bạn
+            // Nếu website của bạn ở: http://localhost/Candy-Crunch-Website/
+            // Thì dùng đường dẫn này:
+            const controllerPath = '/Candy-Crunch-Website/controllers/website/MA_SignUpController.php';
             
-            // Xóa trắng form để nhập người tiếp theo
-            form.reset();
-            // Chuyển hướng đến trang login để đăng nhập lại;
-            window.location.href = '../php/login.php'; 
+            // Gửi request đến server
+            fetch(controllerPath, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                // Kiểm tra response có phải JSON không
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    throw new TypeError("Response is not JSON");
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Đăng ký thành công
+                    alert('Registration successful! Please login.');
+                    // Chuyển hướng đến trang đăng nhập
+                    window.location.href = 'login.php';
+                } else {
+                    // Đăng ký thất bại
+                    alert('Error: ' + data.message);
+                    btnSubmit.disabled = false;
+                    btnSubmit.textContent = 'Sign up';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please check console for details.');
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = 'Sign up';
+            });
         });
     }
 });
+
+/**
+ * Validate form trước khi submit
+ */
+function validateForm(data) {
+    // Kiểm tra first name
+    if (!data.firstname) {
+        alert('Please enter your first name');
+        document.getElementById('firstname').focus();
+        return false;
+    }
+
+    // Kiểm tra last name
+    if (!data.lastname) {
+        alert('Please enter your last name');
+        document.getElementById('lastname').focus();
+        return false;
+    }
+
+    // Kiểm tra email
+    if (!data.email) {
+        alert('Please enter your email');
+        document.getElementById('email').focus();
+        return false;
+    }
+
+    if (!isValidEmail(data.email)) {
+        alert('Please enter a valid email address');
+        document.getElementById('email').focus();
+        return false;
+    }
+
+    // Kiểm tra password
+    if (!data.password) {
+        alert('Please enter your password');
+        document.getElementById('password').focus();
+        return false;
+    }
+
+    if (data.password.length < 6) {
+        alert('Password must be at least 6 characters');
+        document.getElementById('password').focus();
+        return false;
+    }
+
+    // Kiểm tra confirm password
+    if (!data.confirm_password) {
+        alert('Please confirm your password');
+        document.getElementById('confirm_password').focus();
+        return false;
+    }
+
+    if (data.password !== data.confirm_password) {
+        alert('Passwords do not match');
+        document.getElementById('confirm_password').focus();
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * Kiểm tra email hợp lệ
+ */
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+/**
+ * Toggle hiển thị password
+ */
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+    } else {
+        input.type = 'password';
+    }
+}
