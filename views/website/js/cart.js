@@ -27,6 +27,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // CHECKOUT BUTTON ← THÊM VÀO ĐÂY
+    const checkoutBtn = document.querySelector('.checkout-btn');
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener('click', () => {
+            window.location.href = 'checkout.html';
+        });
+    }
+
     bindCartEvents();
 });
 
