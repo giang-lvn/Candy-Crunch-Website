@@ -18,6 +18,28 @@
     <link rel="stylesheet" href="../css/notification.css">
 </head>
 <body>
+    <!-- BREADCRUMB -->
+    <div class="breadcrumb-container">
+        <div class="breadcrumb">
+            <a href="index.php" class="breadcrumb-item home-icon">
+                <img src="../img/home.svg">
+                <i class="fas fa-home"></i>
+            </a>
+            <span class="separator"></span>
+            <a href="my_account.php" class="breadcrumb-item">
+                My Account
+            </a>
+            <span class="separator"></span>
+            <a href="my_orders.php" class="breadcrumb-item">
+                My Orders
+            </a>
+            <span class="separator"></span>
+            <span class="breadcrumb-item active">
+                Order Detail
+            </span> 
+        </div>
+    </div>
+
     <!-- TITLE -->
     <div class="title">
         <h2>ORDER DETAIL</h2>

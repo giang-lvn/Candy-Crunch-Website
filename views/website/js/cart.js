@@ -1,9 +1,4 @@
-/**
- * cart.js
- * Handle cart actions with AJAX (no page reload)
- */
-
-document.addEventListener('DOMContentLoaded', () => {
+ment.addEventListener('DOMContentLoaded', () => {
     bindCartEvents();
 });
 

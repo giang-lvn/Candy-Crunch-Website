@@ -197,6 +197,33 @@ class CartModel
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
+    // Lấy 8 sản phẩm đầu tiên từ bảng PRODUCT (khi giỏ hàng trống)
+    public function getFirstProducts(int $limit = 8): array
+    {
+        $sql = "
+            SELECT
+                s.SKUID,
+                p.ProductName,
+                s.Image,
+                s.Attribute,
+                s.OriginalPrice,
+                s.PromotionPrice
+            FROM SKU s
+            JOIN PRODUCT p ON s.ProductID = p.ProductID
+            JOIN INVENTORY i ON s.InventoryID = i.InventoryID
+            WHERE i.InventoryStatus = 'Available'
+            ORDER BY p.ProductID ASC
+            LIMIT ?
+        ";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $limit);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
     //Tính tiền
     public function calculateCartAmount(array $cartItems): array
     {

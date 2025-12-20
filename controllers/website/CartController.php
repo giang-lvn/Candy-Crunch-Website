@@ -57,17 +57,24 @@ class CartController
             : $this->cartModel->createCart($customer['CustomerID']);
     }
 
-    //Hiển thị trang giỏ hàng
+    // Hiển thị trang giỏ hàng
     public function index()
     {
         $cartId = $_SESSION['cart_id'];
 
-        //Lấy danh sách sản phẩm trong giỏ
+        // Lấy danh sách sản phẩm trong giỏ
         $cartItems = $this->cartModel->getCartItems($cartId);
+        
+        // Đảm bảo $cartItems luôn là array
+        if ($cartItems === null || $cartItems === false) {
+            $cartItems = [];
+        }
 
-        //Gợi ý sản phẩm upsell
+        // Gợi ý sản phẩm upsell
         $upsellProducts = [];
+        
         if (!empty($cartItems)) {
+            // Nếu CÓ sản phẩm trong giỏ → lấy upsell theo category
             $customerId = $_SESSION['customer_id'];
             
             // Lấy CategoryID từ các sản phẩm trong giỏ
@@ -82,35 +89,41 @@ class CartController
                 $excludeSkuIds,
                 8
             );
+        } else {
+            // Nếu KHÔNG có sản phẩm trong giỏ → lấy 8 sản phẩm đầu tiên
+            $upsellProducts = $this->cartModel->getFirstProducts(8);
         }
 
         // Tính tiền
-        $amount = $this->cartModel->calculateCartAmount($cartItems);
-
-        $subtotal = $amount['subtotal'];
-        $discount = $amount['discount'];
-        $promo    = 0;
-        $total    = $subtotal - $discount;
-
-        //Tính subtotal
-        $subtotal = 0;
-        foreach ($cartItems as $item) {
-            $price = $item['PromotionPrice'] ?? $item['OriginalPrice'];
-            $subtotal += $price * $item['CartQuantity'];
+        if (!empty($cartItems)) {
+            // Nếu có sản phẩm → tính bình thường
+            $amount = $this->cartModel->calculateCartAmount($cartItems);
+            $subtotal = $amount['subtotal'];
+            $discount = $amount['discount'];
+        } else {
+            // Nếu giỏ rỗng → tất cả = 0
+            $subtotal = 0;
+            $discount = 0;
         }
 
-        // 3. Truyền dữ liệu sang view
+        $promo    = 0;
+        $shipping = 0;
+        $total    = $subtotal - $discount;
+
+        
+
+        // Truyền dữ liệu sang view
         require 'views/website/php/cart.php';
     }
 
-    //Lấy số lượng sản phẩm trong giỏ
+    // Lấy số lượng sản phẩm trong giỏ
     public function getQuantity(int $cartId, int $skuId): int
     {
         return $this->cartModel->getQuantity($cartId, $skuId);
     }
 
 
-    //Tính subtotal từ cart items
+    // Tính subtotal từ cart items
     private function calculateSubtotal(array $cartItems): float
     {
         $subtotal = 0;
@@ -121,7 +134,7 @@ class CartController
         return $subtotal;
     }
 
-    //Cập nhật số lượng giỏ hàng
+    // Cập nhật số lượng giỏ hàng
     public function updateQuantity()
     {
         header('Content-Type: application/json');
@@ -157,7 +170,7 @@ class CartController
     }
 
 
-    //Xóa sản phẩm
+    // Xóa sản phẩm
     public function removeItem()
     {
         header('Content-Type: application/json');
@@ -184,7 +197,7 @@ class CartController
         ]);
     }
 
-    //Apply vocher
+    // Apply vocher
     public function applyVoucher()
     {
         header('Content-Type: application/json');

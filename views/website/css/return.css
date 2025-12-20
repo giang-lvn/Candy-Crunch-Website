@@ -7,23 +7,58 @@
     box-sizing: border-box;
 }
   
-/* =========================
+/* ================================================
    BREADCRUMB
-========================= */
-.return-breadcrumb {
-    margin-bottom: 24px;
-    font-size: 14px;
+   ================================================ */
+   .breadcrumb-container {
+    width: 100%;
+    background-color: transparent;
+    padding: var(--spacing-32) 0;
+    margin-top: var(--spacing-120);
 }
-  
-.return-breadcrumb nav {
+
+.breadcrumb {
+    width: 100%;
+    position: relative;
     display: flex;
-    gap: 6px;
-    color: #888;
+    align-items: center;
+    box-sizing: border-box;
+    text-align: left;
+    padding: 0 var(--spacing-120);
+    font-family: var(--font-primary);
+    color: var(--gray-500);
+    gap: var(--spacing-8);
+    overflow-x: auto;
+    white-space: nowrap;
 }
-  
-.return-breadcrumb a {
+.breadcrumb-item {
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--gray-600);
     text-decoration: none;
-    color: #888;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+}
+
+.breadcrumb-item.home-icon {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+}
+.breadcrumb-item.active {
+    color: var(--text-black);
+    font-weight: 600;
+    cursor: default;
+    pointer-events: none;
+}
+
+.separator {
+    font-size: 18px;
+    color: var(--gray-400);
+    margin: 0 var(--spacing-4);
+}
+.separator::before {
+    content: '›';
 }
 
 /* =========================
@@ -274,6 +309,7 @@
     border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
+    background-color: var(--gray-300);
 }
 
 .custom-upload:hover {

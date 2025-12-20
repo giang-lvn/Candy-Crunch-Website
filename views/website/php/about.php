@@ -1,4 +1,4 @@
-<?php include '../../../partials/header.php'; ?>
+<?php include ('../../../partials/header.php');?>
 
 <!DOCTYPE html>
 <html lang="en">
