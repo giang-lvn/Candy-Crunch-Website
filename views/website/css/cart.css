@@ -685,7 +685,18 @@
     font: var(--body-medium);
     color: #000;
 }
+
 .payment-row.promo .value {
+    font: var(--body-semibold);
+    color: #000;
+}
+
+.payment-row.shipping .label {
+    font: var(--body-medium);
+    color: #000;
+}
+
+.payment-row.shipping .value {
     font: var(--body-semibold);
     color: #000;
 }
@@ -723,10 +734,9 @@
     background: var(--primary-button-outline-background);
     color: var(--primary-button-outline-text);
     cursor: pointer;
-    display: none;
 }
 
-/* SHOW BUTTON WHEN INPUT HAS VALUE */
+/* SHOW BUTTON WHEN INPUT HAS VALUE 
 .promo-input.has-value .promo-apply {
     display: inline-flex;
     align-items: center;

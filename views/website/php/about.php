@@ -1,4 +1,9 @@
-<?php include '../../../partials/header.php'; ?>
+<?php
+$ROOT = ''; 
+require_once('../../../partials/header.php');
+
+
+?> 
 
 <!DOCTYPE html>
 <html lang="en">

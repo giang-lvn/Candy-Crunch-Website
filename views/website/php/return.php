@@ -15,28 +15,27 @@
 
 </head>
 <body>
-    <!-- BREADCRUMB 
-    <div class="breadcrumb">
-        <nav>
-            <a href="index.html">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M8 10V17.5H16.5V10M6 11.5L12.25 6L18.5 11.5" stroke="#9E9E9E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+    <!-- BREADCRUMB -->
+    <div class="breadcrumb-container">
+        <div class="breadcrumb">
+            <a href="index.php" class="breadcrumb-item home-icon">
+                <img src="../img/home.svg">
+                <i class="fas fa-home"></i>
             </a>
-            <span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="5" height="8" viewBox="0 0 5 8" fill="none">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M4.561 3.854L0.707 7.708L0 7.001L3.147 3.854L0 0.708L0.707 0L4.561 3.854Z" fill="#9E9E9E"/>
-                </svg>
-            </span>
-            <a href="#">Order</a>
-            <span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="5" height="8" viewBox="0 0 5 8" fill="none">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M4.561 3.854L0.707 7.708L0 7.001L3.147 3.854L0 0.708L0.707 0L4.561 3.854Z" fill="#9E9E9E"/>
-                </svg>
-            </span>
-            <span>Return</span>
-        </nav>
-    </div> -->
+            <span class="separator"></span>
+            <a href="my_account.php" class="breadcrumb-item">
+                My Account
+            </a>
+            <span class="separator"></span>
+            <a href="my_orders.php" class="breadcrumb-item">
+                My Orders
+            </a>
+            <span class="separator"></span>
+            <span class="breadcrumb-item active">
+                Order Detail
+            </span> 
+        </div>
+    </div>
     
     <!-- TITLE -->
     <div class="return-title">
@@ -99,17 +98,19 @@
             <div class="input" data-type="dropdown" data-size="medium">
                 <label class="input-label">Return reason</label>
                 <div class="input-field">
-                  <div class="dropdown-trigger">
-                    <span class="dropdown-text">Select a return reason</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="dropdown-arrow">
-                      <path d="M18 9L12 15L6 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </div>
-                  <div class="dropdown-menu">
-                    <button class="dropdown-option" data-value="1">Option 1</button>
-                    <button class="dropdown-option" data-value="2">Option 2</button>
-                    <button class="dropdown-option" data-value="3">Option 3</button>
-                  </div>
+                    <div class="dropdown-trigger">
+                        <span class="dropdown-text">Select a return reason</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="dropdown-arrow">
+                        <path d="M18 9L12 15L6 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="dropdown-menu">
+                        <button class="dropdown-option" data-value="Product is crushed or deformed">Product is crushed or deformed</button>
+                        <button class="dropdown-option" data-value="Product is expired">Product is expired</button>
+                        <button class="dropdown-option" data-value="Wrong Item Received">Wrong Item Received</button>
+                        <button class="dropdown-option" data-value="Packaging has been tampered with">Packaging has been tampered with</button>
+                        <button class="dropdown-option" data-value="Other">Other</button>
+                    </div>
                 </div>
             </div>
         
@@ -129,7 +130,7 @@
                 </div>
             </div>
 
-            <!-- Tùy chỉnh phần chữ hiển thị  
+            <!-- Tùy chỉnh phần chữ hiển thị 
             <div class="input" data-type="upload" data-size="medium">
                 <label class="input-label">Upload image</label>
                 <div class="input-field">
@@ -138,25 +139,22 @@
                         <input type="file" accept="image/*" hidden>
                     </label>
                 </div>
-            </div> -->
+            </div>  -->
         
             <!-- Chọn phương thức hoàn trả -->
             <div class="input" data-type="dropdown" data-size="medium">
                 <label class="input-label">Refund method</label>
                 <div class="input-field">
-                  <div class="dropdown-trigger">
-                    <span class="dropdown-text">Select a refund method</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="dropdown-arrow">
-                      <path d="M18 9L12 15L6 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </div>
-                  <div class="dropdown-menu">
-                    <button class="dropdown-option" data-value="Product is crushed or deformed">Product is crushed or deformed</button>
-                    <button class="dropdown-option" data-value="Product is expired">Product is expired</button>
-                    <button class="dropdown-option" data-value="Wrong Item Received">Wrong Item Received</button>
-                    <button class="dropdown-option" data-value="Packaging has been tampered with">Packaging has been tampered with</button>
-                    <button class="dropdown-option" data-value="Other">Other</button>
-                  </div>
+                    <div class="dropdown-trigger">
+                        <span class="dropdown-text">Select a refund method</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="dropdown-arrow">
+                        <path d="M18 9L12 15L6 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="dropdown-menu">
+                        <button class="dropdown-option" data-value="Refund via Bank transfer">Refund via Bank transfer</button>
+                        <button class="dropdown-option" data-value="Issue a Gift Card">Issue a Gift Card</button>
+                    </div>
                 </div>
             </div>
         
