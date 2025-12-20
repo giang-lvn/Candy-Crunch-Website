@@ -8,7 +8,7 @@ if (!$customer) {
     header('Location: /../../controllers/website/account_controller.php'); 
     exit;
 }
-$ROOT = ''; // hoặc '' nếu chạy ở root domain
+$ROOT = '/Candy-Crunch-Website'; // hoặc '' nếu chạy ở root domain
 require_once('../../../partials/header.php');
 
 
