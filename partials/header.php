@@ -1,7 +1,7 @@
 <?php
 // Chỉ set $ROOT nếu chưa được định nghĩa
 if (!isset($ROOT)) {
-    $ROOT = '';
+    $ROOT = '/Candy-Crunch-Website';
 }
 if (session_status() === PHP_SESSION_NONE) {
     session_start();    
@@ -303,4 +303,5 @@ function is_active($page_name, $current_page_file) {
 <!-- Header JavaScript -->
 <script src="<?php echo $ROOT; ?>/views/website/js/header.js"></script>
 <script src="<?php echo $ROOT; ?>/views/website/js/cart.js"></script>
+
 <script src="<?php echo $ROOT; ?>/views/website/js/wishlist.js"></script>
