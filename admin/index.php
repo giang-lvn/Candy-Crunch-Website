@@ -10,6 +10,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/includes/config.php';
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/includes/helpers.php';
 
 // Kiểm tra đăng nhập
 checkAdminAuth();
@@ -64,6 +65,8 @@ try {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet">
     <!-- <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/admin.css"> -->
     <style>
         /* CSS tạm thời nếu chưa có file admin.css */
@@ -149,11 +152,33 @@ try {
                     </ul>
                 </li>
                 
+                <!-- Orders Dropdown -->
+                <?php 
+                $orderActions = ['orders', 'add_order', 'view_order', 'edit_order'];
+                $isOrderSection = in_array($action, $orderActions);
+                ?>
                 <li class="nav-item mb-2">
-                    <a href="<?php echo BASE_URL; ?>index.php?action=orders" 
-                       class="nav-link text-white <?php echo $action == 'orders' ? 'active bg-white text-dark' : ''; ?>">
-                        <i class="bi bi-receipt me-2"></i> Đơn hàng
+                    <a href="#orderSubmenu" 
+                       class="nav-link text-white d-flex justify-content-between align-items-center <?php echo $isOrderSection ? 'bg-white bg-opacity-25' : ''; ?>" 
+                       data-bs-toggle="collapse" 
+                       aria-expanded="<?php echo $isOrderSection ? 'true' : 'false'; ?>">
+                        <span><i class="bi bi-receipt me-2"></i> Đơn hàng</span>
+                        <i class="bi bi-chevron-down"></i>
                     </a>
+                    <ul class="collapse <?php echo $isOrderSection ? 'show' : ''; ?> nav flex-column ms-3 mt-1" id="orderSubmenu">
+                        <li class="nav-item">
+                            <a href="<?php echo BASE_URL; ?>index.php?action=orders" 
+                               class="nav-link text-white py-1 <?php echo $action == 'orders' ? 'active bg-white text-dark' : ''; ?>">
+                                <i class="bi bi-list-ul me-2"></i> Danh sách đơn hàng
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo BASE_URL; ?>index.php?action=add_order" 
+                               class="nav-link text-white py-1 <?php echo $action == 'add_order' ? 'active bg-white text-dark' : ''; ?>">
+                                <i class="bi bi-plus-circle me-2"></i> Thêm đơn hàng
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 
                 <li class="nav-item mb-2">
@@ -227,6 +252,9 @@ try {
                         'add_category' => 'Thêm danh mục mới',
                         'edit_category' => 'Sửa danh mục',
                         'orders' => 'Quản lý đơn hàng',
+                        'add_order' => 'Thêm đơn hàng mới',
+                        'view_order' => 'Chi tiết đơn hàng',
+                        'edit_order' => 'Chỉnh sửa đơn hàng',
                         'customers' => 'Quản lý khách hàng',
                         'view_customer' => 'Chi tiết khách hàng',
                         'vouchers' => 'Quản lý Voucher',
@@ -283,6 +311,7 @@ try {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
     // Function hiển thị Toast thay cho alert()
     function showToast(message, type = 'info') {

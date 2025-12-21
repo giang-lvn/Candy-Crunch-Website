@@ -50,40 +50,40 @@ class OrderController {
 
     private function mapStatus($status) {
         return match ($status) {
-            'waiting_payment'  => 'waiting-payment',
-            'completed'        => 'completed',
-            'pending'          => 'pending',
-            'shipping'         => 'on-shipping',
-            'returned'         => 'return',
-            'cancelled'        => 'cancel',
-            'pending_confirm'  => 'pending-confirm',
-            default            => 'pending'
+            'Waiting Payment'        => 'waiting-payment',
+            'Complete', 'Completed'  => 'completed',
+            'Pending'                => 'pending',
+            'On Shipping'            => 'on-shipping',
+            'Returned'               => 'return',
+            'Cancelled', 'Canceled'  => 'cancel',
+            'Pending Confirmation'   => 'pending-confirm',
+            default                  => 'pending'
         };
     }
 
     private function mapStatusText($status) {
         return match ($status) {
-            'waiting_payment'  => 'Waiting Payment',
-            'completed'        => 'Completed',
-            'pending'          => 'Pending',
-            'shipping'         => 'On Shipping',
-            'returned'         => 'Return',
-            'cancelled'        => 'Cancel',
-            'pending_confirm'  => 'Pending Confirmation',
-            default            => 'Pending'
+            'Waiting Payment'        => 'Waiting Payment',
+            'Complete', 'Completed'  => 'Completed',
+            'Pending'                => 'Pending',
+            'On Shipping'            => 'On Shipping',
+            'Returned'               => 'Return',
+            'Cancelled', 'Canceled'  => 'Cancel',
+            'Pending Confirmation'   => 'Pending Confirmation',
+            default                  => 'Pending'
         };
     }
 
     private function mapButtons($status) {
         return match ($status) {
-            'waiting_payment' => ['Pay Now', 'Change Method'],
-            'completed'       => ['Buy Again', 'Return', 'Write Review'],
-            'pending'         => ['Contact'],
-            'shipping'        => ['Cancel', 'Contact'],
-            'returned'        => ['Contact'],
-            'cancelled'       => ['Contact', 'Buy Again'],
-            'pending_confirm' => ['Confirmed', 'Cancel'],
-            default           => ['Contact']
+            'Waiting Payment'        => ['Pay Now', 'Change Method'],
+            'Complete', 'Completed'  => ['Buy Again', 'Return', 'Write Review'],
+            'Pending'                => ['Contact'],
+            'On Shipping'            => ['Cancel', 'Contact'],
+            'Returned'               => ['Contact'],
+            'Cancelled', 'Canceled'  => ['Contact', 'Buy Again'],
+            'Pending Confirmation'   => ['Confirmed', 'Cancel'],
+            default                  => ['Contact']
         };
     }
 }

@@ -7,6 +7,32 @@ $search = $_GET['search'] ?? '';
 $start_date = $_GET['start_date'] ?? '';
 $end_date = $_GET['end_date'] ?? '';
 
+// Xử lý xóa đơn hàng
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
+    $orderId = $_POST['order_id'] ?? '';
+    
+    try {
+        $pdo->beginTransaction();
+        
+        // Xóa order details trước
+        $deleteDetails = $pdo->prepare("DELETE FROM ORDER_DETAIL WHERE OrderID = ?");
+        $deleteDetails->execute([$orderId]);
+        
+        // Xóa order
+        $deleteOrder = $pdo->prepare("DELETE FROM ORDERS WHERE OrderID = ?");
+        $deleteOrder->execute([$orderId]);
+        
+        $pdo->commit();
+        
+        echo "<script>showToast('Đã xóa đơn hàng thành công!', 'success'); setTimeout(function(){ window.location.href = '" . BASE_URL . "index.php?action=orders'; }, 1500);</script>";
+    } catch (Exception $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        echo "<script>showToast('Lỗi: " . addslashes($e->getMessage()) . "', 'error');</script>";
+    }
+}
+
 // Xây dựng query
 $sql = "SELECT 
             o.OrderID,
@@ -15,15 +41,20 @@ $sql = "SELECT
             o.PaymentMethod,
             o.ShippingMethod,
             o.ShippingFee,
+            o.CustomerID,
             CONCAT(c.FirstName, ' ', c.LastName) as CustomerName,
-            c.Phone as CustomerPhone,
-            (SELECT SUM(s.OriginalPrice * od.OrderQuantity) 
+            (SELECT addr.Phone FROM ADDRESS addr WHERE addr.CustomerID = c.CustomerID ORDER BY addr.AddressDefault DESC LIMIT 1) as CustomerPhone,
+            a.Email as CustomerEmail,
+            (SELECT SUM(COALESCE(s.PromotionPrice, s.OriginalPrice) * od.OrderQuantity) 
              FROM ORDER_DETAIL od 
              JOIN SKU s ON od.SKUID = s.SKUID 
              WHERE od.OrderID = o.OrderID) as SubTotal,
-            v.Code as VoucherCode
+            v.Code as VoucherCode,
+            v.DiscountPercent,
+            v.DiscountAmount
         FROM ORDERS o
         LEFT JOIN CUSTOMER c ON o.CustomerID = c.CustomerID
+        LEFT JOIN ACCOUNT a ON c.AccountID = a.AccountID
         LEFT JOIN VOUCHER v ON o.VoucherID = v.VoucherID
         WHERE 1=1";
 
@@ -37,7 +68,7 @@ if (!empty($status)) {
 
 // Filter theo search
 if (!empty($search)) {
-    $sql .= " AND (o.OrderID LIKE ? OR c.FirstName LIKE ? OR c.LastName LIKE ? OR c.Phone LIKE ?)";
+    $sql .= " AND (o.OrderID LIKE ? OR c.FirstName LIKE ? OR c.LastName LIKE ? OR a.Email LIKE ?)";
     $searchTerm = "%$search%";
     $params[] = $searchTerm;
     $params[] = $searchTerm;
@@ -66,9 +97,10 @@ $orders = $stmt->fetchAll();
 // Thống kê
 $stats_sql = "SELECT 
                 COUNT(*) as total_orders,
-                SUM(CASE WHEN OrderStatus = 'pending' THEN 1 ELSE 0 END) as pending_orders,
-                SUM(CASE WHEN OrderStatus = 'processing' THEN 1 ELSE 0 END) as processing_orders,
-                SUM(CASE WHEN OrderStatus = 'completed' THEN 1 ELSE 0 END) as completed_orders
+                SUM(CASE WHEN OrderStatus = 'Pending' OR OrderStatus = 'Pending Confirmation' THEN 1 ELSE 0 END) as pending_orders,
+                SUM(CASE WHEN OrderStatus = 'On Shipping' THEN 1 ELSE 0 END) as shipping_orders,
+                SUM(CASE WHEN OrderStatus = 'Complete' THEN 1 ELSE 0 END) as completed_orders,
+                SUM(CASE WHEN OrderStatus = 'Cancelled' THEN 1 ELSE 0 END) as cancelled_orders
               FROM ORDERS";
 $stats = $pdo->query($stats_sql)->fetch();
 
@@ -81,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
         $update_stmt = $pdo->prepare("UPDATE ORDERS SET OrderStatus = ? WHERE OrderID = ?");
         $update_stmt->execute([$new_status, $order_id]);
         
-        echo '<script>showToast("Cập nhật trạng thái thành công!", "success");</script>';
+        echo '<script>showToast("Cập nhật trạng thái thành công!", "success"); setTimeout(function(){ location.reload(); }, 1500);</script>';
     } catch (Exception $e) {
         echo '<script>showToast("Có lỗi xảy ra: ' . $e->getMessage() . '", "error");</script>';
     }
@@ -90,7 +122,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4>Quản lý đơn hàng</h4>
     <div>
-        <button class="btn btn-primary" onclick="exportOrders()">
+        <a href="<?php echo BASE_URL; ?>index.php?action=add_order" class="btn btn-primary me-2">
+            <i class="bi bi-plus-circle me-2"></i>Thêm đơn hàng
+        </a>
+        <button class="btn btn-outline-secondary" onclick="exportOrders()">
             <i class="bi bi-download me-2"></i>Xuất Excel
         </button>
     </div>
@@ -98,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
 
 <!-- Thống kê nhanh -->
 <div class="row mb-4">
-    <div class="col-md-3">
+    <div class="col-md-3 col-sm-6 mb-3">
         <div class="card stat-card">
             <div class="stat-icon bg-primary">
                 <i class="bi bi-receipt text-white"></i>
@@ -107,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
             <div class="stat-label">Tổng đơn hàng</div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-3 col-sm-6 mb-3">
         <div class="card stat-card">
             <div class="stat-icon bg-warning">
                 <i class="bi bi-clock text-white"></i>
@@ -116,16 +151,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
             <div class="stat-label">Chờ xử lý</div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-3 col-sm-6 mb-3">
         <div class="card stat-card">
             <div class="stat-icon bg-info">
-                <i class="bi bi-gear text-white"></i>
+                <i class="bi bi-truck text-white"></i>
             </div>
-            <div class="stat-number"><?php echo $stats['processing_orders'] ?? 0; ?></div>
-            <div class="stat-label">Đang xử lý</div>
+            <div class="stat-number"><?php echo $stats['shipping_orders'] ?? 0; ?></div>
+            <div class="stat-label">Đang giao</div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-3 col-sm-6 mb-3">
         <div class="card stat-card">
             <div class="stat-icon bg-success">
                 <i class="bi bi-check-circle text-white"></i>
@@ -143,6 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
             <input type="hidden" name="action" value="orders">
             
             <div class="col-md-3">
+                <label class="form-label small fw-semibold">Trạng thái</label>
                 <select name="status" class="form-select" onchange="this.form.submit()">
                     <option value="">Tất cả trạng thái</option>
                     <?php foreach (getOrderStatuses() as $key => $label): ?>
@@ -154,23 +190,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
             </div>
             
             <div class="col-md-3">
+                <label class="form-label small fw-semibold">Từ ngày</label>
                 <input type="date" name="start_date" class="form-control" 
-                       placeholder="Từ ngày" value="<?php echo htmlspecialchars($start_date); ?>">
+                       value="<?php echo htmlspecialchars($start_date); ?>">
             </div>
             
             <div class="col-md-3">
+                <label class="form-label small fw-semibold">Đến ngày</label>
                 <input type="date" name="end_date" class="form-control" 
-                       placeholder="Đến ngày" value="<?php echo htmlspecialchars($end_date); ?>">
+                       value="<?php echo htmlspecialchars($end_date); ?>">
             </div>
             
-            <div class="col-md-3">
-                <button type="submit" class="btn btn-primary w-100">Lọc</button>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-filter me-1"></i>Lọc
+                </button>
             </div>
         </form>
         
         <div class="mt-3">
             <input type="text" id="searchInput" class="form-control" 
-                   placeholder="Tìm kiếm theo mã đơn, tên hoặc số điện thoại khách hàng..." 
+                   placeholder="Tìm kiếm theo mã đơn, tên, số điện thoại, email..." 
                    onkeyup="filterOrders()">
         </div>
     </div>
@@ -195,26 +235,43 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
                 <tbody>
                     <?php if (empty($orders)): ?>
                     <tr>
-                        <td colspan="7" class="text-center">Không có đơn hàng nào</td>
+                        <td colspan="7" class="text-center py-4">
+                            <i class="bi bi-inbox display-6 text-muted d-block mb-2"></i>
+                            Không có đơn hàng nào
+                        </td>
                     </tr>
                     <?php else: ?>
                     <?php foreach ($orders as $order): 
-                        $total = ($order['SubTotal'] ?? 0) + ($order['ShippingFee'] ?? 0);
+                        $subTotal = $order['SubTotal'] ?? 0;
+                        $discount = 0;
+                        if (!empty($order['DiscountPercent'])) {
+                            $discount = $subTotal * $order['DiscountPercent'] / 100;
+                        } elseif (!empty($order['DiscountAmount'])) {
+                            $discount = $order['DiscountAmount'];
+                        }
+                        $total = $subTotal - $discount + ($order['ShippingFee'] ?? 0);
                     ?>
                     <tr>
                         <td>
                             <strong class="text-primary">#<?php echo htmlspecialchars($order['OrderID']); ?></strong>
                             <?php if ($order['VoucherCode']): ?>
-                            <br><small class="text-success"><?php echo htmlspecialchars($order['VoucherCode']); ?></small>
+                            <br><small class="text-success"><i class="bi bi-ticket-perforated"></i> <?php echo htmlspecialchars($order['VoucherCode']); ?></small>
                             <?php endif; ?>
                         </td>
                         <td>
-                            <div><?php echo htmlspecialchars($order['CustomerName'] ?? 'N/A'); ?></div>
+                            <?php if ($order['CustomerName']): ?>
+                            <div><strong><?php echo htmlspecialchars(trim($order['CustomerName'])); ?></strong></div>
                             <small class="text-muted"><?php echo htmlspecialchars($order['CustomerPhone'] ?? ''); ?></small>
+                            <?php if ($order['CustomerEmail']): ?>
+                            <br><small class="text-muted"><?php echo htmlspecialchars($order['CustomerEmail']); ?></small>
+                            <?php endif; ?>
+                            <?php else: ?>
+                            <span class="text-muted">Khách vãng lai</span>
+                            <?php endif; ?>
                         </td>
                         <td><?php echo formatDate($order['OrderDate']); ?></td>
                         <td>
-                            <strong><?php echo formatCurrency($total); ?></strong>
+                            <strong class="text-success"><?php echo formatCurrency($total); ?></strong>
                             <?php if ($order['ShippingFee'] > 0): ?>
                             <br><small class="text-muted">Ship: <?php echo formatCurrency($order['ShippingFee']); ?></small>
                             <?php endif; ?>
@@ -234,20 +291,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
                         </td>
                         <td>
                             <div class="btn-group btn-group-sm">
-                                <button class="btn btn-outline-primary" 
-                                        onclick="viewOrderDetail('<?php echo $order['OrderID']; ?>')"
-                                        title="Xem chi tiết">
+                                <a href="<?php echo BASE_URL; ?>index.php?action=view_order&id=<?php echo $order['OrderID']; ?>" 
+                                   class="btn btn-outline-primary" title="Xem chi tiết">
                                     <i class="bi bi-eye"></i>
-                                </button>
+                                </a>
                                 <button class="btn btn-outline-info" 
                                         onclick="showUpdateStatusModal('<?php echo $order['OrderID']; ?>', '<?php echo $order['OrderStatus']; ?>')"
                                         title="Cập nhật trạng thái">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-                                <a href="?action=order_edit&id=<?php echo $order['OrderID']; ?>" 
-                                   class="btn btn-outline-warning" title="Sửa đơn hàng">
-                                    <i class="bi bi-gear"></i>
-                                </a>
+                                <button class="btn btn-outline-danger" 
+                                        onclick="showDeleteModal('<?php echo $order['OrderID']; ?>')"
+                                        title="Xóa đơn hàng">
+                                    <i class="bi bi-trash"></i>
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -256,23 +313,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
                 </tbody>
             </table>
         </div>
-        
-        <!-- Pagination nếu có nhiều đơn hàng -->
-        <?php if (count($orders) > 10): ?>
-        <nav aria-label="Page navigation" class="mt-3">
-            <ul class="pagination justify-content-center">
-                <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1">Trước</a>
-                </li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                    <a class="page-link" href="#">Tiếp</a>
-                </li>
-            </ul>
-        </nav>
-        <?php endif; ?>
     </div>
 </div>
 
@@ -327,17 +367,50 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
     </div>
 </div>
 
+<!-- Modal xác nhận xóa -->
+<div class="modal fade" id="deleteOrderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" id="deleteOrderForm">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="bi bi-exclamation-triangle me-2"></i>Xác nhận xóa</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="order_id" id="deleteOrderId">
+                    <input type="hidden" name="delete_order" value="1">
+                    <p>Bạn có chắc chắn muốn xóa đơn hàng <strong id="deleteOrderIdText"></strong>?</p>
+                    <div class="alert alert-warning small">
+                        <i class="bi bi-exclamation-circle me-1"></i>
+                        Hành động này không thể hoàn tác và sẽ xóa tất cả chi tiết đơn hàng liên quan.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-2"></i>Xóa đơn hàng
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
 $(document).ready(function() {
     // Khởi tạo DataTable
-    $('#ordersTable').DataTable({
-        language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/vi.json'
-        },
-        order: [[2, 'desc']],
-        pageLength: 25,
-        dom: '<"row"<"col-md-6"l><"col-md-6"f>>tip'
-    });
+    if ($('#ordersTable tbody tr').length > 1 || ($('#ordersTable tbody tr').length === 1 && !$('#ordersTable tbody tr td').hasClass('text-center'))) {
+        $('#ordersTable').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/vi.json'
+            },
+            order: [[2, 'desc']],
+            pageLength: 25,
+            columnDefs: [
+                { orderable: false, targets: [6] }
+            ]
+        });
+    }
 });
 
 function filterOrders() {
@@ -361,6 +434,14 @@ function filterOrders() {
         
         row.style.display = found ? '' : 'none';
     }
+}
+
+function showUpdateStatusModal(orderId, currentStatus) {
+    $('#updateOrderId').val(orderId);
+    $('#updateStatusSelect').val(currentStatus);
+    
+    const modal = new bootstrap.Modal(document.getElementById('updateStatusModal'));
+    modal.show();
 }
 
 function viewOrderDetail(orderId) {
@@ -397,16 +478,15 @@ function viewOrderDetail(orderId) {
     });
 }
 
-function showUpdateStatusModal(orderId, currentStatus) {
-    $('#updateOrderId').val(orderId);
-    $('#updateStatusSelect').val(currentStatus);
+function showDeleteModal(orderId) {
+    $('#deleteOrderId').val(orderId);
+    $('#deleteOrderIdText').text('#' + orderId);
     
-    const modal = new bootstrap.Modal(document.getElementById('updateStatusModal'));
+    const modal = new bootstrap.Modal(document.getElementById('deleteOrderModal'));
     modal.show();
 }
 
 function exportOrders() {
-    // Tạo dữ liệu cho export
     const table = document.getElementById('ordersTable');
     const rows = table.querySelectorAll('tbody tr');
     let csvContent = "data:text/csv;charset=utf-8,";
@@ -421,10 +501,9 @@ function exportOrders() {
             const cells = row.querySelectorAll('td');
             const rowData = [];
             
-            for (let i = 0; i < cells.length - 1; i++) { // Bỏ cột thao tác
+            for (let i = 0; i < cells.length - 1; i++) {
                 let cellText = cells[i].textContent.trim();
-                // Xóa các ký tự đặc biệt
-                cellText = cellText.replace(/(\r\n|\n|\r)/gm, "");
+                cellText = cellText.replace(/(\r\n|\n|\r)/gm, " ");
                 cellText = cellText.replace(/,/g, ";");
                 rowData.push('"' + cellText + '"');
             }
@@ -433,7 +512,6 @@ function exportOrders() {
         }
     });
     
-    // Tạo và tải file
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -442,34 +520,6 @@ function exportOrders() {
     link.click();
     document.body.removeChild(link);
 }
-
-// Xử lý form cập nhật trạng thái
-$('#updateStatusForm').submit(function(e) {
-    e.preventDefault();
-    
-    const formData = $(this).serialize();
-    
-    $.ajax({
-        url: window.location.href,
-        method: 'POST',
-        data: formData,
-        success: function(response) {
-            // Đóng modal
-            bootstrap.Modal.getInstance(document.getElementById('updateStatusModal')).hide();
-            
-            // Hiển thị thông báo
-            showToast("Đã cập nhật trạng thái thành công!", "success");
-            
-            // Reload trang sau 1.5 giây
-            setTimeout(() => {
-                window.location.reload();
-            }, 1500);
-        },
-        error: function() {
-            showToast("Có lỗi xảy ra khi cập nhật!", "error");
-        }
-    });
-});
 </script>
 
 <style>
