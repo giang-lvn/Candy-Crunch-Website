@@ -39,13 +39,7 @@ class VoucherController {
        ================================================== */
     public function list() {
         $filter = $_GET['filter'] ?? 'all';
-
-        if ($filter === 'expiring') {
-            $vouchers = $this->voucherModel->getVoucherByFilter('expiring');
-        } else {
-            $vouchers = $this->voucherModel->getActiveVouchers();
-        }
-
+        $vouchers = $this->voucherModel->getVoucherByFilter($filter);
         $this->jsonResponse(true, $vouchers);
     }
 
