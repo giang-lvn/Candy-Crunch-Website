@@ -8,7 +8,6 @@ let currentShippingId = null;
 let currentBankingCard = null;
 let currentBankingId = null;
 let currentBankingMode = null;
-const ROOT = '';
 
 // ==================================================
 // DOM READY
@@ -50,23 +49,20 @@ function initMenuNavigation() {
 function handleMenuAction(action) {
     switch (action) {
         case 'My Account':
-            if (window.location.pathname.includes('account') || window.location.pathname.includes('my_account')) {
-                document.querySelector('.profile')?.scrollIntoView({ behavior: 'smooth' });
-            } else { 
-                window.location.href = ROOT + '/views/website/php/my_account.php';
-            }
+            window.location.href = 'my_account.php';
             break;
         case 'Change Password':
-            window.location.href = ROOT + '/views/website/php/changepass.php';
+            // Already on this page, just scroll to top or do nothing
+            window.location.href = 'changepass.php'
             break;
         case 'My Orders':
-            window.location.href = ROOT + '/views/website/php/my_orders.php';
+            window.location.href = 'my_orders.php';
             break;
         case 'My Vouchers':
-            window.location.href = ROOT + '/views/website/php/my_vouchers.php';
+            window.location.href = 'my_vouchers.php';
             break;
         case 'Log out':
-            if (confirm('Are you sure you want to log out?')) window.location.href = ROOT + '/views/website/php/login.html';
+            if (confirm('Are you sure you want to log out?')) window.location.href = '/Candy-Crunch-Website/views/website/php/login.php';
             break;
     }
 }
@@ -234,7 +230,7 @@ function saveProfile() {
         console.log(pair[0] + ': ' + pair[1]);
     }
 
-    fetch('/controllers/website/account_controller.php', { 
+    fetch('/Candy-Crunch-Website/controllers/website/account_controller.php', { 
         method: 'POST', 
         body: formData 
     })
@@ -416,7 +412,7 @@ function saveBanking() {
         console.log(pair[0] + ': ' + pair[1]);
     }
 
-    fetch('/controllers/website/account_controller.php', { method: 'POST', body: formData })
+    fetch('/Candy-Crunch-Website/controllers/website/account_controller.php', { method: 'POST', body: formData })
     .then(res => {
         console.log('📥 Banking response status:', res.status);
         return res.text();
@@ -447,7 +443,7 @@ function deleteBanking() {
     formData.append('action','deleteBanking');
     formData.append('banking_id', currentBankingId);
 
-    fetch('/controllers/website/account_controller.php', { method:'POST', body:formData })
+    fetch('/Candy-Crunch-Website/controllers/website/account_controller.php', { method:'POST', body:formData })
     .then(res=>res.json())
     .then(res=>{ if(res.success){alert('Banking information saved!'); window.location.reload();} else alert('Error: '+(res.message||'Unknown error')); })
     .catch(err=>alert('Server error: '+err));
@@ -575,7 +571,7 @@ function saveShipping() {
         console.log(pair[0] + ': ' + pair[1]);
     }
 
-    fetch('/controllers/website/account_controller.php', { method:'POST', body:formData })
+    fetch('/Candy-Crunch-Website/controllers/website/account_controller.php', { method:'POST', body:formData })
     .then(res=>{
         console.log('📥 Shipping response status:', res.status);
         return res.text();
@@ -608,7 +604,7 @@ function deleteShipping() {
 
     console.log('🗑️ Deleting address ID:', currentShippingId);
 
-    fetch('/controllers/website/account_controller.php', { 
+    fetch('/Candy-Crunch-Website/controllers/website/account_controller.php', { 
         method: 'POST', 
         body: formData 
     })
