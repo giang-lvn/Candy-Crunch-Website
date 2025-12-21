@@ -148,6 +148,7 @@ class AccountModel
         ");
         $next = ((int)$stmt->fetchColumn()) + 1;
         $addressId = 'ADD' . str_pad($next, 3, '0', STR_PAD_LEFT);
+        
 
         $sql = "
             INSERT INTO ADDRESS (
