@@ -120,7 +120,7 @@ if ($file === '' || $file === 'index.php') {
         </div>
 
         <div class="hero-image">
-            <img src="<?php echo $ROOT; ?>/views/website/img/hero-thumbnails.webp" alt="Ice cream bowls" loading="eager"
+            <img src="<?php echo $ROOT; ?>/views/website/img/Commercial-1.webp" alt="Ice cream bowls" loading="eager"
                 fetchpriority="high" width="527" height="527">
         </div>
     </section>
@@ -217,12 +217,12 @@ if ($file === '' || $file === 'index.php') {
 
         <div class="joy-products">
             <div class="joy-products-col">
-                <img src="<?php echo $ROOT; ?>/views/website/img/pl1.svg" alt="Product" class="joy-product-img">
-                <img src="<?php echo $ROOT; ?>/views/website/img/pl2.svg" alt="Product" class="joy-product-img">
+                <img src="<?php echo $ROOT; ?>/views/website/img/Commercial-CB001-royal-cocoa-bomb.webp" alt="Product" class="joy-product-img">
+            
             </div>
             <div class="joy-products-col">
-                <img src="<?php echo $ROOT; ?>/views/website/img/pr1.svg" alt="Product" class="joy-product-img">
-                <img src="<?php echo $ROOT; ?>/views/website/img/pr2.svg" alt="Product" class="joy-product-img">
+                <img src="<?php echo $ROOT; ?>/views/website/img/Commercial-NOU001-dried-fruit.webp" alt="Product" class="joy-product-img">
+               
             </div>
         </div>
     </section>
@@ -524,11 +524,11 @@ if ($file === '' || $file === 'index.php') {
 
         <!-- Community Images - Appear during "A COMMUNITY" phase -->
         <div class="community-gallery">
-            <img src="<?php echo $ROOT; ?>/views/website/img/community_1.png" alt="Community" class="community-img community-img-1">
-            <img src="<?php echo $ROOT; ?>/views/website/img/community_2.png" alt="Community" class="community-img community-img-2">
-            <img src="<?php echo $ROOT; ?>/views/website/img/community_3.png" alt="Community" class="community-img community-img-3">
-            <img src="<?php echo $ROOT; ?>/views/website/img/community_4.png" alt="Community" class="community-img community-img-4">
-            <img src="<?php echo $ROOT; ?>/views/website/img/community_5.png" alt="Community" class="community-img community-img-5">
+            <img src="<?php echo $ROOT; ?>/views/website/img/Commercial-CG001-blueberry.webp" alt="Community" class="community-img community-img-1">
+            <img src="<?php echo $ROOT; ?>/views/website/img/Commercial-CG002-mint.webp" alt="Community" class="community-img community-img-2">
+            <img src="<?php echo $ROOT; ?>/views/website/img/Commercial-CG003-cola.webp" alt="Community" class="community-img community-img-3">
+            <img src="<?php echo $ROOT; ?>/views/website/img/Commercial-CG004-strawbery.webp" alt="Community" class="community-img community-img-4">
+            <img src="<?php echo $ROOT; ?>/views/website/img/Commercial-GUM001- Worm.webp" alt="Community" class="community-img community-img-5">
         </div>
 
         <!-- Delight Images - Flip in during "A DELIGHT" phase -->
@@ -719,32 +719,26 @@ if ($file === '' || $file === 'index.php') {
             <div class="testimonial-card testimonial-card-1">
                 <img src="<?php echo $ROOT; ?>/views/website/img/testimonial1.png" alt="Customer testimonial" class="testimonial-image">
                 <div class="testimonial-text-container">
-                    <p class="testimonial-comment">Lorem ipsum dolor sit amet consectetur. Et amet sodales donec massa
-                        aenean vestibulum sed nullam. Et donec bibendum egestas neque sed. Massa suspendisse nulla ut
-                        pulvinar. Tristique odio platea tellus cursus morbi ut</p>
+                    <p class="testimonial-comment">“For me, it’s all about energy and vibe. Candy Crunch hits just right — bold flavor, not too heavy, and keeps me sharp. Whether I’m in the studio or working late, one pack is enough to keep my flow going. Once you try it, it’s hard to stop.”</p>
                     <p class="testimonial-tag">Hoang Long - Rapper</p>
                 </div>
             </div>
 
             <!-- Card 2 -->
             <div class="testimonial-card testimonial-card-2">
-                <img src="<?php echo $ROOT; ?>/views/website/img/testimonial1.png" alt="Customer testimonial" class="testimonial-image">
+                <img src="<?php echo $ROOT; ?>/views/website/img/testimonial2.png" alt="Customer testimonial" class="testimonial-image">
                 <div class="testimonial-text-container">
-                    <p class="testimonial-comment">Lorem ipsum dolor sit amet consectetur. Et amet sodales donec massa
-                        aenean vestibulum sed nullam. Et donec bibendum egestas neque sed. Massa suspendisse nulla ut
-                        pulvinar. Tristique odio platea tellus cursus morbi ut</p>
-                    <p class="testimonial-tag">Hoang Long - Rapper</p>
+                    <p class="testimonial-comment">“I’m pretty picky when it comes to sweets, but Candy Crunch is different~ The flavors are light, colorful, and fun — just like me! Every bite feels cheerful and gives me a little boost of happy energy.”</p>
+                    <p class="testimonial-tag">7 Colors Rabbit - Animal</p>
                 </div>
             </div>
 
             <!-- Card 3 -->
             <div class="testimonial-card testimonial-card-3">
-                <img src="<?php echo $ROOT; ?>/views/website/img/testimonial1.png" alt="Customer testimonial" class="testimonial-image">
+                <img src="<?php echo $ROOT; ?>/views/website/img/testimonial3.png" alt="Customer testimonial" class="testimonial-image">
                 <div class="testimonial-text-container">
-                    <p class="testimonial-comment">Lorem ipsum dolor sit amet consectetur. Et amet sodales donec massa
-                        aenean vestibulum sed nullam. Et donec bibendum egestas neque sed. Massa suspendisse nulla ut
-                        pulvinar. Tristique odio platea tellus cursus morbi ut</p>
-                    <p class="testimonial-tag">Hoang Long - Rapper</p>
+                    <p class="testimonial-comment">“I’m pretty picky when it comes to sweets, but Candy Crunch is different~ The flavors are light, colorful, and fun — just like me! Every bite feels cheerful and gives me a little boost of happy energy.”</p>
+                    <p class="testimonial-tag">C.Ronaldo - GOAT</p>
                 </div>
             </div>
         </div>

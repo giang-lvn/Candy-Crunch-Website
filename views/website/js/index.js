@@ -1,6 +1,36 @@
 // GSAP ScrollTrigger Animation for Values Section
 // Morphs from "CANDY - WE ALL IN LOVE" to "HEALTH - ALSO IN FEAR" to Joy Section
 
+// ============================================
+// SCROLL TO TOP ON PAGE LOAD AND RESIZE
+// ============================================
+
+// Force scroll to top immediately on page load/refresh
+// This runs before DOMContentLoaded to prevent flash of wrong position
+if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual'; // Disable browser's scroll restoration
+}
+window.scrollTo(0, 0);
+
+// Also scroll to top when page is fully loaded (backup)
+window.addEventListener('load', () => {
+  window.scrollTo(0, 0);
+});
+
+// Scroll to top on window resize (with debounce to avoid excessive calls)
+let resizeTimeout;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    window.scrollTo(0, 0);
+
+    // Refresh ScrollTrigger to recalculate positions after resize
+    if (typeof ScrollTrigger !== 'undefined') {
+      ScrollTrigger.refresh();
+    }
+  }, 150); // 150ms debounce
+});
+
 document.addEventListener('DOMContentLoaded', () => {
   // Register ScrollTrigger plugin
   gsap.registerPlugin(ScrollTrigger);
