@@ -206,6 +206,7 @@ try {
                         'edit_category' => 'Sửa danh mục',
                         'orders' => 'Quản lý đơn hàng',
                         'customers' => 'Quản lý khách hàng',
+                        'view_customer' => 'Chi tiết khách hàng',
                         'vouchers' => 'Khuyến mãi',
                         'feedback' => 'Phản hồi',
                         'reports' => 'Báo cáo doanh thu'
@@ -304,8 +305,8 @@ try {
     }
     
     $(document).ready(function() {
-        // Khởi tạo DataTable nếu có table
-        $('table').each(function() {
+        // Khởi tạo DataTable chỉ cho các bảng có class 'datatable'
+        $('table.datatable').each(function() {
             if (!$.fn.DataTable.isDataTable(this)) {
                 $(this).DataTable({
                     language: {
