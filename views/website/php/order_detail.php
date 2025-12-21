@@ -243,12 +243,12 @@
             <div class="payment-info">
                 <div class="payment-row subtotal">
                     <span class="label">Subtotal</span>
-                    <span class="value"><?php echo number_format($data['summary']['subtotal'], 0, ',', '.'); ?> VND</span>
+                    <span class="value-payment"><?php echo number_format($data['summary']['subtotal'], 0, ',', '.'); ?> VND</span>
                 </div>
 
                 <div class="payment-row discount">
                     <span class="label">Discount</span>
-                    <span class="value">
+                    <span class="value-payment">
                         <?php echo $data['summary']['discount'] > 0 ? '-' : ''; ?>
                         <?php echo number_format($data['summary']['discount'], 0, ',', '.'); ?> VND
                     </span>
@@ -256,21 +256,21 @@
 
                 <div class="payment-row promo">
                     <span class="label">Promo</span>
-                    <span class="value">
+                    <span class="value-payment">
                         <?php echo $data['summary']['promo'] > 0 ? '-' : ''; ?>
                         <?php echo number_format($data['summary']['promo'], 0, ',', '.'); ?> VND
                     </span>
                 </div>
 
-                <div class="payment-row shipping">
+                <div class="payment-row shippingfee">
                     <span class="label">Shipping fee</span>
-                    <span class="value"><?php echo number_format($data['summary']['shipping_fee'], 0, ',', '.'); ?> VND</span>
+                    <span class="value-payment"><?php echo number_format($data['summary']['shipping_fee'], 0, ',', '.'); ?> VND</span>
                 </div>
             </div>
 
             <div class="payment-total">
                 <span class="label">Total</span>
-                <span class="value"><?php echo number_format($data['summary']['total'], 0, ',', '.'); ?> VND</span>
+                <span class="value-payment"><?php echo number_format($data['summary']['total'], 0, ',', '.'); ?> VND</span>
             </div>
         </div>
 

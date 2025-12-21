@@ -142,7 +142,7 @@
                 <div class="payment-row subtotal">
                     <span class="label">Subtotal</span>
 
-                    <span class="value">
+                    <span class="value-payment">
                         <?= number_format($subtotal ?? 0, 0, ',', '.') ?> VND
                     </span>
                 </div>
@@ -151,7 +151,7 @@
                 <div class="payment-row discount">
                     <span class="label">Discount</span>
 
-                    <span class="value">
+                    <span class="value-payment">
                         <?= ($discount ?? 0) > 0 ? '-' : '' ?>
                         <?= number_format($discount ?? 0, 0, ',', '.') ?> VND
                     </span>
@@ -161,17 +161,17 @@
                 <div class="payment-row promo">
                     <span class="label">Promo</span>
 
-                    <span class="value">
+                    <span class="value-payment">
                         <?= ($promo ?? 0) > 0 ? '-' : '' ?>
                         <?= number_format($promo ?? 0, 0, ',', '.') ?> VND
                     </span>
                 </div>
 
                 <!-- SHIPPING -->
-                <div class="payment-row shipping">
+                <div class="payment-row shippingfee">
                     <span class="label">Shipping fee</span>
 
-                    <span class="value">
+                    <span class="value-payment">
                         <?= ($shipping ?? 0) > 0 ? '-' : '' ?>
                         <?= number_format($shipping ?? 0, 0, ',', '.') ?> VND
                     </span>
