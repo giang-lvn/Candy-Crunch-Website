@@ -1,31 +1,42 @@
 <?php
-// /models/website/changepass_model.php
-
 class ChangePasswordModel {
     private $conn;
 
     public function __construct() {
-        global $db; // Lấy PDO connection từ db.php
+        global $db;
         $this->conn = $db;
     }
 
-    public function getPasswordByAccountId($accountId) {
+    // ✅ LẤY PASSWORD QUA CUSTOMERID
+    public function getPasswordByCustomerId($customerId) {
         try {
-            $stmt = $this->conn->prepare("SELECT Password FROM ACCOUNT WHERE AccountID = ?");
-            $stmt->execute([$accountId]);
+            $stmt = $this->conn->prepare("
+                SELECT A.Password
+                FROM ACCOUNT A
+                JOIN CUSTOMER C ON A.AccountID = C.AccountID
+                WHERE C.CustomerID = ?
+            ");
+            $stmt->execute([$customerId]);
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            error_log("getPasswordByAccountId Error: " . $e->getMessage());
+            error_log("getPasswordByCustomerId Error: " . $e->getMessage());
             return false;
         }
     }
 
-    public function updatePassword($accountId, $hashedPassword) {
+    // ✅ UPDATE PASSWORD QUA CUSTOMERID
+    public function updatePasswordByCustomerId($customerId, $hashedPassword) {
         try {
-            $stmt = $this->conn->prepare("UPDATE ACCOUNT SET Password = ? WHERE AccountID = ?");
-            return $stmt->execute([$hashedPassword, $accountId]);
+            $stmt = $this->conn->prepare("
+                UPDATE ACCOUNT
+                SET Password = ?
+                WHERE AccountID = (
+                    SELECT AccountID FROM CUSTOMER WHERE CustomerID = ?
+                )
+            ");
+            return $stmt->execute([$hashedPassword, $customerId]);
         } catch (PDOException $e) {
-            error_log("updatePassword Error: " . $e->getMessage());
+            error_log("updatePasswordByCustomerId Error: " . $e->getMessage());
             return false;
         }
     }
