@@ -558,14 +558,10 @@ function initShipping() {
 function loadShippingFromCard(card) {
     currentShippingId = card.dataset.addressId;
     setValue('shipName', card.querySelector('.ship-name').textContent);
-    const addrElement = card.querySelector('.ship-address');
-    const fullText = addrElement.textContent.trim();
-    const phone = addrElement.dataset.phone;
-    const parts = fullText.split(',').map(p => p.trim());
-    setValue('shipAddress', parts[0] || '');
-    setValue('shipCity', parts[1] || '');
-    setValue('shipCountry', parts[2] || '');
-    setValue('shipPhone', phone || '');
+    setValue('shipPhone', card.dataset.phone || '');
+    setValue('shipAddress', card.dataset.address || '');
+    setValue('shipCity', card.dataset.city || '');
+    setValue('shipCountry', card.dataset.country || '');
 }
 
 function saveShipping() {

@@ -223,38 +223,42 @@ $totalSpent = array_sum(array_map(function($o) {
     <div class="col-lg-8">
         <!-- Địa chỉ giao hàng -->
         <div class="card mb-4">
-            <div class="card-header bg-success text-white">
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
                 <h6 class="mb-0"><i class="bi bi-geo-alt me-2"></i>Địa chỉ giao hàng (<?php echo count($addresses); ?>)</h6>
+                <button onclick="location.reload()" class="btn btn-sm btn-light py-0" title="Làm mới dữ liệu"><i class="bi bi-arrow-clockwise"></i></button>
             </div>
             <div class="card-body">
                 <?php if (empty($addresses)): ?>
-                    <p class="text-muted text-center mb-0">Chưa có địa chỉ nào được lưu.</p>
+                    <div class="text-center py-3">
+                        <i class="bi bi-geo-alt text-muted fs-2"></i>
+                        <p class="text-muted mb-0 mt-2">Chưa có địa chỉ nào được lưu.</p>
+                        <small class="text-muted">ID: <?php echo htmlspecialchars($customerId); ?></small>
+                    </div>
                 <?php else: ?>
                     <div class="row">
                         <?php foreach ($addresses as $addr): ?>
                         <div class="col-md-6 mb-3">
-                            <div class="card h-100 <?php echo $addr['AddressDefault'] === 'Yes' ? 'border-success' : ''; ?>">
+                            <div class="card h-100 <?php echo ($addr['AddressDefault'] ?? 'No') === 'Yes' ? 'border-success' : ''; ?>">
                                 <div class="card-body">
-                                    <?php if ($addr['AddressDefault'] === 'Yes'): ?>
+                                    <?php if (($addr['AddressDefault'] ?? 'No') === 'Yes'): ?>
                                         <span class="badge bg-success float-end">Mặc định</span>
                                     <?php endif; ?>
                                     
                                     <?php if (!empty($addr['Alias'])): ?>
-                                        <small class="text-muted"><?php echo htmlspecialchars($addr['Alias']); ?></small><br>
+                                        <small class="text-muted text-uppercase fw-bold"><?php echo htmlspecialchars($addr['Alias']); ?></small><br>
                                     <?php endif; ?>
                                     
-                                    <strong><?php echo htmlspecialchars($addr['Fullname']); ?></strong><br>
-                                    <small class="text-muted">
+                                    <strong class="text-primary"><?php echo htmlspecialchars($addr['Fullname']); ?></strong><br>
+                                    <small class="text-muted py-1 d-block">
                                         <i class="bi bi-telephone me-1"></i><?php echo htmlspecialchars($addr['Phone']); ?>
-                                    </small><br>
-                                    <small>
-                                        <?php echo htmlspecialchars($addr['Address']); ?>,
-                                        <?php echo htmlspecialchars($addr['CityState']); ?>,
-                                        <?php echo htmlspecialchars($addr['Country']); ?>
+                                    </small>
+                                    <div class="small bg-light p-2 rounded mt-1">
+                                        <?php echo htmlspecialchars($addr['Address']); ?><br>
+                                        <?php echo htmlspecialchars($addr['CityState']); ?>, <?php echo htmlspecialchars($addr['Country']); ?>
                                         <?php if (!empty($addr['PostalCode'])): ?>
                                             - <?php echo htmlspecialchars($addr['PostalCode']); ?>
                                         <?php endif; ?>
-                                    </small>
+                                    </div>
                                 </div>
                             </div>
                         </div>

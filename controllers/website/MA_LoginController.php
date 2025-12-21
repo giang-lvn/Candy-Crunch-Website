@@ -50,71 +50,93 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         global $db;
         $loginModel = new MA_LoginModel($db);
         
-        // Xác thực đăng nhập
-        $account = $loginModel->authenticate($email, $password);
+        // Xác thực đăng nhập - Nhận response với status
+        $authResult = $loginModel->authenticate($email, $password);
         
-        if ($account) {
-            // Đăng nhập thành công
-            
-            // Lấy thông tin customer
-            $customer = $loginModel->getCustomerByAccountID($account['AccountID']);
-            
-            if ($customer) {
-                // Bắt đầu session (nếu chưa có)
-                if (session_status() === PHP_SESSION_NONE) {
-                    session_start();
+        // Xử lý theo status
+        switch ($authResult['status']) {
+            case 'success':
+                // Đăng nhập thành công
+                $account = $authResult['account'];
+                $customer = $loginModel->getCustomerByAccountID($account['AccountID']);
+                
+                if ($customer) {
+                    // Bắt đầu session (nếu chưa có)
+                    if (session_status() === PHP_SESSION_NONE) {
+                        session_start();
+                    }
+                    
+                    // Lưu thông tin user vào session
+                    $_SESSION['user_id'] = $account['AccountID'];
+                    $_SESSION['AccountID'] = $account['AccountID']; // Thêm để khớp với account_controller
+                    $_SESSION['customer_id'] = $customer['CustomerID'];
+                    $_SESSION['CustomerID'] = $customer['CustomerID']; // Thêm để dễ truy cập
+                    $_SESSION['email'] = $account['Email'];
+                    $_SESSION['firstname'] = $customer['FirstName'];
+                    $_SESSION['lastname'] = $customer['LastName'];
+                    $_SESSION['fullname'] = $customer['FirstName'] . ' ' . $customer['LastName'];
+                    $_SESSION['logged_in'] = true;
+                    
+                    echo json_encode([
+                        'success' => true,
+                        'message' => 'Login successful!',
+                        'data' => [
+                            'accountID' => $account['AccountID'],
+                            'customerID' => $customer['CustomerID'],
+                            'fullname' => $customer['FirstName'] . ' ' . $customer['LastName']
+                        ]
+                    ]);
+                } else {
+                    // Tìm thấy account nhưng không tìm thấy customer (trường hợp hiếm)
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Account error. Please contact support.'
+                    ]);
                 }
+                break;
                 
-                // Lưu thông tin user vào session
-                $_SESSION['user_id'] = $account['AccountID'];
-                $_SESSION['customer_id'] = $customer['CustomerID'];
-                $_SESSION['email'] = $account['Email'];
-                $_SESSION['firstname'] = $customer['FirstName'];
-                $_SESSION['lastname'] = $customer['LastName'];
-                $_SESSION['fullname'] = $customer['FirstName'] . ' ' . $customer['LastName'];
-                $_SESSION['logged_in'] = true;
-                
-                echo json_encode([
-                    'success' => true,
-                    'message' => 'Login successful!',
-                    'data' => [
-                        'accountID' => $account['AccountID'],
-                        'customerID' => $customer['CustomerID'],
-                        'fullname' => $customer['FirstName'] . ' ' . $customer['LastName']
-                    ]
-                ]);
-            } else {
-                // Tìm thấy account nhưng không tìm thấy customer (trường hợp hiếm)
+            case 'inactive':
+                // Tài khoản không hoạt động
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Account error. Please contact support.'
+                    'status' => 'inactive',
+                    'message' => 'Your account is currently inactive. Please contact support to reactivate your account.'
                 ]);
-            }
-            
-        } else {
-            // Đăng nhập thất bại
-            // Kiểm tra xem email có tồn tại không để thông báo chi tiết
-            
-            // Query kiểm tra email có tồn tại không
-            $checkEmailSql = "SELECT AccountID FROM ACCOUNT WHERE Email = :email";
-            $stmt = $db->prepare($checkEmailSql);
-            $stmt->bindParam(':email', $email);
-            $stmt->execute();
-            $emailExists = $stmt->fetch();
-            
-            if ($emailExists) {
-                // Email tồn tại nhưng password sai
+                break;
+                
+            case 'banned':
+                // Tài khoản bị cấm
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Incorrect password'
+                    'status' => 'banned',
+                    'message' => 'Your account is banned. For more information, access this link: https://youtu.be/dQw4w9WgXcQ?si=7XVIiSLCkvk3Ap7u'
                 ]);
-            } else {
+                break;
+                
+            case 'not_found':
                 // Email không tồn tại
                 echo json_encode([
                     'success' => false,
                     'message' => 'Email not found'
                 ]);
-            }
+                break;
+                
+            case 'wrong_password':
+                // Password sai
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Incorrect password'
+                ]);
+                break;
+                
+            case 'error':
+            default:
+                // Lỗi hệ thống
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'An error occurred. Please try again.'
+                ]);
+                break;
         }
         
     } catch (Exception $e) {

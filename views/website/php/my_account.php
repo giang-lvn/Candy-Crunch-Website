@@ -203,7 +203,12 @@ include '../../../partials/header.php';
                             <div class="frame-group">
                                 <?php if (!empty($addresses)): ?>
                                     <?php foreach ($addresses as $address): ?>
-                                        <div class="frame-container address-item" data-address-id="<?= $address['AddressID'] ?>">
+                                        <div class="frame-container address-item" 
+                                             data-address-id="<?= $address['AddressID'] ?>"
+                                             data-phone="<?= htmlspecialchars($address['Phone'] ?? '') ?>"
+                                             data-address="<?= htmlspecialchars($address['Address'] ?? '') ?>"
+                                             data-city="<?= htmlspecialchars($address['City'] ?? '') ?>"
+                                             data-country="<?= htmlspecialchars($address['Country'] ?? '') ?>">
                                             <div class="frame-div">
                                                 <div class="frame-parent5">
                                                     <div class="john-doe-wrapper">
@@ -217,7 +222,7 @@ include '../../../partials/header.php';
                                                 <?php endif; ?>
                                             </div>
                                             <div class="sunset-boulevard-los-angeles-wrapper">
-                                                <div class="gender ship-address">
+                                                <div class="gender ship-address" data-phone="<?= htmlspecialchars($address['Phone'] ?? '') ?>">
                                                     <?php 
                                                         $addr = array_filter([$address['Address']??'', $address['City']??'', $address['Country']??'']);
                                                         echo htmlspecialchars(implode(', ', $addr) ?: '-');

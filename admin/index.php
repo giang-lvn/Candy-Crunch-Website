@@ -163,11 +163,33 @@ try {
                     </a>
                 </li>
                 
+                <!-- Voucher Dropdown -->
+                <?php 
+                $voucherActions = ['vouchers', 'add_voucher', 'edit_voucher'];
+                $isVoucherSection = in_array($action, $voucherActions);
+                ?>
                 <li class="nav-item mb-2">
-                    <a href="<?php echo BASE_URL; ?>index.php?action=vouchers" 
-                       class="nav-link text-white <?php echo $action == 'vouchers' ? 'active bg-white text-dark' : ''; ?>">
-                        <i class="bi bi-percent me-2"></i> Khuyến mãi
+                    <a href="#voucherSubmenu" 
+                       class="nav-link text-white d-flex justify-content-between align-items-center <?php echo $isVoucherSection ? 'bg-white bg-opacity-25' : ''; ?>" 
+                       data-bs-toggle="collapse" 
+                       aria-expanded="<?php echo $isVoucherSection ? 'true' : 'false'; ?>">
+                        <span><i class="bi bi-percent me-2"></i> Khuyến mãi</span>
+                        <i class="bi bi-chevron-down"></i>
                     </a>
+                    <ul class="collapse <?php echo $isVoucherSection ? 'show' : ''; ?> nav flex-column ms-3 mt-1" id="voucherSubmenu">
+                        <li class="nav-item">
+                            <a href="<?php echo BASE_URL; ?>index.php?action=vouchers" 
+                               class="nav-link text-white py-1 <?php echo $action == 'vouchers' ? 'active bg-white text-dark' : ''; ?>">
+                                <i class="bi bi-list-ul me-2"></i> Danh sách voucher
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo BASE_URL; ?>index.php?action=add_voucher" 
+                               class="nav-link text-white py-1 <?php echo $action == 'add_voucher' ? 'active bg-white text-dark' : ''; ?>">
+                                <i class="bi bi-plus-circle me-2"></i> Thêm voucher
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 
 
@@ -207,7 +229,9 @@ try {
                         'orders' => 'Quản lý đơn hàng',
                         'customers' => 'Quản lý khách hàng',
                         'view_customer' => 'Chi tiết khách hàng',
-                        'vouchers' => 'Khuyến mãi',
+                        'vouchers' => 'Quản lý Voucher',
+                        'add_voucher' => 'Thêm voucher mới',
+                        'edit_voucher' => 'Chỉnh sửa voucher',
                         'feedback' => 'Phản hồi',
                         'reports' => 'Báo cáo doanh thu'
                     ];

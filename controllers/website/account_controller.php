@@ -243,7 +243,6 @@ class AccountController
             if (!$data['address_id']) $this->sendJSON(['success'=>false,'message'=>'ID required']);
             $success = $this->model->updateAddress($customer['CustomerID'], $data);
         } else {
-            // ✅ Model sẽ tự tạo address_id
             $success = $this->model->addAddress($customer['CustomerID'], $data);
         }
         if($success) {
