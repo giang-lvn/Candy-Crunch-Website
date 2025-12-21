@@ -114,18 +114,33 @@ try {
                     </a>
                 </li>
                 
+                <!-- Sản phẩm Dropdown -->
+                <?php 
+                $productActions = ['products', 'add_product', 'categories', 'add_category', 'edit_category'];
+                $isProductSection = in_array($action, $productActions);
+                ?>
                 <li class="nav-item mb-2">
-                    <a href="<?php echo BASE_URL; ?>index.php?action=products" 
-                       class="nav-link text-white <?php echo $action == 'products' ? 'active bg-white text-dark' : ''; ?>">
-                        <i class="bi bi-box me-2"></i> Sản phẩm
+                    <a href="#productSubmenu" 
+                       class="nav-link text-white d-flex justify-content-between align-items-center <?php echo $isProductSection ? 'bg-white bg-opacity-25' : ''; ?>" 
+                       data-bs-toggle="collapse" 
+                       aria-expanded="<?php echo $isProductSection ? 'true' : 'false'; ?>">
+                        <span><i class="bi bi-box me-2"></i> Sản phẩm</span>
+                        <i class="bi bi-chevron-down"></i>
                     </a>
-                </li>
-                
-                <li class="nav-item mb-2">
-                    <a href="<?php echo BASE_URL; ?>index.php?action=categories" 
-                       class="nav-link text-white <?php echo $action == 'categories' ? 'active bg-white text-dark' : ''; ?>">
-                        <i class="bi bi-tags me-2"></i> Danh mục
-                    </a>
+                    <ul class="collapse <?php echo $isProductSection ? 'show' : ''; ?> nav flex-column ms-3 mt-1" id="productSubmenu">
+                        <li class="nav-item">
+                            <a href="<?php echo BASE_URL; ?>index.php?action=products" 
+                               class="nav-link text-white py-1 <?php echo $action == 'products' || $action == 'add_product' ? 'active bg-white text-dark' : ''; ?>">
+                                <i class="bi bi-list-ul me-2"></i> Danh sách SP
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo BASE_URL; ?>index.php?action=categories" 
+                               class="nav-link text-white py-1 <?php echo in_array($action, ['categories', 'add_category', 'edit_category']) ? 'active bg-white text-dark' : ''; ?>">
+                                <i class="bi bi-tags me-2"></i> Danh mục
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 
                 <li class="nav-item mb-2">
@@ -182,7 +197,10 @@ try {
                     $titles = [
                         'dashboard' => 'Dashboard',
                         'products' => 'Quản lý sản phẩm',
-                        'categories' => 'Danh mục sản phẩm',
+                        'add_product' => 'Thêm sản phẩm mới',
+                        'categories' => 'Quản lý danh mục',
+                        'add_category' => 'Thêm danh mục mới',
+                        'edit_category' => 'Sửa danh mục',
                         'orders' => 'Quản lý đơn hàng',
                         'customers' => 'Quản lý khách hàng',
                         'vouchers' => 'Khuyến mãi',
