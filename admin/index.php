@@ -116,7 +116,7 @@ try {
                 
                 <!-- Sản phẩm Dropdown -->
                 <?php 
-                $productActions = ['products', 'add_product', 'edit_product', 'view_product', 'categories', 'add_category', 'edit_category'];
+                $productActions = ['products', 'add_product', 'edit_product', 'view_product', 'categories', 'add_category', 'edit_category', 'feedback'];
                 $isProductSection = in_array($action, $productActions);
                 ?>
                 <li class="nav-item mb-2">
@@ -138,6 +138,12 @@ try {
                             <a href="<?php echo BASE_URL; ?>index.php?action=categories" 
                                class="nav-link text-white py-1 <?php echo in_array($action, ['categories', 'add_category', 'edit_category']) ? 'active bg-white text-dark' : ''; ?>">
                                 <i class="bi bi-tags me-2"></i> Danh mục
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo BASE_URL; ?>index.php?action=feedback" 
+                               class="nav-link text-white py-1 <?php echo $action == 'feedback' ? 'active bg-white text-dark' : ''; ?>">
+                                <i class="bi bi-chat-dots me-2"></i> Đánh giá
                             </a>
                         </li>
                     </ul>
@@ -164,12 +170,7 @@ try {
                     </a>
                 </li>
                 
-                <li class="nav-item mb-2">
-                    <a href="<?php echo BASE_URL; ?>index.php?action=feedback" 
-                       class="nav-link text-white <?php echo $action == 'feedback' ? 'active bg-white text-dark' : ''; ?>">
-                        <i class="bi bi-chat-dots me-2"></i> Phản hồi
-                    </a>
-                </li>
+
                 
                 <li class="nav-item mb-2">
                     <a href="<?php echo BASE_URL; ?>index.php?action=reports" 
@@ -241,11 +242,67 @@ try {
         </div>
     </div>
     
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+        <div id="adminToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <i class="bi bi-info-circle me-2" id="toastIcon"></i>
+                <strong class="me-auto" id="toastTitle">Thông báo</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastBody"></div>
+        </div>
+    </div>
+    
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script>
+    // Function hiển thị Toast thay cho alert()
+    function showToast(message, type = 'info') {
+        var toast = document.getElementById('adminToast');
+        var toastBody = document.getElementById('toastBody');
+        var toastIcon = document.getElementById('toastIcon');
+        var toastTitle = document.getElementById('toastTitle');
+        var toastHeader = toast.querySelector('.toast-header');
+        
+        // Reset classes
+        toast.className = 'toast';
+        toastHeader.className = 'toast-header';
+        
+        // Set content
+        toastBody.textContent = message;
+        
+        // Set styling based on type
+        switch(type) {
+            case 'success':
+                toastIcon.className = 'bi bi-check-circle-fill me-2 text-success';
+                toastTitle.textContent = 'Thành công';
+                toastHeader.classList.add('bg-success', 'text-white');
+                break;
+            case 'error':
+            case 'danger':
+                toastIcon.className = 'bi bi-exclamation-triangle-fill me-2 text-danger';
+                toastTitle.textContent = 'Lỗi';
+                toastHeader.classList.add('bg-danger', 'text-white');
+                break;
+            case 'warning':
+                toastIcon.className = 'bi bi-exclamation-circle-fill me-2 text-warning';
+                toastTitle.textContent = 'Cảnh báo';
+                toastHeader.classList.add('bg-warning');
+                break;
+            default:
+                toastIcon.className = 'bi bi-info-circle-fill me-2 text-info';
+                toastTitle.textContent = 'Thông báo';
+                toastHeader.classList.add('bg-info', 'text-white');
+        }
+        
+        // Show toast
+        var bsToast = new bootstrap.Toast(toast, { delay: 4000 });
+        bsToast.show();
+    }
+    
     $(document).ready(function() {
         // Khởi tạo DataTable nếu có table
         $('table').each(function() {

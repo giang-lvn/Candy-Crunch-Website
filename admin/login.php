@@ -234,6 +234,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     });
     
+    // Function hiển thị lỗi bằng Bootstrap alert
+    function showLoginError(message) {
+        // Xóa alert cũ nếu có
+        var oldAlert = document.querySelector('.login-body .alert');
+        if (oldAlert) oldAlert.remove();
+        
+        // Tạo alert mới
+        var alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+        alertDiv.setAttribute('role', 'alert');
+        alertDiv.innerHTML = '<i class="bi bi-exclamation-triangle me-2"></i>' + message + 
+                            '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+        
+        // Chèn vào đầu form
+        var form = document.getElementById('loginForm');
+        form.parentNode.insertBefore(alertDiv, form);
+    }
+    
     // Form validation
     document.getElementById('loginForm').addEventListener('submit', function(e) {
         const email = this.querySelector('input[name="email"]').value.trim();
@@ -241,7 +259,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         if (!email || !password) {
             e.preventDefault();
-            alert('Vui lòng nhập đầy đủ email và mật khẩu!');
+            showLoginError('Vui lòng nhập đầy đủ email và mật khẩu!');
             return false;
         }
         
@@ -249,7 +267,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             e.preventDefault();
-            alert('Email không hợp lệ!');
+            showLoginError('Email không hợp lệ!');
             return false;
         }
         

@@ -28,11 +28,9 @@ class SignUpModel
             $accountId = $this->generateId('ACCOUNT', 'AccountID', 'ACC');
 
             // 2. Insert vào bảng ACCOUNT
-            // Lưu ý: Tôi giả định bảng ACCOUNT có cột Password và Role. 
-            // Nếu tên cột khác, bạn hãy sửa lại ở đây.
             $sqlAccount = "
-                INSERT INTO ACCOUNT (AccountID, Email, Password, AccountStatus, Role)
-                VALUES (:accountId, :email, :password, 'Active', 'Customer')
+                INSERT INTO ACCOUNT (AccountID, Email, Password, AccountStatus)
+                VALUES (:accountId, :email, :password, 'Active')
             ";
             
             $stmtAccount = $this->db->prepare($sqlAccount);

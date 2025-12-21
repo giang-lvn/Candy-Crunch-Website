@@ -476,7 +476,7 @@ $(document).ready(function() {
         
         if (skuItems.length === 0) {
             e.preventDefault();
-            alert('Vui lòng thêm ít nhất 1 SKU cho sản phẩm!');
+            showToast('Vui lòng thêm ít nhất 1 SKU cho sản phẩm!', 'warning');
             return false;
         }
         
@@ -501,7 +501,7 @@ $(document).ready(function() {
                 if (skuIdList.includes(skuId)) {
                     valid = false;
                     $(this).addClass('border-danger');
-                    alert('Mã SKU "' + skuId + '" bị trùng lặp trong form!');
+                    showToast('Mã SKU "' + skuId + '" bị trùng lặp trong form!', 'error');
                 }
                 skuIdList.push(skuId);
             }
@@ -509,7 +509,7 @@ $(document).ready(function() {
         
         if (!valid) {
             e.preventDefault();
-            alert('Vui lòng điền đầy đủ thông tin cho tất cả các SKU (Mã SKU, Thuộc tính, Giá gốc)!');
+            showToast('Vui lòng điền đầy đủ thông tin cho tất cả các SKU (Mã SKU, Thuộc tính, Giá gốc)!', 'warning');
             return false;
         }
     });

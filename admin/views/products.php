@@ -90,8 +90,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_product'])) {
         
         $pdo->commit();
         
-        // Refresh bằng JS
-        echo "<script>alert('Đã xóa sản phẩm thành công!'); window.location.href = '" . BASE_URL . "index.php?action=products';</script>";
+        // Redirect với thông báo thành công
+        echo "<script>window.location.href = '" . BASE_URL . "index.php?action=products&deleted=1';</script>";
         exit;
         
     } catch (Exception $e) {
@@ -210,6 +210,14 @@ $statusLabels = [
     'low_stock' => 'Còn ít hàng',
     'out_of_stock' => 'Hết hàng'
 ];
+
+// Xử lý thông báo từ query params
+$message = '';
+$messageType = '';
+if (isset($_GET['deleted'])) {
+    $message = 'Đã xóa sản phẩm thành công!';
+    $messageType = 'success';
+}
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -218,6 +226,23 @@ $statusLabels = [
         <i class="bi bi-plus-circle me-2"></i>Thêm sản phẩm
     </a>
 </div>
+
+<!-- Thông báo -->
+<?php if ($message): ?>
+<div class="alert alert-<?php echo $messageType; ?> alert-dismissible fade show" role="alert">
+    <i class="bi bi-check-circle me-2"></i>
+    <?php echo htmlspecialchars($message); ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+<?php endif; ?>
+
+<?php if (isset($deleteError)): ?>
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    <?php echo htmlspecialchars($deleteError); ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+<?php endif; ?>
 
 <!-- Bộ lọc sản phẩm -->
 <div class="card mb-4">

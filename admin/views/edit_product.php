@@ -684,7 +684,7 @@ document.addEventListener('change', function(e) {
         var maxImages = 5;
         
         if (input.files.length + currentCount > maxImages) {
-            alert('Chỉ có thể upload tối đa ' + maxImages + ' ảnh. Bạn đã có ' + currentCount + ' ảnh.');
+            showToast('Chỉ có thể upload tối đa ' + maxImages + ' ảnh. Bạn đã có ' + currentCount + ' ảnh.', 'warning');
             input.value = '';
             return;
         }

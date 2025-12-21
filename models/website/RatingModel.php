@@ -9,9 +9,19 @@ class RatingModel {
         $this->db = $db;
     }
 
-    // Tạo FeedbackID tự động (F + timestamp)
+    // Tạo FeedbackID tự động theo format 
     private function generateFeedbackID() {
-        return 'F' . time() . rand(100, 999);
+        // Lấy số lớn nhất hiện tại từ FeedbackID 
+        $stmt = $this->db->query("
+            SELECT MAX(CAST(SUBSTRING(FeedbackID, 3) AS UNSIGNED)) as max_num 
+            FROM FEEDBACK 
+            WHERE FeedbackID LIKE 'FB%'
+        ");
+        $result = $stmt->fetch();
+        $nextNum = ($result && $result['max_num']) ? (int)$result['max_num'] + 1 : 1;
+        
+        // Format thành FB001, FB002, ...
+        return 'FB' . str_pad($nextNum, 3, '0', STR_PAD_LEFT);
     }
 
     // Kiểm tra khách hàng đã đánh giá sản phẩm này chưa
@@ -51,27 +61,27 @@ class RatingModel {
         return $stmt->execute([$rating, $comment, $customerID, $skuID]);
     }
 
-    // Lấy tất cả feedback của 1 sản phẩm
+    // Lấy tất cả feedback đã được duyệt của 1 sản phẩm (hiển thị trên website)
     public function getFeedbacksByProduct($skuID) {
         $stmt = $this->db->prepare("
             SELECT f.*, c.CustomerName 
             FROM FEEDBACK f
             JOIN CUSTOMER c ON f.CustomerID = c.CustomerID
-            WHERE f.SKUID = ?
+            WHERE f.SKUID = ? AND f.Status = 'approved'
             ORDER BY f.CreateDate DESC
         ");
         $stmt->execute([$skuID]);
         return $stmt->fetchAll();
     }
 
-    // Tính điểm trung bình và số lượng đánh giá
+    // Tính điểm trung bình và số lượng đánh giá (chỉ tính feedback đã duyệt)
     public function getProductRatingStats($skuID) {
         $stmt = $this->db->prepare("
             SELECT 
                 COALESCE(AVG(Rating), 0) as average_rating,
                 COUNT(*) as total_reviews
             FROM FEEDBACK 
-            WHERE SKUID = ?
+            WHERE SKUID = ? AND Status = 'approved'
         ");
         $stmt->execute([$skuID]);
         return $stmt->fetch();
