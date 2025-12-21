@@ -2,14 +2,17 @@
 require_once __DIR__ . '/../../models/db.php';
 require_once __DIR__ . '/../../models/website/wishlistmodel.php';
 
-class WishlistController {
+class WishlistController
+{
     private $model;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->model = new WishlistModel();
     }
 
-    public function index() {
+    public function index()
+    {
         session_start();
 
         $customerId = $_SESSION['customer_id'] ?? 1;
@@ -19,7 +22,8 @@ class WishlistController {
         require_once __DIR__ . '/../../views/website/php/wishlist.php';
     }
 
-    public function remove() {
+    public function remove()
+    {
         session_start();
 
         $customerId = $_SESSION['customer_id'];
@@ -31,48 +35,50 @@ class WishlistController {
         exit;
     }
 
-    public function add() {
+    public function add()
+    {
         header('Content-Type: application/json');
-        
+
         session_start();
-        
+
         if (!isset($_SESSION['customer_id'])) {
             echo json_encode(['success' => false, 'message' => 'Vui lòng đăng nhập']);
             return;
         }
-        
+
         $data = json_decode(file_get_contents('php://input'), true);
         $productId = $data['product_id'] ?? null;
         $customerId = $_SESSION['customer_id'];
-        
+
         if (!$productId) {
             echo json_encode(['success' => false, 'message' => 'Thiếu thông tin sản phẩm']);
             return;
         }
-        
+
         $result = $this->model->addToWishlist($customerId, $productId);
         echo json_encode($result);
     }
 
-    public function toggle() {
+    public function toggle()
+    {
         header('Content-Type: application/json');
-        
+
         session_start();
-        
+
         if (!isset($_SESSION['customer_id'])) {
             echo json_encode(['success' => false, 'message' => 'Vui lòng đăng nhập']);
             return;
         }
-        
+
         $data = json_decode(file_get_contents('php://input'), true);
         $productId = $data['product_id'] ?? null;
         $customerId = $_SESSION['customer_id'];
-        
+
         if (!$productId) {
             echo json_encode(['success' => false, 'message' => 'Thiếu thông tin sản phẩm']);
             return;
         }
-        
+
         // Kiểm tra đã có trong wishlist chưa
         if ($this->model->isInWishlist($customerId, $productId)) {
             // Đã có -> Xóa
@@ -89,3 +95,15 @@ class WishlistController {
         }
     }
 }
+
+/* ====== ROUTER MINI ====== */
+$controller = new WishlistController();
+
+$action = $_GET['action'] ?? 'index';
+
+match ($action) {
+    'add' => $controller->add(),
+    'remove' => $controller->remove(),
+    'toggle' => $controller->toggle(),
+    default => $controller->index(),
+};

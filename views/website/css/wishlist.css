@@ -9,6 +9,12 @@
     /*display: none;*/
 }
 
+.wishlist-overlay .cart-panel {
+    position: fixed;
+    top: 40px;
+    right: 40px;
+}
+
 .wishlist-overlay.active {
     display: block;
 }
@@ -46,7 +52,7 @@
     display: flex;
     padding: var(--spacing-8);
     justify-content: center;
-    align-items: center;    
+    align-items: center;
     border-radius: 8px;
     border: 1px solid var(--primary-button-pressed-border);
     background: var(--primary-button-outline-background);

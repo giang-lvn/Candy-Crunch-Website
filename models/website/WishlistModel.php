@@ -1,19 +1,39 @@
 <?php
 require_once __DIR__ . '/../db.php';
 
-class WishlistModel {
-    private $conn;
+class WishlistModel
+{
+    private $db;
 
-    public function __construct() {
-        global $conn;
-        $this->conn = $conn;
+    public function __construct()
+    {
+        global $db;
+        $this->db = $db;
     }
 
-    public function getWishlistByCustomer($customerId) {
+    /**
+     * Lấy ProductID từ SKUID
+     */
+    private function getProductIdFromSku($skuId)
+    {
+        $sql = "SELECT ProductID FROM SKU WHERE SKUID = :skuId";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['skuId' => $skuId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? $result['ProductID'] : null;
+    }
+
+    /**
+     * Lấy danh sách wishlist của customer
+     */
+    public function getWishlistByCustomer($customerId)
+    {
         $sql = "
             SELECT 
-                p.ProductID,
+                w.CustomerID,
+                w.ProductID,
                 p.ProductName,
+                s.SKUID,
                 s.Attribute,
                 s.OriginalPrice,
                 s.PromotionPrice,
@@ -21,55 +41,76 @@ class WishlistModel {
             FROM WISHLIST w
             JOIN PRODUCT p ON w.ProductID = p.ProductID
             JOIN SKU s ON p.ProductID = s.ProductID
-            WHERE w.CustomerID = ?
+            WHERE w.CustomerID = :customerId
+            GROUP BY w.CustomerID, w.ProductID
         ";
 
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("i", $customerId);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['customerId' => $customerId]);
 
-        return $result->fetch_all(MYSQLI_ASSOC);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function removeFromWishlist($customerId, $productId) {
-        $sql = "DELETE FROM WISHLIST WHERE CustomerID = ? AND ProductID = ?";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("ii", $customerId, $productId);
-        return $stmt->execute();
+    /**
+     * Xóa sản phẩm khỏi wishlist
+     */
+    public function removeFromWishlist($customerId, $productId)
+    {
+        // Nếu productId là SKUID, chuyển đổi
+        if (strpos($productId, '-') !== false) {
+            $productId = $this->getProductIdFromSku($productId);
+        }
+
+        $sql = "DELETE FROM WISHLIST WHERE CustomerID = :customerId AND ProductID = :productId";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            'customerId' => $customerId,
+            'productId' => $productId
+        ]);
     }
 
-    // Thêm vào class WishlistModel
-    public function addToWishlist($customerId, $productId) {
+    /**
+     * Thêm sản phẩm vào wishlist
+     */
+    public function addToWishlist($customerId, $productId)
+    {
+        // Nếu productId là SKUID (có dấu -), lấy ProductID
+        if (strpos($productId, '-') !== false) {
+            $productId = $this->getProductIdFromSku($productId);
+            if (!$productId) {
+                return ['success' => false, 'message' => 'Không tìm thấy sản phẩm'];
+            }
+        }
+
         // Kiểm tra đã tồn tại chưa
-        $checkSql = "SELECT * FROM WISHLIST WHERE CustomerID = ? AND ProductID = ?";
-        $checkStmt = $this->conn->prepare($checkSql);
-        $checkStmt->bind_param("ss", $customerId, $productId);
-        $checkStmt->execute();
-        $result = $checkStmt->get_result();
-
-        if ($result->num_rows > 0) {
+        if ($this->isInWishlist($customerId, $productId)) {
             return ['success' => false, 'message' => 'Sản phẩm đã có trong wishlist'];
         }
 
         // Thêm mới
-        $sql = "INSERT INTO WISHLIST (CustomerID, ProductID) VALUES (?, ?)";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("ss", $customerId, $productId);
-        
-        if ($stmt->execute()) {
+        $sql = "INSERT INTO WISHLIST (CustomerID, ProductID) VALUES (:customerId, :productId)";
+        $stmt = $this->db->prepare($sql);
+
+        if ($stmt->execute(['customerId' => $customerId, 'productId' => $productId])) {
             return ['success' => true, 'message' => 'Đã thêm vào wishlist'];
         } else {
             return ['success' => false, 'message' => 'Có lỗi xảy ra'];
         }
     }
 
-    public function isInWishlist($customerId, $productId) {
-        $sql = "SELECT * FROM WISHLIST WHERE CustomerID = ? AND ProductID = ?";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("ss", $customerId, $productId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->num_rows > 0;
+    /**
+     * Kiểm tra sản phẩm có trong wishlist không
+     */
+    public function isInWishlist($customerId, $productId)
+    {
+        // Nếu productId là SKUID, chuyển đổi
+        if (strpos($productId, '-') !== false) {
+            $productId = $this->getProductIdFromSku($productId);
+        }
+
+        $sql = "SELECT * FROM WISHLIST WHERE CustomerID = :customerId AND ProductID = :productId";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['customerId' => $customerId, 'productId' => $productId]);
+        return $stmt->rowCount() > 0;
     }
 }

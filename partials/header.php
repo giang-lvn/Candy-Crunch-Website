@@ -56,6 +56,7 @@ $promo = 0;
 $shipping = 0;
 $total = 0;
 $remainingForFreeShip = 200000;
+$wishlistItems = [];
 
 if ($is_logged_in && isset($_SESSION['customer_id'])) {
     require_once __DIR__ . '/../models/db.php';
@@ -99,10 +100,15 @@ if ($is_logged_in && isset($_SESSION['customer_id'])) {
             $upsellProducts = $cartModel->getFirstProducts(8);
         }
     }
+    
+    // Load wishlist data
+    require_once __DIR__ . '/../models/website/wishlistmodel.php';
+    $wishlistModel = new WishlistModel();
+    $wishlistItems = $wishlistModel->getWishlistByCustomer($_SESSION['customer_id']);
 }
 include 'cart.php';
 ?>
-<?php include 'wishlist.php'; ?>
+<?php include __DIR__ . '/../views/website/php/wishlist.php'; ?>
 
 <!-- HEADER NAV -->
 <div class="header-nav">
