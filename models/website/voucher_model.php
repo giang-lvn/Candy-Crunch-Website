@@ -39,9 +39,12 @@ class VoucherModel {
     }
 
     public function getVoucherByFilter($filter) {
-        $condition = "";
+        $order = "VoucherID DESC";
+
         if ($filter === 'expiring') {
-            $condition = "AND DATEDIFF(EndDate, CURDATE()) <= 10";
+            $order = "EndDate ASC";
+        } elseif ($filter === 'latest') {
+            $order = "StartDate DESC";
         }
 
         $sql = "
@@ -62,10 +65,7 @@ class VoucherModel {
                 DATEDIFF(EndDate, CURDATE()) AS DaysUntilExpire
             FROM VOUCHER
             WHERE VoucherStatus = 'Active'
-              AND StartDate <= CURDATE()
-              AND EndDate >= CURDATE()
-              $condition
-            ORDER BY EndDate ASC
+            ORDER BY $order
         ";
 
         $stmt = $this->conn->prepare($sql);
