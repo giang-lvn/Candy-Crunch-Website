@@ -1,6 +1,6 @@
 <?php
 // admin/views/view_product.php
-// Xem chi tiết sản phẩm (chỉ đọc)
+// Xem chi tiết sản phẩm (chỉ đọc) - Ảnh lấy từ PRODUCT
 
 // 1. Lấy Product ID từ URL
 $productId = $_GET['id'] ?? '';
@@ -42,11 +42,10 @@ $tabLabels = [
     'On sales' => 'Đang giảm giá'
 ];
 
-// Helper function to parse images
-function parseSkuImages($imageData) {
+// Helper function to parse product images
+function parseProductImages($imageData) {
     if (empty($imageData)) return [];
     
-    // Check if it's JSON format (new multi-image)
     $decoded = json_decode($imageData, true);
     if (is_array($decoded)) {
         return $decoded;
@@ -57,8 +56,8 @@ function parseSkuImages($imageData) {
 }
 
 // Helper function to get thumbnail
-function getSkuThumbnail($imageData) {
-    $images = parseSkuImages($imageData);
+function getProductThumbnailView($imageData) {
+    $images = parseProductImages($imageData);
     if (empty($images)) return '';
     
     // Find thumbnail
@@ -71,6 +70,10 @@ function getSkuThumbnail($imageData) {
     // Return first image if no thumbnail set
     return isset($images[0]['path']) ? $images[0]['path'] : (is_string($images[0]) ? $images[0] : '');
 }
+
+// Parse product images
+$productImages = parseProductImages($product['Image'] ?? '');
+$thumbnail = getProductThumbnailView($product['Image'] ?? '');
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -95,8 +98,51 @@ function getSkuThumbnail($imageData) {
 </div>
 
 <div class="row">
-    <!-- Cột trái: Thông tin chung -->
+    <!-- Cột trái: Thông tin chung + Ảnh sản phẩm -->
     <div class="col-lg-5">
+        <!-- Ảnh sản phẩm -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h6 class="mb-0"><i class="bi bi-images me-2"></i>Ảnh sản phẩm (<?php echo count($productImages); ?>)</h6>
+            </div>
+            <div class="card-body">
+                <?php if (!empty($thumbnail)): ?>
+                <div class="text-center mb-3">
+                    <img src="<?php echo htmlspecialchars($thumbnail); ?>" 
+                         alt="<?php echo htmlspecialchars($product['ProductName']); ?>"
+                         class="img-fluid rounded border"
+                         style="max-height: 200px; object-fit: cover;">
+                    <small class="d-block text-muted mt-1">
+                        <i class="bi bi-star-fill text-warning"></i> Thumbnail
+                    </small>
+                </div>
+                
+                <?php if (count($productImages) > 1): ?>
+                <div class="d-flex flex-wrap gap-2 justify-content-center">
+                    <?php foreach ($productImages as $img): 
+                        $imgPath = is_array($img) ? $img['path'] : $img;
+                        $isThumbnail = is_array($img) && isset($img['is_thumbnail']) && $img['is_thumbnail'];
+                        if ($isThumbnail) continue;
+                    ?>
+                    <img src="<?php echo htmlspecialchars($imgPath); ?>" 
+                         alt="Product Image"
+                         class="rounded border"
+                         style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                         onclick="window.open('<?php echo htmlspecialchars($imgPath); ?>', '_blank')">
+                    <?php endforeach; ?>
+                </div>
+                <?php endif; ?>
+                
+                <?php else: ?>
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-image display-4 d-block mb-2"></i>
+                    <p class="mb-0">Chưa có ảnh sản phẩm</p>
+                </div>
+                <?php endif; ?>
+            </div>
+        </div>
+        
+        <!-- Thông tin sản phẩm -->
         <div class="card mb-4">
             <div class="card-header bg-info text-white">
                 <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>Thông tin sản phẩm</h6>
@@ -190,9 +236,6 @@ function getSkuThumbnail($imageData) {
                 <?php else: ?>
                 
                 <?php foreach ($skus as $index => $sku): 
-                    $skuImages = parseSkuImages($sku['Image']);
-                    $thumbnail = getSkuThumbnail($sku['Image']);
-                    
                     // Stock status
                     $stock = (int)$sku['Stock'];
                     if ($stock >= 20) {
@@ -220,76 +263,33 @@ function getSkuThumbnail($imageData) {
                         </div>
                         
                         <div class="row">
-                            <!-- Cột ảnh -->
-                            <div class="col-md-4 mb-3">
-                                <?php if (!empty($thumbnail)): ?>
-                                <div class="text-center">
-                                    <img src="<?php echo htmlspecialchars($thumbnail); ?>" 
-                                         alt="<?php echo htmlspecialchars($sku['Attribute']); ?>"
-                                         class="img-fluid rounded border"
-                                         style="max-height: 150px; object-fit: cover;">
-                                    <small class="d-block text-muted mt-1">
-                                        <i class="bi bi-star-fill text-warning"></i> Thumbnail
-                                    </small>
-                                </div>
-                                
-                                <?php if (count($skuImages) > 1): ?>
-                                <div class="d-flex flex-wrap gap-1 mt-2 justify-content-center">
-                                    <?php foreach ($skuImages as $img): 
-                                        $imgPath = is_array($img) ? $img['path'] : $img;
-                                        $isThumbnail = is_array($img) && isset($img['is_thumbnail']) && $img['is_thumbnail'];
-                                        if ($isThumbnail) continue; // Skip thumbnail, already shown
-                                    ?>
-                                    <img src="<?php echo htmlspecialchars($imgPath); ?>" 
-                                         alt="SKU Image"
-                                         class="rounded border"
-                                         style="width: 40px; height: 40px; object-fit: cover; cursor: pointer;"
-                                         onclick="window.open('<?php echo htmlspecialchars($imgPath); ?>', '_blank')">
-                                    <?php endforeach; ?>
-                                </div>
-                                <?php endif; ?>
-                                
-                                <?php else: ?>
-                                <div class="bg-secondary rounded d-flex align-items-center justify-content-center text-white" 
-                                     style="height: 120px;">
-                                    <i class="bi bi-image display-4"></i>
-                                </div>
-                                <small class="text-muted d-block text-center mt-1">Chưa có ảnh</small>
-                                <?php endif; ?>
+                            <div class="col-6 mb-2">
+                                <label class="form-label small fw-semibold text-muted mb-0">Thuộc tính</label>
+                                <div class="fw-semibold"><?php echo htmlspecialchars($sku['Attribute']); ?></div>
                             </div>
-                            
-                            <!-- Cột thông tin -->
-                            <div class="col-md-8">
-                                <div class="row">
-                                    <div class="col-6 mb-2">
-                                        <label class="form-label small fw-semibold text-muted mb-0">Thuộc tính</label>
-                                        <div class="fw-semibold"><?php echo htmlspecialchars($sku['Attribute']); ?></div>
-                                    </div>
-                                    <div class="col-6 mb-2">
-                                        <label class="form-label small fw-semibold text-muted mb-0">Tồn kho</label>
-                                        <div class="fw-bold <?php echo $stockClass; ?>"><?php echo number_format($stock); ?></div>
-                                    </div>
-                                    <div class="col-6 mb-2">
-                                        <label class="form-label small fw-semibold text-muted mb-0">Giá gốc</label>
-                                        <div class="fw-semibold"><?php echo number_format($sku['OriginalPrice'], 0, ',', '.'); ?>đ</div>
-                                    </div>
-                                    <div class="col-6 mb-2">
-                                        <label class="form-label small fw-semibold text-muted mb-0">Giá khuyến mãi</label>
-                                        <div class="fw-semibold text-danger">
-                                            <?php echo !empty($sku['PromotionPrice']) 
-                                                ? number_format($sku['PromotionPrice'], 0, ',', '.') . 'đ'
-                                                : '<span class="text-muted">-</span>'; ?>
-                                        </div>
-                                    </div>
-                                    <?php if (!empty($sku['PromotionPrice']) && $sku['PromotionPrice'] < $sku['OriginalPrice']): 
-                                        $discount = round((1 - $sku['PromotionPrice'] / $sku['OriginalPrice']) * 100);
-                                    ?>
-                                    <div class="col-12">
-                                        <span class="badge bg-danger">Giảm <?php echo $discount; ?>%</span>
-                                    </div>
-                                    <?php endif; ?>
+                            <div class="col-6 mb-2">
+                                <label class="form-label small fw-semibold text-muted mb-0">Tồn kho</label>
+                                <div class="fw-bold <?php echo $stockClass; ?>"><?php echo number_format($stock); ?></div>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <label class="form-label small fw-semibold text-muted mb-0">Giá gốc</label>
+                                <div class="fw-semibold"><?php echo number_format($sku['OriginalPrice'], 0, ',', '.'); ?>đ</div>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <label class="form-label small fw-semibold text-muted mb-0">Giá khuyến mãi</label>
+                                <div class="fw-semibold text-danger">
+                                    <?php echo !empty($sku['PromotionPrice']) 
+                                        ? number_format($sku['PromotionPrice'], 0, ',', '.') . 'đ'
+                                        : '<span class="text-muted">-</span>'; ?>
                                 </div>
                             </div>
+                            <?php if (!empty($sku['PromotionPrice']) && $sku['PromotionPrice'] < $sku['OriginalPrice']): 
+                                $discount = round((1 - $sku['PromotionPrice'] / $sku['OriginalPrice']) * 100);
+                            ?>
+                            <div class="col-12">
+                                <span class="badge bg-danger">Giảm <?php echo $discount; ?>%</span>
+                            </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

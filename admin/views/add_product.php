@@ -43,10 +43,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
             throw new Exception('Tên sản phẩm không được để trống');
         }
         
-        // 3. INSERT vào bảng PRODUCT
+        // 3. Xử lý upload ảnh sản phẩm (tối đa 5 ảnh)
+        $uploadDir = __DIR__ . '/../../views/website/img/products/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+        
+        $productImages = [];
+        $selectedThumbnail = intval($_POST['product_thumbnail'] ?? 0);
+        
+        if (isset($_FILES['product_images']['name'])) {
+            foreach ($_FILES['product_images']['name'] as $index => $fileName) {
+                if (empty($fileName)) continue;
+                if (count($productImages) >= 5) break;
+                
+                $tmpName = $_FILES['product_images']['tmp_name'][$index];
+                $error = $_FILES['product_images']['error'][$index];
+                
+                if ($error === UPLOAD_ERR_OK) {
+                    $ext = pathinfo($fileName, PATHINFO_EXTENSION);
+                    $newFileName = $newProductId . '_' . time() . '_' . $index . '.' . $ext;
+                    $targetPath = $uploadDir . $newFileName;
+                    
+                    if (move_uploaded_file($tmpName, $targetPath)) {
+                        $imagePath = '/Candy-Crunch-Website/views/website/img/products/' . $newFileName;
+                        $productImages[] = [
+                            'path' => $imagePath,
+                            'is_thumbnail' => ($index === $selectedThumbnail)
+                        ];
+                    }
+                }
+            }
+        }
+        
+        // Đảm bảo có ít nhất 1 thumbnail
+        if (!empty($productImages)) {
+            $hasThumbnail = false;
+            foreach ($productImages as $img) {
+                if ($img['is_thumbnail']) {
+                    $hasThumbnail = true;
+                    break;
+                }
+            }
+            if (!$hasThumbnail) {
+                $productImages[0]['is_thumbnail'] = true;
+            }
+        }
+        
+        $productImageJson = !empty($productImages) ? json_encode($productImages) : null;
+        
+        // 4. INSERT vào bảng PRODUCT
         $stmt = $pdo->prepare("
-            INSERT INTO PRODUCT (ProductID, ProductName, Description, Unit, Flavour, Ingredient, CategoryID, Filter)
-            VALUES (:productId, :productName, :description, :unit, :flavour, :ingredient, :categoryId, :filter)
+            INSERT INTO PRODUCT (ProductID, ProductName, Description, Unit, Flavour, Ingredient, CategoryID, Filter, Image)
+            VALUES (:productId, :productName, :description, :unit, :flavour, :ingredient, :categoryId, :filter, :image)
         ");
         $stmt->execute([
             'productId' => $newProductId,
@@ -56,22 +105,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
             'flavour' => $flavour,
             'ingredient' => $ingredient,
             'categoryId' => $categoryId ?: null,
-            'filter' => $filter
+            'filter' => $filter,
+            'image' => $productImageJson
         ]);
         
-        // 4. Xử lý các SKU
+        // 5. Xử lý các SKU
         $skuIds = $_POST['sku_id'] ?? [];
         $skuAttributes = $_POST['sku_attribute'] ?? [];
         $skuOriginalPrices = $_POST['sku_original_price'] ?? [];
         $skuPromotionPrices = $_POST['sku_promotion_price'] ?? [];
         $skuStocks = $_POST['sku_stock'] ?? [];
         $skuStatuses = $_POST['sku_status'] ?? [];
-        
-        // Upload directory cho ảnh SKU
-        $uploadDir = __DIR__ . '/../../views/website/img/products/';
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0777, true);
-        }
         
         foreach ($skuIds as $index => $skuId) {
             $skuId = trim($skuId);
@@ -121,31 +165,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                 'status' => $status
             ]);
             
-            // Xử lý upload ảnh
-            $imagePath = '';
-            if (isset($_FILES['sku_image']['name'][$index]) && !empty($_FILES['sku_image']['name'][$index])) {
-                $fileName = $_FILES['sku_image']['name'][$index];
-                $tmpName = $_FILES['sku_image']['tmp_name'][$index];
-                $fileError = $_FILES['sku_image']['error'][$index];
-                
-                if ($fileError === UPLOAD_ERR_OK) {
-                    $ext = pathinfo($fileName, PATHINFO_EXTENSION);
-                    $newFileName = $skuId . '_' . time() . '.' . $ext;
-                    $targetPath = $uploadDir . $newFileName;
-                    
-                    if (move_uploaded_file($tmpName, $targetPath)) {
-                        $imagePath = '/Candy-Crunch-Website/views/website/img/products/' . $newFileName;
-                    }
-                }
-            }
-            
-            // INSERT vào SKU
+            // INSERT vào SKU (không còn cột Image - ảnh được lưu ở PRODUCT)
             $originalPrice = floatval($skuOriginalPrices[$index] ?? 0);
             $promotionPrice = !empty($skuPromotionPrices[$index]) ? floatval($skuPromotionPrices[$index]) : null;
             
             $stmtSku = $pdo->prepare("
-                INSERT INTO SKU (SKUID, ProductID, InventoryID, Attribute, OriginalPrice, PromotionPrice, Image)
-                VALUES (:skuId, :productId, :inventoryId, :attribute, :originalPrice, :promotionPrice, :image)
+                INSERT INTO SKU (SKUID, ProductID, InventoryID, Attribute, OriginalPrice, PromotionPrice)
+                VALUES (:skuId, :productId, :inventoryId, :attribute, :originalPrice, :promotionPrice)
             ");
             $stmtSku->execute([
                 'skuId' => $skuId,
@@ -153,8 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                 'inventoryId' => $newInventoryId,
                 'attribute' => $attribute,
                 'originalPrice' => $originalPrice,
-                'promotionPrice' => $promotionPrice,
-                'image' => $imagePath
+                'promotionPrice' => $promotionPrice
             ]);
         }
         
@@ -278,6 +303,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                             <option value="On sales" <?php echo ($_POST['filter'] ?? '') === 'On sales' ? 'selected' : ''; ?>>On sales</option>
                         </select>
                     </div>
+                    
+                    <!-- Ảnh sản phẩm -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-images me-1"></i>Ảnh sản phẩm 
+                            <span class="text-muted fw-normal">(Tối đa 5 ảnh)</span>
+                        </label>
+                        <input type="file" name="product_images[]" class="form-control" accept="image/*" multiple id="productImagesInput">
+                        <input type="hidden" name="product_thumbnail" id="productThumbnailInput" value="0">
+                        <small class="text-muted">Chọn nhiều ảnh cùng lúc. Ảnh đầu tiên sẽ là thumbnail mặc định.</small>
+                        
+                        <!-- Preview images -->
+                        <div id="imagePreviewContainer" class="d-flex flex-wrap gap-2 mt-2"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -348,12 +387,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                                         <input type="number" name="sku_promotion_price[]" class="form-control" 
                                                min="0" step="1000" placeholder="Để trống nếu không giảm giá">
                                     </div>
-                                    
-                                    <!-- Ảnh -->
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label small fw-semibold">Ảnh sản phẩm</label>
-                                        <input type="file" name="sku_image[]" class="form-control" accept="image/*">
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -417,11 +450,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                     <label class="form-label small fw-semibold">Giá khuyến mãi (VNĐ)</label>
                     <input type="number" name="sku_promotion_price[]" class="form-control" 
                            min="0" step="1000" placeholder="Để trống nếu không giảm giá">
-                </div>
-                
-                <div class="col-md-6 mb-3">
-                    <label class="form-label small fw-semibold">Ảnh sản phẩm</label>
-                    <input type="file" name="sku_image[]" class="form-control" accept="image/*">
                 </div>
             </div>
         </div>
@@ -513,7 +541,47 @@ $(document).ready(function() {
             return false;
         }
     });
+    
+    // Preview ảnh sản phẩm
+    $('#productImagesInput').on('change', function() {
+        const container = $('#imagePreviewContainer');
+        container.empty();
+        
+        const files = this.files;
+        if (files.length > 5) {
+            showToast('Chỉ được chọn tối đa 5 ảnh!', 'warning');
+            this.value = '';
+            return;
+        }
+        
+        Array.from(files).forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const isThumbnail = index === 0;
+                const html = `
+                    <div class="image-preview-item position-relative ${isThumbnail ? 'is-thumbnail' : ''}" 
+                         data-index="${index}" onclick="setProductThumbnail(${index})">
+                        <img src="${e.target.result}" class="rounded border" 
+                             style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;">
+                        ${isThumbnail ? '<span class="badge bg-warning text-dark position-absolute" style="bottom: 2px; left: 2px; font-size: 9px;"><i class="bi bi-star-fill"></i></span>' : ''}
+                    </div>
+                `;
+                container.append(html);
+            };
+            reader.readAsDataURL(file);
+        });
+        
+        $('#productThumbnailInput').val(0);
+    });
 });
+
+function setProductThumbnail(index) {
+    $('.image-preview-item').removeClass('is-thumbnail').find('.badge').remove();
+    $(`.image-preview-item[data-index="${index}"]`)
+        .addClass('is-thumbnail')
+        .append('<span class="badge bg-warning text-dark position-absolute" style="bottom: 2px; left: 2px; font-size: 9px;"><i class="bi bi-star-fill"></i></span>');
+    $('#productThumbnailInput').val(index);
+}
 </script>
 
 <style>
@@ -526,4 +594,16 @@ $(document).ready(function() {
 .sku-item.border-danger {
     border: 2px solid #dc3545 !important;
 }
+.image-preview-item {
+    transition: all 0.2s ease;
+    border-radius: 8px;
+}
+.image-preview-item:hover {
+    transform: scale(1.05);
+}
+.image-preview-item.is-thumbnail img {
+    border: 3px solid #ffc107 !important;
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+}
 </style>
+

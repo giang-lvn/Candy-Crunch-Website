@@ -25,7 +25,8 @@ class ProductDetailModel
                 p.Description,
                 p.Flavour,
                 p.Ingredient,
-                p.Filter
+                p.Filter,
+                p.Image
             FROM PRODUCT p
             WHERE p.ProductID = :productId
             LIMIT 1
@@ -48,7 +49,6 @@ class ProductDetailModel
                 s.Attribute,
                 s.OriginalPrice,
                 s.PromotionPrice,
-                s.Image,
                 i.Stock,
                 i.InventoryStatus
             FROM SKU s

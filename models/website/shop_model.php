@@ -25,7 +25,7 @@ class ShopModel
 
                 s.OriginalPrice,
                 s.PromotionPrice,
-                s.Image,
+                p.Image,
 
                 i.Stock,
                 i.InventoryStatus,

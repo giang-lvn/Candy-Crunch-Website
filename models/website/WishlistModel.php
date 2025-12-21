@@ -33,11 +33,11 @@ class WishlistModel
                 w.CustomerID,
                 w.ProductID,
                 p.ProductName,
+                p.Image,
                 s.SKUID,
                 s.Attribute,
                 s.OriginalPrice,
-                s.PromotionPrice,
-                s.Image
+                s.PromotionPrice
             FROM WISHLIST w
             JOIN PRODUCT p ON w.ProductID = p.ProductID
             JOIN SKU s ON p.ProductID = s.ProductID
