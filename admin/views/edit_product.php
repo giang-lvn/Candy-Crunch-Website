@@ -1,6 +1,6 @@
 <?php
 // admin/views/edit_product.php
-// Chỉnh sửa sản phẩm với hỗ trợ nhiều ảnh cho SKU
+// Chỉnh sửa sản phẩm - Ảnh được lưu ở cấp PRODUCT (không phải SKU)
 
 // 1. Lấy Product ID từ URL
 $productId = $_GET['id'] ?? '';
@@ -37,7 +37,7 @@ $message = '';
 $messageType = '';
 
 // Helper function to parse images from JSON
-function parseSkuImagesEdit($imageData) {
+function parseProductImagesEdit($imageData) {
     if (empty($imageData)) return [];
     
     $decoded = json_decode($imageData, true);
@@ -65,6 +65,90 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
         
         if (empty($productName)) throw new Exception('Tên sản phẩm không được để trống');
         
+        // --- Xử lý ảnh sản phẩm ---
+        $uploadDir = __DIR__ . '/../../views/website/img/products/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+        
+        // 1. Lấy ảnh hiện có từ form
+        $existingImagesJson = $_POST['existing_product_images'] ?? '[]';
+        $currentImages = json_decode($existingImagesJson, true) ?: [];
+        
+        // 2. Xử lý ảnh bị xóa
+        $deleteImagesJson = $_POST['delete_product_images'] ?? '[]';
+        $imagesToDelete = json_decode($deleteImagesJson, true) ?: [];
+        
+        // Xóa file ảnh khỏi server
+        foreach ($imagesToDelete as $imgPath) {
+            $filePath = __DIR__ . '/../../' . str_replace('/Candy-Crunch-Website/', '', $imgPath);
+            if (file_exists($filePath)) {
+                @unlink($filePath);
+            }
+        }
+        
+        // Loại bỏ ảnh đã xóa khỏi danh sách hiện có
+        $currentImages = array_filter($currentImages, function($img) use ($imagesToDelete) {
+            $path = is_array($img) ? $img['path'] : $img;
+            return !in_array($path, $imagesToDelete);
+        });
+        $currentImages = array_values($currentImages);
+        
+        // 3. Xử lý upload ảnh mới (tối đa 5 ảnh)
+        if (isset($_FILES['product_images']['name'])) {
+            foreach ($_FILES['product_images']['name'] as $fileIndex => $fileName) {
+                if (empty($fileName)) continue;
+                if (count($currentImages) >= 5) break;
+                
+                $tmpName = $_FILES['product_images']['tmp_name'][$fileIndex];
+                $error = $_FILES['product_images']['error'][$fileIndex];
+                
+                if ($error === UPLOAD_ERR_OK) {
+                    $ext = pathinfo($fileName, PATHINFO_EXTENSION);
+                    $newFileName = $productId . '_' . time() . '_' . $fileIndex . '.' . $ext;
+                    
+                    if (move_uploaded_file($tmpName, $uploadDir . $newFileName)) {
+                        $imagePath = '/Candy-Crunch-Website/views/website/img/products/' . $newFileName;
+                        $currentImages[] = [
+                            'path' => $imagePath,
+                            'is_thumbnail' => false
+                        ];
+                    }
+                }
+            }
+        }
+        
+        // 4. Đặt thumbnail
+        $selectedThumbnail = isset($_POST['product_thumbnail']) ? intval($_POST['product_thumbnail']) : 0;
+        foreach ($currentImages as $imgIndex => &$img) {
+            if (is_array($img)) {
+                $img['is_thumbnail'] = ($imgIndex === $selectedThumbnail);
+            } else {
+                $currentImages[$imgIndex] = [
+                    'path' => $img,
+                    'is_thumbnail' => ($imgIndex === $selectedThumbnail)
+                ];
+            }
+        }
+        unset($img);
+        
+        // Đảm bảo có ít nhất 1 thumbnail
+        if (!empty($currentImages)) {
+            $hasThumbnail = false;
+            foreach ($currentImages as $img) {
+                if ($img['is_thumbnail']) {
+                    $hasThumbnail = true;
+                    break;
+                }
+            }
+            if (!$hasThumbnail) {
+                $currentImages[0]['is_thumbnail'] = true;
+            }
+        }
+        
+        $productImageJson = !empty($currentImages) ? json_encode($currentImages) : null;
+        
+        // Update PRODUCT
         $updateProduct = $pdo->prepare("
             UPDATE PRODUCT 
             SET ProductName = :name, 
@@ -73,7 +157,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                 Flavour = :flavour, 
                 Ingredient = :ingredient, 
                 CategoryID = :catId,
-                Filter = :filter
+                Filter = :filter,
+                Image = :image
             WHERE ProductID = :id
         ");
         $updateProduct->execute([
@@ -84,26 +169,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
             'ingredient' => $ingredient,
             'catId' => $categoryId,
             'filter' => $filter,
+            'image' => $productImageJson,
             'id' => $productId
         ]);
         
-        // --- Xử lý SKU ---
+        // --- Xử lý SKU (không còn xử lý ảnh ở đây) ---
         $formSkuIds = $_POST['sku_id'] ?? [];
         $formAttributes = $_POST['sku_attribute'] ?? [];
         $formStocks = $_POST['sku_stock'] ?? [];
         $formOriginalPrices = $_POST['sku_original_price'] ?? [];
         $formPromotionPrices = $_POST['sku_promotion_price'] ?? [];
-        $formExistingImages = $_POST['existing_images'] ?? []; // JSON array of existing images per SKU
-        $formThumbnails = $_POST['sku_thumbnail'] ?? []; // Selected thumbnail index per SKU
-        $formDeleteImages = $_POST['delete_images'] ?? []; // Images to delete per SKU
         
-        // Upload dir
-        $uploadDir = __DIR__ . '/../../views/website/img/products/';
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0777, true);
-        }
-        
-        // Danh sách SKUID hiện có trong DB
         $existingSkuIds = array_column($skus, 'SKUID');
         $processedSkuIds = [];
         
@@ -123,88 +199,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
             elseif ($stock > 0) $status = 'Low in stock';
             else $status = 'Out of stock';
             
-            // Xử lý ảnh
-            // 1. Lấy ảnh hiện có từ form (đã loại bỏ ảnh bị xóa)
-            $existingImagesJson = $formExistingImages[$index] ?? '[]';
-            $currentImages = json_decode($existingImagesJson, true) ?: [];
-            
-            // 2. Xử lý ảnh bị xóa
-            $deleteImagesJson = $formDeleteImages[$index] ?? '[]';
-            $imagesToDelete = json_decode($deleteImagesJson, true) ?: [];
-            
-            // Xóa file ảnh khỏi server
-            foreach ($imagesToDelete as $imgPath) {
-                $filePath = __DIR__ . '/../../' . str_replace('/Candy-Crunch-Website/', '', $imgPath);
-                if (file_exists($filePath)) {
-                    @unlink($filePath);
-                }
-            }
-            
-            // Loại bỏ ảnh đã xóa khỏi danh sách hiện có
-            $currentImages = array_filter($currentImages, function($img) use ($imagesToDelete) {
-                $path = is_array($img) ? $img['path'] : $img;
-                return !in_array($path, $imagesToDelete);
-            });
-            $currentImages = array_values($currentImages);
-            
-            // 3. Xử lý upload ảnh mới (tối đa 5 ảnh)
-            if (isset($_FILES['sku_images']['name'][$index])) {
-                $uploadedFiles = $_FILES['sku_images']['name'][$index];
-                
-                foreach ($uploadedFiles as $fileIndex => $fileName) {
-                    if (empty($fileName)) continue;
-                    if (count($currentImages) >= 5) break; // Giới hạn 5 ảnh
-                    
-                    $tmpName = $_FILES['sku_images']['tmp_name'][$index][$fileIndex];
-                    $error = $_FILES['sku_images']['error'][$index][$fileIndex];
-                    
-                    if ($error === UPLOAD_ERR_OK) {
-                        $ext = pathinfo($fileName, PATHINFO_EXTENSION);
-                        $newFileName = $skuId . '_' . time() . '_' . $fileIndex . '.' . $ext;
-                        
-                        if (move_uploaded_file($tmpName, $uploadDir . $newFileName)) {
-                            $imagePath = '/Candy-Crunch-Website/views/website/img/products/' . $newFileName;
-                            $currentImages[] = [
-                                'path' => $imagePath,
-                                'is_thumbnail' => false
-                            ];
-                        }
-                    }
-                }
-            }
-            
-            // 4. Đặt thumbnail
-            $selectedThumbnail = isset($formThumbnails[$index]) ? intval($formThumbnails[$index]) : 0;
-            foreach ($currentImages as $imgIndex => &$img) {
-                if (is_array($img)) {
-                    $img['is_thumbnail'] = ($imgIndex === $selectedThumbnail);
-                } else {
-                    // Convert old format to new format
-                    $currentImages[$imgIndex] = [
-                        'path' => $img,
-                        'is_thumbnail' => ($imgIndex === $selectedThumbnail)
-                    ];
-                }
-            }
-            unset($img);
-            
-            // Nếu không có thumbnail được chọn và có ảnh, đặt ảnh đầu tiên làm thumbnail
-            if (!empty($currentImages)) {
-                $hasThumbnail = false;
-                foreach ($currentImages as $img) {
-                    if ($img['is_thumbnail']) {
-                        $hasThumbnail = true;
-                        break;
-                    }
-                }
-                if (!$hasThumbnail) {
-                    $currentImages[0]['is_thumbnail'] = true;
-                }
-            }
-            
-            // Convert to JSON
-            $imagesJson = !empty($currentImages) ? json_encode($currentImages) : '';
-            
             // Kiểm tra xem SKU này đã tồn tại chưa
             $checkSku = $pdo->prepare("SELECT InventoryID FROM SKU WHERE SKUID = ?");
             $checkSku->execute([$skuId]);
@@ -218,13 +212,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                 $updateInv = $pdo->prepare("UPDATE INVENTORY SET Stock = ?, InventoryStatus = ? WHERE InventoryID = ?");
                 $updateInv->execute([$stock, $status, $inventoryId]);
                 
-                // Update SKU
+                // Update SKU (không còn cột Image)
                 $stmtUpdateSku = $pdo->prepare("
                     UPDATE SKU 
-                    SET Attribute = ?, OriginalPrice = ?, PromotionPrice = ?, Image = ?
+                    SET Attribute = ?, OriginalPrice = ?, PromotionPrice = ?
                     WHERE SKUID = ?
                 ");
-                $stmtUpdateSku->execute([$attribute, $originalPrice, $promotionPrice, $imagesJson, $skuId]);
+                $stmtUpdateSku->execute([$attribute, $originalPrice, $promotionPrice, $skuId]);
                 
             } else {
                 // --- INSERT SKU MỚI ---
@@ -240,9 +234,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                 $pdo->prepare("INSERT INTO INVENTORY (InventoryID, Stock, InventoryStatus) VALUES (?, ?, ?)")
                     ->execute([$newInvId, $stock, $status]);
                     
-                // Insert SKU
-                $pdo->prepare("INSERT INTO SKU (SKUID, ProductID, InventoryID, Attribute, OriginalPrice, PromotionPrice, Image) VALUES (?, ?, ?, ?, ?, ?, ?)")
-                    ->execute([$skuId, $productId, $newInvId, $attribute, $originalPrice, $promotionPrice, $imagesJson]);
+                // Insert SKU (không còn cột Image)
+                $pdo->prepare("INSERT INTO SKU (SKUID, ProductID, InventoryID, Attribute, OriginalPrice, PromotionPrice) VALUES (?, ?, ?, ?, ?, ?)")
+                    ->execute([$skuId, $productId, $newInvId, $attribute, $originalPrice, $promotionPrice]);
             }
         }
         
@@ -280,6 +274,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
     }
 }
 
+// Parse product images for display
+$productImages = parseProductImagesEdit($product['Image'] ?? '');
+$thumbnailIndex = 0;
+foreach ($productImages as $idx => $img) {
+    if (is_array($img) && isset($img['is_thumbnail']) && $img['is_thumbnail']) {
+        $thumbnailIndex = $idx;
+        break;
+    }
+}
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -312,7 +315,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
 
 <form method="POST" enctype="multipart/form-data" id="editProductForm">
     <div class="row">
-        <!-- Cột trái: Thông tin chung -->
+        <!-- Cột trái: Thông tin chung + Ảnh sản phẩm -->
         <div class="col-lg-5">
             <div class="card mb-4">
                 <div class="card-header bg-warning">
@@ -343,7 +346,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                         </select>
                     </div>
                     
-                     <div class="mb-3">
+                    <div class="mb-3">
                         <label class="form-label fw-semibold">Mô tả</label>
                         <textarea name="description" class="form-control" rows="3"><?php echo htmlspecialchars($product['Description']); ?></textarea>
                     </div>
@@ -375,6 +378,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                             <option value="On sales" <?php echo ($product['Filter'] == 'On sales') ? 'selected' : ''; ?>>On sales</option>
                         </select>
                     </div>
+                    
+                    <!-- Ảnh sản phẩm -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-images me-1"></i>Ảnh sản phẩm 
+                            <span class="text-muted fw-normal">(Tối đa 5 ảnh, click để đặt thumbnail)</span>
+                        </label>
+                        
+                        <!-- Existing images grid -->
+                        <div class="image-grid d-flex flex-wrap gap-2 mb-2" id="productImageGrid">
+                            <?php foreach ($productImages as $imgIndex => $img): 
+                                $imgPath = is_array($img) ? $img['path'] : $img;
+                                $isThumbnail = is_array($img) && isset($img['is_thumbnail']) && $img['is_thumbnail'];
+                            ?>
+                            <div class="image-item position-relative <?php echo $isThumbnail ? 'is-thumbnail' : ''; ?>" 
+                                 data-path="<?php echo htmlspecialchars($imgPath); ?>"
+                                 data-index="<?php echo $imgIndex; ?>">
+                                <img src="<?php echo htmlspecialchars($imgPath); ?>" 
+                                     alt="Product Image" 
+                                     class="rounded border"
+                                     style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;"
+                                     onclick="setProductThumbnail(this)">
+                                <button type="button" class="btn btn-danger btn-sm position-absolute" 
+                                        style="top: -5px; right: -5px; padding: 0 5px; font-size: 10px;"
+                                        onclick="removeProductImage(this, '<?php echo htmlspecialchars($imgPath); ?>')">
+                                    <i class="bi bi-x"></i>
+                                </button>
+                                <?php if ($isThumbnail): ?>
+                                <span class="badge bg-warning text-dark position-absolute" style="bottom: 2px; left: 2px; font-size: 9px;">
+                                    <i class="bi bi-star-fill"></i>
+                                </span>
+                                <?php endif; ?>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                        
+                        <!-- Hidden inputs for tracking -->
+                        <input type="hidden" name="existing_product_images" id="existingProductImagesInput" 
+                               value='<?php echo htmlspecialchars(json_encode($productImages)); ?>'>
+                        <input type="hidden" name="product_thumbnail" id="productThumbnailInput" value="<?php echo $thumbnailIndex; ?>">
+                        <input type="hidden" name="delete_product_images" id="deleteProductImagesInput" value="[]">
+                        
+                        <!-- Upload new images -->
+                        <div class="upload-area mt-2">
+                            <input type="file" name="product_images[]" class="form-control" accept="image/*" multiple id="productImagesInput">
+                            <small class="text-muted" id="uploadHint">
+                                Còn có thể thêm <?php echo max(0, 5 - count($productImages)); ?> ảnh nữa
+                            </small>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -391,13 +444,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                 <div class="card-body">
                     <div class="alert alert-info small mb-3">
                         <i class="bi bi-info-circle me-2"></i>
-                        Mỗi SKU có thể có tối đa <strong>5 ảnh</strong>. Chọn một ảnh làm <strong>thumbnail</strong> bằng cách click vào ảnh.
+                        Mỗi SKU đại diện cho một biến thể của sản phẩm. Bạn cần thêm ít nhất 1 SKU cho mỗi sản phẩm. 
                     </div>
                     
                     <div id="skuContainer">
-                        <?php foreach ($skus as $index => $sku): 
-                            $skuImages = parseSkuImagesEdit($sku['Image']);
-                        ?>
+                        <?php foreach ($skus as $index => $sku): ?>
                         <div class="sku-item card bg-light mb-3" data-sku-index="<?php echo $index; ?>">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -426,63 +477,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label small fw-semibold">Giá khuyến mãi</label>
                                         <input type="number" name="sku_promotion_price[]" class="form-control" value="<?php echo $sku['PromotionPrice']; ?>" step="1000">
-                                    </div>
-                                    
-                                    <!-- Multi-image upload section -->
-                                    <div class="col-12 mb-3">
-                                        <label class="form-label small fw-semibold">
-                                            Ảnh sản phẩm 
-                                            <span class="text-muted">(Tối đa 5 ảnh, click vào ảnh để đặt làm thumbnail)</span>
-                                        </label>
-                                        
-                                        <!-- Existing images grid -->
-                                        <div class="image-grid d-flex flex-wrap gap-2 mb-2" data-sku-index="<?php echo $index; ?>">
-                                            <?php 
-                                            $thumbnailIndex = 0;
-                                            foreach ($skuImages as $imgIndex => $img): 
-                                                $imgPath = is_array($img) ? $img['path'] : $img;
-                                                $isThumbnail = is_array($img) && isset($img['is_thumbnail']) && $img['is_thumbnail'];
-                                                if ($isThumbnail) $thumbnailIndex = $imgIndex;
-                                            ?>
-                                            <div class="image-item position-relative <?php echo $isThumbnail ? 'is-thumbnail' : ''; ?>" 
-                                                 data-path="<?php echo htmlspecialchars($imgPath); ?>"
-                                                 data-index="<?php echo $imgIndex; ?>">
-                                                <img src="<?php echo htmlspecialchars($imgPath); ?>" 
-                                                     alt="SKU Image" 
-                                                     class="rounded border"
-                                                     style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;"
-                                                     onclick="setThumbnail(this, <?php echo $index; ?>)">
-                                                <button type="button" class="btn btn-danger btn-sm position-absolute" 
-                                                        style="top: -5px; right: -5px; padding: 0 5px; font-size: 10px;"
-                                                        onclick="removeImage(this, '<?php echo htmlspecialchars($imgPath); ?>', <?php echo $index; ?>)">
-                                                    <i class="bi bi-x"></i>
-                                                </button>
-                                                <?php if ($isThumbnail): ?>
-                                                <span class="badge bg-warning text-dark position-absolute" style="bottom: 2px; left: 2px; font-size: 9px;">
-                                                    <i class="bi bi-star-fill"></i>
-                                                </span>
-                                                <?php endif; ?>
-                                            </div>
-                                            <?php endforeach; ?>
-                                        </div>
-                                        
-                                        <!-- Hidden inputs for tracking -->
-                                        <input type="hidden" name="existing_images[]" class="existing-images-input" 
-                                               value='<?php echo htmlspecialchars(json_encode($skuImages)); ?>'>
-                                        <input type="hidden" name="sku_thumbnail[]" class="thumbnail-input" value="<?php echo $thumbnailIndex; ?>">
-                                        <input type="hidden" name="delete_images[]" class="delete-images-input" value="[]">
-                                        
-                                        <!-- Upload new images -->
-                                        <div class="upload-area mt-2">
-                                            <input type="file" name="sku_images[<?php echo $index; ?>][]" 
-                                                   class="form-control sku-image-input" 
-                                                   accept="image/*" 
-                                                   multiple
-                                                   data-sku-index="<?php echo $index; ?>">
-                                            <small class="text-muted">
-                                                Còn có thể thêm <?php echo max(0, 5 - count($skuImages)); ?> ảnh nữa
-                                            </small>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -530,27 +524,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                     <label class="form-label small fw-semibold">Giá KM</label>
                     <input type="number" name="sku_promotion_price[]" class="form-control" step="1000">
                 </div>
-                <div class="col-12 mb-3">
-                    <label class="form-label small fw-semibold">
-                        Ảnh sản phẩm 
-                        <span class="text-muted">(Tối đa 5 ảnh)</span>
-                    </label>
-                    <div class="image-grid d-flex flex-wrap gap-2 mb-2"></div>
-                    <input type="hidden" name="existing_images[]" class="existing-images-input" value="[]">
-                    <input type="hidden" name="sku_thumbnail[]" class="thumbnail-input" value="0">
-                    <input type="hidden" name="delete_images[]" class="delete-images-input" value="[]">
-                    <div class="upload-area mt-2">
-                        <input type="file" name="sku_images[NEW_INDEX][]" class="form-control sku-image-input" accept="image/*" multiple>
-                        <small class="text-muted">Có thể thêm tối đa 5 ảnh</small>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-// Định nghĩa biến toàn cục
 var skuCount = <?php echo count($skus); ?>;
 
 function addSku() {
@@ -558,14 +537,7 @@ function addSku() {
     var template = document.getElementById('skuTemplate');
     var clone = template.content.cloneNode(true);
     
-    // Cập nhật số thứ tự
     clone.querySelector('.sku-number').textContent = skuCount;
-    
-    // Update file input name với index đúng
-    var fileInput = clone.querySelector('.sku-image-input');
-    fileInput.name = 'sku_images[' + (skuCount - 1) + '][]';
-    
-    // Thêm vào container
     document.getElementById('skuContainer').appendChild(clone);
 }
 
@@ -576,45 +548,39 @@ function removeSku(btn) {
     }
 }
 
-function setThumbnail(img, skuIndex) {
-    var container = img.closest('.sku-item');
-    var imageGrid = container.querySelector('.image-grid');
-    var thumbnailInput = container.querySelector('.thumbnail-input');
+// Product image management
+function setProductThumbnail(img) {
     var imageItem = img.closest('.image-item');
+    var grid = document.getElementById('productImageGrid');
     var newIndex = parseInt(imageItem.dataset.index);
     
     // Remove current thumbnail marker
-    var currentThumbnail = imageGrid.querySelector('.is-thumbnail');
-    if (currentThumbnail) {
-        currentThumbnail.classList.remove('is-thumbnail');
-        var badge = currentThumbnail.querySelector('.badge');
+    grid.querySelectorAll('.image-item').forEach(function(item, idx) {
+        item.classList.remove('is-thumbnail');
+        var badge = item.querySelector('.badge');
         if (badge) badge.remove();
-    }
+    });
     
     // Set new thumbnail
     imageItem.classList.add('is-thumbnail');
-    if (!imageItem.querySelector('.badge')) {
-        var badge = document.createElement('span');
-        badge.className = 'badge bg-warning text-dark position-absolute';
-        badge.style.cssText = 'bottom: 2px; left: 2px; font-size: 9px;';
-        badge.innerHTML = '<i class="bi bi-star-fill"></i>';
-        imageItem.appendChild(badge);
-    }
+    var badge = document.createElement('span');
+    badge.className = 'badge bg-warning text-dark position-absolute';
+    badge.style.cssText = 'bottom: 2px; left: 2px; font-size: 9px;';
+    badge.innerHTML = '<i class="bi bi-star-fill"></i>';
+    imageItem.appendChild(badge);
     
     // Update hidden input
-    thumbnailInput.value = newIndex;
+    document.getElementById('productThumbnailInput').value = newIndex;
     
     // Update existing images JSON
-    updateExistingImagesJson(container);
+    updateExistingImagesJson();
 }
 
-function removeImage(btn, path, skuIndex) {
+function removeProductImage(btn, path) {
     if (!confirm('Xóa ảnh này?')) return;
     
-    var container = btn.closest('.sku-item');
     var imageItem = btn.closest('.image-item');
-    var deleteInput = container.querySelector('.delete-images-input');
-    var existingInput = container.querySelector('.existing-images-input');
+    var deleteInput = document.getElementById('deleteProductImagesInput');
     
     // Add to delete list
     var deleteList = JSON.parse(deleteInput.value || '[]');
@@ -628,33 +594,30 @@ function removeImage(btn, path, skuIndex) {
     imageItem.remove();
     
     // Update indices
-    var imageGrid = container.querySelector('.image-grid');
-    var remainingImages = imageGrid.querySelectorAll('.image-item');
+    var grid = document.getElementById('productImageGrid');
+    var remainingImages = grid.querySelectorAll('.image-item');
     remainingImages.forEach(function(item, idx) {
         item.dataset.index = idx;
     });
     
     // If removed thumbnail, set first image as thumbnail
     if (wasThumbnail && remainingImages.length > 0) {
-        var firstImg = remainingImages[0].querySelector('img');
-        setThumbnail(firstImg, skuIndex);
+        setProductThumbnail(remainingImages[0].querySelector('img'));
     }
     
     // Update existing images JSON
-    updateExistingImagesJson(container);
-    
-    // Update upload hint
-    updateUploadHint(container);
+    updateExistingImagesJson();
+    updateUploadHint();
 }
 
-function updateExistingImagesJson(container) {
-    var imageGrid = container.querySelector('.image-grid');
-    var existingInput = container.querySelector('.existing-images-input');
-    var thumbnailInput = container.querySelector('.thumbnail-input');
+function updateExistingImagesJson() {
+    var grid = document.getElementById('productImageGrid');
+    var existingInput = document.getElementById('existingProductImagesInput');
+    var thumbnailInput = document.getElementById('productThumbnailInput');
     var thumbnailIndex = parseInt(thumbnailInput.value) || 0;
     
     var images = [];
-    imageGrid.querySelectorAll('.image-item').forEach(function(item, idx) {
+    grid.querySelectorAll('.image-item').forEach(function(item, idx) {
         images.push({
             path: item.dataset.path,
             is_thumbnail: (idx === thumbnailIndex)
@@ -664,30 +627,25 @@ function updateExistingImagesJson(container) {
     existingInput.value = JSON.stringify(images);
 }
 
-function updateUploadHint(container) {
-    var imageGrid = container.querySelector('.image-grid');
-    var currentCount = imageGrid.querySelectorAll('.image-item').length;
-    var hint = container.querySelector('.upload-area small');
+function updateUploadHint() {
+    var grid = document.getElementById('productImageGrid');
+    var currentCount = grid.querySelectorAll('.image-item').length;
+    var hint = document.getElementById('uploadHint');
     if (hint) {
         var remaining = Math.max(0, 5 - currentCount);
         hint.textContent = 'Còn có thể thêm ' + remaining + ' ảnh nữa';
     }
 }
 
-// Preview new images before upload
-document.addEventListener('change', function(e) {
-    if (e.target.classList.contains('sku-image-input')) {
-        var input = e.target;
-        var container = input.closest('.sku-item');
-        var imageGrid = container.querySelector('.image-grid');
-        var currentCount = imageGrid.querySelectorAll('.image-item').length;
-        var maxImages = 5;
-        
-        if (input.files.length + currentCount > maxImages) {
-            showToast('Chỉ có thể upload tối đa ' + maxImages + ' ảnh. Bạn đã có ' + currentCount + ' ảnh.', 'warning');
-            input.value = '';
-            return;
-        }
+// Validate upload limit
+document.getElementById('productImagesInput').addEventListener('change', function() {
+    var grid = document.getElementById('productImageGrid');
+    var currentCount = grid.querySelectorAll('.image-item').length;
+    var maxImages = 5;
+    
+    if (this.files.length + currentCount > maxImages) {
+        showToast('Chỉ có thể upload tối đa ' + maxImages + ' ảnh. Bạn đã có ' + currentCount + ' ảnh.', 'warning');
+        this.value = '';
     }
 });
 </script>

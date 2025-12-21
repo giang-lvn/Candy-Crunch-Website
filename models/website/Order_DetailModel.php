@@ -128,10 +128,10 @@ class OrderDetailModel
                 od.OrderQuantity,
                 p.ProductID,
                 p.ProductName,
+                p.Image,
                 s.Attribute,
                 s.OriginalPrice,
-                s.PromotionPrice,
-                s.Image
+                s.PromotionPrice
             FROM ORDER_DETAIL od
             INNER JOIN SKU s ON od.SKUID = s.SKUID
             INNER JOIN PRODUCT p ON s.ProductID = p.ProductID

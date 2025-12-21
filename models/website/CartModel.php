@@ -23,11 +23,11 @@ class CartModel
                 p.ProductName,
                 p.ProductID,
                 p.CategoryID,
+                p.Image,
 
                 s.Attribute,
                 s.OriginalPrice,
-                s.PromotionPrice,
-                s.Image
+                s.PromotionPrice
 
             FROM CART_DETAIL cd
             JOIN SKU s ON cd.SKUID = s.SKUID
@@ -165,7 +165,7 @@ class CartModel
             SELECT
                 s.SKUID,
                 p.ProductName,
-                s.Image,
+                p.Image,
                 s.Attribute,
                 s.OriginalPrice,
                 s.PromotionPrice
@@ -203,7 +203,7 @@ class CartModel
             SELECT
                 s.SKUID,
                 p.ProductName,
-                s.Image,
+                p.Image,
                 s.Attribute,
                 s.OriginalPrice,
                 s.PromotionPrice
