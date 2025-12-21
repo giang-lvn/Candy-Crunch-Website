@@ -2,27 +2,25 @@
    POLICY PAGE STYLES
    ================================================ */
 
-   body {
-    min-height: 100%;   
+body {
+    min-height: 100%;
 }
 
 .policy-section {
     width: 100%;
-    min-height: 100vh; /* Đảm bảo trang đủ dài */
+    min-height: 100vh;
+    /* Đảm bảo trang đủ dài */
     background-color: var(--body-background, #F8F5EE);
     padding: 60px 0 100px;
     font-family: var(--font-primary, 'Poppins', sans-serif);
-    
-    /* Fix lỗi sticky: không được để overflow hidden ở đây */
-    position: sticky; 
+    /* Không đặt position: sticky ở đây vì section không cần sticky */
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 24px;
-    overflow: hidden;
-    position: sticky; 
+    /* QUAN TRỌNG: Bỏ overflow: hidden để không phá vỡ sticky behavior của sidebar */
 }
 
 /* --- 2. HEADER --- */
@@ -33,15 +31,16 @@
 
 .page-title {
     color: var(--green-500, #017E6A);
-text-align: center;
+    text-align: center;
 
-/* Headings/Heading 2 */
-font-family: Modak;
-font-size: 50px;
-font-style: normal;
-font-weight: 400;
-line-height: 120%; /* 60px */
-letter-spacing: 0.2px;
+    /* Headings/Heading 2 */
+    font-family: Modak;
+    font-size: 50px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 120%;
+    /* 60px */
+    letter-spacing: 0.2px;
 }
 
 .page-subtitle {
@@ -57,49 +56,57 @@ letter-spacing: 0.2px;
     position: relative;
     isolation: isolate;
     /* QUAN TRỌNG: Cần thuộc tính này để Sidebar không bị kéo dãn bằng Content */
-    align-items: flex-start; 
+    align-items: flex-start;
 }
 
 /* --- 4. SIDEBAR (THANH BÊN TRƯỢT THEO) --- */
 .policy-sidebar {
-    position: -webkit-sticky; /* Cho Safari/iOS */
-    position: sticky;
+    /* JavaScript sẽ xử lý position khi scroll */
+    /* Không dùng sticky vì body có overflow-x: hidden phá vỡ nó */
     align-self: flex-start;
     overflow: visible;
-    will-change: transform;
     width: 300px;
     flex-shrink: 0;
-    /* Khoảng cách từ mép trên màn hình khi trượt xuống */
-    /* Nếu Header của bạn là cố định (fixed), hãy tăng số này lên (ví dụ: 100px) */
-    top: 40px; 
-    z-index: 10;
+    z-index: 100;
     /* Chiều cao tự động theo nội dung menu, không được set 100% */
-    height: fit-content; 
+    height: fit-content;
     /* Style cho cái hộp sidebar */
-    background-color: var(teal-100);
+    background-color: var(--teal-100, #B2DFDB);
     border-radius: 16px;
     padding: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* Bóng đổ nhẹ */
-    border: 1px solid rgba(0,0,0,0.03);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    /* Bóng đổ nhẹ */
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    /* Transition mượt mà khi thay đổi position */
+    transition: box-shadow 0.3s ease;
 }
 
 .sidebar-list {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 8px; /* Khoảng cách giữa các mục lớn */
+    gap: 8px;
+    /* Khoảng cách giữa các mục lớn */
 }
 
 /* --- 5. SIDEBAR ITEM (MỤC LỚN) --- */
 .sidebar-item {
     border-radius: 12px;
-    overflow: hidden; /* Để ẩn menu con khi đóng */
+    overflow: hidden;
+    /* Để ẩn menu con khi đóng */
     transition: all 0.3s ease;
     background: transparent;
 }
 
 /* Header của mục (chứa tên & mũi tên) */
 .sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background-color 0.2s ease;
     color: var(--teal-500, #009688);
 
     /* Body Large/Semibold */
@@ -107,12 +114,14 @@ letter-spacing: 0.2px;
     font-size: 18px;
     font-style: normal;
     font-weight: 600;
-    line-height: 130%; /* 23.4px */
+    line-height: 130%;
+    /* 23.4px */
     letter-spacing: -0.022px;
 }
 
 .sidebar-header:hover {
-    background-color: rgba(1, 126, 106, 0.05); /* Màu nền nhẹ khi hover */
+    background-color: rgba(1, 126, 106, 0.05);
+    /* Màu nền nhẹ khi hover */
 }
 
 .sidebar-header span {
@@ -126,6 +135,7 @@ letter-spacing: 0.2px;
     background-color: var(--green-50, #E6F2F0);
     color: var(--green-500, #017E6A);
 }
+
 .sidebar-item.open .sidebar-header span {
     color: var(--green-500, #017E6A);
 }
@@ -148,17 +158,19 @@ letter-spacing: 0.2px;
 .sidebar-submenu {
     list-style: none;
     /* Hiệu ứng trượt mở */
-    max-height: 0; 
+    max-height: 0;
     overflow: hidden;
     transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    
+
     background-color: transparent;
-    padding-left: 10px; /* Thụt lề cho menu con */
+    padding-left: 10px;
+    /* Thụt lề cho menu con */
 }
 
 /* Khi mở thì tăng max-height để hiện nội dung */
 .sidebar-item.open .sidebar-submenu {
-    max-height: 500px; /* Đủ lớn để chứa các mục con */
+    max-height: 500px;
+    /* Đủ lớn để chứa các mục con */
     padding-bottom: 10px;
 }
 
@@ -190,7 +202,8 @@ letter-spacing: 0.2px;
 }
 
 .content-block {
-    scroll-margin-top: 100px; /* Khi click link, tiêu đề không bị Header che */
+    scroll-margin-top: 100px;
+    /* Khi click link, tiêu đề không bị Header che */
     margin-bottom: 50px;
 }
 
@@ -219,6 +232,7 @@ letter-spacing: 0.2px;
     padding-left: 24px;
     margin-bottom: 24px;
 }
+
 .text-content ul li {
     margin-bottom: 8px;
 }
@@ -228,13 +242,14 @@ letter-spacing: 0.2px;
     .policy-layout {
         flex-direction: column;
     }
-    
+
     .policy-sidebar {
         width: 100%;
-        position: static; /* Mobile thì tắt Sticky */
+        position: static;
+        /* Mobile thì tắt Sticky */
         top: auto;
     }
-    
+
     .policy-content {
         padding: 24px;
     }
