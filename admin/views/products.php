@@ -1,6 +1,30 @@
 <?php
 // admin/views/products.php
 
+// Helper function to get thumbnail from JSON image format
+function getProductThumbnail($imageData) {
+    if (empty($imageData)) return '';
+    
+    // Check if it's JSON format
+    $decoded = json_decode($imageData, true);
+    if (is_array($decoded)) {
+        // Find thumbnail in array
+        foreach ($decoded as $img) {
+            if (isset($img['is_thumbnail']) && $img['is_thumbnail']) {
+                return $img['path'];
+            }
+        }
+        // Return first image if no thumbnail
+        if (!empty($decoded[0])) {
+            return is_array($decoded[0]) ? $decoded[0]['path'] : $decoded[0];
+        }
+        return '';
+    }
+    
+    // Old format: return as-is
+    return $imageData;
+}
+
 // Lấy danh sách category cho dropdown filter
 $categories = $pdo->query("SELECT CategoryID, CategoryName FROM CATEGORY ORDER BY CategoryName")->fetchAll();
 
@@ -11,6 +35,72 @@ $statusFilter = $_GET['status'] ?? '';
 
 // Kiểm tra có filter nào đang active không
 $hasActiveFilter = !empty($categoryFilter) || !empty($tabFilter) || !empty($statusFilter);
+
+// Xử lý xóa sản phẩm
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_product'])) {
+    $productId = $_POST['product_id'] ?? '';
+    
+    try {
+        $pdo->beginTransaction();
+        
+        // Kiểm tra xem có đơn hàng nào chứa sản phẩm này không
+        $checkOrders = $pdo->prepare("
+            SELECT COUNT(*) FROM ORDER_DETAIL od 
+            JOIN SKU s ON od.SKUID = s.SKUID 
+            WHERE s.ProductID = ?
+        ");
+        $checkOrders->execute([$productId]);
+        $orderCount = $checkOrders->fetchColumn();
+        
+        if ($orderCount > 0) {
+            throw new Exception("Không thể xóa sản phẩm này vì đang có $orderCount đơn hàng liên quan.");
+        }
+        
+        // Xóa ảnh của các SKU
+        $skuImages = $pdo->prepare("SELECT Image FROM SKU WHERE ProductID = ?");
+        $skuImages->execute([$productId]);
+        while ($img = $skuImages->fetchColumn()) {
+            // Logic xóa file ảnh nếu cần
+            $filePath = __DIR__ . '/../../' . str_replace('/Candy-Crunch-Website/', '', $img);
+            if (file_exists($filePath)) {
+                @unlink($filePath);
+            }
+        }
+        
+        // Xóa SKU và Inventory liên quan
+        // Lấy danh sách InventoryID
+        $invIds = $pdo->prepare("SELECT InventoryID FROM SKU WHERE ProductID = ?");
+        $invIds->execute([$productId]);
+        $inventoryIds = $invIds->fetchAll(PDO::FETCH_COLUMN);
+        
+        // Xóa SKU
+        $deleteSku = $pdo->prepare("DELETE FROM SKU WHERE ProductID = ?");
+        $deleteSku->execute([$productId]);
+        
+        // Xóa Inventory
+        if (!empty($inventoryIds)) {
+            $inList = str_repeat('?,', count($inventoryIds) - 1) . '?';
+            $deleteInv = $pdo->prepare("DELETE FROM INVENTORY WHERE InventoryID IN ($inList)");
+            $deleteInv->execute($inventoryIds);
+        }
+        
+        // Xóa Product
+        $deleteProduct = $pdo->prepare("DELETE FROM PRODUCT WHERE ProductID = ?");
+        $deleteProduct->execute([$productId]);
+        
+        $pdo->commit();
+        
+        // Refresh bằng JS
+        echo "<script>alert('Đã xóa sản phẩm thành công!'); window.location.href = '" . BASE_URL . "index.php?action=products';</script>";
+        exit;
+        
+    } catch (Exception $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        $deleteError = "Lỗi khi xóa sản phẩm: " . $e->getMessage();
+    }
+}
 
 // Query lấy sản phẩm với thông tin đầy đủ
 $sql = "
@@ -78,7 +168,7 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $allProducts = $stmt->fetchAll();
 
-// Lọc theo trạng thái tồn kho (phải làm ở PHP vì là computed field)
+// Lọc theo trạng thái tồn kho 
 if (!empty($statusFilter)) {
     $products = array_filter($allProducts, function($p) use ($statusFilter) {
         $stock = (int)$p['TotalStock'];
@@ -272,8 +362,11 @@ $statusLabels = [
                         
                         <!-- Thumbnail -->
                         <td>
-                            <?php if (!empty($product['Thumbnail'])): ?>
-                                <img src="<?php echo htmlspecialchars($product['Thumbnail']); ?>" 
+                            <?php 
+                            $thumbnail = getProductThumbnail($product['Thumbnail']);
+                            if (!empty($thumbnail)): 
+                            ?>
+                                <img src="<?php echo htmlspecialchars($thumbnail); ?>" 
                                      alt="<?php echo htmlspecialchars($product['ProductName']); ?>"
                                      class="rounded" 
                                      style="width: 50px; height: 50px; object-fit: cover;">
@@ -364,13 +457,19 @@ $statusLabels = [
                         <!-- Thao tác -->
                         <td>
                             <div class="btn-group btn-group-sm">
-                                <button class="btn btn-outline-primary" title="Sửa sản phẩm">
+                                <button class="btn btn-outline-primary" 
+                                        title="Sửa sản phẩm"
+                                        onclick="window.location.href='<?php echo BASE_URL; ?>index.php?action=edit_product&id=<?php echo htmlspecialchars($product['ProductID']); ?>'">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-                                <button class="btn btn-outline-info" title="Xem SKU">
+                                <button class="btn btn-outline-info" 
+                                        title="Xem SKU"
+                                        onclick="viewProductDetails('<?php echo htmlspecialchars($product['ProductID']); ?>')">
                                     <i class="bi bi-list-check"></i>
                                 </button>
-                                <button class="btn btn-outline-danger" title="Xóa sản phẩm">
+                                <button class="btn btn-outline-danger" 
+                                        title="Xóa sản phẩm"
+                                        onclick="openDeleteProductModal('<?php echo htmlspecialchars($product['ProductID']); ?>', '<?php echo htmlspecialchars(addslashes($product['ProductName'])); ?>')">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </div>
@@ -385,7 +484,49 @@ $statusLabels = [
 </div>
 
 <?php if (!empty($products)): ?>
+<!-- Modal Xác nhận xóa sản phẩm -->
+<div class="modal fade" id="deleteProductModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST">
+                <input type="hidden" name="product_id" id="delete_product_id">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="bi bi-exclamation-triangle me-2"></i>Xác nhận xóa</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn xóa sản phẩm <strong id="delete_product_name"></strong>?</p>
+                    <div class="alert alert-warning small">
+                        <i class="bi bi-exclamation-circle me-1"></i>
+                        Hành động này sẽ xóa tất cả SKU và Inventory liên quan đến sản phẩm.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" name="delete_product" class="btn btn-danger">
+                        <i class="bi bi-trash me-2"></i>Xóa sản phẩm
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
+// Function mở modal xóa
+function openDeleteProductModal(id, name) {
+    document.getElementById('delete_product_id').value = id;
+    document.getElementById('delete_product_name').textContent = name;
+    
+    var modal = new bootstrap.Modal(document.getElementById('deleteProductModal'));
+    modal.show();
+}
+
+// Function xem chi tiết sản phẩm
+function viewProductDetails(id) {
+    window.location.href = '<?php echo BASE_URL; ?>index.php?action=view_product&id=' + id;
+}
+
 $(document).ready(function() {
     $('#productsTable').DataTable({
         language: {

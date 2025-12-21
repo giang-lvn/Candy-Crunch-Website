@@ -116,7 +116,7 @@ try {
                 
                 <!-- Sản phẩm Dropdown -->
                 <?php 
-                $productActions = ['products', 'add_product', 'categories', 'add_category', 'edit_category'];
+                $productActions = ['products', 'add_product', 'edit_product', 'view_product', 'categories', 'add_category', 'edit_category'];
                 $isProductSection = in_array($action, $productActions);
                 ?>
                 <li class="nav-item mb-2">
@@ -130,7 +130,7 @@ try {
                     <ul class="collapse <?php echo $isProductSection ? 'show' : ''; ?> nav flex-column ms-3 mt-1" id="productSubmenu">
                         <li class="nav-item">
                             <a href="<?php echo BASE_URL; ?>index.php?action=products" 
-                               class="nav-link text-white py-1 <?php echo $action == 'products' || $action == 'add_product' ? 'active bg-white text-dark' : ''; ?>">
+                               class="nav-link text-white py-1 <?php echo in_array($action, ['products', 'add_product', 'edit_product']) ? 'active bg-white text-dark' : ''; ?>">
                                 <i class="bi bi-list-ul me-2"></i> Danh sách SP
                             </a>
                         </li>
@@ -198,6 +198,8 @@ try {
                         'dashboard' => 'Dashboard',
                         'products' => 'Quản lý sản phẩm',
                         'add_product' => 'Thêm sản phẩm mới',
+                        'edit_product' => 'Chỉnh sửa sản phẩm',
+                        'view_product' => 'Chi tiết sản phẩm',
                         'categories' => 'Quản lý danh mục',
                         'add_category' => 'Thêm danh mục mới',
                         'edit_category' => 'Sửa danh mục',

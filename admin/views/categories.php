@@ -32,7 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_category'])) {
             $deleteSuccess = "Đã xóa danh mục thành công!";
             
             // Refresh danh sách
-            header("Location: " . BASE_URL . "index.php?action=categories&deleted=1");
+            // Refresh danh sách bằng JavaScript vì headers đã được gửi
+            echo "<script>window.location.href = '" . BASE_URL . "index.php?action=categories&deleted=1';</script>";
             exit;
         }
     } catch (Exception $e) {
@@ -97,14 +98,15 @@ if (isset($_GET['updated'])) {
                     <tr>
                         <th style="width: 150px;">Mã danh mục</th>
                         <th>Tên danh mục</th>
-                        <th class="text-center" style="width: 150px;">Số sản phẩm</th>
+                        <th class="text-center" style="width: 100px;">Số sản phẩm</th>
+                        <th class="text-center" style="width: 180px;">Sản phẩm</th>
                         <th style="width: 150px;">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (empty($categories)): ?>
                     <tr>
-                        <td colspan="4" class="text-center text-muted py-4">
+                        <td colspan="5" class="text-center text-muted py-4">
                             <i class="bi bi-inbox display-6 d-block mb-2"></i>
                             Chưa có danh mục nào. Bấm "Thêm danh mục" để tạo mới.
                         </td>
@@ -131,32 +133,37 @@ if (isset($_GET['updated'])) {
                             <span class="badge <?php echo $badgeClass; ?> fs-6">
                                 <?php echo number_format($count); ?>
                             </span>
-                            <?php if ($count > 0): ?>
+                        </td>
+                        
+                        <!-- Nút xem/thêm sản phẩm -->
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm">
                                 <a href="<?php echo BASE_URL; ?>index.php?action=products&category=<?php echo $cat['CategoryID']; ?>" 
-                                   class="small d-block text-decoration-none">
-                                    Xem sản phẩm
+                                   class="btn btn-outline-info" title="Xem sản phẩm trong danh mục">
+                                    <i class="bi bi-eye me-1"></i>Xem SP
                                 </a>
-                            <?php endif; ?>
+                                <a href="<?php echo BASE_URL; ?>index.php?action=add_product&category=<?php echo $cat['CategoryID']; ?>" 
+                                   class="btn btn-outline-success" title="Thêm sản phẩm vào danh mục">
+                                    <i class="bi bi-plus-circle me-1"></i>Thêm SP
+                                </a>
+                            </div>
                         </td>
                         
                         <!-- Thao tác -->
                         <td>
                             <div class="btn-group btn-group-sm">
-                                <button class="btn btn-outline-primary edit-category-btn" 
+                                <button class="btn btn-outline-primary" 
                                         title="Sửa danh mục"
-                                        data-id="<?php echo htmlspecialchars($cat['CategoryID']); ?>"
-                                        data-name="<?php echo htmlspecialchars($cat['CategoryName']); ?>">
+                                        onclick="openEditModal('<?php echo htmlspecialchars($cat['CategoryID']); ?>', '<?php echo htmlspecialchars(addslashes($cat['CategoryName'])); ?>')">
                                     <i class="bi bi-pencil"></i>
                                 </button>
                                 <button class="btn btn-outline-info" title="Xem chi tiết"
                                         onclick="viewCategoryDetails('<?php echo htmlspecialchars($cat['CategoryID']); ?>')">
                                     <i class="bi bi-eye"></i>
                                 </button>
-                                <button class="btn btn-outline-danger delete-category-btn" 
+                                <button class="btn btn-outline-danger" 
                                         title="Xóa danh mục"
-                                        data-id="<?php echo htmlspecialchars($cat['CategoryID']); ?>"
-                                        data-name="<?php echo htmlspecialchars($cat['CategoryName']); ?>"
-                                        data-count="<?php echo $count; ?>">
+                                        onclick="openDeleteModal('<?php echo htmlspecialchars($cat['CategoryID']); ?>', '<?php echo htmlspecialchars(addslashes($cat['CategoryName'])); ?>', <?php echo $count; ?>)">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </div>
@@ -208,16 +215,16 @@ if (isset($_GET['updated'])) {
     <div class="modal-dialog">
         <div class="modal-content">
             <form method="POST" action="<?php echo BASE_URL; ?>index.php?action=edit_category">
-                <input type="hidden" name="category_id" id="edit_category_id">
+                <input type="hidden" name="old_category_id" id="edit_old_category_id">
                 <div class="modal-header bg-warning">
                     <h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Sửa danh mục</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Mã danh mục</label>
-                        <input type="text" class="form-control" id="edit_category_id_display" disabled>
-                        <small class="text-muted">Mã danh mục không thể thay đổi</small>
+                        <label class="form-label fw-semibold">Mã danh mục <span class="text-danger">*</span></label>
+                        <input type="text" name="category_id" id="edit_category_id" class="form-control" required>
+                        <small class="text-muted">Thay đổi mã danh mục sẽ tự động cập nhật các sản phẩm liên quan</small>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Tên danh mục <span class="text-danger">*</span></label>
@@ -264,56 +271,79 @@ if (isset($_GET['updated'])) {
 </div>
 
 <script>
-$(document).ready(function() {
-    // DataTable
-    if ($('#categoriesTable tbody tr').length > 1) {
-        $('#categoriesTable').DataTable({
-            language: {
-                url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/vi.json'
-            },
-            pageLength: 10,
-            order: [[1, 'asc']],
-            columnDefs: [
-                { orderable: false, targets: [4] }
-            ]
-        });
+// Các function xử lý modal - không phụ thuộc vào jQuery ready
+function openEditModal(id, name) {
+    document.getElementById('edit_old_category_id').value = id;
+    document.getElementById('edit_category_id').value = id;
+    document.getElementById('edit_category_name').value = name;
+    
+    // Sử dụng Bootstrap modal API
+    var modal = new bootstrap.Modal(document.getElementById('editCategoryModal'));
+    modal.show();
+}
+
+function openDeleteModal(id, name, count) {
+    document.getElementById('delete_category_id').value = id;
+    document.getElementById('delete_category_name').textContent = name;
+    
+    var warningEl = document.getElementById('delete_warning');
+    var warningTextEl = document.getElementById('delete_warning_text');
+    var confirmBtn = document.getElementById('confirmDeleteBtn');
+    
+    if (count > 0) {
+        warningEl.classList.remove('d-none');
+        warningTextEl.textContent = 'Danh mục này có ' + count + ' sản phẩm. Bạn cần chuyển sản phẩm sang danh mục khác trước khi xóa.';
+        confirmBtn.disabled = true;
+    } else {
+        warningEl.classList.add('d-none');
+        confirmBtn.disabled = false;
     }
     
-    // Mở modal sửa
-    $('.edit-category-btn').click(function() {
-        const id = $(this).data('id');
-        const name = $(this).data('name');
-        
-        $('#edit_category_id').val(id);
-        $('#edit_category_id_display').val(id);
-        $('#edit_category_name').val(name);
-        
-        $('#editCategoryModal').modal('show');
-    });
-    
-    // Mở modal xóa
-    $('.delete-category-btn').click(function() {
-        const id = $(this).data('id');
-        const name = $(this).data('name');
-        const count = parseInt($(this).data('count'));
-        
-        $('#delete_category_id').val(id);
-        $('#delete_category_name').text(name);
-        
-        if (count > 0) {
-            $('#delete_warning').removeClass('d-none');
-            $('#delete_warning_text').text('Danh mục này có ' + count + ' sản phẩm. Bạn cần chuyển sản phẩm sang danh mục khác trước khi xóa.');
-            $('#confirmDeleteBtn').prop('disabled', true);
-        } else {
-            $('#delete_warning').addClass('d-none');
-            $('#confirmDeleteBtn').prop('disabled', false);
-        }
-        
-        $('#deleteCategoryModal').modal('show');
-    });
-});
+    var modal = new bootstrap.Modal(document.getElementById('deleteCategoryModal'));
+    modal.show();
+}
 
 function viewCategoryDetails(categoryId) {
     window.location.href = '<?php echo BASE_URL; ?>index.php?action=products&category=' + categoryId;
+}
+
+// Khởi tạo DataTable khi jQuery đã sẵn sàng
+if (typeof jQuery !== 'undefined') {
+    $(document).ready(function() {
+        if ($('#categoriesTable tbody tr').length > 1 && $.fn.DataTable) {
+            if (!$.fn.DataTable.isDataTable('#categoriesTable')) {
+                $('#categoriesTable').DataTable({
+                    language: {
+                        url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/vi.json'
+                    },
+                    pageLength: 10,
+                    order: [[1, 'asc']],
+                    columnDefs: [
+                        { orderable: false, targets: [3, 4] }
+                    ]
+                });
+            }
+        }
+    });
+} else {
+    // Nếu jQuery chưa load, đợi và khởi tạo sau
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            if (typeof jQuery !== 'undefined' && $.fn.DataTable) {
+                if (!$.fn.DataTable.isDataTable('#categoriesTable')) {
+                    $('#categoriesTable').DataTable({
+                        language: {
+                            url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/vi.json'
+                        },
+                        pageLength: 10,
+                        order: [[1, 'asc']],
+                        columnDefs: [
+                            { orderable: false, targets: [3, 4] }
+                        ]
+                    });
+                }
+            }
+        }, 100);
+    });
 }
 </script>

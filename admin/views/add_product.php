@@ -7,6 +7,9 @@ $messageType = '';
 // Lấy danh sách danh mục
 $categories = $pdo->query("SELECT CategoryID, CategoryName FROM CATEGORY ORDER BY CategoryName")->fetchAll();
 
+// Lấy category từ URL nếu có (khi bấm "Thêm sản phẩm" từ trang danh mục)
+$preselectedCategory = $_GET['category'] ?? '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
     try {
         $pdo->beginTransaction();
@@ -83,18 +86,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                 throw new Exception('Mã SKU "' . $skuId . '" đã tồn tại. Vui lòng chọn mã khác.');
             }
             
-            // Tự động tạo InventoryID mới
-            $lastInventory = $pdo->query("SELECT InventoryID FROM INVENTORY ORDER BY InventoryID DESC LIMIT 1")->fetch();
+            // Tự động tạo InventoryID mới với format IVENxxx
+            $lastInventory = $pdo->query("
+                SELECT InventoryID FROM INVENTORY 
+                WHERE InventoryID LIKE 'IVEN%' 
+                ORDER BY CAST(SUBSTRING(InventoryID, 5) AS UNSIGNED) DESC 
+                LIMIT 1
+            ")->fetch();
             if ($lastInventory) {
-                $lastInvNum = intval(substr($lastInventory['InventoryID'], 3));
-                $newInventoryId = 'INV' . str_pad($lastInvNum + 1, 3, '0', STR_PAD_LEFT);
+                $lastInvNum = intval(substr($lastInventory['InventoryID'], 4));
+                $newInventoryId = 'IVEN' . str_pad($lastInvNum + 1, 3, '0', STR_PAD_LEFT);
             } else {
-                $newInventoryId = 'INV001';
+                $newInventoryId = 'IVEN001';
             }
             
             // INSERT vào INVENTORY
             $stock = intval($skuStocks[$index] ?? 0);
-            $status = $skuStatuses[$index] ?? 'Available';
+            // Tự động xác định InventoryStatus dựa trên Stock (thỏa mãn constraint Check_InventoryStatus_Stock)
+            if ($stock >= 20) {
+                $status = 'Available';
+            } elseif ($stock > 0) {
+                $status = 'Low in stock';
+            } else {
+                $status = 'Out of stock';
+            }
             
             $stmtInv = $pdo->prepare("
                 INSERT INTO INVENTORY (InventoryID, Stock, InventoryStatus)
@@ -197,7 +212,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Mã sản phẩm (ProductID) <span class="text-danger">*</span></label>
                         <input type="text" name="product_id" class="form-control" required 
-                               placeholder="CHG-001" value="<?php echo htmlspecialchars($_POST['product_id'] ?? ''); ?>">
+                               placeholder="Nhập mã sản phẩm..." value="<?php echo htmlspecialchars($_POST['product_id'] ?? ''); ?>">
                         <small class="text-muted">Nhập mã sản phẩm duy nhất. Mã này không thể trùng với sản phẩm đã có.</small>
                     </div>
                     
@@ -215,7 +230,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                             <option value="">-- Chọn danh mục --</option>
                             <?php foreach ($categories as $cat): ?>
                             <option value="<?php echo $cat['CategoryID']; ?>"
-                                <?php echo (($_POST['category_id'] ?? '') == $cat['CategoryID']) ? 'selected' : ''; ?>>
+                                <?php echo (($_POST['category_id'] ?? $preselectedCategory) == $cat['CategoryID']) ? 'selected' : ''; ?>>
                                 <?php echo htmlspecialchars($cat['CategoryName']); ?>
                             </option>
                             <?php endforeach; ?>
@@ -243,7 +258,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Hương vị</label>
                         <input type="text" name="flavour" class="form-control" 
-                               placeholder="VD: Dâu, Socola, Vani..." value="<?php echo htmlspecialchars($_POST['flavour'] ?? ''); ?>">
+                               placeholder="Nhập hương vị..." value="<?php echo htmlspecialchars($_POST['flavour'] ?? ''); ?>">
                     </div>
                     
                     <!-- Thành phần -->
@@ -302,7 +317,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label small fw-semibold">Mã SKU (SKUID) <span class="text-danger">*</span></label>
                                         <input type="text" name="sku_id[]" class="form-control" required
-                                               placeholder="CHG-001-100">
+                                               placeholder="Nhập mã SKU">
                                         <small class="text-muted">Mã SKU phải duy nhất</small>
                                     </div>
                                     
@@ -310,7 +325,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label small fw-semibold">Thuộc tính <span class="text-danger">*</span></label>
                                         <input type="text" name="sku_attribute[]" class="form-control" required
-                                               placeholder="100g">
+                                               placeholder="Nhập thuộc tính">
                                     </div>
                                     
                                     <!-- Tồn kho -->
@@ -332,15 +347,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                                         <label class="form-label small fw-semibold">Giá khuyến mãi (VNĐ)</label>
                                         <input type="number" name="sku_promotion_price[]" class="form-control" 
                                                min="0" step="1000" placeholder="Để trống nếu không giảm giá">
-                                    </div>
-                                    
-                                    <!-- Trạng thái -->
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label small fw-semibold">Trạng thái kho</label>
-                                        <select name="sku_status[]" class="form-select">
-                                            <option value="Available">Còn hàng (Available)</option>
-                                            <option value="Out of stock">Hết hàng (Out of stock)</option>
-                                        </select>
                                     </div>
                                     
                                     <!-- Ảnh -->
@@ -411,14 +417,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                     <label class="form-label small fw-semibold">Giá khuyến mãi (VNĐ)</label>
                     <input type="number" name="sku_promotion_price[]" class="form-control" 
                            min="0" step="1000" placeholder="Để trống nếu không giảm giá">
-                </div>
-                
-                <div class="col-md-6 mb-3">
-                    <label class="form-label small fw-semibold">Trạng thái kho</label>
-                    <select name="sku_status[]" class="form-select">
-                        <option value="Available">Còn hàng (Available)</option>
-                        <option value="Out of stock">Hết hàng (Out of stock)</option>
-                    </select>
                 </div>
                 
                 <div class="col-md-6 mb-3">
