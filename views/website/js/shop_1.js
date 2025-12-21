@@ -62,10 +62,10 @@ class ShopManager {
     const filterValue = checkbox.dataset.filter;
     const filterSection = checkbox.closest('.filter-section');
     const sectionTitle = filterSection.querySelector('.filter-title').textContent.trim();
-    
+
     // Determine filter category
     let category = this.getFilterCategory(sectionTitle);
-    
+
     if (checkbox.checked) {
       // Add filter
       if (!this.state.filters[category].includes(filterValue)) {
@@ -263,17 +263,17 @@ class ShopManager {
     // Sort dropdown - UPDATED TO AUTO FILTER
     const sortSelect = document.querySelector('.sort-select');
     const sortWrapper = document.querySelector('.sort-select-wrapper');
-    
+
     if (sortSelect && sortWrapper) {
       // Auto-apply sort on change
       sortSelect.addEventListener('change', (e) => {
         this.state.sortBy = e.target.value;
         this.applyFilters(); // Auto apply filters
-        
+
         // Show visual feedback
         const selectedText = e.target.selectedOptions[0].text;
         this.showNotification(`Sorted by: ${selectedText}`, 'success');
-        
+
         // Add pulse animation to grid
         this.pulseProductGrid();
       });
@@ -300,7 +300,7 @@ class ShopManager {
     if (grid) {
       grid.style.transform = 'scale(0.98)';
       grid.style.opacity = '0.7';
-      
+
       setTimeout(() => {
         grid.style.transition = 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
         grid.style.transform = 'scale(1)';
@@ -323,34 +323,34 @@ class ShopManager {
 
     // Lọc theo Search
     if (this.state.searchQuery) {
-        filtered = filtered.filter(p => p.name.toLowerCase().includes(this.state.searchQuery));
+      filtered = filtered.filter(p => p.name.toLowerCase().includes(this.state.searchQuery));
     }
 
     // Lọc theo Category
     if (this.state.filters.category.length > 0) {
-        filtered = filtered.filter(p => this.state.filters.category.includes(p.category));
+      filtered = filtered.filter(p => this.state.filters.category.includes(p.category));
     }
 
     // Lọc theo Ingredients (Khớp với field 'ingredient' từ Model)
     if (this.state.filters.ingredients.length > 0) {
-        filtered = filtered.filter(p => this.state.filters.ingredients.includes(p.ingredient));
+      filtered = filtered.filter(p => this.state.filters.ingredients.includes(p.ingredient));
     }
 
     // Lọc theo Flavor (Khớp với field 'flavour' từ Model)
     if (this.state.filters.flavor.length > 0) {
-        filtered = filtered.filter(p => this.state.filters.flavor.includes(p.flavour));
+      filtered = filtered.filter(p => this.state.filters.flavor.includes(p.flavour));
     }
 
     // Lọc theo Rating
     if (this.state.filters.rating) {
-        filtered = filtered.filter(p => p.rating >= this.state.filters.rating);
+      filtered = filtered.filter(p => p.rating >= this.state.filters.rating);
     }
 
     this.state.filteredProducts = filtered;
     this.state.currentPage = 1;
     this.updateProductDisplay();
     this.updateResultText();
-}
+  }
 
   sortProducts(products) {
     const sorted = [...products];
@@ -431,8 +431,11 @@ class ShopManager {
   createProductCard(product) {
     const card = document.createElement('article');
     card.className = 'product-card';
+    // Handle null/empty image with a fallback - use a product image or empty placeholder
+    const placeholderImg = '/Candy-Crunch-Website/views/website/img/product1.png';
+    const imageUrl = product.image || placeholderImg;
     card.innerHTML = `
-      <img class="product-image" src="${product.image}" alt="${product.name}" />
+      <img class="product-image" src="${imageUrl}" alt="${product.name}" onerror="this.src='${placeholderImg}'" />
       <div class="product-info">
         <div class="product-top">
           <h4 class="product-name">${product.name}</h4>
@@ -480,20 +483,20 @@ class ShopManager {
   // ============================================
   // CART & WISHLIST
   // ============================================
-// ============================================
+  // ============================================
   // CART & WISHLIST (Đã kết nối Database)
   // ============================================
-  
+
   async addToCart(product) {
-    const button = event.currentTarget; 
+    const button = event.currentTarget;
     this.animateAddToCart(button);
 
     const formData = new FormData();
-    formData.append('sku_id', product.id); 
+    formData.append('sku_id', product.id);
 
     try {
-      const response = await fetch('/candy-crunch-website/controllers/website/shop_controller.php', {
-        method: 'POST', 
+      const response = await fetch('/Candy-Crunch-Website/controllers/website/shop_controller.php?action=add-to-cart', {
+        method: 'POST',
         body: formData
       });
 
@@ -503,7 +506,7 @@ class ShopManager {
         // Thông báo thành công từ ShopModel (Ví dụ: "Đã thêm vào giỏ hàng")
         this.showNotification('Add product to Cart!');
         return;
-      } 
+      }
       this.showNotification(result.message || 'Product is out of stock', 'warning');
     } catch (error) {
       // Lỗi hệ thống 
@@ -515,7 +518,7 @@ class ShopManager {
     // Giữ nguyên hiệu ứng UI cho wishlist
     console.log('Toggled wishlist:', product);
     this.showNotification(`${product.name} added to wishlist!`, 'success');
-    
+
     const target = event.currentTarget;
     target.style.transform = 'scale(1.2)';
     setTimeout(() => {
@@ -662,28 +665,28 @@ class ShopManager {
 
     // Show first, last, current and neighbors
     const pages = [];
-    
+
     // Always show first page
     pages.push(1);
-    
+
     if (current > 3) {
       pages.push('...');
     }
-    
+
     // Show pages around current
     for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) {
       pages.push(i);
     }
-    
+
     if (current < total - 2) {
       pages.push('...');
     }
-    
+
     // Always show last page
     if (total > 1) {
       pages.push(total);
     }
-    
+
     return pages;
   }
 
@@ -874,38 +877,38 @@ class ShopManager {
   // ============================================
   async loadProducts() {
     try {
-        // Gọi đến file chứa ShopController của bạn
-        const response = await fetch('/Candy-Crunch-Website/controllers/website/shop_controller.php');
-        const data = await response.json();
-        
-        this.state.products = data;
-        this.state.filteredProducts = [...this.state.products];
-        this.applyFilters();
-        this.updateUI();
+      // Gọi đến file chứa ShopController của bạn
+      const response = await fetch('/Candy-Crunch-Website/controllers/website/shop_controller.php');
+      const data = await response.json();
+
+      this.state.products = data;
+      this.state.filteredProducts = [...this.state.products];
+      this.applyFilters();
+      this.updateUI();
     } catch (error) {
-        console.error('Lỗi tải sản phẩm:', error);
-        this.showNotification('Không thể tải dữ liệu sản phẩm', 'error');
+      console.error('Lỗi tải sản phẩm:', error);
+      this.showNotification('Không thể tải dữ liệu sản phẩm', 'error');
     }
   }
   updateUI() {
     const container = document.getElementById('productContainer');
     if (!container) {
-        console.error("Không tìm thấy container có id 'productContainer'");
-        return;
+      console.error("Không tìm thấy container có id 'productContainer'");
+      return;
     }
     container.innerHTML = '';
-    
+
     // Nếu filteredProducts rỗng, hãy hiện thông báo
     if (this.state.filteredProducts.length === 0) {
-        container.innerHTML = '<p>No products found</p>';
-        return;
+      container.innerHTML = '<p>No products found</p>';
+      return;
     }
 
     this.state.filteredProducts.forEach(product => {
-        const card = this.createProductCard(product);
-        container.appendChild(card);
+      const card = this.createProductCard(product);
+      container.appendChild(card);
     });
-}
+  }
 }
 
 // ============================================
