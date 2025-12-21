@@ -86,11 +86,11 @@ class CartModel
 
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
-        return $row ? (int)$row['CartQuantity'] : 0;
+        return $row ? (int) $row['CartQuantity'] : 0;
     }
 
     //Lấy danh mục từ giỏ hàng
-    public function getCategoryIdsFromCart(int $customerId): array
+    public function getCategoryIdsFromCart($customerId): array
     {
         $sql = "
             SELECT DISTINCT p.CategoryID
@@ -102,7 +102,7 @@ class CartModel
         ";
 
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("i", $customerId);
+        $stmt->bind_param("s", $customerId);
         $stmt->execute();
 
         $result = $stmt->get_result();
@@ -114,7 +114,7 @@ class CartModel
     }
 
     //Lấy sku đang có trng giỏ hàng
-    public function getCartSkuIds(int $customerId): array
+    public function getCartSkuIds($customerId): array
     {
         $sql = "
             SELECT cd.SKUID
@@ -124,7 +124,7 @@ class CartModel
         ";
 
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("i", $customerId);
+        $stmt->bind_param("s", $customerId);
         $stmt->execute();
 
         $result = $stmt->get_result();
@@ -137,11 +137,10 @@ class CartModel
 
     //Gợi ý sản phẩm upsell
     public function getUpsellProducts(
-    array $categoryIds,
-    array $excludeSkuIds,
-    int $limit = 8
-    ): array
-    {
+        array $categoryIds,
+        array $excludeSkuIds,
+        int $limit = 8
+    ): array {
         if (empty($categoryIds)) {
             return [];
         }
@@ -182,14 +181,14 @@ class CartModel
         ";
 
         $stmt = $this->conn->prepare($sql);
-        
+
         // Build bind_param types string
         $types = str_repeat('i', count($categoryIds));
         if (!empty($excludeSkuIds)) {
             $types .= str_repeat('i', count($excludeSkuIds));
         }
         $types .= 'i'; // for limit
-        
+
         $stmt->bind_param($types, ...$params);
         $stmt->execute();
 
@@ -231,7 +230,7 @@ class CartModel
         $discount = 0;
 
         foreach ($cartItems as $item) {
-            $qty = (int)$item['CartQuantity'];
+            $qty = (int) $item['CartQuantity'];
 
             $originalTotal = $item['OriginalPrice'] * $qty;
             $subtotal += $originalTotal;
@@ -279,7 +278,7 @@ class CartModel
         //if ($baseAmount < $voucher['MinOrder']) {
         //    return 0;
         //}
-        
+
         $today = date('Y-m-d');
 
         if ($today < $voucher['StartDate'] || $today > $voucher['EndDate']) {
@@ -298,7 +297,7 @@ class CartModel
     }
 
     //Tìm giỏ hàng đang hoạt động của khách hàng
-    public function findActiveCartByCustomer(int $customerId): ?array
+    public function findActiveCartByCustomer($customerId): ?array
     {
         $sql = "
             SELECT CartID
@@ -308,7 +307,7 @@ class CartModel
         ";
 
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("i", $customerId);
+        $stmt->bind_param("s", $customerId);
         $stmt->execute();
 
         $result = $stmt->get_result();
@@ -317,7 +316,7 @@ class CartModel
     }
 
     //Tạo giỏ hàng mới
-    public function createCart(int $customerId): int
+    public function createCart($customerId): int
     {
         $sql = "
             INSERT INTO CART (CustomerID)
@@ -325,14 +324,14 @@ class CartModel
         ";
 
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("i", $customerId);
+        $stmt->bind_param("s", $customerId);
         $stmt->execute();
 
         return $this->conn->insert_id;
     }
 
     //Thêm sản phẩm vào giỏ hàng
-    public function addToCart(int $customerId, int $skuId, int $quantity = 1): bool
+    public function addToCart($customerId, int $skuId, int $quantity = 1): bool
     {
         // Lấy hoặc tạo cart cho customer
         $cart = $this->findActiveCartByCustomer($customerId);

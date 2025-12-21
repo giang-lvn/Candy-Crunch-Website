@@ -29,10 +29,10 @@ class ShopController
 
         try {
             $params = [
-                'search'     => $_GET['search']     ?? null,
-                'category'   => $_GET['category']   ?? null,
+                'search' => $_GET['search'] ?? null,
+                'category' => $_GET['category'] ?? null,
                 'ingredient' => $_GET['ingredient'] ?? null,
-                'flavour'    => $_GET['flavour']    ?? null,
+                'flavour' => $_GET['flavour'] ?? null,
             ];
 
             echo json_encode(
@@ -59,9 +59,9 @@ class ShopController
 
         header('Content-Type: application/json');
 
-        $customerId = $_SESSION['CustomerID'] ?? null;
+        $customerId = $_SESSION['customer_id'] ?? null;
         $skuId = $_POST['sku_id'] ?? null;
-        $qty = (int)($_POST['qty'] ?? 1);
+        $qty = (int) ($_POST['qty'] ?? 1);
 
         // ❌ Không phân biệt login nữa
         if (!$customerId || !$skuId) {
@@ -96,5 +96,5 @@ $action = $_GET['action'] ?? 'list';
 
 match ($action) {
     'add-to-cart' => $controller->addToCart(),
-    default       => $controller->getProducts(),
+    default => $controller->getProducts(),
 };
