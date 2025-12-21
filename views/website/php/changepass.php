@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 $customer = $_SESSION['user_data'] ?? null;
 if (!$customer) {
     // Chuyển hướng ngược lại Controller để nạp dữ liệu vào Session
-    header('Location: /../../controllers/website/account_controller.php'); 
+    header('Location: /Candy-Crunch-Website/controllers/website/account_controller.php'); 
     exit;
 }
 $ROOT = '/Candy-Crunch-Website'; // hoặc '' nếu chạy ở root domain
