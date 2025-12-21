@@ -444,7 +444,7 @@ foreach ($productImages as $idx => $img) {
                 <div class="card-body">
                     <div class="alert alert-info small mb-3">
                         <i class="bi bi-info-circle me-2"></i>
-                        Mỗi SKU đại diện cho một biến thể của sản phẩm (kích thước, đóng gói khác nhau).
+                        Mỗi SKU đại diện cho một biến thể của sản phẩm. Bạn cần thêm ít nhất 1 SKU cho mỗi sản phẩm. 
                     </div>
                     
                     <div id="skuContainer">
