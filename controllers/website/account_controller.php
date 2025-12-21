@@ -198,6 +198,33 @@ class AccountController
         }
         $this->sendJSON(['success'=>false]);
     }
+
+    /**
+     * Đăng xuất - Hủy session phía server
+     * Không xóa dữ liệu trong database
+     */
+    public function logout()
+    {
+        // Xóa tất cả session data
+        $_SESSION = [];
+        
+        // Xóa session cookie
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+            );
+        }
+        
+        // Hủy session
+        session_destroy();
+        
+        $this->sendJSON([
+            'success' => true,
+            'message' => 'Logged out successfully'
+        ]);
+    }
     
     private function saveAddress($mode) {
         if (!isset($_SESSION['AccountID'])) $this->sendJSON(['success'=>false,'message'=>'Unauthorized']);
@@ -245,6 +272,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         case 'addAddress':     $controller->addAddress(); break;
         case 'updateAddress':  $controller->updateAddress(); break;
         case 'deleteAddress':  $controller->deleteAddress(); break;
+        case 'logout':         $controller->logout(); break;
         default:
             if (ob_get_length()) ob_clean();
             echo json_encode(['success' => false, 'message' => 'Invalid action']);
