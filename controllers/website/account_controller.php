@@ -37,7 +37,7 @@ class AccountController
         $_SESSION['user_banking']   = $this->model->getBankingInfo($customerId);
 
         if (ob_get_length()) ob_end_clean();
-        require_once __DIR__ . '/../../views/website/php/my_account.php';
+        header('Location: /Candy-Crunch-Website/views/website/php/my_account.php');
         exit;
     }
 
@@ -140,8 +140,16 @@ class AccountController
         } else {
             $success = $this->model->addBanking($customer['CustomerID'], $data);
         }
+        if ($success){
+            $newBankingList = $this->model->getBankingInfo($customer['CustomerID']);
+            $_SESSION['user_banking'] = $newBankingList; // Cập nhật Session
+            $this->sendJSON([
+                'success' => true,
+                'banking' => $newBankingList
+            ]);
+        }
 
-        $this->sendJSON(['success' => $success]);
+        $this->sendJSON(['success' => false, 'message' => 'Database error']);
     }
 
     public function deleteBanking()
@@ -153,7 +161,15 @@ class AccountController
 
         $customer = $this->model->getCustomerByAccountId($_SESSION['AccountID']);
         $success  = $this->model->deleteBanking($customer['CustomerID'], $bankingId);
-        $this->sendJSON(['success' => $success]);
+        if($success){
+            $newBankingList = $this->model->getBankingInfo($customer['CustomerID']);
+            $_SESSION['user_banking'] = $newBankingList;
+            $this->sendJSON([
+                'success' => true,
+                'banking' => $newBankingList
+            ]);
+        }
+        $this->sendJSON(['success' => false, 'message' => 'Delete failed']);
     }
 
     public function addAddress() {
@@ -172,7 +188,15 @@ class AccountController
         $addressId = $_POST['address_id'] ?? '';
         if (!$addressId) $this->sendJSON(['success'=>false,'message'=>'ID required']);
         $success = $this->model->deleteAddress($customer['CustomerID'], $addressId);
-        $this->sendJSON(['success'=>$success]);
+        if($success){
+            $newAddresses = $this->model->getAddresses($customer['CustomerID']);
+            $_SESSION['user_addresses'] = $newAddresses;
+            $this->sendJSON([
+                'success' => true,
+                'addresses' => $newAddresses
+            ]);
+        }
+        $this->sendJSON(['success'=>false]);
     }
     
     private function saveAddress($mode) {
@@ -195,8 +219,15 @@ class AccountController
             // ✅ Model sẽ tự tạo address_id
             $success = $this->model->addAddress($customer['CustomerID'], $data);
         }
-    
-        $this->sendJSON(['success'=>$success]);
+        if($success) {
+            $newAddresses = $this->model->getAddresses($customer['CustomerID']);
+            $_SESSION['user_addresses'] = $newAddresses;
+            $this->sendJSON([
+                'success' => true,
+                'addresses' => $newAddresses
+            ]);
+        }
+        $this->sendJSON(['success'=>false]);
     }
 }
 
