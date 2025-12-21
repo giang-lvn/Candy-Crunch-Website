@@ -7,12 +7,8 @@ $customer  = $_SESSION['user_data'] ?? null;
 $addresses = $_SESSION['user_addresses'] ?? [];
 $banking   = $_SESSION['user_banking'] ?? [];
 
-if (!$customer) {
-    header('Location: /../../controllers/website/account_controller.php'); 
-    exit;
-}
-$ROOT = '';
-require_once __DIR__ . '/../../../partials/header.php';
+
+include '../../../partials/header.php';
 ?>
 
 <!DOCTYPE html>
