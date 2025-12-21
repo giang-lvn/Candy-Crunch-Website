@@ -3,6 +3,22 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Fallback: Nếu user đã đăng nhập nhưng user_data chưa có, load lại từ database
+if (!isset($_SESSION['user_data']) && isset($_SESSION['AccountID'])) {
+    require_once __DIR__ . '/../../../models/db.php';
+    require_once __DIR__ . '/../../../models/website/account_model.php';
+    
+    global $db;
+    $accountModel = new AccountModel($db);
+    $fullCustomerData = $accountModel->getCustomerByAccountId($_SESSION['AccountID']);
+    
+    if ($fullCustomerData) {
+        $_SESSION['user_data'] = $fullCustomerData;
+        $_SESSION['user_addresses'] = $accountModel->getAddresses($fullCustomerData['CustomerID']);
+        $_SESSION['user_banking'] = $accountModel->getBankingInfo($fullCustomerData['CustomerID']);
+    }
+}
+
 $customer  = $_SESSION['user_data'] ?? null;
 $addresses = $_SESSION['user_addresses'] ?? [];
 $banking   = $_SESSION['user_banking'] ?? [];

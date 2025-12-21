@@ -45,7 +45,7 @@ class ShopManager {
   // ============================================
   async loadAllProducts() {
     if (this.state.isLoading) return;
-    
+
     this.state.isLoading = true;
     this.showLoadingState();
 
@@ -57,7 +57,7 @@ class ShopManager {
       });
 
       const response = await fetch(`${this.API_BASE}?${params.toString()}`);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -67,7 +67,7 @@ class ShopManager {
       // Lưu toàn bộ sản phẩm
       this.state.allProducts = data.products || [];
       this.state.filteredProducts = [...this.state.allProducts];
-      
+
       // Apply filters và display
       this.applyFilters();
 
@@ -246,22 +246,22 @@ class ShopManager {
     // Filter by Search
     if (this.state.filters.search) {
       const search = this.state.filters.search.toLowerCase();
-      filtered = filtered.filter(p => 
+      filtered = filtered.filter(p =>
         p.name.toLowerCase().includes(search)
       );
     }
 
     // Filter by Category
     if (this.state.filters.category.length > 0) {
-      filtered = filtered.filter(p => 
+      filtered = filtered.filter(p =>
         this.state.filters.category.includes(p.category)
       );
     }
 
     // Filter by Ingredient
     if (this.state.filters.ingredient.length > 0) {
-      filtered = filtered.filter(p => 
-        this.state.filters.ingredient.some(ing => 
+      filtered = filtered.filter(p =>
+        this.state.filters.ingredient.some(ing =>
           p.ingredient && p.ingredient.toLowerCase().includes(ing.toLowerCase())
         )
       );
@@ -269,8 +269,8 @@ class ShopManager {
 
     // Filter by Flavour
     if (this.state.filters.flavour.length > 0) {
-      filtered = filtered.filter(p => 
-        this.state.filters.flavour.some(flav => 
+      filtered = filtered.filter(p =>
+        this.state.filters.flavour.some(flav =>
           p.flavour && p.flavour.toLowerCase().includes(flav.toLowerCase())
         )
       );
@@ -278,7 +278,7 @@ class ShopManager {
 
     // Filter by Rating
     if (this.state.filters.rating) {
-      filtered = filtered.filter(p => 
+      filtered = filtered.filter(p =>
         p.rating >= this.state.filters.rating
       );
     }
@@ -399,7 +399,7 @@ class ShopManager {
           this.state.filters.search = e.target.value.trim();
           this.state.currentPage = 1;
           this.applyFilters();
-          
+
           if (e.target.value) {
             this.showSearchFeedback(e.target.value);
           }
@@ -412,14 +412,8 @@ class ShopManager {
 
     if (sortSelect && sortWrapper) {
       sortSelect.addEventListener('change', (e) => {
-        const sortMap = {
-          'Newest': 'name',
-          'Price: Low to High': 'price_asc',
-          'Price: High to Low': 'price_desc',
-          'Rating': 'rating'
-        };
-
-        this.state.sortBy = sortMap[e.target.value] || 'name';
+        // Use value directly since options now have proper value attributes
+        this.state.sortBy = e.target.value || 'name';
         this.state.currentPage = 1;
         this.applyFilters();
 
@@ -500,10 +494,10 @@ class ShopManager {
   createProductCard(product) {
     const card = document.createElement('article');
     card.className = 'product-card';
-    
+
     const placeholderImg = '/Candy-Crunch-Website/views/website/img/product1.png';
     const imageUrl = product.image || placeholderImg;
-    
+
     const firstSku = product.skus && product.skus.length > 0 ? product.skus[0] : null;
     const displayPrice = firstSku ? firstSku.salePrice : product.basePrice;
     const originalPrice = firstSku?.originalPrice;
@@ -581,19 +575,20 @@ class ShopManager {
         method: 'POST',
         body: formData
       });
-      
+
       const result = await response.json();
 
       if (result.success) {
         this.showNotification('Product added! Redirecting to cart...', 'success', 1500);
-        
+
         // Redirect to cart page after 1.5 seconds
         setTimeout(() => {
           window.location.href = '/Candy-Crunch-Website/views/website/php/cart.php';
         }, 1500);
         return;
-      } else{
-      this.showNotification(result.message || 'Cannot add product to cart', 'warning');}
+      } else {
+        this.showNotification(result.message || 'Cannot add product to cart', 'warning');
+      }
     } catch (error) {
       console.error('Add to cart error:', error);
       this.showNotification('Cannot add product to cart', 'error');

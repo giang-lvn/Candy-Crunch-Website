@@ -4,6 +4,7 @@
 // Include các file cần thiết
 require_once __DIR__ . '/../../models/db.php';
 require_once __DIR__ . '/../../models/website/MA_LoginModel.php';
+require_once __DIR__ . '/../../models/website/account_model.php';
 
 // Chỉ xử lý POST request cho login
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -76,6 +77,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['lastname'] = $customer['LastName'];
                     $_SESSION['fullname'] = $customer['FirstName'] . ' ' . $customer['LastName'];
                     $_SESSION['logged_in'] = true;
+                    
+                    // ✅ Load đầy đủ thông tin customer và lưu vào session (để my_account.php hiển thị đúng)
+                    $accountModel = new AccountModel($db);
+                    $fullCustomerData = $accountModel->getCustomerByAccountId($account['AccountID']);
+                    if ($fullCustomerData) {
+                        $_SESSION['user_data'] = $fullCustomerData;
+                        $_SESSION['user_addresses'] = $accountModel->getAddresses($customer['CustomerID']);
+                        $_SESSION['user_banking'] = $accountModel->getBankingInfo($customer['CustomerID']);
+                    }
                     
                     echo json_encode([
                         'success' => true,
