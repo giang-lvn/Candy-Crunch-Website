@@ -104,7 +104,7 @@ class ProductDetailNewController
             header('Content-Type: application/json');
 
             // Check login
-            if (!isset($_SESSION['AccountID'])) {
+            if (!isset($_SESSION['AccountID']) || !isset($_SESSION['CustomerID'])) {
                 echo json_encode([
                     'success' => false,
                     'redirect' => '/Candy-Crunch-Website/views/website/php/login.php',
@@ -137,7 +137,7 @@ class ProductDetailNewController
 
             // Add to Database Cart
             $cartModel = new CartModel();
-            $result = $cartModel->addToCart($_SESSION['AccountID'], $skuId, $quantity);
+            $result = $cartModel->addToCart($_SESSION['CustomerID'], $skuId, $quantity);
 
             if ($result) {
                 echo json_encode([

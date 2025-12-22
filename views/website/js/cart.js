@@ -27,14 +27,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // CHECKOUT BUTTON
-    const checkoutBtn = document.querySelector('.checkout-btn');
-    if (checkoutBtn) {
-        checkoutBtn.addEventListener('click', () => {
-            // Redirect to checkout page - cart data will be fetched from session
+    // CHECKOUT BUTTON (Delegated Event)
+    // Using delegation because the button might be replaced by AJAX updates
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.checkout-btn');
+        if (btn) {
+            e.preventDefault();
             window.location.href = '/Candy-Crunch-Website/views/website/php/checkout.php';
-        });
-    }
+        }
+    });
 
     bindCartEvents();
 });
@@ -135,13 +136,7 @@ function refreshCartContent() {
                 });
             }
 
-            // Re-bind Checkout Button
-            const checkoutBtn = document.querySelector('.checkout-btn');
-            if (checkoutBtn) {
-                checkoutBtn.addEventListener('click', () => {
-                    window.location.href = '/Candy-Crunch-Website/views/website/php/checkout.php';
-                });
-            }
+            // Checkout button is now handled via delegation (see top of file)
         })
         .catch(console.error);
 }
