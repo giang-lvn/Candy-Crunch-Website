@@ -9,8 +9,9 @@ const VOUCHER_API = '/Candy-Crunch-Website/controllers/website/voucher_controlle
 document.addEventListener('DOMContentLoaded', () => {
     initMenuNavigation();
     initDropdownFilter();
-    loadVouchers('all');
+    // loadVouchers('all'); // Disabled: SSR handles initial load
 });
+
 
 // ===============================
 // MENU NAVIGATION
@@ -33,7 +34,7 @@ function handleMenuAction(action) {
         'Change Password': 'changepass.php',
         'My Orders': 'my_orders.php',
         'My Vouchers': 'my_vouchers.php',
-        'Log out': 'login.php'
+        'Log out': 'login.html'
     };
 
     if (action === 'Log out') {
@@ -88,9 +89,16 @@ function initDropdownFilter() {
         item.onclick = e => {
             e.stopPropagation();
             const text = item.textContent.trim();
-            selected.innerHTML = `${text} <img class="icon-dropdown" src="../img/dropdown.svg">`;
+            // Update selected text but keep the icon
+            selected.childNodes[0].nodeValue = text + ' ';
 
-            loadVouchers(text === 'Expiring Soon' ? 'expiring' : 'all');
+            // Map text to filter value
+            let filterVal = 'all';
+            if (text === 'Active') filterVal = 'active';
+            if (text === 'Expiring Soon') filterVal = 'expiring';
+            if (text === 'Upcoming') filterVal = 'upcoming';
+
+            loadVouchers(filterVal);
 
             list.classList.remove('show');
         };
@@ -111,7 +119,7 @@ function loadVouchers(filter = 'all') {
         .then(res => {
             container.innerHTML = '';
 
-            if (!res.success || res.data.length === 0) {
+            if (!res.success || !res.data || res.data.length === 0) {
                 container.innerHTML = '<p>No vouchers available.</p>';
                 return;
             }
@@ -129,27 +137,50 @@ function loadVouchers(filter = 'all') {
 // ===============================
 function createVoucherCard(v) {
     const card = document.createElement('div');
-    card.className = 'voucher-card';
+    card.className = `voucher-card ${v.isUpcoming ? 'disabled' : ''}`;
 
-    const badge = v.DaysUntilExpire <= 10
-        ? '<div class="expire-badge">Expiring Soon</div>'
-        : '';
+    let badge = '';
+    if (v.badge) {
+        const badgeClass = v.badge === 'Upcoming' ? 'expire-badge upcoming' : 'expire-badge';
+        badge = `<div class="${badgeClass}">${v.badge}</div>`;
+    }
+
+    // Determine date text
+    let dateText = v.isUpcoming ? `Starts: ${v.startDate}` : `Expire date: ${v.expireDate}`;
 
     card.innerHTML = `
         ${badge}
-        <img src="../img/voutick.svg">
+        <img src="/Candy-Crunch-Website/views/website/img/voutick.svg" alt="voucher-icon">
+
         <div>
-            <div>
-                <div>${v.DiscountText}</div>
-                <div>For orders over ${Number(v.MinOrder).toLocaleString()}đ</div>
+            <div class="voucher-info">
+                <div class="voucher-code">
+                    ${v.code}
+                </div>
+
+                <div class="voucher-discount">
+                    ${v.discountText}
+                </div>
+
+                <div class="voucher-condition">
+                    For orders over ${v.minOrder}
+                </div>
             </div>
-            <div>Expire date: ${formatDate(v.EndDate)}</div>
+
+            <div>
+                ${dateText}
+            </div>
         </div>
-        <button data-id="${v.VoucherID}">Apply</button>
+
+        <button ${v.isUpcoming ? 'disabled' : ''} data-id="${v.id}">
+            Apply
+        </button>
     `;
 
-    card.querySelector('button').onclick = e =>
-        applyVoucher(e.target.dataset.id, e.target);
+    if (!v.isUpcoming) {
+        card.querySelector('button').onclick = e =>
+            applyVoucher(e.target.dataset.id, e.target);
+    }
 
     return card;
 }
@@ -171,20 +202,20 @@ function applyVoucher(voucherId, btn) {
             order_total: orderTotal
         })
     })
-    .then(r => r.json())
-    .then(res => {
-        if (!res.success) {
-            showNotification(res.message, 'error');
-            btn.disabled = false;
-            btn.textContent = 'Apply';
-            return;
-        }
+        .then(r => r.json())
+        .then(res => {
+            if (!res.success) {
+                showNotification(res.message, 'error');
+                btn.disabled = false;
+                btn.textContent = 'Apply';
+                return;
+            }
 
-        localStorage.setItem('appliedVoucher', JSON.stringify(res.data));
-        btn.textContent = '✓ Applied';
-        btn.style.background = '#28a745';
-        showNotification('Voucher applied!', 'success');
-    });
+            localStorage.setItem('appliedVoucher', JSON.stringify(res.data));
+            btn.textContent = '✓ Applied';
+            btn.style.background = '#28a745';
+            showNotification('Voucher applied!', 'success');
+        });
 }
 
 // ===============================

@@ -139,16 +139,15 @@ class AccountModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // ✅ FIX: Tự động tạo AddressID
+    // Tự động tạo AddressID
     public function addAddress(string $customerId, array $data): bool
     {
-        // ✅ Tạo AddressID tự động
+        // Tạo AddressID tự động (global sequential)
         $stmt = $this->db->query("
             SELECT MAX(CAST(SUBSTRING(AddressID, 4) AS UNSIGNED)) FROM ADDRESS
         ");
         $next = ((int)$stmt->fetchColumn()) + 1;
         $addressId = 'ADD' . str_pad($next, 3, '0', STR_PAD_LEFT);
-        
 
         $sql = "
             INSERT INTO ADDRESS (
@@ -163,18 +162,23 @@ class AccountModel
 
         $stmt = $this->db->prepare($sql);
 
-        return $stmt->execute([
-            'id'         => $addressId,  // ✅ Dùng ID tự tạo
-            'customerId' => $customerId,
-            'fullname'   => $data['fullname'],
-            'phone'      => $data['phone'],
-            'alias'      => $data['alias'] ?? '',
-            'address'    => $data['address'],
-            'city'       => $data['city'],
-            'country'    => $data['country'],
-            'postal'     => $data['postal'] ?? '',
-            'isDefault'  => $data['is_default'] ?? 'No'
-        ]);
+        try {
+            return $stmt->execute([
+                'id'         => $addressId,
+                'customerId' => $customerId,
+                'fullname'   => $data['fullname'],
+                'phone'      => $data['phone'],
+                'alias'      => $data['alias'] ?? '',
+                'address'    => $data['address'],
+                'city'       => $data['city'],
+                'country'    => $data['country'],
+                'postal'     => $data['postal'] ?? '',
+                'isDefault'  => $data['is_default'] ?? 'No'
+            ]);
+        } catch (PDOException $e) {
+            error_log("addAddress error: " . $e->getMessage());
+            return false;
+        }
     }
 
     public function updateAddress(string $customerId, array $data): bool

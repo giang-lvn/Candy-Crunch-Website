@@ -40,7 +40,7 @@ class VoucherController {
     public function list() {
         $filter = $_GET['filter'] ?? 'all';
         $vouchers = $this->voucherModel->getVoucherByFilter($filter);
-        $this->jsonResponse(true, $vouchers);
+        $this->jsonResponse(true, $this->mapVouchers($vouchers));
     }
 
     /* ==================================================
@@ -101,15 +101,25 @@ class VoucherController {
        ================================================== */
     private function mapVouchers($vouchers) {
         return array_map(function ($v) {
+            // Determine badge text
+            $badge = null;
+            if (($v['DynamicStatus'] ?? '') === 'Upcoming') {
+                $badge = 'Upcoming';
+            } elseif (($v['DynamicStatus'] ?? '') === 'Expiring Soon') {
+                $badge = 'Expiring Soon';
+            }
+            
             return [
                 'id'           => $v['VoucherID'],
                 'code'         => $v['Code'],
                 'description'  => $v['VoucherDescription'],
                 'discountText' => $v['DiscountText'],
-                'minOrder'     => number_format($v['MinOrder'], 0, ',', '.') . ' đ',
+                'minOrder'     => number_format($v['MinOrder'], 0, ',', '.') . 'đ',
+                'startDate'    => date('d/m/Y', strtotime($v['StartDate'])),
                 'expireDate'   => date('d/m/Y', strtotime($v['EndDate'])),
                 'daysLeft'     => (int)$v['DaysUntilExpire'],
-                'badge'        => $v['DaysUntilExpire'] <= 10 ? 'Expiring Soon' : null
+                'badge'        => $badge,
+                'isUpcoming'   => ($v['DynamicStatus'] ?? '') === 'Upcoming'
             ];
         }, $vouchers);
     }

@@ -58,6 +58,12 @@ switch ($controller) {
             case 'applyVoucher':
                 $cartController->applyVoucher();
                 break;
+            case 'getCartContent':
+                $cartController->getCartContent();
+                break;
+            case 'changeAttribute':
+                $cartController->changeAttribute();
+                break;
             default:
                 $cartController->index();
                 break;

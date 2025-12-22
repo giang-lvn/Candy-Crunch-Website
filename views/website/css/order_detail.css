@@ -31,6 +31,7 @@
     overflow-x: auto;
     white-space: nowrap;
 }
+
 .breadcrumb-item {
     font-size: 18px;
     font-weight: 400;
@@ -45,6 +46,7 @@
     display: flex;
     align-items: center;
 }
+
 .breadcrumb-item.active {
     color: var(--text-black);
     font-weight: 600;
@@ -57,6 +59,7 @@
     color: var(--gray-400);
     margin: 0 var(--spacing-4);
 }
+
 .separator::before {
     content: '›';
 }
@@ -91,7 +94,7 @@
     border: 1px solid var(--gray-300);
     background: var(--beige-300);
 }
-  
+
 .section-title h3 {
     color: #000;
     text-align: center;
@@ -191,7 +194,8 @@
     font-size: 13px;
     font-style: normal;
     font-weight: 400;
-    line-height: 130%; /* 16.9px */
+    line-height: 130%;
+    /* 16.9px */
     text-decoration-line: line-through;
 }
 
@@ -246,6 +250,7 @@
     text-align: center;
     font: var(--body-xxlarge-semibold);
 }
+
 /* STATUS LIST */
 .status-list {
     display: flex;
@@ -414,7 +419,8 @@
     font: var(--body-medium);
     color: #000;
 }
-.payment-row.subtotal .value {
+
+.payment-row.subtotal .value-payment {
     font: var(--body-semibold);
     color: var(--green-500);
 }
@@ -423,7 +429,8 @@
     font: var(--body-medium);
     color: #000;
 }
-.payment-row.discount .value {
+
+.payment-row.discount .value-payment {
     font: var(--body-semibold);
     color: var(--red-500);
 }
@@ -432,17 +439,18 @@
     font: var(--body-medium);
     color: #000;
 }
-.payment-row.promo .value {
+
+.payment-row.promo .value-payment {
     font: var(--body-semibold);
     color: #000;
 }
 
-.payment-row.shipping .label {
+.payment-row.shippingfee .label {
     font: var(--body-medium);
     color: #000;
 }
 
-.payment-row.shipping .value {
+.payment-row.shippingfee .value-payment {
     font: var(--body-semibold);
     color: #000;
 }
@@ -462,7 +470,7 @@
     color: #000;
 }
 
-.payment-total .value {
+.payment-total .value-payment {
     font: var(--body-semibold);
     color: var(--green-500);
 }

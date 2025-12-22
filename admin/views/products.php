@@ -112,8 +112,8 @@ $sql = "
         c.CategoryID,
         c.CategoryName,
         
-        -- Lấy thumbnail từ SKU đầu tiên
-        (SELECT s1.Image FROM SKU s1 WHERE s1.ProductID = p.ProductID LIMIT 1) AS Thumbnail,
+        -- Lấy thumbnail từ PRODUCT (không còn từ SKU)
+        p.Image AS Thumbnail,
         
         -- Tổng tồn kho từ bảng INVENTORY (qua SKU)
         COALESCE((

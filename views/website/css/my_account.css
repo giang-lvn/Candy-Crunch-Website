@@ -943,8 +943,11 @@ body {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 999;
+    z-index: 9999;
+    /* Tăng z-index để nằm trên header */
     justify-content: center;
+    align-items: center;
+    /* Căn giữa theo chiều dọc */
     animation: fadeIn 0.3s ease;
 }
 
@@ -992,6 +995,10 @@ body {
     animation: slideUp 0.3s ease;
     max-height: 90vh;
     overflow-y: auto;
+    margin: auto;
+    /* Đảm bảo căn giữa */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    /* Thêm shadow đẹp hơn */
 }
 
 .edit-my-profile-wrapper {

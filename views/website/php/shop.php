@@ -247,10 +247,11 @@ $file = basename($path);
               <span class="sort-label">Sort by:</span>
               <div class="sort-select-wrapper">
               <select class="sort-select">
-                <option>Waiting payment</option>
-                <option>Newest</option>
-                <option>Price: Low to High</option>
-                <option>Price: High to Low</option>
+                <option value="name">Name A-Z</option>
+                <option value="newest">Newest</option>
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+                <option value="rating">Rating</option>
               </select>
 
               <span class="dropdown-arrow">

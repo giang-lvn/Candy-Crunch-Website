@@ -9,17 +9,17 @@ class MA_LoginModel {
     }
 
     /**
-     * Xác thực đăng nhập - Đơn giản, không phức tạp
+     * Xác thực đăng nhập - Kiểm tra trạng thái tài khoản
      * @param string $email
      * @param string $password
-     * @return array|false Trả về account nếu thành công, false nếu thất bại
+     * @return array Trả về array với status và data
      */
     public function authenticate($email, $password) {
         try {
-            // 1. Lấy account từ email
+            // 1. Lấy account từ email (không lọc theo status)
             $sql = "SELECT AccountID, Email, Password, AccountStatus 
                     FROM ACCOUNT 
-                    WHERE Email = :email AND AccountStatus = 'Active'";
+                    WHERE Email = :email";
             
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':email', $email);
@@ -29,21 +29,36 @@ class MA_LoginModel {
             
             // 2. Nếu không tìm thấy account
             if (!$account) {
-                return false;
+                return ['status' => 'not_found', 'account' => null];
             }
             
-            // 3. Kiểm tra password (đã được hash trong sign up)
-            // password_verify() sẽ so sánh password người dùng nhập với hash trong database
-            if (password_verify($password, $account['Password'])) {
-                return $account;
+            // 3. Kiểm tra password trước
+            if (!password_verify($password, $account['Password'])) {
+                return ['status' => 'wrong_password', 'account' => null];
             }
             
-            return false;
+            // 4. Kiểm tra trạng thái tài khoản
+            $accountStatus = $account['AccountStatus'];
+            
+            if ($accountStatus === 'Inactive') {
+                return ['status' => 'inactive', 'account' => null];
+            }
+            
+            if ($accountStatus === 'Banned') {
+                return ['status' => 'banned', 'account' => null];
+            }
+            
+            if ($accountStatus === 'Active') {
+                return ['status' => 'success', 'account' => $account];
+            }
+            
+            // Trạng thái không xác định
+            return ['status' => 'unknown', 'account' => null];
             
         } catch (PDOException $e) {
             // Ghi log lỗi
             error_log("Login authentication error: " . $e->getMessage());
-            return false;
+            return ['status' => 'error', 'account' => null];
         }
     }
 

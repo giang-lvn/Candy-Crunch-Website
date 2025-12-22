@@ -3,6 +3,22 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Fallback: Nếu user đã đăng nhập nhưng user_data chưa có, load lại từ database
+if (!isset($_SESSION['user_data']) && isset($_SESSION['AccountID'])) {
+    require_once __DIR__ . '/../../../models/db.php';
+    require_once __DIR__ . '/../../../models/website/account_model.php';
+    
+    global $db;
+    $accountModel = new AccountModel($db);
+    $fullCustomerData = $accountModel->getCustomerByAccountId($_SESSION['AccountID']);
+    
+    if ($fullCustomerData) {
+        $_SESSION['user_data'] = $fullCustomerData;
+        $_SESSION['user_addresses'] = $accountModel->getAddresses($fullCustomerData['CustomerID']);
+        $_SESSION['user_banking'] = $accountModel->getBankingInfo($fullCustomerData['CustomerID']);
+    }
+}
+
 $customer  = $_SESSION['user_data'] ?? null;
 $addresses = $_SESSION['user_addresses'] ?? [];
 $banking   = $_SESSION['user_banking'] ?? [];
@@ -203,7 +219,12 @@ include '../../../partials/header.php';
                             <div class="frame-group">
                                 <?php if (!empty($addresses)): ?>
                                     <?php foreach ($addresses as $address): ?>
-                                        <div class="frame-container address-item" data-address-id="<?= $address['AddressID'] ?>">
+                                        <div class="frame-container address-item" 
+                                             data-address-id="<?= $address['AddressID'] ?>"
+                                             data-phone="<?= htmlspecialchars($address['Phone'] ?? '') ?>"
+                                             data-address="<?= htmlspecialchars($address['Address'] ?? '') ?>"
+                                             data-city="<?= htmlspecialchars($address['City'] ?? '') ?>"
+                                             data-country="<?= htmlspecialchars($address['Country'] ?? '') ?>">
                                             <div class="frame-div">
                                                 <div class="frame-parent5">
                                                     <div class="john-doe-wrapper">
@@ -217,7 +238,7 @@ include '../../../partials/header.php';
                                                 <?php endif; ?>
                                             </div>
                                             <div class="sunset-boulevard-los-angeles-wrapper">
-                                                <div class="gender ship-address">
+                                                <div class="gender ship-address" data-phone="<?= htmlspecialchars($address['Phone'] ?? '') ?>">
                                                     <?php 
                                                         $addr = array_filter([$address['Address']??'', $address['City']??'', $address['Country']??'']);
                                                         echo htmlspecialchars(implode(', ', $addr) ?: '-');
