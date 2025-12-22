@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // MỞ CART
     const openCartBtn = document.getElementById('openCartBtn');
     const cartOverlay = document.getElementById('cart-overlay');
-    
+
     if (openCartBtn && cartOverlay) {
         openCartBtn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -54,7 +54,7 @@ function bindCartEvents() {
         });
     });
 
-    document.querySelectorAll('.remove-product').forEach(btn => {
+    document.querySelectorAll('.product-item .remove-product').forEach(btn => {
         btn.addEventListener('click', () => {
             removeCartItem(btn.dataset.skuid, btn);
         });
@@ -75,16 +75,16 @@ function updateQuantity(skuid, action) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ skuid, action })
     })
-    .then(res => res.json())
-    .then(data => {
-        if (!data.success) return;
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) return;
 
-        if (data.cartEmpty) {
-            renderEmptyCart();
-        } else {
-            updateCartUI(data);
-        }
-    });
+            if (data.cartEmpty) {
+                renderEmptyCart();
+            } else {
+                updateCartUI(data);
+            }
+        });
 }
 
 
@@ -193,22 +193,22 @@ function formatMoney(value) {
 }
 
 function addToCartFromUpsell(skuid) {
-    fetch('/cart/handle-add-to-cart', {  
+    fetch('/cart/handle-add-to-cart', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ skuid, quantity: 1 })
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            alert('Product added to cart!');
-            location.reload();
-        } else {
-            alert(data.message || 'Failed to add product');
-        }
-    })
-    .catch(err => {
-        console.error(err);
-        alert('An error occurred');
-    });
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert('Product added to cart!');
+                location.reload();
+            } else {
+                alert(data.message || 'Failed to add product');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('An error occurred');
+        });
 }
