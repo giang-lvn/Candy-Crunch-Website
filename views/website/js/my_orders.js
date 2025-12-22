@@ -94,7 +94,7 @@ function renderOrders() {
             <header class="header2">
                 <div>
                     <div class="order-id">Order ID</div>
-                    <b>${order.id}</b>
+                    <b><a href="/Candy-Crunch-Website/index.php?controller=OrderDetail&action=index&id=${order.id}" style="text-decoration: none; color: inherit; cursor: pointer;">${order.id}</a></b>
                 </div>
                 <div>
                     <span class="status ${order.status}">${order.statusText}</span>
@@ -103,33 +103,14 @@ function renderOrders() {
             </header>
 
             <div class="details">
-                <div class="product">
-                    <img class="product-img" src="../img/pr2.svg">
-
-                    <div class="product-info">
-                        <div class="fruit-filled-candy">${order.product}</div>
-
-                        <div class="product-meta">
-                            <div class="unit-related-product">
-                                <div class="g-wrapper">
-                                    <span class="g">${order.weight}</span>
-                                </div>
-                            </div>
-                            <div class="quantity-text">
-                                Quantity: <b>${order.quantity}</b>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="price">
-                        <div class="new">${order.total}</div>
-                    </div>
-                </div>
+                ${renderProductsHtml(order.products)}
             </div>
 
             <footer class="order-action">
                 <div class="order-action-left">
-                    ${renderButtons(order.buttons)}
+                <div class="order-action-left">
+                    ${renderButtons(order.buttons, order.id)}
+                </div>
                 </div>
                 <div class="order-action-right">
                     <span class="total-label">Total:</span>
@@ -143,6 +124,45 @@ function renderOrders() {
     if (totalOrders) {
         totalOrders.textContent = `${filteredOrders.length} Orders`;
     }
+
+    // Attach event listeners to buttons
+    attachButtonListeners();
+}
+
+function renderProductsHtml(products) {
+    let html = '';
+    products.forEach((p, index) => {
+        html += `
+            <div class="product">
+                <img class="product-img" src="${p.image || '../img/pr2.svg'}" onerror="this.src='../img/pr2.svg'">
+
+                <div class="product-info">
+                    <div class="fruit-filled-candy">${p.name}</div>
+
+                    <div class="product-meta">
+                        <div class="unit-related-product">
+                            <div class="g-wrapper">
+                                <span class="g">${p.weight}</span>
+                            </div>
+                        </div>
+                        <div class="quantity-text">
+                            Quantity: <b>${p.quantity}</b>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="price">
+                    <div class="new">${p.price}</div>
+                </div>
+            </div>
+        `;
+
+        // Add separator if not the last item
+        if (index < products.length - 1) {
+            html += '<div style="margin: 10px 0; border-bottom: 1px solid #eee;"></div>';
+        }
+    });
+    return html;
 }
 
 /*********************************
@@ -159,11 +179,138 @@ const buttonClassMap = {
     'Write Review': 'btn-primary-outline-small'
 };
 
-function renderButtons(buttons = []) {
+function renderButtons(buttons = [], orderId) {
     return buttons.map(text => {
         const className = buttonClassMap[text] || 'btn-outline';
-        return `<button class="${className}">${text}</button>`;
+        return `<button class="${className}" data-action="${text}" data-id="${orderId}">${text}</button>`;
     }).join('');
+}
+
+function attachButtonListeners() {
+    const orderList = document.getElementById('orderList');
+    if (!orderList) return;
+
+    const buttons = orderList.querySelectorAll('button[data-action]');
+    buttons.forEach(btn => {
+        btn.addEventListener('click', e => {
+            e.preventDefault();
+            const action = btn.dataset.action;
+            const orderId = btn.dataset.id;
+            handleOrderAction(action, orderId);
+        });
+    });
+}
+
+function handleOrderAction(action, orderId) {
+    console.log('Action:', action, 'OrderId:', orderId);
+    switch (action) {
+        case 'Cancel':
+            showCancelPopup(orderId);
+            break;
+        case 'Contact':
+            console.log('Contact support for order:', orderId);
+            break;
+        case 'Pay Now':
+            console.log('Pay now for order:', orderId);
+            break;
+        default:
+            console.warn('Unknown action:', action);
+    }
+}
+
+/*********************************
+ * CANCEL POPUP LOGIC
+ *********************************/
+let cancelOverlay, cancelPopupClose, closeContactBtn, dropdownTrigger, dropdownMenu, dropdownText, submitCancelBtn, cancelMessage;
+
+function initCancelPopup() {
+    cancelOverlay = document.getElementById("cancel-order-overlay");
+    cancelPopupClose = document.getElementById("cancelPopupClose");
+    closeContactBtn = document.getElementById("closeContactBtn");
+    dropdownTrigger = document.getElementById('dropdownTrigger');
+    dropdownMenu = document.getElementById('dropdownMenu');
+    dropdownText = dropdownTrigger ? dropdownTrigger.querySelector('.dropdown-text') : null;
+    submitCancelBtn = document.getElementById('submitCancelOrder');
+    cancelMessage = document.getElementById('cancelMessage');
+
+    if (cancelPopupClose) cancelPopupClose.addEventListener("click", hideCancelPopup);
+    if (closeContactBtn) closeContactBtn.addEventListener("click", hideCancelPopup);
+
+    if (cancelOverlay) {
+        cancelOverlay.addEventListener("click", (e) => {
+            if (e.target === cancelOverlay) hideCancelPopup();
+        });
+    }
+
+    if (dropdownTrigger && dropdownMenu) {
+        dropdownTrigger.addEventListener('click', () => {
+            dropdownMenu.classList.toggle('show');
+        });
+
+        dropdownMenu.querySelectorAll('.dropdown-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const value = option.dataset.value;
+                if (dropdownText) dropdownText.textContent = value;
+                dropdownTrigger.dataset.value = value;
+                dropdownMenu.classList.remove('show');
+            });
+        });
+    }
+
+    if (submitCancelBtn) {
+        submitCancelBtn.addEventListener('click', submitCancelOrder);
+    }
+}
+
+function showCancelPopup(orderId) {
+    if (!cancelOverlay) initCancelPopup();
+
+    document.getElementById('cancelOrderID').value = orderId;
+    if (dropdownText) dropdownText.textContent = 'Select a return reason';
+    if (dropdownTrigger) delete dropdownTrigger.dataset.value;
+    if (cancelMessage) cancelMessage.textContent = '';
+    if (cancelOverlay) cancelOverlay.classList.remove("hidden");
+}
+
+function hideCancelPopup() {
+    if (cancelOverlay) cancelOverlay.classList.add("hidden");
+}
+
+function submitCancelOrder() {
+    const orderID = document.getElementById('cancelOrderID').value;
+    const reason = dropdownTrigger ? dropdownTrigger.dataset.value : '';
+
+    if (!reason) {
+        if (cancelMessage) {
+            cancelMessage.style.color = 'red';
+            cancelMessage.textContent = 'Please select a reason.';
+        }
+        return;
+    }
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/Candy-Crunch-Website/controllers/website/CancelController.php', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            try {
+                const res = JSON.parse(xhr.responseText);
+                if (cancelMessage) {
+                    cancelMessage.style.color = res.success ? 'green' : 'red';
+                    cancelMessage.textContent = res.message;
+                }
+                if (res.success) {
+                    setTimeout(() => {
+                        hideCancelPopup();
+                        loadOrders(); // Reload orders to update status
+                    }, 1500);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    };
+    xhr.send('order_id=' + encodeURIComponent(orderID) + '&reason=' + encodeURIComponent(reason));
 }
 
 /*********************************

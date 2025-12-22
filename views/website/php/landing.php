@@ -12,7 +12,7 @@ $file = basename($path);
 */
 
 // Nếu truy cập trực tiếp folder hoặc index.php → landing
-if ($file === '' || $file === 'landing.php') {
+if ($file === '' || $file === 'landing.php' || $file === 'index.php') {
     // Không require gì cả
     // Chạy HTML landing phía dưới
 } else {

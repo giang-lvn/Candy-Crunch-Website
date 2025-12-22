@@ -47,4 +47,10 @@ class CancelController {
         }
     }
 }
+
+// Execute if requested
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $controller = new CancelController();
+    $controller->submitCancellationRequest();
+}
 ?>

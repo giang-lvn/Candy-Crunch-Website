@@ -3,7 +3,7 @@
  */
 
 // Khởi tạo khi DOM load xong
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     initOrderDetail();
 });
 
@@ -58,6 +58,21 @@ function initOrderDetail() {
     if (btnReview) {
         btnReview.addEventListener('click', handleWriteReview);
     }
+
+    // Close Rating Popup
+    const closeRatingBtn = document.getElementById('closeRatingPopup');
+    if (closeRatingBtn) {
+        closeRatingBtn.addEventListener('click', function () {
+            const overlay = document.getElementById('rating-overlay');
+            if (overlay) overlay.classList.add('hidden');
+        });
+    }
+
+    // Submit Rating
+    const submitRatingBtn = document.getElementById('submitRating');
+    if (submitRatingBtn) {
+        submitRatingBtn.addEventListener('click', handleSubmitRating);
+    }
 }
 
 /**
@@ -79,30 +94,30 @@ function handleCancelOrder(e) {
     }
 
     // Gửi AJAX request
-    fetch('/index.php?controller=OrderDetail&action=cancel', {
+    fetch('/Candy-Crunch-Website/index.php?controller=OrderDetail&action=cancel', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: `order_id=${orderId}`
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showNotification(data.message, 'success');
-            
-            // Reload trang sau 1.5s
-            setTimeout(() => {
-                window.location.reload();
-            }, 1500);
-        } else {
-            showNotification(data.message, 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNotification('An error occurred. Please try again.', 'error');
-    });
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message, 'success');
+
+                // Reload trang sau 1.5s
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                showNotification(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('An error occurred. Please try again.', 'error');
+        });
 }
 
 /**
@@ -124,30 +139,30 @@ function handleConfirmReceived(e) {
     }
 
     // Gửi AJAX request
-    fetch('/index.php?controller=OrderDetail&action=confirmReceived', {
+    fetch('/Candy-Crunch-Website/index.php?controller=OrderDetail&action=confirmReceived', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: `order_id=${orderId}`
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showNotification(data.message, 'success');
-            
-            // Reload trang sau 1.5s
-            setTimeout(() => {
-                window.location.reload();
-            }, 1500);
-        } else {
-            showNotification(data.message, 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNotification('An error occurred. Please try again.', 'error');
-    });
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message, 'success');
+
+                // Reload trang sau 1.5s
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                showNotification(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('An error occurred. Please try again.', 'error');
+        });
 }
 
 /**
@@ -189,7 +204,7 @@ function handleBuyAgain(e) {
     showNotification('Adding products to cart...', 'info');
 
     // Chuyển hướng đến controller để thêm vào giỏ hàng
-    window.location.href = `/index.php?controller=OrderDetail&action=reOrder&id=${orderId}`;
+    window.location.href = `/Candy-Crunch-Website/index.php?controller=OrderDetail&action=reOrder&id=${orderId}`;
 }
 
 /**
@@ -206,7 +221,7 @@ function handlePayNow(e) {
     }
 
     // Chuyển hướng đến trang thanh toán
-    window.location.href = `/index.php?controller=OrderDetail&action=payNow&id=${orderId}`;
+    window.location.href = `/Candy-Crunch-Website/index.php?controller=OrderDetail&action=payNow&id=${orderId}`;
 }
 
 /**
@@ -223,7 +238,7 @@ function handleChangeMethod(e) {
     }
 
     // Chuyển hướng đến trang đổi phương thức thanh toán
-    window.location.href = `/index.php?controller=OrderDetail&action=changeMethod&id=${orderId}`;
+    window.location.href = `/Candy-Crunch-Website/index.php?controller=OrderDetail&action=changeMethod&id=${orderId}`;
 }
 
 /**
@@ -240,11 +255,11 @@ function handleReturn(e) {
     }
 
     // Chuyển hướng đến trang Return
-    window.location.href = `/index.php?controller=return&action=index&order_id=${orderId}`;
+    window.location.href = `/Candy-Crunch-Website/views/website/php/return.php?order_id=${orderId}`;
 }
 
 /**
- * Xử lý button Write Review
+ * Xử lý button Write Review - Hiển thị popup rating
  */
 function handleWriteReview(e) {
     e.preventDefault();
@@ -256,8 +271,57 @@ function handleWriteReview(e) {
         return;
     }
 
-    // Chuyển hướng đến trang Review
-    window.location.href = `/index.php?controller=review&action=write&order_id=${orderId}`;
+    // Show rating popup embedded in order_detail.php
+    const ratingOverlay = document.getElementById('rating-overlay');
+    if (ratingOverlay) {
+        ratingOverlay.classList.remove('hidden');
+        // Set order ID for the rating form
+        const orderIdInput = document.getElementById('rating-order-id');
+        if (orderIdInput) {
+            orderIdInput.value = orderId;
+        }
+    } else {
+        // Fallback: redirect to rating page if popup not found
+        window.location.href = `/Candy-Crunch-Website/views/website/php/rating.php?order_id=${orderId}`;
+    }
+}
+
+/**
+ * Xử lý submit rating
+ */
+function handleSubmitRating() {
+    const skuId = document.getElementById('rating-product-select')?.value;
+    const starRating = document.querySelector('.star-rating')?.dataset.rating || 0;
+    const reviewText = document.getElementById('rating-review-text')?.value || '';
+    const orderId = document.getElementById('rating-order-id')?.value;
+
+    if (!skuId || starRating == 0) {
+        showNotification('Please select a product and provide a rating.', 'error');
+        return;
+    }
+
+    fetch('/Candy-Crunch-Website/controllers/website/RatingController.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `sku_id=${skuId}&rating=${starRating}&review=${encodeURIComponent(reviewText)}&order_id=${orderId}`
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message || 'Review submitted successfully!', 'success');
+                // Close popup
+                const overlay = document.getElementById('rating-overlay');
+                if (overlay) overlay.classList.add('hidden');
+            } else {
+                showNotification(data.message || 'Failed to submit review.', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('An error occurred while submitting your review.', 'error');
+        });
 }
 
 /**
@@ -277,7 +341,7 @@ function getOrderIdFromPage() {
 function showNotification(message, type = 'info') {
     // Kiểm tra xem đã có notification container chưa
     let container = document.querySelector('.notification-container');
-    
+
     if (!container) {
         container = document.createElement('div');
         container.className = 'notification-container';
@@ -318,7 +382,7 @@ function showNotification(message, type = 'info') {
  */
 function closeNotification(notification) {
     notification.classList.remove('show');
-    
+
     setTimeout(() => {
         notification.remove();
     }, 300);
@@ -343,7 +407,7 @@ function formatDate(dateString) {
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
-    
+
     return `${day}-${month}-${year}`;
 }
 
@@ -356,6 +420,6 @@ function formatTime(dateString) {
     const date = new Date(dateString);
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
-    
+
     return `${hours}:${minutes}`;
 }

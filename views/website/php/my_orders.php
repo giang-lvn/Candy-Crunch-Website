@@ -21,6 +21,7 @@ require_once('../../../partials/header.php');
     <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/main.css">
     <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/my_account.css">
     <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/my_orders.css">
+    <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/cancel.css">
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Modak&family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
@@ -54,7 +55,7 @@ require_once('../../../partials/header.php');
             <!-- SIDEBAR -->
             <div class="card-account">
                 <div class="user-card">
-                    <img class="avatar-icon" src="<?php echo $ROOT; ?>/views/website/img/ot-longvo.png" alt="avatar">
+                    <img class="avatar-icon" src="<?php echo !empty($customer['Avatar']) ? htmlspecialchars($customer['Avatar']) : $ROOT . '/views/website/img/ot-longvo.png'; ?>" alt="avatar">
                     <div class="user-name">
                         <div class="john-doe">
                             <?php
@@ -139,6 +140,40 @@ require_once('../../../partials/header.php');
 
     <!-- JS -->
     <script src="<?php echo $ROOT; ?>/views/website/js/my_orders.js"></script>
+
+    <!-- Popup Cancel Order -->
+    <div id="cancel-order-overlay" class="cancel-overlay hidden">
+        <div class="cancel-popup">
+            <button class="close-btn" id="cancelPopupClose">&times;</button>
+            <h2 class="cancel-title">Cancel Order</h2>
+            <p class="cancel-desc">
+                Please let Candy Crunch know the reason for canceling your order.
+                Paid orders will be refunded according to our refund policy.
+            </p>
+            <div class="input" data-type="dropdown" data-size="medium">
+                <label class="input-label">Return reason</label>
+                <div class="input-field">
+                    <div class="dropdown-trigger" id="dropdownTrigger">
+                        <span class="dropdown-text">Select a return reason</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="dropdown-arrow">
+                        <path d="M18 9L12 15L6 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <button class="dropdown-option" data-value="Changed my mind">Changed my mind</button>
+                        <button class="dropdown-option" data-value="Ordered wrong item">Ordered wrong item</button>
+                        <button class="dropdown-option" data-value="Found a better price">Found a better price</button>
+                        <button class="dropdown-option" data-value="Other">Other</button>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="cancelOrderID" value="">
+            <div class="return-submit">
+                <button class="btn-primary-medium" id="submitCancelOrder">Send Request</button>
+            </div>
+            <p id="cancelMessage" style="text-align: center; margin-top: 10px;"></p>
+        </div>
+    </div>
 </body>
 </html>
 <?php

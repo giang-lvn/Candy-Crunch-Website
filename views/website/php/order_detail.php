@@ -1,4 +1,7 @@
-<?php include '../../../partials/header.php'; ?>
+<?php 
+$ROOT = '/Candy-Crunch-Website';
+include __DIR__ . '/../../../partials/header.php'; 
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -13,24 +16,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Modak&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- CSS -->
-    <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/order_detail.css">
-    <link rel="stylesheet" href="../css/notification.css">
+    <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/main.css">
+    <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/order_detail.css">
+    <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/notification.css">
 </head>
 <body>
     <!-- BREADCRUMB -->
     <div class="breadcrumb-container">
         <div class="breadcrumb">
-            <a href="index.php" class="breadcrumb-item home-icon">
-                <img src="../img/home.svg">
+            <a href="<?php echo $ROOT; ?>/index.php" class="breadcrumb-item home-icon">
+                <img src="<?php echo $ROOT; ?>/views/website/img/home.svg">
                 <i class="fas fa-home"></i>
             </a>
             <span class="separator"></span>
-            <a href="my_account.php" class="breadcrumb-item">
+            <a href="<?php echo $ROOT; ?>/views/website/php/my_account.php" class="breadcrumb-item">
                 My Account
             </a>
             <span class="separator"></span>
-            <a href="my_orders.php" class="breadcrumb-item">
+            <a href="<?php echo $ROOT; ?>/views/website/php/my_orders.php" class="breadcrumb-item">
                 My Orders
             </a>
             <span class="separator"></span>
@@ -276,10 +279,58 @@
 
     </div>
 
+    <!-- Rating Popup -->
+    <div id="rating-overlay" class="overlay hidden">
+        <div class="rating-popup">
+            <button class="close-btn" id="closeRatingPopup">&times;</button>
+            <h2 class="rating-title">Rating</h2>
+            <p class="rating-desc">Share your thoughts and help Candy Crunch get even sweeter!</p>
+            
+            <input type="hidden" id="rating-order-id" value="">
+            
+            <div class="input" data-size="medium">
+                <label class="input-label">Select Product</label>
+                <div class="input-field">
+                    <select id="rating-product-select">
+                        <?php foreach ($data['products'] as $product): ?>
+                            <option value="<?php echo htmlspecialchars($product['SKUID']); ?>">
+                                <?php echo htmlspecialchars($product['ProductName']); ?> - <?php echo htmlspecialchars($product['Attribute']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input">
+                <label class="input-label">Your Rating</label>
+                <div class="star-rating" data-rating="0">
+                    <span class="star" data-value="1">&#9733;</span>
+                    <span class="star" data-value="2">&#9733;</span>
+                    <span class="star" data-value="3">&#9733;</span>
+                    <span class="star" data-value="4">&#9733;</span>
+                    <span class="star" data-value="5">&#9733;</span>
+                </div>
+            </div>
+
+            <div class="input" data-optional="true" data-size="medium">
+                <label class="input-label">Product Review</label>
+                <div class="input-field">
+                    <textarea id="rating-review-text" placeholder="Provide a detailed review..." rows="3"></textarea>
+                </div>
+            </div>
+
+            <div class="return-submit">
+                <button class="btn-primary-medium" id="submitRating">Submit</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
-    <script src="../js/main.js"></script>
-    <script src="../js/order_detail.js"></script>
+    <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/rating.css">
+    <script src="<?php echo $ROOT; ?>/views/website/js/main.js"></script>
+    <script src="<?php echo $ROOT; ?>/views/website/js/order_detail.js"></script>
+    <script src="<?php echo $ROOT; ?>/views/website/js/rating.js"></script>
 </body>
 </html>
 
-<?php include '../../../partials/footer_kovid.php'; ?>
+<?php include __DIR__ . '/../../../partials/footer_kovid.php'; ?>

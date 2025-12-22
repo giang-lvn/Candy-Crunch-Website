@@ -94,6 +94,36 @@ switch ($controller) {
         }
         break;
 
+    // ========== ORDER DETAIL ==========
+    case 'OrderDetail':
+        require_once 'controllers/website/OrderDetailController.php';
+        $odController = new OrderDetailController();
+
+        switch ($action) {
+            case 'index':
+                $odController->index();
+                break;
+            case 'cancel':
+                $odController->cancel();
+                break;
+            case 'confirmReceived':
+                $odController->confirmReceived();
+                break;
+            case 'reOrder':
+                $odController->reOrder();
+                break;
+            case 'payNow':
+                $odController->payNow();
+                break;
+            case 'changeMethod':
+                $odController->changeMethod();
+                break;
+            default:
+                $odController->index();
+                break;
+        }
+        break;
+
     // ========== DEFAULT (404) ==========
     default:
         http_response_code(404);

@@ -64,6 +64,7 @@ class OrderModel {
             ) AS TotalPrice,
 
             p.ProductName,
+            p.Image,
             s.Attribute
 
         FROM ORDERS o
@@ -76,7 +77,7 @@ class OrderModel {
 
         WHERE o.CustomerID = ?
 
-        GROUP BY o.OrderID, v.VoucherID, p.ProductName, s.Attribute
+        GROUP BY o.OrderID, v.VoucherID, p.ProductName, p.Image, s.Attribute
         ORDER BY o.OrderDate DESC
         ";
 

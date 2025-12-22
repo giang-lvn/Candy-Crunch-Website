@@ -29,7 +29,9 @@ class OrderDetailModel
                 o.ShippingMethod,
                 o.ShippingFee,
                 o.OrderStatus,
-                v.DiscountValue as VoucherDiscount
+                v.DiscountPercent,
+                v.DiscountAmount,
+                v.MinOrder
             FROM ORDERS o
             LEFT JOIN VOUCHER v ON o.VoucherID = v.VoucherID
             WHERE o.OrderID = ?
@@ -148,10 +150,10 @@ class OrderDetailModel
      * Tính toán tổng tiền đơn hàng (Summary)
      * @param array $products - Danh sách sản phẩm từ getOrderProducts()
      * @param float $shippingFee
-     * @param float $voucherDiscount
+     * @param array $voucherInfo - [DiscountPercent, DiscountAmount, MinOrder]
      * @return array [subtotal, discount, promo, shipping_fee, total]
      */
-    public function calculateOrderSummary($products, $shippingFee, $voucherDiscount)
+    public function calculateOrderSummary($products, $shippingFee, $voucherInfo = [])
     {
         $subtotal = 0;  // Tổng theo OriginalPrice
         $discount = 0;  // Tổng giảm giá sản phẩm (OriginalPrice - PromotionPrice)
@@ -170,21 +172,45 @@ class OrderDetailModel
             }
         }
 
-        // Promo từ voucher
-        $promo = $voucherDiscount ?? 0;
+        // Tính Voucher Discount
+        $promo = 0;
+        $orderTotalForVoucher = 0; 
+        // Note: Voucher condition usually based on PromotionPrice total (Actual accumulated payment before voucher)
+        // Let's calculate the "Subtotal after Product Discount"
+        foreach ($products as $product) {
+             $price = $product['PromotionPrice'] ?? $product['OriginalPrice'];
+             $orderTotalForVoucher += $price * $product['OrderQuantity'];
+        }
+
+        if (!empty($voucherInfo)) {
+            $minOrder = $voucherInfo['MinOrder'] ?? 0;
+            if ($orderTotalForVoucher >= $minOrder) {
+                if (!empty($voucherInfo['DiscountPercent'])) {
+                    $promo = $orderTotalForVoucher * ($voucherInfo['DiscountPercent'] / 100);
+                } elseif (!empty($voucherInfo['DiscountAmount'])) {
+                    $promo = $voucherInfo['DiscountAmount'];
+                }
+            }
+        }
 
         // Shipping fee
         $shipping = $shippingFee ?? 0;
 
         // Tổng tiền = Subtotal - Discount - Promo + Shipping
-        $total = $subtotal - $discount - $promo + $shipping;
+        // Correct formula based on previous logic:
+        // Total = (Sum of PromotionPrice) - Voucher + Shipping
+        // But logic here was: Total = Subtotal (Original) - ProductDiscount - Promo + Shipping
+        // Subtotal (Original) - ProductDiscount = Sum of PromotionPrice.
+        // So it matches.
+        
+        $total = ($subtotal - $discount) - $promo + $shipping;
 
         return [
             'subtotal' => $subtotal,
             'discount' => $discount,
             'promo' => $promo,
             'shipping_fee' => $shipping,
-            'total' => $total
+            'total' => max(0, $total)
         ];
     }
 

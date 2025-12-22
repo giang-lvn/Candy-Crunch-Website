@@ -61,7 +61,7 @@ require_once('../../../partials/header.php');
         <div class="card-account">
             <div class="user-card">
                 <img class="avatar-icon"
-                     src="<?= $ROOT ?>/views/website/img/ot-longvo.png"
+                     src="<?php echo !empty($customer['Avatar']) ? htmlspecialchars($customer['Avatar']) : $ROOT . '/views/website/img/ot-longvo.png'; ?>"
                      alt="avatar">
 
                 <div class="user-name">

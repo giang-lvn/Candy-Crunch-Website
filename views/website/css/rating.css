@@ -23,7 +23,7 @@
     align-items: center;
     justify-content: center;
 }
-  
+
 /* Ẩn popup 
 .hidden {
     display: none;
@@ -41,9 +41,9 @@
     background: var(--body-background, #F8F5EE);
     display: flex;
     flex-direction: column;
-    gap: 20px;   
+    gap: 20px;
     align-items: center;
-    z-index: 9999; 
+    z-index: 9999;
 }
 
 /* Close button */
@@ -98,13 +98,15 @@
 
 .star {
     font-size: 50px;
-    color: #d1d5db; /* sao xám */
+    color: #d1d5db;
+    /* sao xám */
     transition: color 0.2s ease;
 }
 
 /* Sao được chọn */
 .star.active {
-    color: #fbbf24; /* vàng */
+    color: #fbbf24;
+    /* vàng */
 }
 
 /* Hover */
@@ -113,27 +115,27 @@
 }
 
 .star:hover,
-.star:hover ~ .star {
+.star:hover~.star {
     color: #d1d5db;
 }
 
 .star-rating .star:hover,
-.star-rating .star:hover ~ .star {
+.star-rating .star:hover~.star {
     color: #d1d5db;
 }
 
 .star-rating .star:hover,
-.star-rating .star:hover ~ .star {
+.star-rating .star:hover~.star {
     color: #d1d5db;
 }
 
 .star-rating .star:hover,
-.star-rating .star:hover ~ .star {
+.star-rating .star:hover~.star {
     color: #d1d5db;
 }
 
 .star-rating .star:hover,
-.star-rating .star:hover ~ .star {
+.star-rating .star:hover~.star {
     color: #d1d5db;
 }
 
@@ -141,4 +143,49 @@
     .rating-popup {
         width: calc(100%/3*2);
     }
+}
+
+/* Form Element Styles */
+.rating-popup select,
+.rating-popup textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--gray-300, #d1d5db);
+    border-radius: 8px;
+    background: #fff;
+    font: var(--body-regular);
+    color: #000;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.rating-popup select:focus,
+.rating-popup textarea:focus {
+    border-color: var(--green-500, #0d8f78);
+    box-shadow: 0 0 0 3px rgba(13, 143, 120, 0.15);
+}
+
+.rating-popup select {
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 12px center;
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    padding-right: 40px;
+}
+
+.rating-popup textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.rating-popup .input-field {
+    width: 100%;
+}
+
+.rating-popup .input {
+    width: 100%;
 }
