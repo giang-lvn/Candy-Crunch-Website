@@ -219,12 +219,7 @@ try {
                 
 
                 
-                <li class="nav-item mb-2">
-                    <a href="<?php echo BASE_URL; ?>index.php?action=reports" 
-                       class="nav-link text-white <?php echo $action == 'reports' ? 'active bg-white text-dark' : ''; ?>">
-                        <i class="bi bi-bar-chart me-2"></i> Báo cáo
-                    </a>
-                </li>
+
                 
                 <li class="nav-item mt-4">
                     <a href="<?php echo BASE_URL; ?>logout.php" class="nav-link text-danger">
@@ -260,8 +255,7 @@ try {
                         'vouchers' => 'Quản lý Voucher',
                         'add_voucher' => 'Thêm voucher mới',
                         'edit_voucher' => 'Chỉnh sửa voucher',
-                        'feedback' => 'Phản hồi',
-                        'reports' => 'Báo cáo doanh thu'
+                        'feedback' => 'Phản hồi'
                     ];
                     echo $titles[$action] ?? 'Dashboard';
                     ?>
