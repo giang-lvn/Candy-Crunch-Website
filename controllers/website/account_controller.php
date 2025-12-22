@@ -226,17 +226,90 @@ class AccountController
         ]);
     }
     
+    /**
+     * Upload avatar cho customer
+     */
+    public function uploadAvatar()
+    {
+        if (!isset($_SESSION['AccountID'])) {
+            $this->sendJSON(['success' => false, 'message' => 'Unauthorized']);
+        }
+        
+        $customer = $this->model->getCustomerByAccountId($_SESSION['AccountID']);
+        if (!$customer) {
+            $this->sendJSON(['success' => false, 'message' => 'Customer not found']);
+        }
+        
+        // Kiểm tra có file upload không
+        if (!isset($_FILES['avatar']) || $_FILES['avatar']['error'] !== UPLOAD_ERR_OK) {
+            $this->sendJSON(['success' => false, 'message' => 'No file uploaded or upload error']);
+        }
+        
+        $file = $_FILES['avatar'];
+        
+        // Validate file type
+        $allowedTypes = ['image/jpeg', 'image/png'];
+        if (!in_array($file['type'], $allowedTypes)) {
+            $this->sendJSON(['success' => false, 'message' => 'Only JPEG and PNG files are allowed']);
+        }
+        
+        // Validate file size (max 1MB)
+        if ($file['size'] > 1024 * 1024) {
+            $this->sendJSON(['success' => false, 'message' => 'File size must be less than 1MB']);
+        }
+        
+        // Tạo thư mục upload nếu chưa có
+        $uploadDir = __DIR__ . '/../../uploads/avatars/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+        
+        // Tạo tên file unique
+        $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $newFileName = $customer['CustomerID'] . '_' . time() . '.' . $extension;
+        $uploadPath = $uploadDir . $newFileName;
+        
+        // Di chuyển file
+        if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
+            // Đường dẫn để lưu vào DB (relative path)
+            $avatarUrl = '/Candy-Crunch-Website/uploads/avatars/' . $newFileName;
+            
+            // Cập nhật vào database
+            $success = $this->model->updateAvatar($customer['CustomerID'], $avatarUrl);
+            
+            if ($success) {
+                // Cập nhật session
+                $_SESSION['user_data']['Avatar'] = $avatarUrl;
+                
+                $this->sendJSON([
+                    'success' => true,
+                    'avatar' => $avatarUrl,
+                    'message' => 'Avatar uploaded successfully'
+                ]);
+            }
+        }
+        
+        $this->sendJSON(['success' => false, 'message' => 'Failed to upload avatar']);
+    }
+    
     private function saveAddress($mode) {
         if (!isset($_SESSION['AccountID'])) $this->sendJSON(['success'=>false,'message'=>'Unauthorized']);
         $customer = $this->model->getCustomerByAccountId($_SESSION['AccountID']);
         
         $data = [
-            'fullname' => $_POST['fullname'] ?? '',
-            'phone'    => $_POST['phone'] ?? '',
-            'address'  => $_POST['address'] ?? '',
-            'city'     => $_POST['city'] ?? '',
-            'country'  => $_POST['country'] ?? ''
+            'fullname'   => $_POST['fullname'] ?? '',
+            'phone'      => $_POST['phone'] ?? '',
+            'address'    => $_POST['address'] ?? '',
+            'city'       => $_POST['city'] ?? '',
+            'country'    => $_POST['country'] ?? '',
+            'alias'      => $_POST['alias'] ?? '',
+            'is_default' => $_POST['is_default'] ?? 'No'
         ];
+    
+        // Nếu set default, reset các địa chỉ khác
+        if ($data['is_default'] === 'Yes') {
+            $this->model->resetAllAddressDefault($customer['CustomerID']);
+        }
     
         if ($mode === 'edit') {
             $data['address_id'] = $_POST['address_id'] ?? '';
@@ -272,6 +345,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         case 'updateAddress':  $controller->updateAddress(); break;
         case 'deleteAddress':  $controller->deleteAddress(); break;
         case 'logout':         $controller->logout(); break;
+        case 'uploadAvatar':   $controller->uploadAvatar(); break;
         default:
             if (ob_get_length()) ob_clean();
             echo json_encode(['success' => false, 'message' => 'Invalid action']);

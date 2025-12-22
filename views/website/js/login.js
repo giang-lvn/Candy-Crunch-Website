@@ -1,5 +1,5 @@
-document.addEventListener('DOMContentLoaded', function() {
-    
+document.addEventListener('DOMContentLoaded', function () {
+
     // --- KHAI BÁO BIẾN ---
     const loginForm = document.getElementById('loginForm');
     const btnLogin = document.getElementById('btnLogin');
@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- 1. CHỨC NĂNG ẨN/HIỆN MẬT KHẨU ---
     if (togglePasswordBtn && passwordInput) {
-        togglePasswordBtn.addEventListener('click', function() {
+        togglePasswordBtn.addEventListener('click', function () {
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
 
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (passwordInput) {
         passwordInput.setAttribute('autocomplete', 'current-password');
     }
-    
+
     const emailInput = document.getElementById('login_input');
     if (emailInput) {
         emailInput.setAttribute('autocomplete', 'email');
@@ -32,9 +32,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- 3. XỬ LÝ ĐĂNG NHẬP ---
     if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
+        loginForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            
+
             console.log("=== LOGIN PROCESS STARTED ===");
 
             // Lấy dữ liệu
@@ -65,13 +65,13 @@ document.addEventListener('DOMContentLoaded', function() {
             // ĐƯỜNG DẪN CONTROLLER - THỬ NHIỀU CÁCH
             // Cách 1: Tương đối từ file hiện tại (views/website/js/)
             const controllerPath1 = '../../controllers/website/MA_LoginController.php';
-            
+
             // Cách 2: Tuyệt đối từ root
             const controllerPath2 = '/Candy-Crunch-Website/controllers/website/MA_LoginController.php';
-            
+
             // Cách 3: Full URL
             const controllerPath3 = window.location.origin + '/Candy-Crunch-Website/controllers/website/MA_LoginController.php';
-            
+
             // Chọn cách 2 trước (tuyệt đối)
             const controllerPath = controllerPath2;
             console.log("Controller path:", controllerPath);
@@ -88,79 +88,79 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify(formData),
                 signal: controller.signal
             })
-            .then(response => {
-                clearTimeout(timeoutId);
-                
-                console.log("Response status:", response.status, response.statusText);
-                console.log("Response URL:", response.url);
-                console.log("Response headers:");
-                for (let pair of response.headers.entries()) {
-                    console.log(pair[0] + ': ' + pair[1]);
-                }
+                .then(response => {
+                    clearTimeout(timeoutId);
 
-                // Kiểm tra content type
-                const contentType = response.headers.get("content-type");
-                console.log("Content-Type:", contentType);
-                
-                if (contentType && contentType.includes("application/json")) {
-                    return response.json();
-                } else {
-                    return response.text().then(text => {
-                        console.error("Raw response (non-JSON):", text);
-                        throw new Error("Server returned non-JSON: " + text.substring(0, 100));
-                    });
-                }
-            })
-            .then(data => {
-                console.log("Response data (parsed):", data);
-                
-                if (data && data.success) {
-                    // Đăng nhập thành công
-                    const fullname = data.data && data.data.fullname ? data.data.fullname : 'User';
-                    alert(`🎉 Login successful! Welcome back, ${fullname}.`);
-                    
-                    // Chuyển hướng
-                    setTimeout(() => {
-                        window.location.href = 'index.php';
-                    }, 500);
-                } else {
-                    // Đăng nhập thất bại
-                    const errorMsg = data && data.message ? data.message : 'Unknown error';
-                    console.error("Login failed with message:", errorMsg);
-                    alert('⛔ ' + errorMsg);
-                    
+                    console.log("Response status:", response.status, response.statusText);
+                    console.log("Response URL:", response.url);
+                    console.log("Response headers:");
+                    for (let pair of response.headers.entries()) {
+                        console.log(pair[0] + ': ' + pair[1]);
+                    }
+
+                    // Kiểm tra content type
+                    const contentType = response.headers.get("content-type");
+                    console.log("Content-Type:", contentType);
+
+                    if (contentType && contentType.includes("application/json")) {
+                        return response.json();
+                    } else {
+                        return response.text().then(text => {
+                            console.error("Raw response (non-JSON):", text);
+                            throw new Error("Server returned non-JSON: " + text.substring(0, 100));
+                        });
+                    }
+                })
+                .then(data => {
+                    console.log("Response data (parsed):", data);
+
+                    if (data && data.success) {
+                        // Đăng nhập thành công
+                        const fullname = data.data && data.data.fullname ? data.data.fullname : 'User';
+                        alert(`🎉 Login successful! Welcome back, ${fullname}.`);
+
+                        // Chuyển hướng
+                        setTimeout(() => {
+                            window.location.href = 'index.php';
+                        }, 500);
+                    } else {
+                        // Đăng nhập thất bại
+                        const errorMsg = data && data.message ? data.message : 'Unknown error';
+                        console.error("Login failed with message:", errorMsg);
+                        alert('⛔ ' + errorMsg);
+
+                        // Reset button
+                        if (btnLogin) {
+                            btnLogin.disabled = false;
+                            btnLogin.textContent = 'Login';
+                        }
+                    }
+                })
+                .catch(error => {
+                    clearTimeout(timeoutId);
+
+                    if (error.name === 'AbortError') {
+                        console.error("Request timeout:", error);
+                        alert('⛔ Request timeout. Server may be down or too slow.');
+                    } else {
+                        console.error("Fetch error details:", error);
+                        console.error("Error name:", error.name);
+                        console.error("Error message:", error.message);
+
+                        // Kiểm tra nếu lỗi mạng
+                        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                            alert('⛔ Network error. Please check your connection and try again.');
+                        } else {
+                            alert('⛔ Error: ' + error.message);
+                        }
+                    }
+
                     // Reset button
                     if (btnLogin) {
                         btnLogin.disabled = false;
                         btnLogin.textContent = 'Login';
                     }
-                }
-            })
-            .catch(error => {
-                clearTimeout(timeoutId);
-                
-                if (error.name === 'AbortError') {
-                    console.error("Request timeout:", error);
-                    alert('⛔ Request timeout. Server may be down or too slow.');
-                } else {
-                    console.error("Fetch error details:", error);
-                    console.error("Error name:", error.name);
-                    console.error("Error message:", error.message);
-                    
-                    // Kiểm tra nếu lỗi mạng
-                    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-                        alert('⛔ Network error. Please check your connection and try again.');
-                    } else {
-                        alert('⛔ Error: ' + error.message);
-                    }
-                }
-                
-                // Reset button
-                if (btnLogin) {
-                    btnLogin.disabled = false;
-                    btnLogin.textContent = 'Login';
-                }
-            });
+                });
         });
     }
 
@@ -178,8 +178,8 @@ document.addEventListener('DOMContentLoaded', function() {
     debugButton.style.border = 'none';
     debugButton.style.borderRadius = '3px';
     debugButton.style.cursor = 'pointer';
-    
-    debugButton.addEventListener('click', function() {
+
+    debugButton.addEventListener('click', function () {
         const paths = [
             '../../controllers/website/MA_LoginController.php',
             '/Candy-Crunch-Website/controllers/website/MA_LoginController.php',
@@ -187,15 +187,15 @@ document.addEventListener('DOMContentLoaded', function() {
             '../controllers/website/MA_LoginController.php',
             'controllers/website/MA_LoginController.php'
         ];
-        
+
         console.log("=== TESTING CONTROLLER PATHS ===");
         console.log("Current URL:", window.location.href);
         console.log("Current pathname:", window.location.pathname);
         console.log("Current origin:", window.location.origin);
-        
+
         paths.forEach((path, index) => {
             console.log(`\nPath ${index + 1}: ${path}`);
-            
+
             // Test với HEAD request để kiểm tra tồn tại
             fetch(path, { method: 'HEAD' })
                 .then(response => {
@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         });
     });
-    
+
     // Chỉ thêm nút debug khi đang ở localhost
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
         document.body.appendChild(debugButton);
