@@ -99,6 +99,14 @@ try {
             padding: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
+        /* Sidebar active items - chữ đen dễ nhìn */
+        .sidebar .nav-link.active {
+            color: #212529 !important;
+            font-weight: 600;
+        }
+        .sidebar .nav-link.active i {
+            color: #667eea !important;
+        }
     </style>
 </head>
 <body>
