@@ -10,6 +10,7 @@ class VoucherModel {
     }
 
     public function getActiveVouchers() {
+        // Equivalent to 'all' filter: Active status and not expired
         $sql = "
             SELECT
                 VoucherID,
@@ -25,10 +26,14 @@ class VoucherModel {
                 StartDate,
                 EndDate,
                 VoucherStatus,
-                DATEDIFF(EndDate, CURDATE()) AS DaysUntilExpire
+                DATEDIFF(EndDate, CURDATE()) AS DaysUntilExpire,
+                CASE
+                    WHEN StartDate > CURDATE() THEN 'Upcoming'
+                    WHEN DATEDIFF(EndDate, CURDATE()) <= 7 THEN 'Expiring Soon'
+                    ELSE 'Active'
+                END AS DynamicStatus
             FROM VOUCHER
-            WHERE VoucherStatus = 'Active'
-              AND StartDate <= CURDATE()
+            WHERE VoucherStatus IN ('Active', 'Upcoming', 'Expiring Soon')
               AND EndDate >= CURDATE()
             ORDER BY EndDate ASC
         ";
@@ -40,11 +45,22 @@ class VoucherModel {
 
     public function getVoucherByFilter($filter) {
         $order = "VoucherID DESC";
-
         if ($filter === 'expiring') {
+            // Expiring: Must be Active or Expiring Soon status AND valid date AND expiring soon
+            $whereClause = "VoucherStatus IN ('Active', 'Expiring Soon') AND StartDate <= CURDATE() AND EndDate >= CURDATE() AND DATEDIFF(EndDate, CURDATE()) <= 7";
             $order = "EndDate ASC";
-        } elseif ($filter === 'latest') {
-            $order = "StartDate DESC";
+        } elseif ($filter === 'active') {
+             // Active: Active or Expiring Soon status AND valid date
+            $whereClause = "VoucherStatus IN ('Active', 'Expiring Soon') AND StartDate <= CURDATE() AND EndDate >= CURDATE()";
+            $order = "EndDate ASC";
+        } elseif ($filter === 'upcoming') {
+            // Upcoming: Active OR Upcoming status AND Future Start Date
+            $whereClause = "VoucherStatus IN ('Active', 'Upcoming') AND StartDate > CURDATE()";
+            $order = "StartDate ASC";
+        } else {
+             // 'all' or default: Active, Upcoming or Expiring Soon status AND Not Expired (EndDate >= Today)
+             $whereClause = "VoucherStatus IN ('Active', 'Upcoming', 'Expiring Soon') AND EndDate >= CURDATE()"; 
+             $order = "EndDate ASC"; 
         }
 
         $sql = "
@@ -62,9 +78,14 @@ class VoucherModel {
                 StartDate,
                 EndDate,
                 VoucherStatus,
-                DATEDIFF(EndDate, CURDATE()) AS DaysUntilExpire
+                DATEDIFF(EndDate, CURDATE()) AS DaysUntilExpire,
+                CASE
+                    WHEN StartDate > CURDATE() THEN 'Upcoming'
+                    WHEN DATEDIFF(EndDate, CURDATE()) <= 7 THEN 'Expiring Soon'
+                    ELSE 'Active'
+                END AS DynamicStatus
             FROM VOUCHER
-            WHERE VoucherStatus = 'Active'
+            WHERE $whereClause
             ORDER BY $order
         ";
 

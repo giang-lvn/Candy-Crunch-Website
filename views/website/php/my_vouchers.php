@@ -115,8 +115,9 @@ require_once('../../../partials/header.php');
                     </span>
                     <ul class="status-list">
                         <li>All</li>
-                        <li>Latest</li>
+                        <li>Active</li>
                         <li>Expiring Soon</li>
+                        <li>Upcoming</li>
                     </ul>
                 </div>
             </div>
@@ -125,33 +126,55 @@ require_once('../../../partials/header.php');
             <div class="vouchers-line">
                 <div class="line">
 
+                    <?php 
+                    // SSR: Fetch directly using Model for initial load
+                    require_once __DIR__ . '/../../../models/website/voucher_model.php';
+                    $voucherModel = new VoucherModel();
+                    $vouchers = $voucherModel->getActiveVouchers(); // Equivalent to 'all' logic
+                    ?>
+
                     <?php if (!empty($vouchers)): ?>
                         <?php foreach ($vouchers as $v): ?>
-                            <div class="voucher-card">
-                                <img alt="">
+                            <?php 
+                                $isUpcoming = ($v['DynamicStatus'] === 'Upcoming');
+                                $badge = '';
+                                if ($isUpcoming) {
+                                    $badge = '<div class="expire-badge upcoming">Upcoming</div>';
+                                } elseif ($v['DynamicStatus'] === 'Expiring Soon') {
+                                    $badge = '<div class="expire-badge">Expiring Soon</div>';
+                                }
+                            ?>
+                            <div class="voucher-card <?= $isUpcoming ? 'disabled' : '' ?>">
+                                <?= $badge ?>
+                                <img src="<?= $ROOT ?>/views/website/img/voutick.svg" alt="voucher-icon">
 
                                 <div>
-                                    <div>
-                                        <div>
-                                            <?php if ($v['DiscountPercent'] > 0): ?>
-                                                <?= $v['DiscountPercent'] ?>% off
-                                            <?php else: ?>
-                                                <?= number_format($v['DiscountAmount']) ?>đ off
-                                            <?php endif; ?>
+                                    <div class="voucher-info">
+                                        <div class="voucher-code">
+                                            <?= htmlspecialchars($v['Code']) ?>
                                         </div>
 
-                                        <div>
-                                            For orders over <?= number_format($v['MinOrder']) ?>đ
+                                        <div class="voucher-discount">
+                                            <?= $v['DiscountText'] ?>
+                                        </div>
+
+                                        <div class="voucher-condition">
+                                            For orders over <?= number_format($v['MinOrder'], 0, ',', '.') ?>đ
                                         </div>
                                     </div>
 
                                     <div>
-                                        Expire date:
-                                        <?= date('d/m/Y', strtotime($v['EndDate'])) ?>
+                                        <?php if ($isUpcoming): ?>
+                                            Starts: <?= date('d/m/Y', strtotime($v['StartDate'])) ?>
+                                        <?php else: ?>
+                                            Expire date: <?= date('d/m/Y', strtotime($v['EndDate'])) ?>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
 
-                                <button>Apply</button>
+                                <button <?= $isUpcoming ? 'disabled' : '' ?> data-id="<?= $v['VoucherID'] ?>">
+                                    Apply
+                                </button>
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>

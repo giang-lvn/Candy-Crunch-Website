@@ -171,7 +171,7 @@ include 'cart.php';
             <!-- Cart -->
             <button class="action-item cart-item" id="openCartBtn">
                 <img src="<?php echo $ROOT; ?>/views/website/img/cart.svg" alt="Cart" class="action-icon" />
-                <span class="action-text"> Cart (<span id="cartCount"><?php echo $cart_item_count; ?></span>) </span>
+                <span class="action-text"> Cart </span>
             </button>
 
             <!-- Wishlist -->

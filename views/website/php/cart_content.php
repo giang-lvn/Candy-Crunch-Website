@@ -54,13 +54,12 @@
                                         <img class="product-image" src="<?= htmlspecialchars($item['Image']) ?>"
                                             alt="<?= htmlspecialchars($item['ProductName']) ?>" />
 
-                                        <div class="product-info">
+                                        <div class="product-info-cart">
                                             <h4 class="product-name">
                                                 <?= htmlspecialchars($item['ProductName']) ?>
                                             </h4>
 
-                                            <div class="product-meta">
-                                                <!-- ATTRIBUTE -->
+                                            <div class="product-meta-cart">
                                                 <!-- ATTRIBUTE -->
                                                 <?php 
                                                     // Fetch all SKUs for this product to show in dropdown
@@ -105,16 +104,16 @@
                                             </svg>
                                         </button>
 
-                                        <div class="product-price">
+                                        <div class="product-price-cart">
                                             <?php if (!empty($item['PromotionPrice'])): ?>
-                                                <span class="price-old">
+                                                <span class="price-old-cart">
                                                     <?= number_format($item['OriginalPrice'], 0, ',', '.') ?> VND
                                                 </span>
-                                                <span class="price-new">
+                                                <span class="price-new-cart">
                                                     <?= number_format($item['PromotionPrice'], 0, ',', '.') ?> VND
                                                 </span>
                                             <?php else: ?>
-                                                <span class="price-new">
+                                                <span class="price-new-cart">
                                                     <?= number_format($item['OriginalPrice'], 0, ',', '.') ?> VND
                                                 </span>
                                             <?php endif; ?>

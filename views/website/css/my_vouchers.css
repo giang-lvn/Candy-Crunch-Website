@@ -5,6 +5,7 @@ body {
     line-height: normal;
     background: var(--body-background, var(--beige-500));
 }
+
 .breadcrumb-container {
     width: 100%;
     background-color: transparent;
@@ -27,6 +28,7 @@ body {
     overflow-x: auto;
     white-space: nowrap;
 }
+
 .breadcrumb-item {
     font-size: 18px;
     font-weight: 400;
@@ -35,31 +37,38 @@ body {
     transition: color 0.2s ease;
     white-space: nowrap;
 }
+
 .breadcrumb-item:hover {
     color: var(--green-500);
 }
+
 .breadcrumb-item.home-icon {
     font-size: 20px;
     display: flex;
     align-items: center;
 }
+
 .breadcrumb-item.active {
     color: var(--text-black);
     font-weight: 600;
     cursor: default;
     pointer-events: none;
 }
+
 .breadcrumb-item.active:hover {
     color: var(--text-black);
 }
+
 .separator {
     font-size: 18px;
     color: var(--gray-400);
     margin: 0 var(--spacing-4);
 }
+
 .separator::before {
     content: '›';
 }
+
 /* ===============================
    ACCOUNT MENU STYLES
    =============================== */
@@ -94,8 +103,8 @@ body {
 }
 
 .account-menu:not(.active):hover {
-    background-color:var(--gray-100);
-    border-left-color:var(--green-500);
+    background-color: var(--gray-100);
+    border-left-color: var(--green-500);
 }
 
 .account-menu:not(.active):hover div {
@@ -269,6 +278,7 @@ body {
     flex-wrap: wrap;
     gap: var(--spacing-32);
     justify-content: flex-start;
+    align-items: stretch;
 }
 
 /* Voucher Card */
@@ -280,9 +290,11 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: space-between;
     padding-bottom: var(--spacing-16);
     gap: var(--spacing-16);
     width: 235px;
+    min-height: 280px;
     box-sizing: border-box;
     transition: all 0.3s ease;
     overflow: hidden;
@@ -300,7 +312,7 @@ body {
     object-fit: cover;
 }
 
-.voucher-card > div {
+.voucher-card>div {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -310,18 +322,36 @@ body {
     padding: 0 var(--spacing-16);
 }
 
-.voucher-card div div:first-child {
+.voucher-card .voucher-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-4);
+    width: 100%;
+}
 
-    font: var(--body-large-semibold);
+.voucher-discount {
+    font: var(--body-regular);
+    /* Reduced from Large */
     color: var(--text-black);
 }
 
-.voucher-card div div:nth-child(2) {
+.voucher-condition {
     font: var(--footnote-regular);
+    font-weight: 400;
     color: var(--gray-700);
 }
 
-.voucher-card > div > div:last-child {
+.voucher-code {
+    font: var(--body-semibold);
+    color: var(--green-600);
+    background-color: rgba(1, 126, 106, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+}
+
+.voucher-card>div>div:last-child:not(.voucher-info) {
     font: var(--small-medium);
     color: var(--green-500);
 }
@@ -372,6 +402,26 @@ body {
     letter-spacing: 0.5px;
 }
 
+.expire-badge.upcoming {
+    background: linear-gradient(135deg, #2196F3 0%, #00BCD4 100%);
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.4);
+}
+
+.voucher-card.disabled {
+    opacity: 0.8;
+}
+
+.voucher-card.disabled button {
+    background-color: var(--gray-400);
+    cursor: not-allowed;
+    transform: none;
+}
+
+.voucher-card.disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
 /* ===============================
    ANIMATIONS
    =============================== */
@@ -380,6 +430,7 @@ body {
         transform: translateX(400px);
         opacity: 0;
     }
+
     to {
         transform: translateX(0);
         opacity: 1;
@@ -391,6 +442,7 @@ body {
         transform: translateX(0);
         opacity: 1;
     }
+
     to {
         transform: translateX(400px);
         opacity: 0;
@@ -434,25 +486,27 @@ body {
 .notification.error {
     background: var(--red-500);
 }
+
 @media (max-width: 1200px) {
     .breadcrumb-container {
-        padding: var(--spacing-24) 0; 
+        padding: var(--spacing-24) 0;
         margin-bottom: var(--spacing-24);
         margin-top: var(--spacing-24);
     }
+
     .breadcrumb {
-        padding: 0 var(--spacing-40); 
+        padding: 0 var(--spacing-40);
     }
 
     .account-menu {
         padding: var(--spacing-12) var(--spacing-20);
     }
-    
+
     .profile-parent {
         padding: var(--spacing-24);
         gap: var(--spacing-24);
     }
-    
+
     .vouchers-line {
         gap: var(--spacing-32);
     }
@@ -461,33 +515,39 @@ body {
         gap: var(--spacing-24);
         justify-content: center;
     }
-    
+
     .voucher-card {
         /* Cho phép card co giãn nhẹ */
-        width: 220px; 
-        flex-basis: calc(25% - var(--spacing-18)); /* Ưu tiên 4 cột/hàng */
+        width: 220px;
+        flex-basis: calc(25% - var(--spacing-18));
+        /* Ưu tiên 4 cột/hàng */
         min-width: 200px;
-        flex-grow: 1; /* Cho phép giãn ra nếu không đủ 4 card */
+        flex-grow: 1;
+        /* Cho phép giãn ra nếu không đủ 4 card */
         gap: var(--spacing-12);
     }
-    
+
     .voucher-card img {
         height: 100px;
     }
 
-    .voucher-card div div:first-child {
-        font-size: 15px; 
+    .voucher-discount {
+        font-size: 14px;
         font-weight: 600;
     }
 
-    .voucher-card div div:nth-child(2) {
-        font-size: 12px; 
+    .voucher-condition {
+        font-size: 11px;
     }
 
-    .voucher-card > div > div:last-child {
+    .voucher-code {
+        font-size: 13px;
+    }
+
+    .voucher-card>div>div:last-child:not(.voucher-info) {
         font-size: 12px;
     }
-    
+
     .voucher-card button {
         /* Giảm padding nút */
         padding: 8px 0;
@@ -503,19 +563,23 @@ body {
         margin-bottom: var(--spacing-16);
         margin-top: var(--spacing-16);
     }
+
     .breadcrumb {
         padding: 0 var(--spacing-16);
         gap: var(--spacing-4);
     }
+
     .breadcrumb-item {
-        font-size: 14px; 
+        font-size: 14px;
     }
+
     .breadcrumb-item.home-icon i {
         font-size: 16px;
     }
+
     .separator {
-        font-size: 14px; 
-        margin: 0 var(--spacing-2); 
+        font-size: 14px;
+        margin: 0 var(--spacing-2);
     }
 
     .account-menu {
@@ -527,16 +591,16 @@ body {
         gap: var(--spacing-20);
         border-radius: var(--spacing-24);
     }
-    
+
     .filter {
         width: 100%;
         justify-content: space-between;
-        font: var(--footnote-regular); 
+        font: var(--footnote-regular);
     }
 
     .status-dropdown .selected {
-        padding: 6px 12px; 
-        width: 130px; 
+        padding: 6px 12px;
+        width: 130px;
         min-width: 130px;
         max-width: 130px;
         font: var(--footnote-regular);
@@ -548,41 +612,47 @@ body {
     }
 
     .vouchers-line {
-        gap: var(--spacing-24); 
+        gap: var(--spacing-24);
     }
-    
+
     .line {
         gap: var(--spacing-16);
-        justify-content: space-around; 
+        justify-content: space-around;
     }
 
     .voucher-card {
         width: calc(50% - var(--spacing-8));
-        min-width: 150px; /* Giới hạn min-width để tránh quá nhỏ */
-        flex-basis: calc(50% - var(--spacing-8)); 
+        min-width: 150px;
+        /* Giới hạn min-width để tránh quá nhỏ */
+        flex-basis: calc(50% - var(--spacing-8));
         padding-bottom: var(--spacing-12);
-        gap: var(--spacing-8); /* Giảm gap nội dung */
+        gap: var(--spacing-8);
+        /* Giảm gap nội dung */
     }
-    
+
     .voucher-card img {
-        height: 80px; 
+        height: 80px;
     }
-    
-    .voucher-card > div {
-        gap: var(--spacing-4); 
+
+    .voucher-card>div {
+        gap: var(--spacing-4);
         padding: 0 var(--spacing-8);
     }
-    
-    .voucher-card div div:first-child {
-        font-size: 14px; 
+
+    .voucher-discount {
+        font-size: 13px;
         font-weight: 500;
     }
 
-    .voucher-card div div:nth-child(2) {
-        font-size: 11px; 
+    .voucher-condition {
+        font-size: 10px;
     }
 
-    .voucher-card > div > div:last-child {
+    .voucher-code {
+        font-size: 12px;
+    }
+
+    .voucher-card>div>div:last-child:not(.voucher-info) {
         font-size: 11px;
     }
 
@@ -595,10 +665,10 @@ body {
     .expire-badge {
         font-size: 9px;
         padding: 4px 10px;
-        top: 0px; 
+        top: 0px;
         right: 0px;
     }
-    
+
     .notification {
         top: auto;
         bottom: var(--spacing-16);
