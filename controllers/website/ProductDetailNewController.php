@@ -41,7 +41,20 @@ class ProductDetailNewController
         // 5. Lấy danh sách Ingredient
         $ingredients = $this->model->getProductIngredients($productId);
 
-        // 6. Truyền dữ liệu sang View
+        // 6. Parse product images từ JSON
+        $productImages = $this->model->parseProductImages($product['Image'] ?? '');
+        $thumbnailImage = $this->model->getProductThumbnail($product['Image'] ?? '');
+
+        // 7. Lấy danh sách sản phẩm liên quan
+        $relatedProducts = $this->model->getRelatedProducts($product['CategoryID'], $productId, 4);
+
+        // Process related product images
+        foreach ($relatedProducts as &$relatedProduct) {
+            $relatedProduct['Thumbnail'] = $this->model->getProductThumbnail($relatedProduct['Image'] ?? '');
+        }
+        unset($relatedProduct); // Break reference
+
+        // 8. Truyền dữ liệu sang View
         require_once __DIR__ . '/../../views/website/php/productdetail-new.php';
     }
 
