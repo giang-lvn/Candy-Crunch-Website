@@ -3,7 +3,7 @@
 /* ================================================
    ROOT & RESET
    ================================================ */
-   .breadcrumb-container {
+.breadcrumb-container {
     width: 100%;
     background-color: transparent;
     padding: var(--spacing-32) 0;
@@ -25,6 +25,7 @@
     overflow-x: auto;
     white-space: nowrap;
 }
+
 .breadcrumb-item {
     font-size: 18px;
     font-weight: 400;
@@ -39,6 +40,7 @@
     display: flex;
     align-items: center;
 }
+
 .breadcrumb-item.active {
     color: var(--text-black);
     font-weight: 600;
@@ -51,14 +53,17 @@
     color: var(--gray-400);
     margin: 0 var(--spacing-4);
 }
+
 .separator::before {
     content: '›';
 }
-   * {
+
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
+
 body {
     margin: 0;
     line-height: normal;
@@ -107,7 +112,7 @@ body {
     align-self: stretch;
     display: flex;
     align-items: flex-start;
-    justify-content: flex-start;    
+    justify-content: flex-start;
     gap: var(--spacing-32);
     text-align: left;
     font: var(--body-large-regular);
@@ -129,10 +134,12 @@ body {
     align-items: flex-start;
     justify-content: flex-start;
     max-width: 500px;
-    height: fit-content; /* FIX: Cho phép sidebar co giãn theo nội dung */
-    position: sticky; /* NEW: Làm sidebar sticky khi scroll */
+    height: fit-content;
+    /* FIX: Cho phép sidebar co giãn theo nội dung */
+    position: sticky;
+    /* NEW: Làm sidebar sticky khi scroll */
     top: 20px;
-    flex-shrink:0;
+    flex-shrink: 0;
     align-self: flex-start;
 }
 
@@ -148,7 +155,8 @@ body {
 }
 
 .avatar-icon {
-    width: 48px; /* IMPROVED: Tăng kích thước avatar */
+    width: 48px;
+    /* IMPROVED: Tăng kích thước avatar */
     height: 48px;
     position: relative;
     border-radius: 50%;
@@ -176,6 +184,7 @@ body {
     align-items: flex-start;
     color: var(--gray-700);
 }
+
 .menus a {
     color: var(--gray-700);
     font-weight: 400;
@@ -290,7 +299,8 @@ body {
     width: 24px;
     height: 24px;
     position: relative;
-    flex-shrink: 0; /* IMPROVED: Ngăn icon bị co */
+    flex-shrink: 0;
+    /* IMPROVED: Ngăn icon bị co */
 }
 
 .sidebar-ele {
@@ -298,6 +308,7 @@ body {
     display: flex;
     align-items: center;
 }
+
 .profile-parent {
     flex: 2;
     display: flex;
@@ -305,6 +316,7 @@ body {
     gap: var(--spacing-32);
     color: var(--text-white);
 }
+
 .profile {
     border-radius: var(--spacing-32);
     border: 1px solid var(--gray-300);
@@ -314,6 +326,7 @@ body {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.3s ease;
 }
+
 .profile:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
@@ -324,6 +337,7 @@ body {
     flex-direction: column;
     padding: var(--spacing-16) var(--spacing-32);
 }
+
 .heading {
     display: flex;
     align-items: center;
@@ -353,12 +367,15 @@ body {
    PROFILE CONTENT AREA
    ================================================ */
 .profile-parent {
-    flex: 2; /* IMPROVED: Tỷ lệ linh hoạt hơn */
+    flex: 2;
+    /* IMPROVED: Tỷ lệ linh hoạt hơn */
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    justify-content: flex-start; /* FIX: Thay đổi từ space-between */
-    gap: var(--spacing-32); /* IMPROVED: Gap nhất quán */
+    justify-content: flex-start;
+    /* FIX: Thay đổi từ space-between */
+    gap: var(--spacing-32);
+    /* IMPROVED: Gap nhất quán */
     font: var(--body-xxxlarge-regular);
     color: var(--text-white);
 }
@@ -372,13 +389,16 @@ body {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* NEW: Thêm shadow nhẹ */
-    transition: box-shadow 0.3s ease; /* NEW: Transition cho shadow */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    /* NEW: Thêm shadow nhẹ */
+    transition: box-shadow 0.3s ease;
+    /* NEW: Transition cho shadow */
 }
 
 .profile:hover,
 .shipping:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* NEW: Shadow đậm hơn khi hover */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    /* NEW: Shadow đậm hơn khi hover */
 }
 
 /* Section Header */
@@ -397,7 +417,8 @@ body {
     align-items: center;
     justify-content: space-between;
     gap: var(--spacing-20);
-    flex-wrap: wrap; /* NEW: Cho phép wrap trên mobile */
+    flex-wrap: wrap;
+    /* NEW: Cho phép wrap trên mobile */
 }
 
 .title3 {
@@ -429,7 +450,8 @@ body {
     color: var(--green-500);
     cursor: pointer;
     transition: all 0.2s ease;
-    white-space: nowrap; /* NEW: Ngăn text wrap */
+    white-space: nowrap;
+    /* NEW: Ngăn text wrap */
 }
 
 .button:hover,
@@ -437,7 +459,8 @@ body {
 .button6:hover {
     background-color: var(--green-100, rgba(34, 197, 94, 0.2));
     border-color: var(--green-800);
-    transform: translateY(-1px); /* NEW: Hiệu ứng nâng lên */
+    transform: translateY(-1px);
+    /* NEW: Hiệu ứng nâng lên */
 }
 
 .button:active,
@@ -521,20 +544,24 @@ body {
 
 /* Frame Divs */
 .frame-div {
-    align-self: stretch; /* FIX: Thêm để đảm bảo chiều rộng đầy đủ */
+    align-self: stretch;
+    /* FIX: Thêm để đảm bảo chiều rộng đầy đủ */
     display: flex;
-    align-items: flex-start; /* FIX: Thay đổi từ center để linh hoạt hơn */
+    align-items: flex-start;
+    /* FIX: Thay đổi từ center để linh hoạt hơn */
     gap: var(--spacing-32);
 }
 
 /* Info Container */
 .info {
-    flex: 1; /* IMPROVED: Cho phép co giãn */
+    flex: 1;
+    /* IMPROVED: Cho phép co giãn */
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: var(--spacing-32);
-    min-width: 0; /* NEW: Fix truncation issues */
+    min-width: 0;
+    /* NEW: Fix truncation issues */
 }
 
 .info2 {
@@ -548,8 +575,10 @@ body {
 
 /* Info Lines */
 .line {
-    width: 100%; /* FIX: Thay đổi từ fixed width */
-    display: flex; /* FIX: Thay đổi từ none */
+    width: 100%;
+    /* FIX: Thay đổi từ fixed width */
+    display: flex;
+    /* FIX: Thay đổi từ none */
     align-items: center;
     gap: var(--spacing-40);
 }
@@ -564,9 +593,11 @@ body {
 .label {
     display: flex;
     align-items: center;
-    justify-content: flex-start; /* FIX: Thay đổi từ center */
+    justify-content: flex-start;
+    /* FIX: Thay đổi từ center */
     min-width: 100px;
-    flex-shrink: 0; /* NEW: Ngăn label bị co */
+    flex-shrink: 0;
+    /* NEW: Ngăn label bị co */
 }
 
 .label7,
@@ -586,11 +617,14 @@ body {
     flex: 1;
     display: flex;
     align-items: center;
-    justify-content: flex-start; /* FIX: Thay đổi từ center */
+    justify-content: flex-start;
+    /* FIX: Thay đổi từ center */
     color: var(--text-black);
     font: var(--body-regular);
-    min-width: 0; /* NEW: Allow text truncation */
-    word-break: break-word; /* NEW: Cho phép break word nếu cần */
+    min-width: 0;
+    /* NEW: Allow text truncation */
+    word-break: break-word;
+    /* NEW: Cho phép break word nếu cần */
 }
 
 .gender {
@@ -604,8 +638,10 @@ body {
     flex: 1;
     display: flex;
     align-items: center;
-    justify-content: flex-start; /* FIX: Thay đổi từ space-between */
-    gap: var(--spacing-16); /* NEW: Thêm gap */
+    justify-content: flex-start;
+    /* FIX: Thay đổi từ space-between */
+    gap: var(--spacing-16);
+    /* NEW: Thêm gap */
     color: var(--text-black);
 }
 
@@ -633,11 +669,11 @@ body {
     transition: all 0.2s ease;
 }
 
-.radio-option input[type="radio"]:checked + .custom-radio-icon {
+.radio-option input[type="radio"]:checked+.custom-radio-icon {
     border-color: var(--teal-500);
 }
 
-.radio-option input[type="radio"]:checked + .custom-radio-icon::after {
+.radio-option input[type="radio"]:checked+.custom-radio-icon::after {
     content: '';
     position: absolute;
     width: 10px;
@@ -666,8 +702,10 @@ body {
     height: 24px;
     cursor: pointer;
     transition: opacity 0.2s ease;
-    flex-shrink: 0; /* NEW: Ngăn icon bị co */
-    display: block; /* Ensure visible by default */
+    flex-shrink: 0;
+    /* NEW: Ngăn icon bị co */
+    display: block;
+    /* Ensure visible by default */
 }
 
 .icon-toggle:hover {
@@ -691,19 +729,23 @@ body {
    ================================================ */
 .avatar,
 .avatar2 {
-    flex: 0 0 auto; /* IMPROVED: Không co giãn */
-    width: 250px; /* IMPROVED: Fixed width rõ ràng hơn */
+    flex: 0 0 auto;
+    /* IMPROVED: Không co giãn */
+    width: 250px;
+    /* IMPROVED: Fixed width rõ ràng hơn */
     border-left: 1px solid rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 0 0 0 var(--spacing-32); /* IMPROVED: Padding tốt hơn */
+    padding: 0 0 0 var(--spacing-32);
+    /* IMPROVED: Padding tốt hơn */
     gap: var(--spacing-24);
     color: var(--gray-50);
 }
 
 .avatar2 {
-    display: none; /* Hidden by default */
+    display: none;
+    /* Hidden by default */
 }
 
 .avatar-icon2 {
@@ -712,8 +754,10 @@ body {
     position: relative;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid var(--gray-200); /* NEW: Thêm border cho avatar */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* NEW: Thêm shadow */
+    border: 3px solid var(--gray-200);
+    /* NEW: Thêm border cho avatar */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    /* NEW: Thêm shadow */
 }
 
 .caption {
@@ -724,17 +768,21 @@ body {
     text-align: center;
     font: var(--footnote-regular);
     color: var(--gray-400);
-    line-height: 1.4; /* NEW: Line height tốt hơn */
+    line-height: 1.4;
+    /* NEW: Line height tốt hơn */
 }
 
 
 
 .frame-div {
-    align-self: stretch; /* FIX: Thêm để đảm bảo chiều rộng đầy đủ */
+    align-self: stretch;
+    /* FIX: Thêm để đảm bảo chiều rộng đầy đủ */
     display: flex;
-    align-items: flex-start; /* FIX: Thay đổi từ center để linh hoạt hơn */
+    align-items: flex-start;
+    /* FIX: Thay đổi từ center để linh hoạt hơn */
     gap: var(--spacing-32);
 }
+
 .content3 {
     align-self: stretch;
     display: flex;
@@ -751,7 +799,8 @@ body {
    SHIPPING ADDRESSES
    ================================================ */
 .frame-parent {
-    align-self: stretch; /* FIX: Thay đổi để co giãn */
+    align-self: stretch;
+    /* FIX: Thay đổi để co giãn */
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -759,9 +808,11 @@ body {
 }
 
 .frame-group {
-    align-self: stretch; /* FIX: Thay đổi để co giãn */
+    align-self: stretch;
+    /* FIX: Thay đổi để co giãn */
     display: flex;
-    align-items: stretch; /* FIX: Đảm bảo các card cùng chiều cao */
+    align-items: stretch;
+    /* FIX: Đảm bảo các card cùng chiều cao */
     gap: var(--spacing-32);
     flex-wrap: wrap;
     align-items: flex-start;
@@ -775,17 +826,21 @@ body {
     flex-direction: column;
     align-items: flex-start;
     padding: var(--spacing-24);
-    gap: var(--spacing-16); /* IMPROVED: Gap nhỏ hơn */
+    gap: var(--spacing-16);
+    /* IMPROVED: Gap nhỏ hơn */
     transition: all 0.3s ease;
     cursor: pointer;
-    border: 2px solid transparent; /* NEW: Thêm border transparent */
-    min-width: 0; /* NEW: Allow shrinking */
+    border: 2px solid transparent;
+    /* NEW: Thêm border transparent */
+    min-width: 0;
+    /* NEW: Allow shrinking */
 }
+
 .frame-container.banking-item {
     flex: 1 1 calc(50% - 20px);
-    min-width: 280px;              
+    min-width: 280px;
     max-width: 350px;
-    min-height: 220px;            
+    min-height: 220px;
     border: 1px solid #e0e0e0;
     border-radius: 12px;
     padding: 25px;
@@ -795,10 +850,12 @@ body {
     transition: all 0.2s ease-in-out;
     box-sizing: border-box;
 }
+
 .frame-container:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     transform: translateY(-2px);
-    border-color: var(--green-500); /* NEW: Border color khi hover */
+    border-color: var(--green-500);
+    /* NEW: Border color khi hover */
 }
 
 .frame-parent2,
@@ -808,14 +865,16 @@ body {
     display: flex;
     align-items: center;
     gap: var(--spacing-16);
-    flex-wrap: wrap; /* NEW: Cho phép wrap */
+    flex-wrap: wrap;
+    /* NEW: Cho phép wrap */
 }
 
 .john-doe-wrapper {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600; /* NEW: Làm nổi bật tên */
+    font-weight: 600;
+    /* NEW: Làm nổi bật tên */
 }
 
 .wrapper {
@@ -823,12 +882,14 @@ body {
     align-items: center;
     justify-content: center;
     text-align: right;
-    color: var(--gray-600); /* NEW: Màu nhẹ hơn cho số điện thoại */
+    color: var(--gray-600);
+    /* NEW: Màu nhẹ hơn cho số điện thoại */
 }
 
 .status-tag {
     height: 29px;
-    min-width: 93px; /* FIX: Thay đổi từ width */
+    min-width: 93px;
+    /* FIX: Thay đổi từ width */
     border-radius: 30px;
     background-color: var(--light-green-50, rgba(134, 239, 172, 0.3));
     border: 1px solid var(--light-green-500);
@@ -840,7 +901,8 @@ body {
     text-align: center;
     color: var(--light-green-600);
     font: var(--body-semibold);
-    white-space: nowrap; /* NEW: Ngăn text wrap */
+    white-space: nowrap;
+    /* NEW: Ngăn text wrap */
 }
 
 .status-tag2 {
@@ -865,10 +927,13 @@ body {
     align-self: stretch;
     display: flex;
     align-items: center;
-    justify-content: flex-start; /* FIX: Thay đổi từ center */
+    justify-content: flex-start;
+    /* FIX: Thay đổi từ center */
     font: var(--body-regular);
-    line-height: 1.5; /* NEW: Line height tốt hơn */
+    line-height: 1.5;
+    /* NEW: Line height tốt hơn */
 }
+
 .modal-overlay {
     display: none;
     position: fixed;
@@ -890,8 +955,13 @@ body {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes slideUp {
@@ -899,6 +969,7 @@ body {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -1134,7 +1205,6 @@ body {
 }
 
 .button-parent {
-    align-self: stretch;
     display: flex;
     align-items: flex-start;
     gap: 32px;
@@ -1186,6 +1256,7 @@ body {
     line-height: 27px;
     font-weight: 500;
 }
+
 #ShippingModal .new-address {
     max-width: 520px;
 }
@@ -1196,7 +1267,7 @@ body {
 }
 
 /* INPUT GROUP CHÍNH → GRID 2 CỘT */
-#ShippingModal .frame-parent-modal > .input-parent {
+#ShippingModal .frame-parent-modal>.input-parent {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
@@ -1262,15 +1333,18 @@ body {
 #ShippingModal .button-parent button:nth-child(2) {
     width: 100%;
 }
+
 #BankingModal .button-parent {
     display: grid;
     grid-template-columns: 1fr 1fr;
     flex-wrap: wrap;
 }
+
 #BankingModal #deleteBankingBtn {
     grid-column: span 2;
     margin-top: 4px;
 }
+
 /* Nhóm Save + Cancel */
 #ShippingModal .button-parent {
     display: grid;
@@ -1282,8 +1356,11 @@ body {
     grid-column: span 2;
     margin-top: 12px;
 }
-button, .button-save, .button-cancel {
-    display:flex;
+
+button,
+.button-save,
+.button-cancel {
+    display: flex;
     align-items: center;
     justify-content: center;
 }
@@ -1314,6 +1391,7 @@ select.success {
     .breadcrumb {
         padding: 0 var(--spacing-60);
     }
+
     .my-account-profile {
         padding: var(--spacing-16) var(--spacing-60) var(--spacing-60);
         gap: var(--spacing-32);
@@ -1328,7 +1406,8 @@ select.success {
     .card-account {
         max-width: 100%;
         width: 100%;
-        position: static; /* FIX: Bỏ sticky trên tablet */
+        position: static;
+        /* FIX: Bỏ sticky trên tablet */
     }
 
     .profile-parent {
@@ -1342,7 +1421,8 @@ select.success {
 
     .content3 {
         gap: var(--spacing-24);
-        flex-direction: column; /* IMPROVED: Stack vertical */
+        flex-direction: column;
+        /* IMPROVED: Stack vertical */
     }
 
     .info2 {
@@ -1352,7 +1432,8 @@ select.success {
     .avatar {
         width: 100%;
         border-left: none;
-        border-top: 1px solid rgba(0, 0, 0, 0.1); /* NEW: Border top thay vì left */
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        /* NEW: Border top thay vì left */
         padding: var(--spacing-32) 0 0 0;
     }
 
@@ -1366,7 +1447,8 @@ select.success {
     }
 
     .frame-container {
-        flex: 1 1 calc(50% - var(--spacing-12)); /* IMPROVED: 2 columns với gap */
+        flex: 1 1 calc(50% - var(--spacing-12));
+        /* IMPROVED: 2 columns với gap */
         min-width: 280px;
     }
 }
@@ -1379,13 +1461,16 @@ select.success {
         padding: 0 var(--spacing-24);
         gap: var(--spacing-4);
     }
-    .breadcrumb-item, .separator {
+
+    .breadcrumb-item,
+    .separator {
         font-size: 14px;
     }
+
     .breadcrumb-item.home-icon {
         font-size: 18px;
     }
-    
+
     .my-account-profile {
         padding: var(--spacing-16) var(--spacing-24) var(--spacing-48);
         gap: var(--spacing-24);
@@ -1394,7 +1479,8 @@ select.success {
 
     .my-account {
         height: auto;
-        font-size: 24px; /* NEW: Fixed size cho mobile */
+        font-size: 24px;
+        /* NEW: Fixed size cho mobile */
     }
 
     .content {
@@ -1406,7 +1492,8 @@ select.success {
     }
 
     .avatar-icon {
-        width: 40px; /* IMPROVED: Điều chỉnh cho mobile */
+        width: 40px;
+        /* IMPROVED: Điều chỉnh cho mobile */
         height: 40px;
     }
 
@@ -1414,14 +1501,17 @@ select.success {
         padding: var(--spacing-12) var(--spacing-16);
     }
 
-    .account-menu, .account-menu2, .account-menu5 {
+    .account-menu,
+    .account-menu2,
+    .account-menu5 {
         padding: var(--spacing-12) var(--spacing-16);
         gap: var(--spacing-12);
     }
 
     .icon-account-outline,
     .icon-key {
-        width: 20px; /* IMPROVED: Icon nhỏ hơn trên mobile */
+        width: 20px;
+        /* IMPROVED: Icon nhỏ hơn trên mobile */
         height: 20px;
     }
 
@@ -1438,7 +1528,8 @@ select.success {
     }
 
     .heading {
-        flex-direction: column; /* NEW: Stack vertical trên mobile */
+        flex-direction: column;
+        /* NEW: Stack vertical trên mobile */
         align-items: flex-start;
         gap: var(--spacing-12);
     }
@@ -1448,13 +1539,15 @@ select.success {
     .button6 {
         padding: var(--spacing-6) var(--spacing-12);
         font: var(--footnote-medium);
-        font-size: 12px; /* NEW: Smaller font */
+        font-size: 12px;
+        /* NEW: Smaller font */
     }
 
     .button-group {
         width: 100%;
         gap: var(--spacing-8);
-        flex-direction: row; /* IMPROVED: Keep horizontal */
+        flex-direction: row;
+        /* IMPROVED: Keep horizontal */
     }
 
     .button3,
@@ -1493,7 +1586,8 @@ select.success {
         width: 100%;
         justify-content: flex-start;
         font: var(--footnote-medium);
-        font-weight: 500; /* NEW: Làm nổi bật label */
+        font-weight: 500;
+        /* NEW: Làm nổi bật label */
     }
 
     .value,
@@ -1517,7 +1611,8 @@ select.success {
     }
 
     .avatar-icon2 {
-        width: 120px; /* IMPROVED: Smaller avatar on mobile */
+        width: 120px;
+        /* IMPROVED: Smaller avatar on mobile */
         height: 120px;
     }
 
@@ -1552,7 +1647,8 @@ select.success {
     }
 
     .status-tag {
-        align-self: flex-start; /* NEW: Align left on mobile */
+        align-self: flex-start;
+        /* NEW: Align left on mobile */
     }
 }
 
@@ -1560,7 +1656,7 @@ select.success {
    UTILITY CLASSES
    ================================================ */
 .button7 {
-    display: flex; 
+    display: flex;
 }
 
 /* Focus styles for accessibility */

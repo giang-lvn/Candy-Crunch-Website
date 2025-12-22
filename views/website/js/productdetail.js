@@ -23,72 +23,137 @@ if (attributeSelect) {
     attributeSelectWrapper.classList.remove('is-open');
   });
 }
-// ========================================
 
+//======DESCRIPTION======
+//========================
+
+// mở phần description khi click see more
+const seeMoreBtn = document.querySelector('.description-section .btn-secondary-outline-small');
+const descriptionText = document.querySelector('.description-section .description-text');
+
+if (seeMoreBtn && descriptionText) {
+  seeMoreBtn.addEventListener('click', () => {
+    descriptionText.classList.toggle('collapsed');
+
+    if (descriptionText.classList.contains('collapsed')) {
+      seeMoreBtn.textContent = 'See more';
+    } else {
+      seeMoreBtn.textContent = 'See less';
+    }
+  });
+}
+
+
+//======PRODUCT DETAIL FUNCTIONS======
+//====================================
+
+// Biến toàn cục cho quantity (dùng var để tránh temporal dead zone)
+var currentQuantity = 1;
+var maxStock = 0;
+
+// Khởi tạo maxStock từ DOM khi trang load
+document.addEventListener('DOMContentLoaded', function () {
+  const stockDisplay = document.getElementById('stock-display');
+  if (stockDisplay) {
+    const stockText = stockDisplay.textContent.trim();
+    const stockMatch = stockText.match(/(\d+)/);
+    if (stockMatch) {
+      maxStock = parseInt(stockMatch[1]) || 0;
+    }
+  }
+});
+
+// Hàm thay đổi hình ảnh chính
 function changeImage(src) {
-  document.getElementById('main-image').src = src;
+  const mainImage = document.getElementById('main-image');
+  if (mainImage) {
+    mainImage.src = src;
+  }
 }
 
-function updateSkuInfo() {
-  const skuId = document.getElementById('sku-select').value;
+// Hàm cập nhật thông tin khi đổi SKU
+function updateSkuInfo(skuId) {
+  const select = document.getElementById('sku-select');
+  if (!select) return;
 
-  const formData = new FormData();
-  formData.append('skuid', skuId);
+  const selectedOption = select.options[select.selectedIndex];
 
-  // Sửa lại đường dẫn fetch
-  fetch('/Candy-Crunch-Website/views/website/php/productdetail.php?action=getSkuInfo', {
-    method: 'POST',
-    body: formData
-  })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error) {
-        console.error(data.error);
-        return;
-      }
+  if (!selectedOption || !skuId) return;
 
-      // Cập nhật hình ảnh chính
-      if (data.image) {
-        const mainImage = document.getElementById('main-image');
-        if (mainImage) {
-          mainImage.src = (typeof ROOT !== 'undefined' ? ROOT : '') + data.image;
-        }
-      }
+  // Lấy data từ option attributes
+  const price = selectedOption.dataset.price;
+  const originalPrice = selectedOption.dataset.original;
+  const stock = selectedOption.dataset.stock;
+  const image = selectedOption.dataset.image;
 
-      // Cập nhật giá
-      if (data.price) {
-        const newPrice = new Intl.NumberFormat('vi-VN').format(data.price.PromotionPrice);
-        const oldPrice = new Intl.NumberFormat('vi-VN').format(data.price.OriginalPrice);
+  // Cập nhật giá
+  const priceNew = document.getElementById('price-new');
+  if (priceNew) {
+    priceNew.textContent = formatPrice(price) + ' VND';
+  }
 
-        const priceNewEl = document.getElementById('price-new');
-        if (priceNewEl) priceNewEl.innerText = newPrice + ' VND';
+  const priceOld = document.getElementById('price-old');
+  if (priceOld && parseFloat(originalPrice) > parseFloat(price)) {
+    priceOld.textContent = formatPrice(originalPrice) + ' VND';
+    priceOld.style.display = 'inline';
+  } else if (priceOld) {
+    priceOld.style.display = 'none';
+  }
 
-        let oldPriceEl = document.getElementById('price-old');
+  // Cập nhật tồn kho
+  maxStock = parseInt(stock) || 0;
+  const stockDisplay = document.getElementById('stock-display');
+  if (stockDisplay) {
+    stockDisplay.textContent = maxStock + ' in stock';
+  }
 
-        // Nếu có giảm giá
-        if (parseInt(data.price.OriginalPrice) > parseInt(data.price.PromotionPrice)) {
-          if (!oldPriceEl) {
-            // Tạo element nếu chưa có
-            oldPriceEl = document.createElement('span');
-            oldPriceEl.className = 'old-price';
-            oldPriceEl.id = 'price-old';
-            priceNewEl.parentNode.insertBefore(oldPriceEl, priceNewEl.nextSibling);
-          }
-          oldPriceEl.innerText = oldPrice + ' VND';
-          oldPriceEl.style.display = 'inline-block';
-        } else {
-          // Không giảm giá thì ẩn
-          if (oldPriceEl) {
-            oldPriceEl.style.display = 'none';
-          }
-        }
-      }
+  // Reset quantity nếu vượt quá stock
+  if (currentQuantity > maxStock) {
+    currentQuantity = maxStock > 0 ? maxStock : 1;
+    const quantityDisplay = document.getElementById('quantity-display');
+    if (quantityDisplay) {
+      quantityDisplay.textContent = currentQuantity;
+    }
+  }
 
-      // Cập nhật tồn kho
-      if (data.stock) {
-        const stockEl = document.getElementById('stock-display');
-        if (stockEl) stockEl.innerText = data.stock.Stock + ' in stock';
-      }
-    })
-    .catch(error => console.error('Error:', error));
+  // Cập nhật hình ảnh
+  if (image && typeof ROOT !== 'undefined') {
+    const mainImage = document.getElementById('main-image');
+    if (mainImage) {
+      mainImage.src = ROOT + '/views/website/img/product-img/' + image;
+    }
+  }
 }
+
+// Format giá tiền
+function formatPrice(price) {
+  return new Intl.NumberFormat('vi-VN').format(price);
+}
+
+// Tăng số lượng
+function increaseQuantity() {
+  if (currentQuantity < maxStock) {
+    currentQuantity++;
+    const quantityDisplay = document.getElementById('quantity-display');
+    if (quantityDisplay) {
+      quantityDisplay.textContent = currentQuantity;
+    }
+  }
+}
+
+// Giảm số lượng
+function decreaseQuantity() {
+  if (currentQuantity > 1) {
+    currentQuantity--;
+    const quantityDisplay = document.getElementById('quantity-display');
+    if (quantityDisplay) {
+      quantityDisplay.textContent = currentQuantity;
+    }
+  }
+}
+
+// Hàm set maxStock (gọi từ PHP inline script)
+function setMaxStock(stock) {
+  maxStock = parseInt(stock) || 0;
+}
+

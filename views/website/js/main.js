@@ -102,10 +102,10 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleBtn.addEventListener('click', () => {
       if (inputField.type === 'password') {
         inputField.type = 'text';
-        eyeIcon.src = '/views/website/img/eye-open.svg';
+        eyeIcon.src = '/Candy-Crunch-Website/views/website/img/eye-open.svg';
       } else {
         inputField.type = 'password';
-        eyeIcon.src = '/views/website/img/eye-closed.svg';
+        eyeIcon.src = '/Candy-Crunch-Website/views/website/img/eye-closed.svg';
       }
     });
   });
@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
             parentComponent.setAttribute('data-checked', 'false');
             const icon = parentComponent.querySelector('.radio-icon');
             if (icon) {
-              icon.src = '/views/website/img/radio-unchecked.svg';
+              icon.src = '/Candy-Crunch-Website/views/website/img/radio-unchecked.svg';
             }
             input.checked = false;
           }
@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Check this radio
       component.setAttribute('data-checked', 'true');
-      radioIcon.src = '/views/website/img/radio-checked.svg';
+      radioIcon.src = '/Candy-Crunch-Website/views/website/img/radio-checked.svg';
       radioInput.checked = true;
 
       // Trigger custom event
