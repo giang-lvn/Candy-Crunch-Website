@@ -90,18 +90,63 @@ function handleAddToCartFromWishlist() {
 
             if (!skuid) return;
 
-            fetch('../../../controllers/website/cartcontroller.php?action=add', {
+            fetch('/Candy-Crunch-Website/index.php?controller=cart&action=handleAddToCart', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/json'
                 },
-                body: 'skuid=' + encodeURIComponent(skuid) + '&quantity=1'
+                body: JSON.stringify({ skuid: skuid, quantity: 1 })
             })
-                .then(response => response.text())
-                //.then(() => {
-                // Sau khi add vào cart → remove khỏi wishlist luôn
-                //removeWishlistItemBySku(skuid);
-                //})
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Alert removed as per user request
+
+                        // Update Cart Count
+                        if (data.cartCount !== undefined) {
+                            const cartCount = document.querySelector('.cart-count');
+                            if (cartCount) cartCount.textContent = `(${data.cartCount})`;
+
+                            const cartCountEl = document.getElementById('cartCount');
+                            if (cartCountEl) cartCountEl.innerText = data.cartCount;
+                        }
+
+                        // Update Cart HTML if provided
+                        if (data.html) {
+                            const oldPanel = document.querySelector('.cart-panel');
+                            if (oldPanel) {
+                                oldPanel.outerHTML = data.html;
+                            } else {
+                                const cartOverlay = document.getElementById('cart-overlay');
+                                if (cartOverlay) cartOverlay.innerHTML = data.html;
+                            }
+
+                            // Re-bind cart events (defined in cart.js)
+                            if (typeof window.bindCartEvents === 'function') {
+                                window.bindCartEvents();
+                            }
+
+                            // Re-bind Cart Close Button since we replaced the HTML
+                            const closeCartBtn = document.querySelector('.cart-close');
+                            const cartOverlay = document.getElementById('cart-overlay');
+                            if (closeCartBtn && cartOverlay) {
+                                closeCartBtn.addEventListener('click', () => {
+                                    cartOverlay.classList.add('hidden');
+                                });
+                            }
+
+                            // Re-bind Checkout Button
+                            const checkoutBtn = document.querySelector('.checkout-btn');
+                            if (checkoutBtn) {
+                                checkoutBtn.addEventListener('click', () => {
+                                    window.location.href = 'checkout.html';
+                                });
+                            }
+                        }
+                    } else {
+                        alert(data.message || 'Failed to add product to cart');
+                    }
+                })
                 .catch(error => {
                     console.error('Add to cart error:', error);
                 });

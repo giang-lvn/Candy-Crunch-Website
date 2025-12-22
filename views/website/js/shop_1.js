@@ -567,31 +567,74 @@ class ShopManager {
     const button = event.currentTarget;
     this.animateAddToCart(button);
 
+    // Hiệu ứng loading nhỏ cho nút (optional)
+    const originalText = button.innerHTML;
+    button.innerHTML = '<span class="loading-spinner-small">...</span>';
+    button.disabled = true;
+
     const formData = new FormData();
-    formData.append('sku_id', skuId);
+    formData.append('skuid', skuId); // Lưu ý: Controller check 'skuid' (lowercase) or 'sku_id'? Check controller: $skuId = (int)$data['skuid'];
+    formData.append('quantity', 1);
 
     try {
-      const response = await fetch('/Candy-Crunch-Website/controllers/website/shop_controller.php?action=add-to-cart', {
+      // Gọi đến CartController -> handleAddToCart
+      const response = await fetch('/Candy-Crunch-Website/index.php?controller=cart&action=handleAddToCart', {
         method: 'POST',
-        body: formData
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ skuid: skuId, quantity: 1 })
       });
 
       const result = await response.json();
 
       if (result.success) {
-        this.showNotification('Product added! Redirecting to cart...', 'success', 1500);
+        this.showNotification('Product added to cart!', 'success', 2000);
 
-        // Redirect to cart page after 1.5 seconds
-        setTimeout(() => {
-          window.location.href = '/Candy-Crunch-Website/views/website/php/cart.php';
-        }, 1500);
-        return;
+        // 1. Cập nhật số lượng trên header
+        const cartCountEl = document.getElementById('cartCount');
+        if (cartCountEl) {
+          cartCountEl.innerText = result.cartCount;
+        }
+
+        // 2. Cập nhật nội dung popup cart (ẩn)
+        const cartPanel = document.querySelector('.cart-panel');
+        if (cartPanel && result.html) {
+          // Thay thế nội dung cũ bằng HTML mới từ server
+          cartPanel.outerHTML = result.html;
+
+          // 3. Re-bind events cho cart mới (nút +, -, remove...)
+          if (window.bindCartEvents) {
+            window.bindCartEvents();
+          }
+
+          // Re-attach close event listeners manually if needed due to outerHTML replacement
+          const closeCartBtn = document.querySelector('.cart-close');
+          const cartOverlay = document.getElementById('cart-overlay');
+          if (closeCartBtn && cartOverlay) {
+            closeCartBtn.addEventListener('click', () => {
+              cartOverlay.classList.add('hidden');
+            });
+          }
+        }
+
       } else {
-        this.showNotification(result.message || 'Cannot add product to cart', 'warning');
+        // Xử lý khi cần redirect (chưa đăng nhập)
+        if (result.redirect) {
+          this.showNotification(result.message || 'Please login to continue', 'warning');
+          setTimeout(() => {
+            window.location.href = result.redirect;
+          }, 1500);
+        } else {
+          this.showNotification(result.message || 'Cannot add product to cart', 'warning');
+        }
       }
     } catch (error) {
       console.error('Add to cart error:', error);
       this.showNotification('Cannot add product to cart', 'error');
+    } finally {
+      button.innerHTML = originalText;
+      button.disabled = false;
     }
   }
 

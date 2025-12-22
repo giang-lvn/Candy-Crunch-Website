@@ -12,6 +12,31 @@ class CartModel
         $this->conn = $conn;
     }
 
+    /**
+     * Helper function to extract thumbnail path from JSON image data
+     */
+    private function getProductThumbnailPath($imageData)
+    {
+        if (empty($imageData)) return '';
+        
+        $decoded = json_decode($imageData, true);
+        if (is_array($decoded)) {
+            // Find the thumbnail image
+            foreach ($decoded as $img) {
+                if (isset($img['is_thumbnail']) && $img['is_thumbnail']) {
+                    return $img['path'] ?? '';
+                }
+            }
+            // Return first image if no thumbnail is set
+            if (!empty($decoded[0])) {
+                return is_array($decoded[0]) ? ($decoded[0]['path'] ?? '') : $decoded[0];
+            }
+            return '';
+        }
+        
+        return $imageData;
+    }
+
     // Lấy danh sách sản phẩm trong giỏ hàng
     public function getCartItems($cartId)
     {
@@ -36,11 +61,18 @@ class CartModel
         ";
 
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("i", $cartId);
+        $stmt->bind_param("s", $cartId); // CartID is VARCHAR(10)
         $stmt->execute();
 
         $result = $stmt->get_result();
-        return $result->fetch_all(MYSQLI_ASSOC);
+        $items = $result->fetch_all(MYSQLI_ASSOC);
+        
+        // Process thumbnail images
+        foreach ($items as &$item) {
+            $item['Image'] = $this->getProductThumbnailPath($item['Image']);
+        }
+        
+        return $items;
     }
 
     //Cập nhật số lượng sản phẩm trong giỏ
@@ -53,11 +85,11 @@ class CartModel
         ";
 
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("iii", $quantity, $cartId, $skuId);
+        $stmt->bind_param("iss", $quantity, $cartId, $skuId);
         return $stmt->execute();
     }
 
-    //Xóa sản phẩm khỏi giỏ
+    // Xóa sản phẩm khỏi giỏ
     public function removeItem($cartId, $skuId)
     {
         $sql = "
@@ -66,8 +98,62 @@ class CartModel
         ";
 
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("ii", $cartId, $skuId);
+        $stmt->bind_param("ss", $cartId, $skuId);
         return $stmt->execute();
+    }
+    
+    // Lấy tất cả SKUs của một sản phẩm (cho attribute dropdown)
+    public function getProductSKUs($productId)
+    {
+        $sql = "
+            SELECT 
+                SKUID,
+                Attribute,
+                OriginalPrice,
+                PromotionPrice
+            FROM SKU
+            WHERE ProductID = ?
+            ORDER BY Attribute
+        ";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("s", $productId);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+    
+    // Đổi attribute (đổi SKUID) trong giỏ hàng
+    public function changeAttribute($cartId, $oldSkuId, $newSkuId)
+    {
+        // Lấy quantity hiện tại
+        $currentQty = $this->getQuantity($cartId, $oldSkuId);
+        if ($currentQty <= 0) {
+            return false;
+        }
+        
+        // Kiểm tra xem SKU mới đã có trong giỏ chưa
+        $existingQty = $this->getQuantity($cartId, $newSkuId);
+        
+        if ($existingQty > 0) {
+            // Nếu SKU mới đã có -> cộng dồn quantity và xóa SKU cũ
+            $this->updateQuantity($cartId, $newSkuId, $existingQty + $currentQty);
+            $this->removeItem($cartId, $oldSkuId);
+        } else {
+            // Nếu SKU mới chưa có -> update SKUID trực tiếp
+            $sql = "
+                UPDATE CART_DETAIL
+                SET SKUID = ?
+                WHERE CartID = ? AND SKUID = ?
+            ";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("sss", $newSkuId, $cartId, $oldSkuId);
+            return $stmt->execute();
+        }
+        
+        return true;
     }
 
     //Lấy số lượng sản phẩm trong giỏ
@@ -81,7 +167,7 @@ class CartModel
         ";
 
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("ii", $cartId, $skuId);
+        $stmt->bind_param("ss", $cartId, $skuId);
         $stmt->execute();
 
         $result = $stmt->get_result();
@@ -271,17 +357,25 @@ class CartModel
     //Tính giá rị voucher
     public function calculateVoucherDiscount(array $voucher, float $subtotal): float
     {
-        if ($subtotal < $voucher['MinOrder']) {
+        // Check Min Order
+        $minOrder = (float)($voucher['MinOrder'] ?? 0);
+        if ($minOrder > 0 && $subtotal < $minOrder) {
             return 0;
         }
 
-        //if ($baseAmount < $voucher['MinOrder']) {
-        //    return 0;
-        //}
-
         $today = date('Y-m-d');
 
-        if ($today < $voucher['StartDate'] || $today > $voucher['EndDate']) {
+        // Check Date Range if set and not zero/null
+        $startDate = $voucher['StartDate'] ?? '';
+        $endDate = $voucher['EndDate'] ?? '';
+
+        // Start Date Logic
+        if (!empty($startDate) && $startDate !== '0000-00-00' && $today < $startDate) {
+            return 0;
+        }
+
+        // End Date Logic
+        if (!empty($endDate) && $endDate !== '0000-00-00' && $today > $endDate) {
             return 0;
         }
 
@@ -316,22 +410,43 @@ class CartModel
     }
 
     //Tạo giỏ hàng mới
-    public function createCart($customerId): int
+    public function createCart($customerId): string
     {
+        // Tạo CartID dạng VARCHAR(10) - VD: "CA001"
+        $cartId = $this->generateCartId();
+        
         $sql = "
-            INSERT INTO CART (CustomerID)
-            VALUES (?)
+            INSERT INTO CART (CartID, CustomerID, TimeUpdate)
+            VALUES (?, ?, NOW())
         ";
 
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("s", $customerId);
+        $stmt->bind_param("ss", $cartId, $customerId);
         $stmt->execute();
 
-        return $this->conn->insert_id;
+        return $cartId;
+    }
+    
+    // Tạo CartID mới theo format VARCHAR(10) - VD: "CA001"
+    private function generateCartId(): string
+    {
+        $sql = "SELECT CartID FROM CART ORDER BY CartID DESC LIMIT 1";
+        $result = $this->conn->query($sql);
+        $row = $result->fetch_assoc();
+        
+        if ($row) {
+            // Lấy số từ CartID hiện tại và tăng lên 1
+            $lastId = $row['CartID'];
+            $number = (int) substr($lastId, 2); // Bỏ "CA" đầu tiên
+            $newNumber = $number + 1;
+            return 'CA' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+        } else {
+            return 'CA001';
+        }
     }
 
     //Thêm sản phẩm vào giỏ hàng
-    public function addToCart($customerId, int $skuId, int $quantity = 1): bool
+    public function addToCart($customerId, string $skuId, int $quantity = 1): bool
     {
         // Lấy hoặc tạo cart cho customer
         $cart = $this->findActiveCartByCustomer($customerId);
@@ -352,9 +467,11 @@ class CartModel
             ";
 
             $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param("iii", $cartId, $skuId, $quantity);
+            $stmt->bind_param("ssi", $cartId, $skuId, $quantity);
             return $stmt->execute();
         }
     }
+
+
 
 }
