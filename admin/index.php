@@ -99,6 +99,14 @@ try {
             padding: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
+        /* Sidebar active items - chữ đen dễ nhìn */
+        .sidebar .nav-link.active {
+            color: #212529 !important;
+            font-weight: 600;
+        }
+        .sidebar .nav-link.active i {
+            color: #667eea !important;
+        }
     </style>
 </head>
 <body>
@@ -219,12 +227,7 @@ try {
                 
 
                 
-                <li class="nav-item mb-2">
-                    <a href="<?php echo BASE_URL; ?>index.php?action=reports" 
-                       class="nav-link text-white <?php echo $action == 'reports' ? 'active bg-white text-dark' : ''; ?>">
-                        <i class="bi bi-bar-chart me-2"></i> Báo cáo
-                    </a>
-                </li>
+
                 
                 <li class="nav-item mt-4">
                     <a href="<?php echo BASE_URL; ?>logout.php" class="nav-link text-danger">
@@ -260,8 +263,7 @@ try {
                         'vouchers' => 'Quản lý Voucher',
                         'add_voucher' => 'Thêm voucher mới',
                         'edit_voucher' => 'Chỉnh sửa voucher',
-                        'feedback' => 'Phản hồi',
-                        'reports' => 'Báo cáo doanh thu'
+                        'feedback' => 'Phản hồi'
                     ];
                     echo $titles[$action] ?? 'Dashboard';
                     ?>

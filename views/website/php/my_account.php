@@ -57,7 +57,7 @@ include '../../../partials/header.php';
         <div class="content">
             <div class="card-account">
                 <div class="user-card">
-                    <img class="avatar-icon" src="<?php echo $ROOT; ?>/views/website/img/ot-longvo.png" alt="avatar">
+                    <img class="avatar-icon" id="sidebarAvatar" src="<?php echo !empty($customer['Avatar']) ? htmlspecialchars($customer['Avatar']) : $ROOT . '/views/website/img/ot-longvo.png'; ?>" alt="avatar">
                     <div class="user-name">
                         <div class="john-doe">
                             <?php 
@@ -122,12 +122,21 @@ include '../../../partials/header.php';
                                 </div>
                                 <div class="line2">
                                     <div class="label"><div class="gender">Date of Birth</div></div>
-                                    <div class="value"><div class="male" id="displayDOB"><?php echo htmlspecialchars($customer['CustomerBirth'] ?? '-'); ?></div></div>
+                                    <div class="value"><div class="male" id="displayDOB"><?php 
+                                        $dob = $customer['CustomerBirth'] ?? '';
+                                        if (!empty($dob)) {
+                                            $date = DateTime::createFromFormat('Y-m-d', $dob) ?: DateTime::createFromFormat('Y/m/d', $dob);
+                                            echo $date ? $date->format('d/m/Y') : htmlspecialchars($dob);
+                                        } else {
+                                            echo '-';
+                                        }
+                                    ?></div></div>
                                 </div>
                             </div>
                             <div class="avatar">
-                                <img class="avatar-icon2" src="<?php echo $ROOT; ?>/views/website/img/ot-longvo.png" alt="avatar">
-                                <div class="button2"><div class="texttitle"><div class="text4">Choose image</div></div></div>
+                                <img class="avatar-icon2" id="profileAvatar" src="<?php echo !empty($customer['Avatar']) ? htmlspecialchars($customer['Avatar']) : $ROOT . '/views/website/img/ot-longvo.png'; ?>" alt="avatar">
+                                <input type="file" id="avatarInput" accept="image/jpeg,image/png" style="display:none;">
+                                <div class="button2" id="chooseAvatarBtn"><div class="texttitle"><div class="text4">Choose image</div></div></div>
                                 <div class="caption"><div class="gender">Max: 1 MB (.JPEG, .PNG)</div></div>
                             </div>
                         </div>
@@ -159,7 +168,8 @@ include '../../../partials/header.php';
                                             data-bank-name="<?php echo htmlspecialchars($b['BankName'] ?? ''); ?>"
                                             data-bank-branch="<?php echo htmlspecialchars($b['BankBranchName'] ?? ''); ?>"
                                             data-holder-name="<?php echo htmlspecialchars($b['AccountHolderName'] ?? ''); ?>"
-                                            data-id-number="<?php echo htmlspecialchars($b['IDNumber'] ?? ''); ?>">
+                                            data-id-number="<?php echo htmlspecialchars($b['IDNumber'] ?? ''); ?>"
+                                            data-is-default="<?php echo ($b['IsDefault'] ?? 'No'); ?>">
 
                                             <div class="frame-div">
                                                 <div class="frame-parent5">
@@ -224,17 +234,20 @@ include '../../../partials/header.php';
                                              data-phone="<?= htmlspecialchars($address['Phone'] ?? '') ?>"
                                              data-address="<?= htmlspecialchars($address['Address'] ?? '') ?>"
                                              data-city="<?= htmlspecialchars($address['City'] ?? '') ?>"
-                                             data-country="<?= htmlspecialchars($address['Country'] ?? '') ?>">
+                                             data-country="<?= htmlspecialchars($address['Country'] ?? '') ?>"
+                                             data-alias="<?= htmlspecialchars($address['Alias'] ?? '') ?>"
+                                             data-is-default="<?= ($address['IsDefault'] ?? 'No') ?>">
                                             <div class="frame-div">
                                                 <div class="frame-parent5">
                                                     <div class="john-doe-wrapper">
                                                         <div class="text4 ship-name"><?php echo htmlspecialchars($address['Fullname'] ?? '-'); ?></div>
                                                     </div>
                                                 </div>
-                                                <?php if (($address['IsDefault'] ?? '') === 'Yes'): ?>
-                                                    <div class="status-tag">
-                                                        <div class="completed">Default</div>
-                                                    </div>
+                                                <div class="status-tag<?php echo ($address['IsDefault'] ?? 'No') !== 'Yes' ? ' hidden-tag' : ''; ?>" style="<?php echo ($address['IsDefault'] ?? 'No') !== 'Yes' ? 'display:none;' : ''; ?>">
+                                                    <div class="completed">Default</div>
+                                                </div>
+                                                <?php if (!empty($address['Alias'])): ?>
+                                                    <span class="alias-tag"><?php echo htmlspecialchars($address['Alias']); ?></span>
                                                 <?php endif; ?>
                                             </div>
                                             <div class="sunset-boulevard-los-angeles-wrapper">
@@ -445,6 +458,10 @@ include '../../../partials/header.php';
                     </div>
                 </div>
             </div>
+            <div class="default-checkbox-row" style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+                <input type="checkbox" id="bankIsDefault" style="width:18px;height:18px;">
+                <label for="bankIsDefault" style="cursor:pointer;color:#333;">Set as default bank account</label>
+            </div>
             <div class="button-parent">
                     <button class="btn-primary-medium" id="saveBankingBtn" style="flex: 1;">Save</button>
                     <button class="btn-secondary-outline-medium" id="cancelBankingBtn">Cancel</button>
@@ -468,6 +485,16 @@ include '../../../partials/header.php';
                             </div>
                             <div class="field">
                                 <input type="text" class="gender" id="shipName" placeholder="John Doe">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input3">
+                        <div class="head">
+                            <div class="label-edit">
+                                <div class="male">Alias <span style="color:#999;font-size:12px;">(optional)</span></div>
+                            </div>
+                            <div class="field">
+                                <input type="text" class="gender" id="shipAlias" placeholder="Home, Office, etc.">
                             </div>
                         </div>
                     </div>
@@ -514,6 +541,10 @@ include '../../../partials/header.php';
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="default-checkbox-row" style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+                <input type="checkbox" id="shipIsDefault" style="width:18px;height:18px;">
+                <label for="shipIsDefault" style="cursor:pointer;color:#333;">Set as default address</label>
             </div>
             <div class="button-parent">
                     <button class="btn-primary-medium" id="saveShippingBtn">Save</button>

@@ -15,7 +15,7 @@ class ProductDetailNewModel
 
     /**
      * Lấy thông tin chi tiết sản phẩm bao gồm:
-     * - ProductName, Description từ bảng PRODUCT
+     * - ProductName, Description, Image từ bảng PRODUCT
      * - OriginalPrice, PromotionPrice từ bảng SKU
      * - Stock từ bảng INVENTORY
      */
@@ -26,6 +26,8 @@ class ProductDetailNewModel
                 p.ProductID,
                 p.ProductName,
                 p.Description,
+                p.Image,
+                p.CategoryID,
                 s.SKUID,
                 s.OriginalPrice,
                 s.PromotionPrice,
@@ -45,6 +47,83 @@ class ProductDetailNewModel
     }
 
     /**
+     * Get related products from the same category
+     */
+    public function getRelatedProducts($categoryId, $excludeProductId, $limit = 4)
+    {
+        $sql = "
+            SELECT 
+                p.ProductID, 
+                p.ProductName, 
+                p.Image,
+                s.SKUID,
+                s.OriginalPrice, 
+                s.PromotionPrice
+            FROM PRODUCT p
+            JOIN SKU s ON p.ProductID = s.ProductID
+            WHERE p.CategoryID = :categoryId 
+            AND p.ProductID != :excludeProductId
+            GROUP BY p.ProductID
+            ORDER BY RAND()
+            LIMIT :limit
+        ";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':categoryId', $categoryId, PDO::PARAM_INT);
+        $stmt->bindValue(':excludeProductId', $excludeProductId, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Helper function to parse product images from JSON format
+     * @param string|null $imageData JSON encoded image data
+     * @return array Array of image objects with 'path' and 'is_thumbnail'
+     */
+    public function parseProductImages($imageData)
+    {
+        if (empty($imageData)) return [];
+        
+        $decoded = json_decode($imageData, true);
+        if (is_array($decoded)) {
+            return $decoded;
+        }
+        
+        // Old format: single image path - convert to new format
+        return [['path' => $imageData, 'is_thumbnail' => true]];
+    }
+
+    /**
+     * Get thumbnail image path from JSON image data
+     * @param string|null $imageData JSON encoded image data
+     * @return string Thumbnail image path or empty string
+     */
+    public function getProductThumbnail($imageData)
+    {
+        if (empty($imageData)) return '';
+        
+        $decoded = json_decode($imageData, true);
+        if (is_array($decoded)) {
+            // Find the thumbnail image
+            foreach ($decoded as $img) {
+                if (isset($img['is_thumbnail']) && $img['is_thumbnail']) {
+                    return $img['path'] ?? '';
+                }
+            }
+            // Return first image if no thumbnail is set
+            if (!empty($decoded[0])) {
+                return is_array($decoded[0]) ? ($decoded[0]['path'] ?? '') : $decoded[0];
+            }
+            return '';
+        }
+        
+        // Old format: return as-is
+        return $imageData;
+    }
+
+    /**
      * Lấy tất cả SKU của sản phẩm với giá và tồn kho
      */
     public function getAllSkuWithStock($productId)
@@ -58,6 +137,7 @@ class ProductDetailNewModel
                 p.Image,
                 i.Stock
             FROM SKU s
+            LEFT JOIN PRODUCT p ON s.ProductID = p.ProductID
             LEFT JOIN INVENTORY i ON s.InventoryID = i.InventoryID
             LEFT JOIN PRODUCT p ON s.ProductID = p.ProductID
             WHERE s.ProductID = :productId
@@ -84,6 +164,7 @@ class ProductDetailNewModel
                 p.Image,
                 i.Stock
             FROM SKU s
+            LEFT JOIN PRODUCT p ON s.ProductID = p.ProductID
             LEFT JOIN INVENTORY i ON s.InventoryID = i.InventoryID
             LEFT JOIN PRODUCT p ON s.ProductID = p.ProductID
             WHERE s.SKUID = :skuId

@@ -10,6 +10,7 @@ class ShopManager {
         category: [],
         ingredient: [],
         flavour: [],
+        productType: [],
         rating: null
       },
       currentPage: 1,
@@ -37,7 +38,32 @@ class ShopManager {
     this.setupRatingFilter();
     this.initializeAnimations();
     this.setupKeyboardShortcuts();
+    this.parseUrlParams(); // Parse URL params before loading products
     this.loadAllProducts(); // Load tất cả sản phẩm 1 lần
+  }
+
+  // ============================================
+  // URL PARSING
+  // ============================================
+  parseUrlParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const category = urlParams.get('category');
+
+    if (category) {
+      // Update state
+      if (!this.state.filters.category.includes(category)) {
+        this.state.filters.category.push(category);
+      }
+
+      // Check the checkbox in UI
+      const checkbox = document.querySelector(`.filter-checkbox[data-filter="${category}"]`);
+      if (checkbox) {
+        checkbox.checked = true;
+      }
+
+      // Add visual tag
+      this.addFilterTag(category, 'category');
+    }
   }
 
   // ============================================
@@ -139,6 +165,8 @@ class ShopManager {
 
     let category = this.getFilterCategory(sectionTitle);
 
+    console.log('Filter Debug:', { sectionTitle, category, filterValue, checked: checkbox.checked });
+
     if (checkbox.checked) {
       if (!this.state.filters[category].includes(filterValue)) {
         this.state.filters[category].push(filterValue);
@@ -151,6 +179,8 @@ class ShopManager {
       this.removeFilterTagByValue(filterValue);
     }
 
+    console.log('Current filters state:', JSON.stringify(this.state.filters));
+
     this.state.currentPage = 1;
     this.applyFilters(); // Filter ở client-side
   }
@@ -160,7 +190,8 @@ class ShopManager {
       'Category': 'category',
       'Ingredients': 'ingredient',
       'Flavor': 'flavour',
-      'Flavour': 'flavour'
+      'Flavour': 'flavour',
+      'Product Type': 'productType'
     };
     return categoryMap[sectionTitle] || 'category';
   }
@@ -274,6 +305,18 @@ class ShopManager {
           p.flavour && p.flavour.toLowerCase().includes(flav.toLowerCase())
         )
       );
+    }
+
+    // Filter by Product Type (On sales, New products, Best-seller)
+    if (this.state.filters.productType.length > 0) {
+      console.log('Filtering by productType:', this.state.filters.productType);
+      console.log('Sample product filter values:', filtered.slice(0, 3).map(p => ({ name: p.name, filter: p.filter })));
+      filtered = filtered.filter(p =>
+        this.state.filters.productType.some(type =>
+          p.filter && p.filter.toLowerCase() === type.toLowerCase()
+        )
+      );
+      console.log('After productType filter, count:', filtered.length);
     }
 
     // Filter by Rating
@@ -494,6 +537,7 @@ class ShopManager {
   createProductCard(product) {
     const card = document.createElement('article');
     card.className = 'product-card';
+    card.style.cursor = 'pointer';
 
     const placeholderImg = '/Candy-Crunch-Website/views/website/img/product1.png';
     const imageUrl = product.image || placeholderImg;
@@ -502,6 +546,9 @@ class ShopManager {
     const displayPrice = firstSku ? firstSku.salePrice : product.basePrice;
     const originalPrice = firstSku?.originalPrice;
     const hasDiscount = originalPrice && originalPrice > displayPrice;
+
+    // Product detail page URL
+    const productDetailUrl = `/Candy-Crunch-Website/controllers/website/ProductDetailNewController.php?productId=${product.id}`;
 
     card.innerHTML = `
       <img class="product-image" src="${imageUrl}" alt="${product.name}" onerror="this.src='${placeholderImg}'" />
@@ -541,8 +588,23 @@ class ShopManager {
     const addToCartBtn = card.querySelector('.btn-primary-small');
     const wishlistBtn = card.querySelector('.btn-icon-primary-outline-small-square');
 
-    addToCartBtn.addEventListener('click', () => this.addToCart(product, firstSku));
-    wishlistBtn.addEventListener('click', () => this.toggleWishlist(product));
+    // Click on card navigates to product detail (except when clicking buttons)
+    card.addEventListener('click', (e) => {
+      // Don't navigate if user clicked on Add to Cart or Wishlist buttons
+      if (e.target.closest('.btn-primary-small') || e.target.closest('.btn-icon-primary-outline-small-square')) {
+        return;
+      }
+      window.location.href = productDetailUrl;
+    });
+
+    addToCartBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.addToCart(product, firstSku);
+    });
+    wishlistBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.toggleWishlist(product);
+    });
 
     return card;
   }

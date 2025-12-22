@@ -20,17 +20,17 @@ if ($is_logged_in && isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
 $current_page_uri = str_replace('\\', '/', $_SERVER['PHP_SELF']);
 $current_page_file = basename($current_page_uri);
 
-// Nếu không có file name hoặc là header.php thì mặc định là index.php
+// Nếu không có file name hoặc là header.php thì mặc định là landing.php
 if (empty($current_page_file) || $current_page_file === 'header.php') {
-    $current_page_file = 'index.php';
+    $current_page_file = 'landing.php';
 }
 
 // Function kiểm tra active state
 function is_active($page_name, $current_page_file)
 {
     // Homepage special case
-    if ($page_name === 'index.php' || $page_name === '#') {
-        return ($current_page_file === 'index.php' || $current_page_file === '') ? 'Yes' : 'No';
+    if ($page_name === 'landing.php' || $page_name === '#') {
+        return ($current_page_file === 'landing.php' || $current_page_file === '') ? 'Yes' : 'No';
     }
 
     // So sánh trực tiếp
@@ -106,7 +106,7 @@ if ($is_logged_in && isset($_SESSION['customer_id'])) {
     $wishlistModel = new WishlistModel();
     $wishlistItems = $wishlistModel->getWishlistByCustomer($_SESSION['customer_id']);
 }
-include 'cart.php';
+include __DIR__ . '/../views/website/php/cart.php';
 ?>
 <?php include __DIR__ . '/../views/website/php/wishlist.php'; ?>
 
@@ -117,7 +117,8 @@ include 'cart.php';
     <!-- Navigation Pills -->
     <div class="nav-pills">
         <!-- Homepage -->
-        <a href="index.php" class="nav-item" data-active="<?php echo is_active('index.php', $current_page_file); ?>"
+        <!-- Homepage -->
+        <a href="<?php echo $ROOT; ?>/views/website/php/landing.php" class="nav-item" data-active="<?php echo is_active('landing.php', $current_page_file); ?>"
             data-dropdown="false">
             <div class="inline-flex-center">
                 <div class="nav-text">Homepage</div>
@@ -125,7 +126,8 @@ include 'cart.php';
         </a>
 
         <!-- About Us -->
-        <a href="about.php" class="nav-item" data-active="<?php echo is_active('about.php', $current_page_file); ?>"
+        <!-- About Us -->
+        <a href="<?php echo $ROOT; ?>/views/website/php/about.php" class="nav-item" data-active="<?php echo is_active('about.php', $current_page_file); ?>"
             data-dropdown="false">
             <div class="inline-flex-center">
                 <div class="nav-text">About us</div>
@@ -133,7 +135,8 @@ include 'cart.php';
         </a>
 
         <!-- SHOP DROPDOWN BUTTON -->
-        <a href="#" class="nav-item" data-active="<?php echo is_active('shop.php', $current_page_file); ?>"
+        <!-- SHOP DROPDOWN BUTTON -->
+        <a href="<?php echo $ROOT; ?>/views/website/php/shop.php" class="nav-item" data-active="<?php echo is_active('shop.php', $current_page_file); ?>"
             data-dropdown="true" id="shopDropdownBtn">
             <div class="inline-flex-center">
                 <div class="nav-text">Shop</div>
@@ -144,7 +147,8 @@ include 'cart.php';
         </a>
 
         <!-- Checkout -->
-        <a href="checkout.php" class="nav-item"
+        <!-- Checkout -->
+        <a href="<?php echo $ROOT; ?>/views/website/php/checkout.php" class="nav-item"
             data-active="<?php echo is_active('checkout.php', $current_page_file); ?>" data-dropdown="false">
             <div class="inline-flex-center">
                 <div class="nav-text">Checkout</div>
@@ -154,7 +158,8 @@ include 'cart.php';
 
 
         <!-- Policy -->
-        <a href="policy.php" class="nav-item" data-active="<?php echo is_active('policy.php', $current_page_file); ?>"
+        <!-- Policy -->
+        <a href="<?php echo $ROOT; ?>/views/website/php/policy.php" class="nav-item" data-active="<?php echo is_active('policy.php', $current_page_file); ?>"
             data-dropdown="false">
             <div class="inline-flex-center">
                 <div class="nav-text">Policy</div>
@@ -180,7 +185,7 @@ include 'cart.php';
             </button>
 
             <!-- Account -->
-            <a href="my_account.php" class="action-item">
+            <a href="<?php echo $ROOT; ?>/views/website/php/my_account.php" class="action-item">
                 <img src="<?php echo $ROOT; ?>/views/website/img/person.svg" alt="User" class="action-icon" />
             </a>
         </div>
@@ -190,11 +195,11 @@ include 'cart.php';
         <!-- HEADER CHO KHÁCH (CHƯA ĐĂNG NHẬP) -->
         <!-- ============================================ -->
         <div class="auth-buttons">
-            <a href="login.php" class="btn btn-login">
+            <a href="<?php echo $ROOT; ?>/views/website/php/login.php" class="btn btn-login">
                 <span class="btn-text">Log in</span>
             </a>
 
-            <a href="sign_up.php" class="btn btn-signup">
+            <a href="<?php echo $ROOT; ?>/views/website/php/sign_up.php" class="btn btn-signup">
                 <span class="btn-text">Sign up</span>
             </a>
         </div>
@@ -211,14 +216,13 @@ include 'cart.php';
                     <div class="menu-column">
                         <div class="menu-title">Hard Candy</div>
                         <div class="menu-items">
-                            <a class="menu-item" href="product.php?id=milk-coffee-candy"
-                                data-image="/Candy-Crunch-Website/views/website/img/products
-/HAC-001_1766332406_0.webp" data-title="Milk-Filled Coffee Candy"
+                            <a class="menu-item" href="<?php echo $ROOT; ?>/controllers/website/ProductDetailNewController.php?productId=HAC-001"
+                                data-image="/Candy-Crunch-Website/views/website/img/products/HAC-001_1766332406_0.webp" data-title="Milk-Filled Coffee Candy"
                                 data-desc="Rich and creamy coffee-flavored hard candy with a smooth finish">
                                 Milk Coffee Candy
                             </a>
-                            <a class="menu-item" href="product.php?id=fruit-candy"
-                            data-image="/Candy-Crunch-Website/views/website/img/products/HAC-002_1766332363_0.webp" data-title="Fruit Candy"
+                            <a class="menu-item" href="<?php echo $ROOT; ?>/controllers/website/ProductDetailNewController.php?productId=HAC-002"
+                                data-image="/Candy-Crunch-Website/views/website/img/products/HAC-002_1766332363_0.webp" data-title="Fruit Candy"
                                 data-desc="Bright and juicy hard candies bursting with assorted fruit sweetness in every piece">
                                 Fruit Candy
                             </a>
@@ -229,15 +233,13 @@ include 'cart.php';
                     <div class="menu-column">
                         <div class="menu-title">Filled-Hard Candy</div>
                         <div class="menu-items">
-                            <a class="menu-item" href="product.php?id=caramel-coffee"
-                                data-image="/Candy-Crunch-Website/views/website/img/products
-/FHC-001_1766334726_0.png" data-title="Caramel-Filled Coffee Candy"
+                            <a class="menu-item" href="<?php echo $ROOT; ?>/controllers/website/ProductDetailNewController.php?productId=FHC-001"
+                                data-image="/Candy-Crunch-Website/views/website/img/products/FHC-001_1766334726_0.png" data-title="Caramel-Filled Coffee Candy"
                                 data-desc="Coffee candy with gooey caramel center for double indulgence">
                                 Caramel-Filled Coffee Candy
                             </a>
-                            <a class="menu-item" href="product.php?id=milk-filled-coffee"
-                                data-image="/Candy-Crunch-Website/views/website/img/products
-/FHC-002_1766333086_0.webp" data-title="Milk-filled Coffee Candy"
+                            <a class="menu-item" href="<?php echo $ROOT; ?>/controllers/website/ProductDetailNewController.php?productId=FHC-002"
+                                data-image="/Candy-Crunch-Website/views/website/img/products/FHC-002_1766333086_0.webp" data-title="Milk-filled Coffee Candy"
                                 data-desc="Smooth milk filling wrapped in coffee-flavored shell">
                                 Milk-filled Coffee Candy
                             </a>
@@ -248,15 +250,13 @@ include 'cart.php';
                     <div class="menu-column">
                         <div class="menu-title">Gummy</div>
                         <div class="menu-items">
-                            <a class="menu-item" href="product.php?id=worm-gummies"
-                                data-image="/Candy-Crunch-Website/views/website/img/products
-/GUM-001_1766332806_0.webp" data-title="Wiggly Worm Gummies"
+                            <a class="menu-item" href="<?php echo $ROOT; ?>/controllers/website/ProductDetailNewController.php?productId=GUM-001"
+                                data-image="/Candy-Crunch-Website/views/website/img/products/GUM-001_1766332806_0.webp" data-title="Wiggly Worm Gummies"
                                 data-desc="Fun worm-shaped gummies in fruity flavors kids love">
                                 Wiggly Worm Gummies
                             </a>
-                            <a class="menu-item" href="product.php?id=bear-gummies"
-                                data-image="/Candy-Crunch-Website/views/website/img/products
-/GUM-002_1766334760_0.png" data-title="Tiny Bear Gummies"
+                            <a class="menu-item" href="<?php echo $ROOT; ?>/controllers/website/ProductDetailNewController.php?productId=GUM-002"
+                                data-image="/Candy-Crunch-Website/views/website/img/products/GUM-002_1766334760_0.png" data-title="Tiny Bear Gummies"
                                 data-desc="Adorable bear-shaped gummies packed with fruit flavors">
                                 Tiny Bear Gummies
                             </a>
@@ -267,30 +267,26 @@ include 'cart.php';
                     <div class="menu-column">
                         <div class="menu-title">Chewing Gum</div>
                         <div class="menu-items">
-                            <a class="menu-item" href="product.php?id=blueberry-chewy"
-                                data-image="/Candy-Crunch-Website/views/website/img/products
-/CHG-001_1766334469_0.png" data-title="Blueberry Crisp Chewy"
+                            <a class="menu-item" href="<?php echo $ROOT; ?>/controllers/website/ProductDetailNewController.php?productId=CHG-001"
+                                data-image="/Candy-Crunch-Website/views/website/img/products/CHG-001_1766334469_0.png" data-title="Blueberry Crisp Chewy"
                                 data-desc="Crispy shell with chewy center, sweet blueberry taste">
                                 Blueberry Crisp Chewy
                             </a>
-                            <a class="menu-item" href="product.php?id=mint-chewy"
-                                data-image="/Candy-Crunch-Website/views/website/img/products
-/CHG-002_1766334513_0.png"
+                            <a class="menu-item" href="<?php echo $ROOT; ?>/controllers/website/ProductDetailNewController.php?productId=CHG-002"
+                                data-image="/Candy-Crunch-Website/views/website/img/products/CHG-002_1766334513_0.png"
                                 data-title="Mint Crisp Chewy"
                                 data-desc="Refreshing mint flavor for lasting fresh breath">
                                 Mint Crisp Chewy
                             </a>
-                            <a class="menu-item" href="product.php?id=cola-chewy"
-                                data-image="/Candy-Crunch-Website/views/website/img/products
-/CHG-003_1766334546_0.png
-" data-title="Cola Crisp Chewy"
+                            <a class="menu-item" href="<?php echo $ROOT; ?>/controllers/website/ProductDetailNewController.php?productId=CHG-003"
+                                data-image="/Candy-Crunch-Website/views/website/img/products/CHG-003_1766334546_0.png"
+                                data-title="Cola Crisp Chewy"
                                 data-desc="Classic cola taste in a fun chewing gum format">
                                 Cola Crisp Chewy
                             </a>
-                            <a class="menu-item" href="product.php?id=strawberry-chewy"
-                                data-image="/Candy-Crunch-Website/views/website/img/products
-/CHG-004_1766334585_0.png
-" data-title="Strawberry Soft Chewy"
+                            <a class="menu-item" href="<?php echo $ROOT; ?>/controllers/website/ProductDetailNewController.php?productId=CHG-004"
+                                data-image="/Candy-Crunch-Website/views/website/img/products/CHG-004_1766334585_0.png"
+                                data-title="Strawberry Soft Chewy"
                                 data-desc="Soft and sweet strawberry chewing gum">
                                 Strawberry Soft Chewy
                             </a>
@@ -301,29 +297,25 @@ include 'cart.php';
                     <div class="menu-column">
                         <div class="menu-title">Marshmallow</div>
                         <div class="menu-items">
-                            <a class="menu-item" href="product.php?id=vanilla-whirl"
-                                data-image="/Candy-Crunch-Website/views/website/img/products
-/MAR-001_1766334947_0.png" data-title="Vanilla Cotton Whirl"
+                            <a class="menu-item" href="<?php echo $ROOT; ?>/controllers/website/ProductDetailNewController.php?productId=MAR-001"
+                                data-image="/Candy-Crunch-Website/views/website/img/products/MAR-001_1766334947_0.png" data-title="Vanilla Cotton Whirl"
                                 data-desc="Cloud-like vanilla marshmallows that melt in your mouth">
                                 Vanilla Cotton Whirl
                             </a>
-                            <a class="menu-item" href="product.php?id=chocolate-whirl"
-                                data-image="/Candy-Crunch-Website/views/website/img/products
-/MAR-002_1766334365_0.png" data-title="Chocolate Cotton Whirl"
+                            <a class="menu-item" href="<?php echo $ROOT; ?>/controllers/website/ProductDetailNewController.php?productId=MAR-002"
+                                data-image="/Candy-Crunch-Website/views/website/img/products/MAR-002_1766334365_0.png" data-title="Chocolate Cotton Whirl"
                                 data-desc="Rich chocolate marshmallows with fluffy texture">
                                 Chocolate Cotton Whirl
                             </a>
-                            <a class="menu-item" href="product.php?id=strawberry-whirl"
-                                data-image="/Candy-Crunch-Website/views/website/img/products
-/MAR-003_1766334927_0.png"
+                            <a class="menu-item" href="<?php echo $ROOT; ?>/controllers/website/ProductDetailNewController.php?productId=MAR-003"
+                                data-image="/Candy-Crunch-Website/views/website/img/products/MAR-003_1766334927_0.png"
                                 data-title="Strawberry Cotton Whirl"
                                 data-desc="Pink and fluffy strawberry marshmallow delights">
                                 Strawberry Cotton Whirl
                             </a>
-                            <a class="menu-item" href="product.php?id=blueberry-cloud"
-                                data-image="/Candy-Crunch-Website/views/website/img/products
-/MAR-004_1766334899_0.png
-" data-title="Blueberry Fluffy Cloud"
+                            <a class="menu-item" href="<?php echo $ROOT; ?>/controllers/website/ProductDetailNewController.php?productId=MAR-004"
+                                data-image="/Candy-Crunch-Website/views/website/img/products/MAR-004_1766334899_0.png"
+                                data-title="Blueberry Fluffy Cloud"
                                 data-desc="Light blueberry marshmallows with fruity burst">
                                 Blueberry Fluffy Cloud
                             </a>
@@ -334,16 +326,13 @@ include 'cart.php';
                     <div class="menu-column">
                         <div class="menu-title">Collection</div>
                         <div class="menu-items">
-                            <a class="menu-item" href="collection.php?id=tet"
-                                data-image="/Candy-Crunch-Website/views/website/img/products
-/NOU-001_1766334996_0.png
-" data-title="Tet Collection"
+                            <a class="menu-item" href="<?php echo $ROOT; ?>/views/website/php/shop.php?category=Tet Collection"
+                                data-image="/Candy-Crunch-Website/views/website/img/products/NOU-001_1766334996_0.png" data-title="Tet Collection"
                                 data-desc="Special edition candy boxes for Lunar New Year celebrations">
                                 Tet Collection
                             </a>
-                            <a class="menu-item" href="collection.php?id=christmas"
-                                data-image="/Candy-Crunch-Website/views/website/img/products
-/WS-001_1766334638_0.png" data-title="Christmas Collection"
+                            <a class="menu-item" href="<?php echo $ROOT; ?>/views/website/php/shop.php?category=Christmas Collection"
+                                data-image="/Candy-Crunch-Website/views/website/img/products/WS-001_1766334638_0.png" data-title="Christmas Collection"
                                 data-desc="Festive candy assortments for holiday season">
                                 Christmas Collection
                             </a>
@@ -354,7 +343,7 @@ include 'cart.php';
 
                 <!-- See All -->
                 <div class="inline-flex-center">
-                    <a class="see-all-link" href="shop.php">See all products →</a>
+                    <a class="see-all-link" href="<?php echo $ROOT; ?>/views/website/php/shop.php">See all products →</a>
                 </div>
             </div>
 

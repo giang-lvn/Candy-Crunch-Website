@@ -46,19 +46,19 @@ $file = basename($path);
 
             <div class="filter-options">
               <label class="filter-option">
-                <input class="filter-checkbox" type="checkbox" data-filter = "On Sales"/>
+                <input class="filter-checkbox" type="checkbox" data-filter="On sales"/>
                 <span class="filter-text">On Sales</span>
               </label>
 
 
               <label class="filter-option">
-                <input class="filter-checkbox" type="checkbox" data-filter = "New Product"/>
+                <input class="filter-checkbox" type="checkbox" data-filter="New products"/>
                 <span class="filter-text">New Product</span>
               </label>
 
 
               <label class="filter-option">
-                <input class="filter-checkbox" type="checkbox" data-filter = "Best Seller"/>
+                <input class="filter-checkbox" type="checkbox" data-filter="Best-seller"/>
                 <span class="filter-text">Best Seller</span>
               </label>
             </div>

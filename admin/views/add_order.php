@@ -193,7 +193,10 @@ function getProductThumb($imageData) {
                                 </tr>
                                 <tr>
                                     <td>Phí vận chuyển:</td>
-                                    <td class="text-end" id="shippingDisplay">0đ</td>
+                                    <td class="text-end">
+                                        <span id="shippingDisplay">30.000đ</span>
+                                        <small id="freeShipNote" class="text-success d-block" style="display:none !important;"><i class="bi bi-check-circle"></i> Free ship</small>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>Voucher:</td>
@@ -270,15 +273,19 @@ function getProductThumb($imageData) {
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Phương thức vận chuyển</label>
                         <select name="shipping_method" class="form-select" onchange="updateShippingFee(this)">
-                            <option value="Standard" data-fee="25000">Giao hàng tiêu chuẩn (25.000đ)</option>
+                            <option value="Standard" data-fee="30000" selected>Giao hàng tiêu chuẩn (30.000đ)</option>
                             <option value="Express" data-fee="50000">Giao hàng nhanh (50.000đ)</option>
                             <option value="Same Day" data-fee="80000">Giao trong ngày (80.000đ)</option>
                         </select>
+                        <small class="text-success mt-1 d-block">
+                            <i class="bi bi-gift me-1"></i>Miễn phí ship cho đơn từ 200.000đ
+                        </small>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Phí vận chuyển (VNĐ)</label>
                         <input type="number" name="shipping_fee" id="shippingFee" class="form-control" 
-                               value="25000" min="0" step="1000" onchange="updateTotal()">
+                               value="30000" min="0" step="1000" onchange="updateTotal()" readonly>
+                        <small class="text-muted">Tự động tính theo giá trị đơn hàng</small>
                     </div>
                 </div>
             </div>
@@ -447,8 +454,10 @@ function updateProductInfo(select) {
 }
 
 function updateShippingFee(select) {
-    const fee = $(select).find(':selected').data('fee') || 0;
-    $('#shippingFee').val(fee);
+    // Phí ship mặc định từ option được chọn
+    const baseFee = $(select).find(':selected').data('fee') || 30000;
+    // Lưu phí gốc để dùng trong updateTotal
+    $('#shippingFee').data('base-fee', baseFee);
     updateTotal();
 }
 
@@ -467,8 +476,23 @@ function updateTotal() {
         subtotal += itemTotal;
     });
     
-    // Phí vận chuyển
-    const shipping = parseFloat($('#shippingFee').val()) || 0;
+    // Phí vận chuyển - Free ship cho đơn từ 200,000đ
+    const FREE_SHIP_THRESHOLD = 200000;
+    const DEFAULT_SHIPPING_FEE = 30000;
+    let baseFee = parseFloat($('#shippingFee').data('base-fee')) || parseFloat($('select[name="shipping_method"]').find(':selected').data('fee')) || DEFAULT_SHIPPING_FEE;
+    
+    let shipping = 0;
+    let isFreeShip = false;
+    
+    if (subtotal >= FREE_SHIP_THRESHOLD) {
+        shipping = 0;
+        isFreeShip = true;
+    } else {
+        shipping = baseFee;
+    }
+    
+    // Cập nhật giá trị input hidden
+    $('#shippingFee').val(shipping);
     
     // Voucher
     let voucherDiscount = 0;
@@ -490,7 +514,19 @@ function updateTotal() {
     
     // Cập nhật hiển thị
     $('#subtotalDisplay').text(formatCurrencyJS(subtotal));
-    $('#shippingDisplay').text(formatCurrencyJS(shipping));
+    
+    if (isFreeShip) {
+        $('#shippingDisplay').html('<span class="text-decoration-line-through text-muted">' + formatCurrencyJS(baseFee) + '</span> <span class="text-success fw-bold">0đ</span>');
+        $('#freeShipNote').show();
+    } else {
+        $('#shippingDisplay').text(formatCurrencyJS(shipping));
+        $('#freeShipNote').hide();
+        if (subtotal > 0) {
+            const remaining = FREE_SHIP_THRESHOLD - subtotal;
+            $('#shippingDisplay').append('<br><small class="text-muted">Mua thêm ' + formatCurrencyJS(remaining) + ' để được free ship</small>');
+        }
+    }
+    
     $('#voucherDisplay').text('-' + formatCurrencyJS(voucherDiscount));
     $('#totalDisplay').text(formatCurrencyJS(total));
 }
