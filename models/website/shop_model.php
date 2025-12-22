@@ -74,6 +74,18 @@ class ShopModel
             $bind['rating'] = (int) $params['rating'];
         }
 
+        // Filter by Product Type (On sales, New products, Best-seller)
+        if (!empty($params['productType'])) {
+            $types = explode(',', $params['productType']);
+            $placeholders = [];
+            foreach ($types as $i => $type) {
+                $key = "type$i";
+                $placeholders[] = ":$key";
+                $bind[$key] = $type;
+            }
+            $where[] = "p.Filter IN (" . implode(',', $placeholders) . ")";
+        }
+
         $whereSql = $where ? 'WHERE ' . implode(' AND ', $where) : '';
         $havingSql = $having ? 'HAVING ' . implode(' AND ', $having) : '';
 
@@ -109,7 +121,7 @@ class ShopModel
 
         // --- 5. MAIN QUERY (Lấy p.Image và đóng gói SKU chi tiết) ---
         $sql = "SELECT 
-                    p.ProductID, p.ProductName, p.Image, p.Ingredient, p.Flavour, c.CategoryName,
+                    p.ProductID, p.ProductName, p.Image, p.Ingredient, p.Flavour, p.Filter, c.CategoryName,
                     MIN(IFNULL(s.PromotionPrice, s.OriginalPrice)) as MinPrice,
                     IFNULL(AVG(fb.Rating), 0) as AvgRating,
                     GROUP_CONCAT(
@@ -122,7 +134,7 @@ class ShopModel
                 LEFT JOIN INVENTORY i ON s.InventoryID = i.InventoryID
                 LEFT JOIN FEEDBACK fb ON fb.SKUID = s.SKUID
                 $whereSql
-                GROUP BY p.ProductID, p.ProductName, p.Image, p.Ingredient, p.Flavour, c.CategoryName
+                GROUP BY p.ProductID, p.ProductName, p.Image, p.Ingredient, p.Flavour, p.Filter, c.CategoryName
                 $havingSql
                 ORDER BY $orderBy
                 LIMIT :limit OFFSET :offset";
@@ -164,6 +176,7 @@ class ShopModel
                 'rating' => round($row['AvgRating'], 1),
                 'ingredient' => $row['Ingredient'],
                 'flavour' => $row['Flavour'],
+                'filter' => $row['Filter'],
                 'basePrice' => (float) $row['MinPrice'],
                 'skus' => $skus,
                 'totalStock' => array_sum(array_column($skus, 'stock'))

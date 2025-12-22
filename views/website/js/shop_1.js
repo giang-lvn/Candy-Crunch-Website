@@ -10,6 +10,7 @@ class ShopManager {
         category: [],
         ingredient: [],
         flavour: [],
+        productType: [],
         rating: null
       },
       currentPage: 1,
@@ -139,6 +140,8 @@ class ShopManager {
 
     let category = this.getFilterCategory(sectionTitle);
 
+    console.log('Filter Debug:', { sectionTitle, category, filterValue, checked: checkbox.checked });
+
     if (checkbox.checked) {
       if (!this.state.filters[category].includes(filterValue)) {
         this.state.filters[category].push(filterValue);
@@ -151,6 +154,8 @@ class ShopManager {
       this.removeFilterTagByValue(filterValue);
     }
 
+    console.log('Current filters state:', JSON.stringify(this.state.filters));
+
     this.state.currentPage = 1;
     this.applyFilters(); // Filter ở client-side
   }
@@ -160,7 +165,8 @@ class ShopManager {
       'Category': 'category',
       'Ingredients': 'ingredient',
       'Flavor': 'flavour',
-      'Flavour': 'flavour'
+      'Flavour': 'flavour',
+      'Product Type': 'productType'
     };
     return categoryMap[sectionTitle] || 'category';
   }
@@ -274,6 +280,18 @@ class ShopManager {
           p.flavour && p.flavour.toLowerCase().includes(flav.toLowerCase())
         )
       );
+    }
+
+    // Filter by Product Type (On sales, New products, Best-seller)
+    if (this.state.filters.productType.length > 0) {
+      console.log('Filtering by productType:', this.state.filters.productType);
+      console.log('Sample product filter values:', filtered.slice(0, 3).map(p => ({ name: p.name, filter: p.filter })));
+      filtered = filtered.filter(p =>
+        this.state.filters.productType.some(type =>
+          p.filter && p.filter.toLowerCase() === type.toLowerCase()
+        )
+      );
+      console.log('After productType filter, count:', filtered.length);
     }
 
     // Filter by Rating
