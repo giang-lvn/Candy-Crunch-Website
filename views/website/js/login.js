@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         // Chuyển hướng
                         setTimeout(() => {
-                            window.location.href = 'index.php';
+                            window.location.href = 'landing.php';
                         }, 500);
                     } else {
                         // Đăng nhập thất bại
