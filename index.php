@@ -16,12 +16,12 @@ $action = $_GET['action'] ?? 'index';
 // ==========================================
 
 switch ($controller) {
-    
+
     // ========== HOME ==========
     case 'home':
         require_once 'controllers/website/HomeController.php';
         $homeController = new HomeController();
-        
+
         if ($action === 'index') {
             $homeController->index();
         }
@@ -31,7 +31,7 @@ switch ($controller) {
     case 'shop':
         require_once 'controllers/website/ShopController.php';
         $shopController = new ShopController();
-        
+
         if ($action === 'index') {
             $shopController->index();
         }
@@ -41,7 +41,7 @@ switch ($controller) {
     case 'cart':
         require_once 'controllers/website/CartController.php';
         $cartController = new CartController();
-        
+
         switch ($action) {
             case 'index':
                 $cartController->index();
@@ -74,7 +74,7 @@ switch ($controller) {
     case 'wishlist':
         require_once 'controllers/website/WishlistController.php';
         $wishlistController = new WishlistController();
-        
+
         switch ($action) {
             case 'index':
                 $wishlistController->index();

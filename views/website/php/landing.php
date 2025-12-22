@@ -1,6 +1,6 @@
 <?php
 $ROOT = '/Candy-Crunch-Website';
-include('../../../partials/header.php');
+include(__DIR__ . '/../../../partials/header.php');
 $uri = $_SERVER['REQUEST_URI'];
 $path = parse_url($uri, PHP_URL_PATH);
 $file = basename($path);
@@ -12,7 +12,7 @@ $file = basename($path);
 */
 
 // Nếu truy cập trực tiếp folder hoặc index.php → landing
-if ($file === '' || $file === 'index.php') {
+if ($file === '' || $file === 'landing.php') {
     // Không require gì cả
     // Chạy HTML landing phía dưới
 } else {
@@ -28,19 +28,19 @@ if ($file === '' || $file === 'index.php') {
         case 'my_account.php':
             require 'my_account.php';
             exit;
-        
+
         case 'changepass.php':
             require 'changepass.php';
             exit;
-        
+
         case 'my_orders.php':
             require 'my_orders.php';
             exit;
-        
+
         case 'my_vouchers.php':
             require 'my_vouchers.php';
             exit;
-        
+
         case '':
 
 
@@ -67,7 +67,8 @@ if ($file === '' || $file === 'index.php') {
         href="https://fonts.googleapis.com/css2?family=Modak&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&display=swap"
         rel="stylesheet">
     <!-- Preload critical hero images for faster loading -->
-    <link rel="preload" href="<?php echo $ROOT; ?>/views/website/img/hero-thumbnail.svg" as="image" fetchpriority="high">
+    <link rel="preload" href="<?php echo $ROOT; ?>/views/website/img/hero-thumbnail.svg" as="image"
+        fetchpriority="high">
     <link rel="preload" href="<?php echo $ROOT; ?>/views/website/img/hero-line1.webp" as="image">
     <link rel="preload" href="<?php echo $ROOT; ?>/views/website/img/hero-line2.webp" as="image">
     <link rel="preload" href="<?php echo $ROOT; ?>/views/website/img/hero-line3.webp" as="image">
@@ -90,27 +91,28 @@ if ($file === '' || $file === 'index.php') {
                 <div class="hero-heading">
                     <div class="hero-line">
                         <h1 class="hero-text hero-text-pink">CHRISTMAS</h1>
-                        <img src="<?php echo $ROOT; ?>/views/website/img/hero-line1.webp" alt="badge" class="hero-badge" loading="eager"
-                            width="48" height="48">
+                        <img src="<?php echo $ROOT; ?>/views/website/img/hero-line1.webp" alt="badge" class="hero-badge"
+                            loading="eager" width="48" height="48">
                     </div>
                     <div class="hero-line">
-                        <img src="<?php echo $ROOT; ?>/views/website/img/hero-line2.webp" alt="badge" class="hero-badge" loading="eager"
-                            width="48" height="48">
+                        <img src="<?php echo $ROOT; ?>/views/website/img/hero-line2.webp" alt="badge" class="hero-badge"
+                            loading="eager" width="48" height="48">
                         <h1 class="hero-text hero-text-teal">IS</h1>
-                        <img src="<?php echo $ROOT; ?>/views/website/img/hero-line2.webp" alt="badge" class="hero-badge" loading="eager"
-                            width="48" height="48">
+                        <img src="<?php echo $ROOT; ?>/views/website/img/hero-line2.webp" alt="badge" class="hero-badge"
+                            loading="eager" width="48" height="48">
                         <h1 class="hero-text hero-text-teal">COMING</h1>
-                        <img src="<?php echo $ROOT; ?>/views/website/img/hero-line3.webp" alt="badge" class="hero-badge" loading="eager"
-                            width="48" height="48">
+                        <img src="<?php echo $ROOT; ?>/views/website/img/hero-line3.webp" alt="badge" class="hero-badge"
+                            loading="eager" width="48" height="48">
                     </div>
                     <div class="hero-line">
                         <h1 class="hero-text hero-text-orange">All THE WAYS</h1>
-                        <img src="<?php echo $ROOT; ?>/views/website/img/hero-line4.webp" alt="badge" class="hero-badge" loading="eager"
-                            width="48" height="48">
+                        <img src="<?php echo $ROOT; ?>/views/website/img/hero-line4.webp" alt="badge" class="hero-badge"
+                            loading="eager" width="48" height="48">
                     </div>
                 </div>
 
-                <button onclick="window.location.href='/views/website/php/shop.html'" class="btn-primary-large">Check it out now</button>
+                <button onclick="window.location.href='/views/website/php/shop.html'" class="btn-primary-large">Check it
+                    out now</button>
             </div>
 
             <p class="hero-tagline">
@@ -150,12 +152,18 @@ if ($file === '' || $file === 'index.php') {
         <h3 class="values-main-text-2 values-text-state-2">ALSO IN FEAR</h3>
 
         <!-- Intro Images State 1 (intro1-6) -->
-        <img src="<?php echo $ROOT; ?>/views/website/img/intro1.svg" alt="Candy lover" class="values-img values-img-state-1 values-img-1">
-        <img src="<?php echo $ROOT; ?>/views/website/img/intro2.svg" alt="Candy lover" class="values-img values-img-state-1 values-img-2">
-        <img src="<?php echo $ROOT; ?>/views/website/img/intro3.svg" alt="Candy lover" class="values-img values-img-state-1 values-img-3">
-        <img src="<?php echo $ROOT; ?>/views/website/img/intro4.svg" alt="Candy lover" class="values-img values-img-state-1 values-img-4">
-        <img src="<?php echo $ROOT; ?>/views/website/img/intro5.svg" alt="Candy lover" class="values-img values-img-state-1 values-img-5">
-        <img src="<?php echo $ROOT; ?>/views/website/img/intro6.svg" alt="Candy lover" class="values-img values-img-state-1 values-img-6">
+        <img src="<?php echo $ROOT; ?>/views/website/img/intro1.svg" alt="Candy lover"
+            class="values-img values-img-state-1 values-img-1">
+        <img src="<?php echo $ROOT; ?>/views/website/img/intro2.svg" alt="Candy lover"
+            class="values-img values-img-state-1 values-img-2">
+        <img src="<?php echo $ROOT; ?>/views/website/img/intro3.svg" alt="Candy lover"
+            class="values-img values-img-state-1 values-img-3">
+        <img src="<?php echo $ROOT; ?>/views/website/img/intro4.svg" alt="Candy lover"
+            class="values-img values-img-state-1 values-img-4">
+        <img src="<?php echo $ROOT; ?>/views/website/img/intro5.svg" alt="Candy lover"
+            class="values-img values-img-state-1 values-img-5">
+        <img src="<?php echo $ROOT; ?>/views/website/img/intro6.svg" alt="Candy lover"
+            class="values-img values-img-state-1 values-img-6">
 
         <!-- Intro Images State 2 (intro7-12) -->
         <img src="<?php echo $ROOT; ?>/views/website/img/intro7.svg" alt="Health concern"
@@ -217,12 +225,14 @@ if ($file === '' || $file === 'index.php') {
 
         <div class="joy-products">
             <div class="joy-products-col">
-                <img src="<?php echo $ROOT; ?>/views/website/img/Commercial-CB001-royal-cocoa-bomb.webp" alt="Product" class="joy-product-img">
-            
+                <img src="<?php echo $ROOT; ?>/views/website/img/Commercial-CB001-royal-cocoa-bomb.webp" alt="Product"
+                    class="joy-product-img">
+
             </div>
             <div class="joy-products-col">
-                <img src="<?php echo $ROOT; ?>/views/website/img/Commercial-NOU001-dried-fruit.webp" alt="Product" class="joy-product-img">
-               
+                <img src="<?php echo $ROOT; ?>/views/website/img/Commercial-NOU001-dried-fruit.webp" alt="Product"
+                    class="joy-product-img">
+
             </div>
         </div>
     </section>
@@ -499,11 +509,13 @@ if ($file === '' || $file === 'index.php') {
         <div class="gallery-scroll">
             <div class="gallery-column gallery-left">
                 <div class="crew-member crew-member-1">
-                    <img src="<?php echo $ROOT; ?>/views/website/img/ot-thanhgiang.png" alt="Thanh Giang" class="gallery-item">
+                    <img src="<?php echo $ROOT; ?>/views/website/img/ot-thanhgiang.png" alt="Thanh Giang"
+                        class="gallery-item">
                     <div class="crew-name">THANH GIANG</div>
                 </div>
                 <div class="crew-member crew-member-2">
-                    <img src="<?php echo $ROOT; ?>/views/website/img/ot-giang.png" alt="Ngoc Giang" class="gallery-item">
+                    <img src="<?php echo $ROOT; ?>/views/website/img/ot-giang.png" alt="Ngoc Giang"
+                        class="gallery-item">
                     <div class="crew-name">NGOC GIANG</div>
                 </div>
             </div>
@@ -512,11 +524,13 @@ if ($file === '' || $file === 'index.php') {
             </div>
             <div class="gallery-column gallery-right">
                 <div class="crew-member crew-member-3">
-                    <img src="<?php echo $ROOT; ?>/views/website/img/ot-mananh.png" alt="Team Member" class="gallery-item">
+                    <img src="<?php echo $ROOT; ?>/views/website/img/ot-mananh.png" alt="Team Member"
+                        class="gallery-item">
                     <div class="crew-name">MAN ANH</div>
                 </div>
                 <div class="crew-member crew-member-4">
-                    <img src="<?php echo $ROOT; ?>/views/website/img/ot-longvo.png" alt="Team Member" class="gallery-item">
+                    <img src="<?php echo $ROOT; ?>/views/website/img/ot-longvo.png" alt="Team Member"
+                        class="gallery-item">
                     <div class="crew-name">LONG VO</div>
                 </div>
             </div>
@@ -524,20 +538,30 @@ if ($file === '' || $file === 'index.php') {
 
         <!-- Community Images - Appear during "A COMMUNITY" phase -->
         <div class="community-gallery">
-            <img src="<?php echo $ROOT; ?>/views/website/img/Commercial-CG001-blueberry.webp" alt="Community" class="community-img community-img-1">
-            <img src="<?php echo $ROOT; ?>/views/website/img/Commercial-CG002-mint.webp" alt="Community" class="community-img community-img-2">
-            <img src="<?php echo $ROOT; ?>/views/website/img/Commercial-CG003-cola.webp" alt="Community" class="community-img community-img-3">
-            <img src="<?php echo $ROOT; ?>/views/website/img/Commercial-CG004-strawbery.webp" alt="Community" class="community-img community-img-4">
-            <img src="<?php echo $ROOT; ?>/views/website/img/Commercial-GUM001- Worm.webp" alt="Community" class="community-img community-img-5">
+            <img src="<?php echo $ROOT; ?>/views/website/img/Commercial-CG001-blueberry.webp" alt="Community"
+                class="community-img community-img-1">
+            <img src="<?php echo $ROOT; ?>/views/website/img/Commercial-CG002-mint.webp" alt="Community"
+                class="community-img community-img-2">
+            <img src="<?php echo $ROOT; ?>/views/website/img/Commercial-CG003-cola.webp" alt="Community"
+                class="community-img community-img-3">
+            <img src="<?php echo $ROOT; ?>/views/website/img/Commercial-CG004-strawbery.webp" alt="Community"
+                class="community-img community-img-4">
+            <img src="<?php echo $ROOT; ?>/views/website/img/Commercial-GUM001- Worm.webp" alt="Community"
+                class="community-img community-img-5">
         </div>
 
         <!-- Delight Images - Flip in during "A DELIGHT" phase -->
         <div class="delight-gallery">
-            <img src="<?php echo $ROOT; ?>/views/website/img/community_3.png" alt="Delight" class="delight-img delight-img-1">
-            <img src="<?php echo $ROOT; ?>/views/website/img/community_5.png" alt="Delight" class="delight-img delight-img-2">
-            <img src="<?php echo $ROOT; ?>/views/website/img/community_2.png" alt="Delight" class="delight-img delight-img-3">
-            <img src="<?php echo $ROOT; ?>/views/website/img/community_1.png" alt="Delight" class="delight-img delight-img-4">
-            <img src="<?php echo $ROOT; ?>/views/website/img/community_4.png" alt="Delight" class="delight-img delight-img-5">
+            <img src="<?php echo $ROOT; ?>/views/website/img/community_3.png" alt="Delight"
+                class="delight-img delight-img-1">
+            <img src="<?php echo $ROOT; ?>/views/website/img/community_5.png" alt="Delight"
+                class="delight-img delight-img-2">
+            <img src="<?php echo $ROOT; ?>/views/website/img/community_2.png" alt="Delight"
+                class="delight-img delight-img-3">
+            <img src="<?php echo $ROOT; ?>/views/website/img/community_1.png" alt="Delight"
+                class="delight-img delight-img-4">
+            <img src="<?php echo $ROOT; ?>/views/website/img/community_4.png" alt="Delight"
+                class="delight-img delight-img-5">
         </div>
 
         <!-- Arc Wheel: Rotating container with 3 arc phrases positioned at 0°, 120°, 240° -->
@@ -704,8 +728,10 @@ if ($file === '' || $file === 'index.php') {
     <!-- Testimonials Section -->
     <section class="testimonials">
         <!-- Decorative Stars -->
-        <img src="<?php echo $ROOT; ?>/views/website/img/star1.svg" alt="Star decoration" class="testimonial-star testimonial-star-1">
-        <img src="<?php echo $ROOT; ?>/views/website/img/star2.svg" alt="Star decoration" class="testimonial-star testimonial-star-2">
+        <img src="<?php echo $ROOT; ?>/views/website/img/star1.svg" alt="Star decoration"
+            class="testimonial-star testimonial-star-1">
+        <img src="<?php echo $ROOT; ?>/views/website/img/star2.svg" alt="Star decoration"
+            class="testimonial-star testimonial-star-2">
 
         <!-- Section Header -->
         <div class="testimonials-header">
@@ -717,27 +743,36 @@ if ($file === '' || $file === 'index.php') {
         <div class="testimonials-cards">
             <!-- Card 1 -->
             <div class="testimonial-card testimonial-card-1">
-                <img src="<?php echo $ROOT; ?>/views/website/img/testimonial1.png" alt="Customer testimonial" class="testimonial-image">
+                <img src="<?php echo $ROOT; ?>/views/website/img/testimonial1.png" alt="Customer testimonial"
+                    class="testimonial-image">
                 <div class="testimonial-text-container">
-                    <p class="testimonial-comment">“For me, it’s all about energy and vibe. Candy Crunch hits just right — bold flavor, not too heavy, and keeps me sharp. Whether I’m in the studio or working late, one pack is enough to keep my flow going. Once you try it, it’s hard to stop.”</p>
+                    <p class="testimonial-comment">“For me, it’s all about energy and vibe. Candy Crunch hits just right
+                        — bold flavor, not too heavy, and keeps me sharp. Whether I’m in the studio or working late, one
+                        pack is enough to keep my flow going. Once you try it, it’s hard to stop.”</p>
                     <p class="testimonial-tag">Hoang Long - Rapper</p>
                 </div>
             </div>
 
             <!-- Card 2 -->
             <div class="testimonial-card testimonial-card-2">
-                <img src="<?php echo $ROOT; ?>/views/website/img/testimonial2.png" alt="Customer testimonial" class="testimonial-image">
+                <img src="<?php echo $ROOT; ?>/views/website/img/testimonial2.png" alt="Customer testimonial"
+                    class="testimonial-image">
                 <div class="testimonial-text-container">
-                    <p class="testimonial-comment">“I’m pretty picky when it comes to sweets, but Candy Crunch is different~ The flavors are light, colorful, and fun — just like me! Every bite feels cheerful and gives me a little boost of happy energy.”</p>
+                    <p class="testimonial-comment">“I’m pretty picky when it comes to sweets, but Candy Crunch is
+                        different~ The flavors are light, colorful, and fun — just like me! Every bite feels cheerful
+                        and gives me a little boost of happy energy.”</p>
                     <p class="testimonial-tag">7 Colors Rabbit - Animal</p>
                 </div>
             </div>
 
             <!-- Card 3 -->
             <div class="testimonial-card testimonial-card-3">
-                <img src="<?php echo $ROOT; ?>/views/website/img/testimonial3.png" alt="Customer testimonial" class="testimonial-image">
+                <img src="<?php echo $ROOT; ?>/views/website/img/testimonial3.png" alt="Customer testimonial"
+                    class="testimonial-image">
                 <div class="testimonial-text-container">
-                    <p class="testimonial-comment">“I’m pretty picky when it comes to sweets, but Candy Crunch is different~ The flavors are light, colorful, and fun — just like me! Every bite feels cheerful and gives me a little boost of happy energy.”</p>
+                    <p class="testimonial-comment">“I’m pretty picky when it comes to sweets, but Candy Crunch is
+                        different~ The flavors are light, colorful, and fun — just like me! Every bite feels cheerful
+                        and gives me a little boost of happy energy.”</p>
                     <p class="testimonial-tag">C.Ronaldo - GOAT</p>
                 </div>
             </div>
@@ -764,7 +799,8 @@ if ($file === '' || $file === 'index.php') {
                                     <div class="text"><input class="div" placeholder="Your Email" type="email" /></div>
                                 </div>
                                 <div class="button"><img class="solar-arrow-right"
-                                        src="<?php echo $ROOT; ?>/views/website/img/solar-arrow-right-linear.svg" alt="Subscribe" /></div>
+                                        src="<?php echo $ROOT; ?>/views/website/img/solar-arrow-right-linear.svg"
+                                        alt="Subscribe" /></div>
                             </div>
                         </div>
                     </div>

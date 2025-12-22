@@ -993,7 +993,7 @@ nav.nav-visible {
 }
 
 .featured-card-pink .scalloped-edge {
-  color: var(--pink-700);
+  color: var(--pink-300);
 }
 
 /* ===== Slide-up Content ===== */
@@ -1035,7 +1035,7 @@ nav.nav-visible {
 }
 
 .featured-card-pink .featured-card-slideup {
-  background: var(--pink-700);
+  background: var(--pink-300);
 }
 
 .featured-card:hover .featured-card-slideup {

@@ -1212,7 +1212,6 @@ body {
 }
 
 .button-parent {
-    align-self: stretch;
     display: flex;
     align-items: flex-start;
     gap: 32px;

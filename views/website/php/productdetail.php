@@ -27,29 +27,30 @@ include('../../../partials/header.php');
 			<div class="thumbnail">
 
 				<div class="main-thumb-image">
-					<img src="<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png" alt="Product Image" id="main-image">
+					<img src="<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png"
+						alt="Product Image" id="main-image">
 					<section class="tag">
 						<span class="product-tag">Sugar-free</span>
 					</section>
 				</div>
 
 				<div class="gallery">
-						<img class="preview-image" 
-							     src="<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png" 
-							     alt="Product Image"
-							     onclick="changeImage('<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png')">
-						<img class="preview-image" 
-							     src="<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png" 
-							     alt="Product Image"
-							     onclick="changeImage('<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png')">
-						<img class="preview-image" 
-							     src="<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png" 
-							     alt="Product Image"
-							     onclick="changeImage('<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png')">
-						<img class="preview-image" 
-							     src="<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png" 
-							     alt="Product Image"
-							     onclick="changeImage('<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png')">
+					<img class="preview-image"
+						src="<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png"
+						alt="Product Image"
+						onclick="changeImage('<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png')">
+					<img class="preview-image"
+						src="<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png"
+						alt="Product Image"
+						onclick="changeImage('<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png')">
+					<img class="preview-image"
+						src="<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png"
+						alt="Product Image"
+						onclick="changeImage('<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png')">
+					<img class="preview-image"
+						src="<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png"
+						alt="Product Image"
+						onclick="changeImage('<?php echo $ROOT; ?>/views/website/img/product-img/main-thumb-example.png')">
 				</div>
 			</div>
 			<!-- end Image -->
@@ -86,17 +87,19 @@ include('../../../partials/header.php');
 
 							<!-- Price -->
 							<section class="product-price">
-									<span class="new-price" id="price-new">
-										150.000 VND
-									</span>
-									<span class="old-price" id="price-old">
-										150.000 VND
-									</span>
+								<span class="new-price" id="price-new">
+									150.000 VND
+								</span>
+								<span class="old-price" id="price-old">
+									150.000 VND
+								</span>
 							</section>
 						</section>
 
 						<p class="product-description-container">
-							Chocolate Filled Candies are a delicious and sweet treat that are perfect for any occasion. They are made with a rich and creamy chocolate filling that is encased in a crispy and crunchy candy shell. They are perfect for snacking or as a sweet treat after a meal.
+							Chocolate Filled Candies are a delicious and sweet treat that are perfect for any occasion.
+							They are made with a rich and creamy chocolate filling that is encased in a crispy and
+							crunchy candy shell. They are perfect for snacking or as a sweet treat after a meal.
 						</p>
 
 					</div>
@@ -206,7 +209,9 @@ include('../../../partials/header.php');
 		<div class="description-section">
 			<div class="description-content">
 				<h4 class="description-title">Description</h4>
-				<p class="description-text">Chocolate Filled Candies are a delicious and sweet treat that are perfect for any occasion. They are made with a rich and creamy chocolate filling that is encased in a crispy and crunchy candy shell. They are perfect for snacking or as a sweet treat after a meal.</p>
+				<p class="description-text">Chocolate Filled Candies are a delicious and sweet treat that are perfect
+					for any occasion. They are made with a rich and creamy chocolate filling that is encased in a crispy
+					and crunchy candy shell. They are perfect for snacking or as a sweet treat after a meal.</p>
 			</div>
 			<button class="btn-secondary-outline-small">See more</button>
 
@@ -271,7 +276,8 @@ include('../../../partials/header.php');
 						<!-- 5 sao -->
 						<div class="rating-row">
 							<span class="rating-row__label">5.0</span>
-							<img src="/views/website/img/Icon _ Star.svg" alt="5 star" class="rating-row__icon" />
+							<img src="<?php echo $ROOT; ?>/views/website/img/Icon _ Star.svg" alt="5 star"
+								class="rating-row__icon" />
 							<div class="rating-row__bar">
 								<div class="rating-row__bar-fill" style="width: 80%;"></div>
 							</div>
@@ -280,7 +286,8 @@ include('../../../partials/header.php');
 						<!-- 4 sao -->
 						<div class="rating-row">
 							<span class="rating-row__label">4.0</span>
-							<img src="/views/website/img/Icon _ Star.svg" alt="4 star" class="rating-row__icon" />
+							<img src="<?php echo $ROOT; ?>/views/website/img/Icon _ Star.svg" alt="4 star"
+								class="rating-row__icon" />
 							<div class="rating-row__bar">
 								<div class="rating-row__bar-fill" style="width: 70%;"></div>
 							</div>
@@ -289,7 +296,8 @@ include('../../../partials/header.php');
 						<!-- 3 sao -->
 						<div class="rating-row">
 							<span class="rating-row__label">3.0</span>
-							<img src="/views/website/img/Icon _ Star.svg" alt="3 star" class="rating-row__icon" />
+							<img src="<?php echo $ROOT; ?>/views/website/img/Icon _ Star.svg" alt="3 star"
+								class="rating-row__icon" />
 							<div class="rating-row__bar">
 								<div class="rating-row__bar-fill" style="width: 60%;"></div>
 							</div>
@@ -298,7 +306,8 @@ include('../../../partials/header.php');
 						<!-- 2 sao -->
 						<div class="rating-row">
 							<span class="rating-row__label">2.0</span>
-							<img src="/views/website/img/Icon _ Star.svg" alt="2 star" class="rating-row__icon" />
+							<img src="<?php echo $ROOT; ?>/views/website/img/Icon _ Star.svg" alt="2 star"
+								class="rating-row__icon" />
 							<div class="rating-row__bar">
 								<div class="rating-row__bar-fill" style="width: 50%;"></div>
 							</div>
@@ -307,7 +316,8 @@ include('../../../partials/header.php');
 						<!-- 1 sao -->
 						<div class="rating-row">
 							<span class="rating-row__label">1.0</span>
-							<img src="/views/website/img/Icon _ Star.svg" alt="1 star" class="rating-row__icon" />
+							<img src="<?php echo $ROOT; ?>/views/website/img/Icon _ Star.svg" alt="1 star"
+								class="rating-row__icon" />
 							<div class="rating-row__bar">
 								<div class="rating-row__bar-fill" style="width: 40%;"></div>
 							</div>
@@ -326,12 +336,12 @@ include('../../../partials/header.php');
 								<div class="rating-comment">
 									<span class="rating-number">4.0</span>
 									<span class="rating-star">
-										<img src="/views/website/img/Icon _ Star.svg" alt="star" />
+										<img src="<?php echo $ROOT; ?>/views/website/img/Icon _ Star.svg" alt="star" />
 									</span>
 
 								</div>
 							</div>
-							<span class="created-time">Last 10 days</span>
+							<span class="created-time">Last 20 days</span>
 						</div>
 
 						<span class="comment-text">I have to admit, KitKat really puts their heart into making
@@ -350,7 +360,7 @@ include('../../../partials/header.php');
 								<div class="rating-comment">
 									<span class="rating-number">4.0</span>
 									<span class="rating-star">
-										<img src="/views/website/img/Icon _ Star.svg" alt="star" />
+										<img src="<?php echo $ROOT; ?>/views/website/img/Icon _ Star.svg" alt="star" />
 									</span>
 
 								</div>
