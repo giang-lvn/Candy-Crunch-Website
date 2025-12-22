@@ -104,9 +104,11 @@
 
 /* EMPTY STATE */
 .cart-empty p {
-    text-align: center;
+    text-align: left;
     color: var(--text-black);
     font: var(--body-medium);
+    align-self: stretch;
+    align-items: flex-start;
 }
 
 /* ========== FREE SHIPPING ========== */

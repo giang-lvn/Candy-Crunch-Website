@@ -191,7 +191,7 @@
             <div class="payment-total">
                 <span class="label">Total</span>
 
-                <span class="value">
+                <span class="value-payment">
                     <?= number_format($total ?? 0, 0, ',', '.') ?> VND
                 </span>
             </div>

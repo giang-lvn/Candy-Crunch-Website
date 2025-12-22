@@ -595,15 +595,45 @@ class ShopManager {
     }
   }
 
-  toggleWishlist(product) {
-    console.log('Toggled wishlist:', product);
-    this.showNotification(`${product.name} added to wishlist!`, 'success');
-
+  async toggleWishlist(product) {
+    console.log('Toggling wishlist:', product);
     const target = event.currentTarget;
-    target.style.transform = 'scale(1.2)';
-    setTimeout(() => {
-      target.style.transform = 'scale(1)';
-    }, 200);
+
+    try {
+      const response = await fetch('/Candy-Crunch-Website/controllers/website/wishlistcontroller.php?action=toggle', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ product_id: product.id })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        this.showNotification(result.message, 'success');
+
+        // Dispatch event properly to document
+        document.dispatchEvent(new CustomEvent('wishlist-updated'));
+
+        // Animation
+        target.style.transform = 'scale(1.2)';
+        setTimeout(() => {
+          target.style.transform = 'scale(1)';
+        }, 200);
+
+        // Optional: Update icon state if needed (e.g. fill color)
+      } else {
+        if (result.redirect) {
+          window.location.href = result.redirect;
+        } else {
+          this.showNotification(result.message || 'Error updating wishlist', 'warning');
+        }
+      }
+    } catch (error) {
+      console.error('Wishlist error:', error);
+      this.showNotification('Cannot update wishlist', 'error');
+    }
   }
 
   animateAddToCart(button) {

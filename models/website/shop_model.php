@@ -8,6 +8,34 @@ class ShopModel
         $this->db = $db;
     }
 
+    /**
+     * Helper function to extract thumbnail path from JSON image data
+     * Image is stored as JSON array with 'path' and 'is_thumbnail' properties
+     */
+    private function getProductThumbnailPath($imageData): string
+    {
+        if (empty($imageData)) return '';
+        
+        // Try to decode JSON
+        $decoded = json_decode($imageData, true);
+        if (is_array($decoded)) {
+            // Find the thumbnail image
+            foreach ($decoded as $img) {
+                if (isset($img['is_thumbnail']) && $img['is_thumbnail']) {
+                    return $img['path'] ?? '';
+                }
+            }
+            // Return first image if no thumbnail is set
+            if (!empty($decoded[0])) {
+                return is_array($decoded[0]) ? ($decoded[0]['path'] ?? '') : $decoded[0];
+            }
+            return '';
+        }
+        
+        // Old format: return as-is
+        return $imageData;
+    }
+
     public function getProducts(array $params): array
     {
         $where = [];
@@ -107,7 +135,8 @@ class ShopModel
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
 
-        $products = array_map(function ($row) {
+        $self = $this;
+        $products = array_map(function ($row) use ($self) {
             $skus = [];
             if (!empty($row['sku_details'])) {
                 $skuItems = explode(';;', $row['sku_details']);
@@ -130,7 +159,7 @@ class ShopModel
             return [
                 'id' => $row['ProductID'],
                 'name' => $row['ProductName'],
-                'image' => $row['Image'],
+                'image' => $self->getProductThumbnailPath($row['Image']),
                 'category' => $row['CategoryName'],
                 'rating' => round($row['AvgRating'], 1),
                 'ingredient' => $row['Ingredient'],
