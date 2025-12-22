@@ -19,13 +19,92 @@ $orderStatus = 'Pending Confirmation';
 // Calculate expected delivery date (OrderDate + 3 days)
 $expectedDelivery = date('d/m/Y', strtotime($orderDate . ' +3 days'));
 
-// Get order items from session
+// Get ALL order data from session (set by OrderSuccessController)
 $orderItems = $_SESSION['last_order_items'] ?? [];
 $subtotal = $_SESSION['last_order_subtotal'] ?? 0;
 $discount = $_SESSION['last_order_discount'] ?? 0;
 $shippingFee = $_SESSION['last_order_shipping'] ?? 30000;
 $promo = $_SESSION['last_order_promo'] ?? 0;
 $total = $_SESSION['last_order_total'] ?? 0;
+
+// If session data is missing or subtotal is 0, try to load from database
+if ($subtotal == 0 && !empty($orderId) && $orderId !== 'ORD001') {
+    require_once __DIR__ . '/../../../models/db.php';
+    require_once __DIR__ . '/../../../models/website/CartModel.php';
+
+    try {
+        // Get order details from database
+        $stmt = $conn->prepare("
+            SELECT 
+                od.SKUID,
+                od.OrderQuantity as CartQuantity,
+                p.ProductName,
+                p.ProductID,
+                p.Image,
+                s.Attribute,
+                s.OriginalPrice,
+                s.PromotionPrice
+            FROM ORDER_DETAIL od
+            JOIN SKU s ON od.SKUID = s.SKUID
+            JOIN PRODUCT p ON s.ProductID = p.ProductID
+            WHERE od.OrderID = ?
+        ");
+        $stmt->bind_param("s", $orderId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $orderItems = $result->fetch_all(MYSQLI_ASSOC);
+
+        // Process images
+        foreach ($orderItems as &$item) {
+            if (!empty($item['Image'])) {
+                $decoded = json_decode($item['Image'], true);
+                if (is_array($decoded)) {
+                    foreach ($decoded as $img) {
+                        if (isset($img['is_thumbnail']) && $img['is_thumbnail']) {
+                            $item['Image'] = $img['path'] ?? '';
+                            break;
+                        }
+                    }
+                    if (empty($item['Image']) && !empty($decoded[0])) {
+                        $item['Image'] = is_array($decoded[0]) ? ($decoded[0]['path'] ?? '') : $decoded[0];
+                    }
+                }
+            }
+        }
+
+        // Recalculate amounts from order items
+        $cartModel = new CartModel();
+        $amount = $cartModel->calculateCartAmount($orderItems);
+        $subtotal = $amount['subtotal'];
+        $discount = $amount['discount'];
+
+        // Get shipping fee from ORDERS table
+        $stmt = $conn->prepare("SELECT ShippingFee FROM ORDERS WHERE OrderID = ?");
+        $stmt->bind_param("s", $orderId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($row = $result->fetch_assoc()) {
+            $shippingFee = $row['ShippingFee'] ?? 30000;
+        }
+
+        // Recalculate total
+        $total = $subtotal - $discount - $promo + $shippingFee;
+
+        error_log("OrderSuccess.php - Loaded from database: Subtotal=$subtotal, Discount=$discount, Shipping=$shippingFee, Total=$total");
+
+    } catch (Exception $e) {
+        error_log("OrderSuccess.php - Error loading from database: " . $e->getMessage());
+    }
+} else {
+    // Debug: Log session data
+    error_log("OrderSuccess.php - Session Data:");
+    error_log("Subtotal from session: " . ($subtotal));
+    error_log("Discount from session: " . ($discount));
+    error_log("Shipping from session: " . ($shippingFee));
+    error_log("Promo from session: " . ($promo));
+    error_log("Total from session: " . ($total));
+    error_log("Order Items count: " . count($orderItems));
+}
 
 // Get shipping address
 $shippingAddress = $_SESSION['last_order_address'] ?? [
@@ -182,13 +261,14 @@ include(__DIR__ . '/../../../partials/header.php');
 
             <!-- Action Buttons -->
             <div class="action-buttons">
-                <a href="<?= $ROOT ?>/index.php?controller=OrderDetail&action=index&id=<?= htmlspecialchars($orderId) ?>" class="btn-primary-outline-large">View Order Detail</a>
+                <a href="<?= $ROOT ?>/index.php?controller=OrderDetail&action=index&id=<?= htmlspecialchars($orderId) ?>"
+                    class="btn-primary-outline-large">View Order Detail</a>
                 <a href="<?= $ROOT ?>/views/website/php/shop.php" class="btn-primary-large">Continue Shopping</a>
             </div>
         </div>
     </main>
 
-    <?php include(__DIR__ . '/../../../partials/footer.php'); ?>
+    <?php include(__DIR__ . '/../../../partials/footer_kovid.php'); ?>
 </body>
 
 </html>

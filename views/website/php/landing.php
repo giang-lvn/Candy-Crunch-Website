@@ -111,7 +111,8 @@ if ($file === '' || $file === 'landing.php' || $file === 'index.php') {
                     </div>
                 </div>
 
-                <button onclick="window.location.href='/views/website/php/shop.html'" class="btn-primary-large">Check it
+                <button onclick="window.location.href='<?php echo $ROOT; ?>/views/website/php/shop.php'"
+                    class="btn-primary-large">Check it
                     out now</button>
             </div>
 

@@ -71,17 +71,34 @@ function placeOrder()
         return;
     }
 
+    // Debug: Log cart items data
+    error_log("OrderSuccessController - Cart Items Count: " . count($cartItems));
+    foreach ($cartItems as $idx => $item) {
+        error_log("Item $idx: " . json_encode([
+            'ProductName' => $item['ProductName'] ?? 'N/A',
+            'OriginalPrice' => $item['OriginalPrice'] ?? 0,
+            'PromotionPrice' => $item['PromotionPrice'] ?? 0,
+            'CartQuantity' => $item['CartQuantity'] ?? 0
+        ]));
+    }
+
     // Calculate amounts
     $amount = $cartModel->calculateCartAmount($cartItems);
     $subtotal = $amount['subtotal'];
     $discount = $amount['discount'];
     $promo = 0; // Voucher discount (if applied)
 
+    // Debug: Log calculated amounts
+    error_log("OrderSuccessController - Calculated: subtotal=$subtotal, discount=$discount");
+
     // Shipping fee based on delivery method
     $shippingFee = ($deliveryMethod === 'fast') ? 50000 : 30000;
 
     // Calculate total
     $total = $subtotal - $discount - $promo + $shippingFee;
+
+    // Debug: Log final total
+    error_log("OrderSuccessController - Final: total=$total, shipping=$shippingFee");
 
     try {
         $db->beginTransaction();
@@ -138,8 +155,7 @@ function placeOrder()
                           WHERE s.SKUID = ?")->execute([$item['CartQuantity'], $item['SKUID']]);
         }
 
-        // Clear the cart
-        $db->prepare("DELETE FROM CART_DETAIL WHERE CartID = ?")->execute([$cartId]);
+
 
         // Get shipping address details from session
         $shippingAddress = null;
@@ -164,6 +180,23 @@ function placeOrder()
         $_SESSION['last_order_promo'] = $promo;
         $_SESSION['last_order_total'] = $total;
         $_SESSION['last_order_address'] = $shippingAddress;
+
+        // Debug log
+        error_log("Order Success - Session Data:");
+        error_log("Subtotal: " . $subtotal);
+        error_log("Discount: " . $discount);
+        error_log("Shipping: " . $shippingFee);
+        error_log("Promo: " . $promo);
+        error_log("Total: " . $total);
+        error_log("Cart Items: " . count($cartItems));
+
+        // Ensure session is saved
+        session_write_close();
+        session_start();
+
+        // Clear the cart AFTER saving session but BEFORE sending response
+        // This ensures session data is preserved for ordersuccess.php
+        $db->prepare("DELETE FROM CART_DETAIL WHERE CartID = ?")->execute([$cartId]);
 
         echo json_encode([
             'success' => true,
