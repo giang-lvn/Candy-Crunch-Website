@@ -309,15 +309,39 @@ function updatePaymentRow(selector, value, isMinus = false) {
    EMPTY CART RENDER
 ========================= */
 function renderEmptyCart() {
+    // Update cart count in title
+    const cartCount = document.querySelector('.cart-count');
+    if (cartCount) {
+        cartCount.textContent = '(0)';
+    }
+    const cartCountEl = document.getElementById('cartCount');
+    if (cartCountEl) {
+        cartCountEl.innerText = '0';
+    }
+
+    // Clear cart products container - show empty message only
     const cartProduct = document.querySelector('.cart-product');
-    if (!cartProduct) return;
+    if (cartProduct) {
+        cartProduct.innerHTML = `<p class="empty-cart">Your cart is empty.</p>`;
+    }
 
-    cartProduct.innerHTML = `
-        <p class="empty-cart">Your cart is empty.</p>
-    `;
+    // Keep payment section but reset all values to 0
+    updatePaymentRow('.payment-row.subtotal .value-payment', 0);
+    updatePaymentRow('.payment-row.discount .value-payment', 0);
+    updatePaymentRow('.payment-row.promo .value-payment', 0);
+    updatePaymentRow('.payment-row.shippingfee .value-payment', 0);
+    updatePaymentRow('.payment-total .value-payment', 0);
 
-    const paymentSection = document.querySelector('.payment-section');
-    if (paymentSection) paymentSection.remove();
+    // Reset promo input
+    const promoInput = document.querySelector('.promo-input-field');
+    if (promoInput) {
+        promoInput.value = '';
+    }
+    const promoBtn = document.querySelector('.promo-apply');
+    if (promoBtn) {
+        promoBtn.textContent = 'Apply';
+        promoBtn.dataset.action = 'apply';
+    }
 }
 
 /* =========================

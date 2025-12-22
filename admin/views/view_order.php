@@ -93,14 +93,44 @@ $total = $subtotal - $discount - $voucherDiscount + $shippingFee;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
     try {
         $newStatus = $_POST['new_status'];
+        $oldStatus = $order['OrderStatus'];
+        
+        // Kiểm tra nếu đang chuyển sang Cancelled hoặc Returned
+        // và trước đó KHÔNG phải là Cancelled/Returned (để tránh cộng trùng)
+        $restoreStatuses = ['Cancelled', 'Returned'];
+        $shouldRestoreStock = in_array($newStatus, $restoreStatuses) && !in_array($oldStatus, $restoreStatuses);
+        
+        if ($shouldRestoreStock) {
+            // Hoàn trả tồn kho cho từng sản phẩm trong đơn hàng
+            foreach ($orderDetails as $item) {
+                $pdo->prepare("UPDATE INVENTORY i 
+                              JOIN SKU s ON i.InventoryID = s.InventoryID 
+                              SET i.Stock = i.Stock + ? 
+                              WHERE s.SKUID = ?")->execute([$item['OrderQuantity'], $item['SKUID']]);
+            }
+        }
+        
+        // Cập nhật trạng thái đơn hàng
         $updateStmt = $pdo->prepare("UPDATE ORDERS SET OrderStatus = ? WHERE OrderID = ?");
         $updateStmt->execute([$newStatus, $orderId]);
         
-        $order['OrderStatus'] = $newStatus;
-        echo '<script>showToast("Cập nhật trạng thái thành công!", "success");</script>';
+        // Redirect bằng JavaScript để refresh trang với dữ liệu mới
+        $stockParam = $shouldRestoreStock ? '&stock_restored=1' : '';
+        $redirectUrl = BASE_URL . 'index.php?action=view_order&id=' . $orderId . '&status_updated=1' . $stockParam;
+        echo '<script>window.location.href = "' . $redirectUrl . '";</script>';
+        exit;
     } catch (Exception $e) {
-        echo '<script>showToast("Lỗi: ' . addslashes($e->getMessage()) . '", "error");</script>';
+        $updateError = $e->getMessage();
     }
+}
+
+// Hiển thị thông báo từ redirect
+if (isset($_GET['status_updated'])) {
+    $stockMessage = isset($_GET['stock_restored']) ? ' Đã hoàn trả tồn kho.' : '';
+    echo '<script>document.addEventListener("DOMContentLoaded", function() { showToast("Cập nhật trạng thái thành công!' . $stockMessage . '", "success"); });</script>';
+}
+if (isset($updateError)) {
+    echo '<script>document.addEventListener("DOMContentLoaded", function() { showToast("Lỗi: ' . addslashes($updateError) . '", "error"); });</script>';
 }
 
 // Helper function để lấy thumbnail

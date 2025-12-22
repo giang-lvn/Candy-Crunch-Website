@@ -42,7 +42,7 @@
                                         <img class="product-image" src="<?= htmlspecialchars($item['Image']) ?>"
                                             alt="<?= htmlspecialchars($item['ProductName']) ?>" />
 
-                                        <div class="product-info">
+                                        <div class="wishlist-product-info">
                                             <h4 class="product-name">
                                                 <?= htmlspecialchars($item['ProductName']) ?>
                                             </h4>

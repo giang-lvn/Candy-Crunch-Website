@@ -131,8 +131,11 @@ function placeOrder()
                 $item['CartQuantity']
             ]);
 
-            // Update stock quantity (optional)
-            // $db->prepare("UPDATE SKU SET StockQuantity = StockQuantity - ? WHERE SKUID = ?")->execute([$item['CartQuantity'], $item['SKUID']]);
+            // Update stock quantity when order is placed
+            $db->prepare("UPDATE INVENTORY i 
+                          JOIN SKU s ON i.InventoryID = s.InventoryID 
+                          SET i.Stock = i.Stock - ? 
+                          WHERE s.SKUID = ?")->execute([$item['CartQuantity'], $item['SKUID']]);
         }
 
         // Clear the cart
