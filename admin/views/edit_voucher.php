@@ -27,7 +27,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_voucher'])) {
         $startDate = $_POST['start_date'] ?? '';
         $endDate = $_POST['end_date'] ?? '';
         $minOrder = floatval($_POST['min_order'] ?? 0);
-        $voucherStatus = $_POST['voucher_status'] ?? 'Active';
+// Tự động xác định trạng thái dựa trên ngày
+        $currentDate = date('Y-m-d');
+        if (strtotime($startDate) > strtotime($currentDate)) {
+            $voucherStatus = 'Upcoming';
+        } elseif (strtotime($currentDate) > strtotime($endDate)) {
+            $voucherStatus = 'Expired';
+        } else {
+            $daysToExpiry = (strtotime($endDate) - strtotime($currentDate)) / (60 * 60 * 24);
+            if ($daysToExpiry <= 7) {
+                $voucherStatus = 'Expiring Soon';
+            } else {
+                $voucherStatus = 'Active';
+            }
+        }
         
         if (empty($code)) throw new Exception('Code voucher không được để trống');
         if ($discountPercent <= 0 && $discountAmount <= 0) throw new Exception('Phải có ít nhất một loại giảm giá');
@@ -64,7 +77,9 @@ $usageCount = $usageCount->fetchColumn();
 $statusBadges = [
     'Active' => ['class' => 'bg-success', 'text' => 'Hoạt động'],
     'Inactive' => ['class' => 'bg-secondary', 'text' => 'Tạm dừng'],
-    'Expired' => ['class' => 'bg-danger', 'text' => 'Hết hạn']
+    'Expired' => ['class' => 'bg-danger', 'text' => 'Hết hạn'],
+    'Upcoming' => ['class' => 'bg-primary', 'text' => 'Sắp diễn ra'],
+    'Expiring Soon' => ['class' => 'bg-warning text-dark', 'text' => 'Sắp hết hạn']
 ];
 ?>
 
@@ -141,14 +156,7 @@ $statusBadges = [
                             <label class="form-label fw-semibold">Ngày kết thúc <span class="text-danger">*</span></label>
                             <input type="date" name="end_date" class="form-control" required value="<?php echo $voucher['EndDate']; ?>">
                         </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label fw-semibold">Trạng thái</label>
-                            <select name="voucher_status" class="form-select">
-                                <option value="Active" <?php echo $voucher['VoucherStatus'] === 'Active' ? 'selected' : ''; ?>>Hoạt động</option>
-                                <option value="Inactive" <?php echo $voucher['VoucherStatus'] === 'Inactive' ? 'selected' : ''; ?>>Tạm dừng</option>
-                                <option value="Expired" <?php echo $voucher['VoucherStatus'] === 'Expired' ? 'selected' : ''; ?>>Hết hạn</option>
-                            </select>
-                        </div>
+
                     </div>
                 </div>
             </div>

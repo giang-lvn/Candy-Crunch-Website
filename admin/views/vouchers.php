@@ -76,6 +76,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
     }
 }
 
+// Cập nhật trạng thái voucher tự động trong Database
+// Chạy mỗi khi vào trang danh sách để đảm bảo dữ liệu luôn đúng
+$pdo->exec("
+    UPDATE VOUCHER
+    SET VoucherStatus = CASE
+        WHEN StartDate > CURDATE() THEN 'Upcoming'
+        WHEN CURDATE() > EndDate THEN 'Expired'
+        WHEN DATEDIFF(EndDate, CURDATE()) BETWEEN 0 AND 7 THEN 'Expiring Soon'
+        ELSE 'Active'
+    END
+");
+
 // Lấy danh sách voucher
 $sql = "
     SELECT 
@@ -97,16 +109,20 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $vouchers = $stmt->fetchAll();
 
-// Đếm theo trạng thái
+// Đếm theo trạng thái (Dữ liệu trong DB đã được update nên count trực tiếp là đúng)
 $countActive = $pdo->query("SELECT COUNT(*) FROM VOUCHER WHERE VoucherStatus = 'Active'")->fetchColumn();
 $countInactive = $pdo->query("SELECT COUNT(*) FROM VOUCHER WHERE VoucherStatus = 'Inactive'")->fetchColumn();
 $countExpired = $pdo->query("SELECT COUNT(*) FROM VOUCHER WHERE VoucherStatus = 'Expired'")->fetchColumn();
+$countUpcoming = $pdo->query("SELECT COUNT(*) FROM VOUCHER WHERE VoucherStatus = 'Upcoming'")->fetchColumn();
+$countExpiringSoon = $pdo->query("SELECT COUNT(*) FROM VOUCHER WHERE VoucherStatus = 'Expiring Soon'")->fetchColumn();
 
 // Status badges
 $statusBadges = [
     'Active' => ['class' => 'bg-success', 'icon' => 'bi-check-circle', 'text' => 'Hoạt động'],
     'Inactive' => ['class' => 'bg-secondary', 'icon' => 'bi-pause-circle', 'text' => 'Tạm dừng'],
-    'Expired' => ['class' => 'bg-danger', 'icon' => 'bi-x-circle', 'text' => 'Hết hạn']
+    'Expired' => ['class' => 'bg-danger', 'icon' => 'bi-x-circle', 'text' => 'Hết hạn'],
+    'Upcoming' => ['class' => 'bg-primary', 'icon' => 'bi-clock', 'text' => 'Sắp diễn ra'],
+    'Expiring Soon' => ['class' => 'bg-warning text-dark', 'icon' => 'bi-exclamation-circle', 'text' => 'Sắp hết hạn']
 ];
 ?>
 
@@ -127,60 +143,61 @@ $statusBadges = [
 <?php endif; ?>
 
 <!-- Thống kê nhanh -->
-<div class="row mb-4">
-    <div class="col-md-3">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body d-flex align-items-center">
-                <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
-                    <i class="bi bi-ticket-perforated text-primary fs-4"></i>
+    <!-- Thống kê nhanh -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                        <i class="bi bi-clock text-primary fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-0">Sắp diễn ra</h6>
+                        <h3 class="mb-0"><?php echo $countUpcoming; ?></h3>
+                    </div>
                 </div>
-                <div>
-                    <h6 class="text-muted mb-0">Tổng voucher</h6>
-                    <h3 class="mb-0"><?php echo count($vouchers); ?></h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+                        <i class="bi bi-check-circle text-success fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-0">Đang hoạt động</h6>
+                        <h3 class="mb-0"><?php echo $countActive; ?></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-3">
+                        <i class="bi bi-exclamation-circle text-warning fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-0">Sắp hết hạn</h6>
+                        <h3 class="mb-0"><?php echo $countExpiringSoon; ?></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <div class="rounded-circle bg-danger bg-opacity-10 p-3 me-3">
+                        <i class="bi bi-x-circle text-danger fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-0">Hết hạn</h6>
+                        <h3 class="mb-0"><?php echo $countExpired; ?></h3>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body d-flex align-items-center">
-                <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
-                    <i class="bi bi-check-circle text-success fs-4"></i>
-                </div>
-                <div>
-                    <h6 class="text-muted mb-0">Đang hoạt động</h6>
-                    <h3 class="mb-0"><?php echo $countActive; ?></h3>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body d-flex align-items-center">
-                <div class="rounded-circle bg-secondary bg-opacity-10 p-3 me-3">
-                    <i class="bi bi-pause-circle text-secondary fs-4"></i>
-                </div>
-                <div>
-                    <h6 class="text-muted mb-0">Tạm dừng</h6>
-                    <h3 class="mb-0"><?php echo $countInactive; ?></h3>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body d-flex align-items-center">
-                <div class="rounded-circle bg-danger bg-opacity-10 p-3 me-3">
-                    <i class="bi bi-x-circle text-danger fs-4"></i>
-                </div>
-                <div>
-                    <h6 class="text-muted mb-0">Hết hạn</h6>
-                    <h3 class="mb-0"><?php echo $countExpired; ?></h3>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- Bộ lọc -->
 <div class="card mb-4">
@@ -198,11 +215,17 @@ $statusBadges = [
                         <option value="Active" <?php echo $statusFilter === 'Active' ? 'selected' : ''; ?>>
                             Hoạt động (<?php echo $countActive; ?>)
                         </option>
-                        <option value="Inactive" <?php echo $statusFilter === 'Inactive' ? 'selected' : ''; ?>>
-                            Tạm dừng (<?php echo $countInactive; ?>)
+                        <option value="Upcoming" <?php echo $statusFilter === 'Upcoming' ? 'selected' : ''; ?>>
+                            Sắp diễn ra (<?php echo $countUpcoming; ?>)
+                        </option>
+                        <option value="Expiring Soon" <?php echo $statusFilter === 'Expiring Soon' ? 'selected' : ''; ?>>
+                            Sắp hết hạn (<?php echo $countExpiringSoon; ?>)
                         </option>
                         <option value="Expired" <?php echo $statusFilter === 'Expired' ? 'selected' : ''; ?>>
                             Hết hạn (<?php echo $countExpired; ?>)
+                        </option>
+                        <option value="Inactive" <?php echo $statusFilter === 'Inactive' ? 'selected' : ''; ?>>
+                            Tạm dừng (<?php echo $countInactive; ?>)
                         </option>
                     </select>
                 </div>
@@ -338,26 +361,7 @@ $statusBadges = [
                                    class="btn btn-outline-primary" title="Chỉnh sửa">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <button type="button" class="btn btn-outline-info dropdown-toggle" 
-                                        data-bs-toggle="dropdown" title="Thay đổi trạng thái">
-                                    <i class="bi bi-toggle-on"></i>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><h6 class="dropdown-header">Đổi trạng thái</h6></li>
-                                    <?php foreach (['Active', 'Inactive', 'Expired'] as $s): ?>
-                                    <li>
-                                        <form method="POST" style="display: inline;">
-                                            <input type="hidden" name="voucher_id" value="<?php echo $voucher['VoucherID']; ?>">
-                                            <input type="hidden" name="new_status" value="<?php echo $s; ?>">
-                                            <button type="submit" name="update_status" 
-                                                    class="dropdown-item <?php echo $status === $s ? 'active' : ''; ?>">
-                                                <i class="<?php echo $statusBadges[$s]['icon']; ?> me-2"></i>
-                                                <?php echo $statusBadges[$s]['text']; ?>
-                                            </button>
-                                        </form>
-                                    </li>
-                                    <?php endforeach; ?>
-                                </ul>
+                                <!-- Removed Status Update Button -->
                                 <button type="button" class="btn btn-outline-danger" title="Xóa"
                                         onclick="openDeleteVoucherModal('<?php echo htmlspecialchars($voucher['VoucherID']); ?>', '<?php echo htmlspecialchars(addslashes($voucher['Code'])); ?>')">
                                     <i class="bi bi-trash"></i>

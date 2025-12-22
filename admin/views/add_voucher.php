@@ -13,7 +13,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_voucher'])) {
         $startDate = $_POST['start_date'] ?? '';
         $endDate = $_POST['end_date'] ?? '';
         $minOrder = floatval($_POST['min_order'] ?? 0);
-        $voucherStatus = $_POST['voucher_status'] ?? 'Active';
+// Tự động xác định trạng thái dựa trên ngày
+        $currentDate = date('Y-m-d');
+        if (strtotime($startDate) > strtotime($currentDate)) {
+            $voucherStatus = 'Upcoming';
+        } elseif (strtotime($currentDate) > strtotime($endDate)) {
+            $voucherStatus = 'Expired';
+        } else {
+            $daysToExpiry = (strtotime($endDate) - strtotime($currentDate)) / (60 * 60 * 24);
+            if ($daysToExpiry <= 7) {
+                $voucherStatus = 'Expiring Soon';
+            } else {
+                $voucherStatus = 'Active';
+            }
+        }
         
         if (empty($voucherId)) throw new Exception('Mã voucher không được để trống');
         if (empty($code)) throw new Exception('Code voucher không được để trống');
@@ -88,14 +101,7 @@ $suggestedId = $lastVoucher ? 'V' . str_pad(intval(substr($lastVoucher['VoucherI
                         <label class="form-label fw-semibold">Mô tả voucher</label>
                         <textarea name="description" class="form-control" rows="3" placeholder="Mô tả chi tiết..."><?php echo htmlspecialchars($_POST['description'] ?? ''); ?></textarea>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Trạng thái</label>
-                        <select name="voucher_status" class="form-select">
-                            <option value="Active" <?php echo ($_POST['voucher_status'] ?? 'Active') === 'Active' ? 'selected' : ''; ?>>Hoạt động</option>
-                            <option value="Inactive" <?php echo ($_POST['voucher_status'] ?? '') === 'Inactive' ? 'selected' : ''; ?>>Tạm dừng</option>
-                            <option value="Expired" <?php echo ($_POST['voucher_status'] ?? '') === 'Expired' ? 'selected' : ''; ?>>Hết hạn</option>
-                        </select>
-                    </div>
+
                 </div>
             </div>
         </div>

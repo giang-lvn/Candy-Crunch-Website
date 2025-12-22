@@ -341,7 +341,6 @@ class CartModel
             SELECT *
             FROM VOUCHER
             WHERE Code = ?
-            AND VoucherStatus = 'active'
             LIMIT 1
         ";
 
@@ -355,35 +354,46 @@ class CartModel
     }
 
     //Tính giá rị voucher
+    // Validate Voucher - returns [success => bool, message => string]
+    public function validateVoucher($voucher, $subtotal)
+    {
+        if (!$voucher) return ['success' => false, 'message' => 'Voucher không tồn tại'];
+        
+        $today = date('Y-m-d');
+        $startDate = $voucher['StartDate'];
+        $endDate = $voucher['EndDate'];
+        $minOrder = (float)$voucher['MinOrder'];
+        
+        // 1. Check Date
+        if (strtotime($startDate) > strtotime($today)) {
+            return ['success' => false, 'message' => 'Voucher chưa đến ngày áp dụng (Bắt đầu: ' . date('d/m/Y', strtotime($startDate)) . ')'];
+        }
+        
+        if (strtotime($today) > strtotime($endDate)) {
+            return ['success' => false, 'message' => 'Voucher đã hết hạn sử dụng (Hết hạn: ' . date('d/m/Y', strtotime($endDate)) . ')'];
+        }
+        
+        // 2. Check Min Order
+        if ($minOrder > 0 && $subtotal < $minOrder) {
+            return ['success' => false, 'message' => 'Đơn hàng chưa đạt giá trị tối thiểu ' . number_format($minOrder, 0, ',', '.') . 'đ'];
+        }
+        
+        return ['success' => true, 'message' => 'Áp dụng voucher thành công'];
+    }
+
     public function calculateVoucherDiscount(array $voucher, float $subtotal): float
     {
-        // Check Min Order
-        $minOrder = (float)($voucher['MinOrder'] ?? 0);
-        if ($minOrder > 0 && $subtotal < $minOrder) {
+        // Use validateVoucher internal check or just simple calc
+        $validation = $this->validateVoucher($voucher, $subtotal);
+        if (!$validation['success']) {
             return 0;
         }
 
-        $today = date('Y-m-d');
-
-        // Check Date Range if set and not zero/null
-        $startDate = $voucher['StartDate'] ?? '';
-        $endDate = $voucher['EndDate'] ?? '';
-
-        // Start Date Logic
-        if (!empty($startDate) && $startDate !== '0000-00-00' && $today < $startDate) {
-            return 0;
-        }
-
-        // End Date Logic
-        if (!empty($endDate) && $endDate !== '0000-00-00' && $today > $endDate) {
-            return 0;
-        }
-
-        if (!empty($voucher['DiscountPercent'])) {
+        if (isset($voucher['DiscountPercent']) && $voucher['DiscountPercent'] > 0) {
             return round($subtotal * ($voucher['DiscountPercent'] / 100));
         }
 
-        if (!empty($voucher['DiscountAmount'])) {
+        if (isset($voucher['DiscountAmount']) && $voucher['DiscountAmount'] > 0) {
             return min($voucher['DiscountAmount'], $subtotal);
         }
 

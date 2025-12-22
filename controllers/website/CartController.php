@@ -241,10 +241,15 @@ class CartController
         // Apply Voucher from Session
         if (isset($_SESSION['voucher_code']) && !empty($_SESSION['voucher_code'])) {
             $voucher = $this->cartModel->findVoucherByCode($_SESSION['voucher_code']);
-            // Validate voucher again (expiration, etc)
+            
             if ($voucher) {
-                // Calculate promo based on subtotal - discount (actual price of products)
-                $promo = $this->cartModel->calculateVoucherDiscount($voucher, $subtotal - $discount);
+                // Validate logic
+                $check = $this->cartModel->validateVoucher($voucher, $subtotal - $discount);
+                if ($check['success']) {
+                    $promo = $this->cartModel->calculateVoucherDiscount($voucher, $subtotal - $discount);
+                } else {
+                    unset($_SESSION['voucher_code']);
+                }
             } else {
                 // Remove invalid voucher
                 unset($_SESSION['voucher_code']);
@@ -400,33 +405,35 @@ class CartController
         // Tạm lưu session để tính toán thử
         $_SESSION['voucher_code'] = $code;
         
+        // Validate specifically using new method
+        $subtotal = $this->calculateSubtotal($cartItems); // Use helper or recalc? 
+        // Note: calculateCartData has subtotal logic too, let's reuse logic
+        $amount = $this->cartModel->calculateCartAmount($cartItems);
+        $subtotal = $amount['subtotal'];
+        $discount = $amount['discount'];
+        $realSubtotal = $subtotal - $discount;
+
+        $check = $this->cartModel->validateVoucher($voucher, $realSubtotal);
+        if (!$check['success']) {
+            unset($_SESSION['voucher_code']);
+            $cartData = $this->calculateCartData($cartItems);
+            echo json_encode(['success' => false, 'message' => $check['message'], 'total' => $cartData['total']]);
+            return;
+        }
+
         // Tính toán lại
         $cartData = $this->calculateCartData($cartItems);
         
-        if ($cartData['promo'] > 0) {
-            echo json_encode([
-                'success'  => true,
-                'message'  => 'Voucher applied successfully',
-                'subtotal' => $cartData['subtotal'],
-                'discount' => $cartData['discount'],
-                'promo'    => $cartData['promo'],
-                'shipping' => $cartData['shipping'],
-                'remainingForFreeShip' => $cartData['remainingForFreeShip'],
-                'total'    => $cartData['total']
-            ]);
-        } else {
-            // Voucher valid but not applicable (condition failure)
-            unset($_SESSION['voucher_code']); // Revert
-            
-            // Recalculate without voucher to give clean state data
-            $cartData = $this->calculateCartData($cartItems);
-
-            echo json_encode([
-                'success' => false, 
-                'message' => 'Voucher conditions not met (Min spend or Expiry)',
-                'total' => $cartData['total']
-            ]);
-        }
+        echo json_encode([
+            'success'  => true,
+            'message'  => 'Áp dụng voucher thành công',
+            'subtotal' => $cartData['subtotal'],
+            'discount' => $cartData['discount'],
+            'promo'    => $cartData['promo'],
+            'shipping' => $cartData['shipping'],
+            'remainingForFreeShip' => $cartData['remainingForFreeShip'],
+            'total'    => $cartData['total']
+        ]);
     }
 
     // Đổi attribute (SKU)
