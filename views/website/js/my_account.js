@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initBankingToggle();
     initBanking();
     initShipping();
+    initAvatarUpload();
     handleResize();
 });
 
@@ -52,7 +53,6 @@ function handleMenuAction(action) {
             window.location.href = 'my_account.php';
             break;
         case 'Change Password':
-            // Already on this page, just scroll to top or do nothing
             window.location.href = 'changepass.php'
             break;
         case 'My Orders':
@@ -69,24 +69,14 @@ function handleMenuAction(action) {
 
 /**
  * Xử lý đăng xuất hoàn chỉnh
- * - Clear localStorage, sessionStorage, cookies phía client
- * - Gọi server để hủy session PHP
- * - Ngăn người dùng dùng nút back để quay lại trang my_account
- * - Redirect về trang chủ với header guest
  */
 function performLogout() {
     if (!confirm('Are you sure you want to log out?')) return;
 
-    // 1. Clear tất cả localStorage
     localStorage.clear();
-
-    // 2. Clear tất cả sessionStorage
     sessionStorage.clear();
-
-    // 3. Clear tất cả cookies (những cookie có thể xóa được)
     clearAllCookies();
 
-    // 4. Gọi server để hủy session PHP
     const formData = new FormData();
     formData.append('action', 'logout');
 
@@ -96,26 +86,15 @@ function performLogout() {
     })
         .then(res => res.json())
         .then(res => {
-            console.log('Logout response:', res);
-
-            // 5. Xóa history để ngăn back button quay lại trang my_account
-            // Thay thế entry hiện tại bằng trang chủ
             window.history.replaceState(null, '', '/Candy-Crunch-Website/views/website/php/index.php');
-
-            // 6. Redirect về trang chủ (người dùng sẽ thấy header guest)
             window.location.replace('/Candy-Crunch-Website/views/website/php/index.php');
         })
         .catch(err => {
-            console.error('Logout error:', err);
-            // Ngay cả khi có lỗi, vẫn clear client và redirect
             window.history.replaceState(null, '', '/Candy-Crunch-Website/views/website/php/index.php');
             window.location.replace('/Candy-Crunch-Website/views/website/php/index.php');
         });
 }
 
-/**
- * Xóa tất cả cookies có thể xóa được
- */
 function clearAllCookies() {
     const cookies = document.cookie.split(';');
 
@@ -124,11 +103,74 @@ function clearAllCookies() {
         const eqPos = cookie.indexOf('=');
         const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
 
-        // Xóa cookie với các path khác nhau
         document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
         document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/Candy-Crunch-Website';
         document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/Candy-Crunch-Website/';
     }
+}
+
+// ==================================================
+// AVATAR UPLOAD
+// ==================================================
+function initAvatarUpload() {
+    const chooseBtn = document.getElementById('chooseAvatarBtn');
+    const avatarInput = document.getElementById('avatarInput');
+
+    if (chooseBtn && avatarInput) {
+        chooseBtn.addEventListener('click', () => {
+            avatarInput.click();
+        });
+
+        avatarInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Validate file type
+            if (!['image/jpeg', 'image/png'].includes(file.type)) {
+                alert('Only JPEG and PNG files are allowed!');
+                return;
+            }
+
+            // Validate file size (max 1MB)
+            if (file.size > 1024 * 1024) {
+                alert('File size must be less than 1MB!');
+                return;
+            }
+
+            // Upload file
+            uploadAvatar(file);
+        });
+    }
+}
+
+function uploadAvatar(file) {
+    const formData = new FormData();
+    formData.append('action', 'uploadAvatar');
+    formData.append('avatar', file);
+
+    fetch('/Candy-Crunch-Website/controllers/website/account_controller.php', {
+        method: 'POST',
+        body: formData
+    })
+        .then(res => res.json())
+        .then(res => {
+            if (res.success) {
+                // Update avatar images on page
+                const profileAvatar = document.getElementById('profileAvatar');
+                const sidebarAvatar = document.getElementById('sidebarAvatar');
+
+                if (profileAvatar) profileAvatar.src = res.avatar + '?t=' + Date.now();
+                if (sidebarAvatar) sidebarAvatar.src = res.avatar + '?t=' + Date.now();
+
+                alert('Avatar uploaded successfully!');
+            } else {
+                alert('Error: ' + (res.message || 'Failed to upload avatar'));
+            }
+        })
+        .catch(err => {
+            console.error('Upload error:', err);
+            alert('Failed to upload avatar. Please try again.');
+        });
 }
 
 // ==================================================
@@ -213,7 +255,17 @@ function loadProfileToModal() {
     setValue('editFirstName', getText('displayFirstName'));
     setValue('editLastName', getText('displayLastName'));
     setValue('editEmail', getText('displayEmail'));
-    setValue('editDOB', getText('displayDOB'));
+
+    // Convert DOB from DD/MM/YYYY to YYYY/MM/DD for input
+    const displayDOB = getText('displayDOB');
+    let dobValue = displayDOB;
+    if (displayDOB && displayDOB.includes('/')) {
+        const parts = displayDOB.split('/');
+        if (parts.length === 3) {
+            dobValue = `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+    }
+    setValue('editDOB', dobValue);
 
     selectedGender = getText('displayGender').toLowerCase() || 'female';
     updateGenderUI();
@@ -234,8 +286,6 @@ function updateGenderUI() {
 }
 
 function saveProfile() {
-    console.log('🔵 saveProfile() called');
-
     const data = {
         firstName: getValue('editFirstName').trim(),
         lastName: getValue('editLastName').trim(),
@@ -243,8 +293,6 @@ function saveProfile() {
         dob: getValue('editDOB').trim(),
         gender: selectedGender
     };
-
-    console.log('📦 Data to send:', data);
 
     clearAllErrors(['editFirstName', 'editLastName', 'editEmail', 'editDOB']);
 
@@ -273,12 +321,7 @@ function saveProfile() {
         hasError = true;
     }
 
-    if (hasError) {
-        console.log('❌ Validation failed');
-        return;
-    }
-
-    console.log('✅ Validation passed, sending request...');
+    if (hasError) return;
 
     const formData = new FormData();
     formData.append('action', 'updateProfile');
@@ -288,49 +331,41 @@ function saveProfile() {
     formData.append('birth', data.dob);
     formData.append('gender', data.gender);
 
-    // 🔍 DEBUG: Log FormData
-    console.log('📤 FormData contents:');
-    for (let pair of formData.entries()) {
-        console.log(pair[0] + ': ' + pair[1]);
-    }
-
     fetch('/Candy-Crunch-Website/controllers/website/account_controller.php', {
         method: 'POST',
         body: formData
     })
-        .then(res => {
-            console.log('📥 Response status:', res.status);
-            return res.text(); // Đổi sang .text() để xem raw response
-        })
+        .then(res => res.text())
         .then(text => {
-            console.log('📄 Raw response:', text);
             try {
                 const res = JSON.parse(text);
-                console.log('✅ Parsed JSON:', res);
-
                 if (res.success) {
-                    // ✅ Update UI với data từ server
                     if (res.data) {
                         setText('displayFirstName', res.data.firstName || data.firstName);
                         setText('displayLastName', res.data.lastName || data.lastName);
                         setText('displayEmail', res.data.email || data.email);
-                        setText('displayDOB', res.data.dob || data.dob);
+                        // Format DOB to DD/MM/YYYY
+                        let dob = res.data.dob || data.dob;
+                        if (dob && dob.includes('-')) {
+                            const parts = dob.split('-');
+                            dob = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                        } else if (dob && dob.includes('/') && dob.indexOf('/') === 4) {
+                            const parts = dob.split('/');
+                            dob = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                        }
+                        setText('displayDOB', dob);
                         setText('displayGender', capitalize(res.data.gender || data.gender));
                     }
                     alert('Profile updated successfully!');
                     closeEditModal();
                 } else {
-                    console.error('❌ Update failed:', res.message);
                     alert('Update failed: ' + (res.message || 'Unknown error'));
                 }
             } catch (e) {
-                console.error('❌ JSON Parse Error:', e);
-                console.error('Response was not valid JSON. Raw text:', text);
                 alert('Server error: Invalid response format');
             }
         })
         .catch(err => {
-            console.error('❌ Network error:', err);
             alert('Network error. Please try again.');
         });
 }
@@ -383,6 +418,7 @@ function initBanking() {
         setValue('bankBranch', '');
         setValue('holderName', '');
         setValue('idNumber', '');
+        document.getElementById('bankIsDefault').checked = false;
         clearAllErrors(['bankAccountNumber', 'bankName', 'bankBranch', 'holderName', 'idNumber']);
         document.getElementById('deleteBankingBtn').style.display = 'none';
         openBankingModal();
@@ -403,20 +439,18 @@ function loadBankingToModal(card) {
     setValue('bankBranch', card.dataset.bankBranch);
     setValue('holderName', card.dataset.holderName);
     setValue('idNumber', card.dataset.idNumber);
+    document.getElementById('bankIsDefault').checked = (card.dataset.isDefault === 'Yes');
 }
 
 function saveBanking() {
-    console.log('🔵 saveBanking() called');
-
     const data = {
         accountNumber: getValue('bankAccountNumber').trim(),
         bankName: getValue('bankName').trim(),
         bankBranch: getValue('bankBranch').trim(),
         holderName: getValue('holderName').trim(),
-        idNumber: getValue('idNumber').trim()
+        idNumber: getValue('idNumber').trim(),
+        isDefault: document.getElementById('bankIsDefault').checked ? 'Yes' : 'No'
     };
-
-    console.log('📦 Banking data:', data);
 
     clearAllErrors(['bankAccountNumber', 'bankName', 'bankBranch', 'holderName', 'idNumber']);
 
@@ -453,12 +487,7 @@ function saveBanking() {
         hasError = true;
     }
 
-    if (hasError) {
-        console.log('❌ Banking validation failed');
-        return;
-    }
-
-    console.log('✅ Banking validation passed');
+    if (hasError) return;
 
     const formData = new FormData();
     formData.append('action', currentBankingMode === 'edit' ? 'updateBanking' : 'addBanking');
@@ -469,32 +498,20 @@ function saveBanking() {
     formData.append('bank_name', data.bankName);
     formData.append('holder_name', data.holderName);
     formData.append('id_number', data.idNumber);
-    formData.append('is_default', 'No');
-
-    console.log('📤 Sending banking request...');
-    for (let pair of formData.entries()) {
-        console.log(pair[0] + ': ' + pair[1]);
-    }
+    formData.append('is_default', data.isDefault);
 
     fetch('/Candy-Crunch-Website/controllers/website/account_controller.php', { method: 'POST', body: formData })
-        .then(res => {
-            console.log('📥 Banking response status:', res.status);
-            return res.text();
-        })
+        .then(res => res.text())
         .then(text => {
-            console.log('📄 Banking raw response:', text);
             try {
                 const res = JSON.parse(text);
-                console.log('✅ Banking parsed:', res);
                 if (res.success) { alert('Banking information saved!'); window.location.reload(); }
                 else alert('Error: ' + (res.message || 'Unknown error'));
             } catch (e) {
-                console.error('❌ Banking JSON parse error:', e);
                 alert('Server error: Invalid response');
             }
         })
         .catch(err => {
-            console.error('❌ Banking network error:', err);
             alert('Server error: ' + err);
         });
 }
@@ -509,7 +526,7 @@ function deleteBanking() {
 
     fetch('/Candy-Crunch-Website/controllers/website/account_controller.php', { method: 'POST', body: formData })
         .then(res => res.json())
-        .then(res => { if (res.success) { alert('Banking information saved!'); window.location.reload(); } else alert('Error: ' + (res.message || 'Unknown error')); })
+        .then(res => { if (res.success) { alert('Banking information deleted!'); window.location.reload(); } else alert('Error: ' + (res.message || 'Unknown error')); })
         .catch(err => alert('Server error: ' + err));
 }
 
@@ -537,10 +554,12 @@ function initShipping() {
         currentShippingCard = null;
         currentShippingId = null;
         setValue('shipName', '');
+        setValue('shipAlias', '');
         setValue('shipPhone', '');
         setValue('shipAddress', '');
         setValue('shipCity', '');
         setValue('shipCountry', '');
+        document.getElementById('shipIsDefault').checked = false;
         clearAllErrors(['shipName', 'shipPhone', 'shipAddress', 'shipCity', 'shipCountry']);
         document.getElementById('deleteShippingBtn').style.display = 'none';
         openShippingModal();
@@ -558,24 +577,24 @@ function initShipping() {
 function loadShippingFromCard(card) {
     currentShippingId = card.dataset.addressId;
     setValue('shipName', card.querySelector('.ship-name').textContent);
+    setValue('shipAlias', card.dataset.alias || '');
     setValue('shipPhone', card.dataset.phone || '');
     setValue('shipAddress', card.dataset.address || '');
     setValue('shipCity', card.dataset.city || '');
     setValue('shipCountry', card.dataset.country || '');
+    document.getElementById('shipIsDefault').checked = (card.dataset.isDefault === 'Yes');
 }
 
 function saveShipping() {
-    console.log('🔵 saveShipping() called');
-
     const data = {
         fullname: getValue('shipName').trim(),
+        alias: getValue('shipAlias').trim(),
         phone: getValue('shipPhone').trim(),
         address: getValue('shipAddress').trim(),
         city: getValue('shipCity').trim(),
-        country: getValue('shipCountry').trim()
+        country: getValue('shipCountry').trim(),
+        isDefault: document.getElementById('shipIsDefault').checked ? 'Yes' : 'No'
     };
-
-    console.log('📦 Shipping data:', data);
 
     clearAllErrors(['shipName', 'shipPhone', 'shipAddress', 'shipCity', 'shipCountry']);
 
@@ -609,47 +628,32 @@ function saveShipping() {
         hasError = true;
     }
 
-    if (hasError) {
-        console.log('❌ Shipping validation failed');
-        return;
-    }
-
-    console.log('✅ Shipping validation passed');
+    if (hasError) return;
 
     const formData = new FormData();
     formData.append('action', currentShippingCard ? 'updateAddress' : 'addAddress');
     if (currentShippingCard) formData.append('address_id', currentShippingId);
 
     formData.append('fullname', data.fullname);
+    formData.append('alias', data.alias);
     formData.append('phone', data.phone);
     formData.append('address', data.address);
     formData.append('city', data.city);
     formData.append('country', data.country);
-
-    console.log('📤 Sending shipping request...');
-    for (let pair of formData.entries()) {
-        console.log(pair[0] + ': ' + pair[1]);
-    }
+    formData.append('is_default', data.isDefault);
 
     fetch('/Candy-Crunch-Website/controllers/website/account_controller.php', { method: 'POST', body: formData })
-        .then(res => {
-            console.log('📥 Shipping response status:', res.status);
-            return res.text();
-        })
+        .then(res => res.text())
         .then(text => {
-            console.log('📄 Shipping raw response:', text);
             try {
                 const res = JSON.parse(text);
-                console.log('✅ Shipping parsed:', res);
                 if (res.success) { alert('Shipping information saved!'); window.location.reload(); }
                 else alert('Error: ' + (res.message || 'Unknown error'));
             } catch (e) {
-                console.error('❌ Shipping JSON parse error:', e);
                 alert('Server error: Invalid response');
             }
         })
         .catch(err => {
-            console.error('❌ Shipping network error:', err);
             alert('Server error: ' + err);
         });
 }
@@ -662,39 +666,25 @@ function deleteShipping() {
     formData.append('action', 'deleteAddress');
     formData.append('address_id', currentShippingId);
 
-    console.log('🗑️ Deleting address ID:', currentShippingId);
-
     fetch('/Candy-Crunch-Website/controllers/website/account_controller.php', {
         method: 'POST',
         body: formData
     })
         .then(res => res.json())
         .then(res => {
-            console.log('Delete response:', res);
-
             if (res.success) {
                 alert('Address deleted successfully!');
-
-                // 1️⃣ Xóa thẻ DOM tương ứng
                 if (currentShippingCard) {
                     currentShippingCard.remove();
                 }
-
-                // 2️⃣ Reset state
                 currentShippingCard = null;
                 currentShippingId = null;
-
-                // 3️⃣ (Tuỳ chọn) Cập nhật session địa chỉ nếu controller trả về addresses
-                if (res.addresses) {
-                    // ví dụ bạn lưu session vào JS array để render lại
-                    // window.userAddresses = res.addresses; 
-                }
+                closeShippingModal();
             } else {
                 alert('Error: ' + (res.message || 'Unknown error'));
             }
         })
         .catch(err => {
-            console.error('❌ Delete error:', err);
             alert('Server error: ' + err);
         });
 }

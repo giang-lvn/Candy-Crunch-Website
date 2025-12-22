@@ -1684,3 +1684,131 @@ button:focus,
     cursor: not-allowed;
     pointer-events: none;
 }
+
+/* ================================================
+   BANKING & SHIPPING CARDS - GRID LAYOUT 2 PER ROW
+   ================================================ */
+.frame-group {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    width: 100%;
+}
+
+.banking-item,
+.address-item {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.banking-item:hover,
+.address-item:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.banking-item.selected,
+.address-item.selected {
+    border-color: var(--green-500, #017e6a);
+    box-shadow: 0 4px 16px rgba(1, 126, 106, 0.3);
+}
+
+/* Alias tag styling */
+.alias-tag {
+    display: inline-block;
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    color: #1565c0;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Default status tag */
+.status-tag {
+    display: inline-flex;
+    align-items: center;
+}
+
+.status-tag .completed {
+    background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Card header layout */
+.frame-div {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.frame-parent5 {
+    flex: 1;
+}
+
+/* Card content */
+.sunset-boulevard-los-angeles-wrapper .gender,
+.ship-address {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Responsive - 1 card per row on mobile */
+@media (max-width: 768px) {
+    .frame-group {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Avatar upload button */
+#chooseAvatarBtn {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#chooseAvatarBtn:hover {
+    opacity: 0.8;
+    transform: scale(1.02);
+}
+
+/* Profile avatar */
+.avatar-icon2 {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--green-500, #017e6a);
+}
+
+.avatar-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Default checkbox row in modals */
+.default-checkbox-row {
+    padding: 0 16px;
+}
+
+.default-checkbox-row label {
+    font-size: 14px;
+    color: #555;
+}

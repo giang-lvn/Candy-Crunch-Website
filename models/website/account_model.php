@@ -148,6 +148,19 @@ class AccountModel
         ");
         $next = ((int)$stmt->fetchColumn()) + 1;
         $addressId = 'ADD' . str_pad($next, 3, '0', STR_PAD_LEFT);
+        
+        // Kiểm tra nếu đây là địa chỉ đầu tiên của customer
+        $check = $this->db->prepare("
+            SELECT COUNT(*) FROM ADDRESS WHERE CustomerID = :customerId
+        ");
+        $check->execute(['customerId' => $customerId]);
+        $existingCount = $check->fetchColumn();
+        
+        // Nếu đây là địa chỉ đầu tiên, tự động set default
+        $isDefault = ($data['is_default'] ?? 'No');
+        if ($existingCount == 0) {
+            $isDefault = 'Yes';
+        }
 
         $sql = "
             INSERT INTO ADDRESS (
@@ -173,7 +186,7 @@ class AccountModel
                 'city'       => $data['city'],
                 'country'    => $data['country'],
                 'postal'     => $data['postal'] ?? '',
-                'isDefault'  => $data['is_default'] ?? 'No'
+                'isDefault'  => $isDefault
             ]);
         } catch (PDOException $e) {
             error_log("addAddress error: " . $e->getMessage());
@@ -260,11 +273,21 @@ class AccountModel
         $next = ((int)$stmt->fetchColumn()) + 1;
         $bankingId = 'BAN' . str_pad($next, 3, '0', STR_PAD_LEFT);
     
+        // Nếu user muốn đặt làm default hoặc nếu đây là banking đầu tiên
         $check = $this->db->prepare("
             SELECT COUNT(*) FROM BANKING WHERE CustomerID = :customerId
         ");
         $check->execute(['customerId' => $customerId]);
-        $isDefault = $check->fetchColumn() == 0 ? 'Yes' : 'No';
+        $existingCount = $check->fetchColumn();
+        
+        // Nếu đây là banking đầu tiên, tự động set default
+        // Hoặc nếu user chọn default, reset các banking khác trước
+        $isDefault = ($data['is_default'] ?? 'No');
+        if ($existingCount == 0) {
+            $isDefault = 'Yes';
+        } else if ($isDefault === 'Yes') {
+            $this->resetAllBankingDefault($customerId);
+        }
     
         $sql = "
             INSERT INTO BANKING (
@@ -334,5 +357,25 @@ class AccountModel
             'id' => $bankingId,
             'customerId' => $customerId
         ]);
+    }
+    
+    /**
+     * Reset tất cả địa chỉ về không phải default
+     */
+    public function resetAllAddressDefault(string $customerId): bool
+    {
+        $sql = "UPDATE ADDRESS SET AddressDefault = 'No' WHERE CustomerID = :customerId";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute(['customerId' => $customerId]);
+    }
+    
+    /**
+     * Reset tất cả banking về không phải default
+     */
+    public function resetAllBankingDefault(string $customerId): bool
+    {
+        $sql = "UPDATE BANKING SET BankDefault = 'No' WHERE CustomerID = :customerId";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute(['customerId' => $customerId]);
     }
 }
