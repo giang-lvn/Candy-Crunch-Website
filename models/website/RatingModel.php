@@ -43,8 +43,8 @@ class RatingModel {
         $feedbackID = $this->generateFeedbackID();
         
         $stmt = $this->db->prepare("
-            INSERT INTO FEEDBACK (FeedbackID, CustomerID, SKUID, Rating, Comment, CreateDate) 
-            VALUES (?, ?, ?, ?, ?, NOW())
+            INSERT INTO FEEDBACK (FeedbackID, CustomerID, SKUID, Rating, Comment, CreateDate, Status) 
+            VALUES (?, ?, ?, ?, ?, NOW(), 'pending')
         ");
         
         return $stmt->execute([$feedbackID, $customerID, $skuID, $rating, $comment]);
@@ -85,6 +85,42 @@ class RatingModel {
         ");
         $stmt->execute([$skuID]);
         return $stmt->fetch();
+    }
+
+    // Lấy feedback theo ProductID (tất cả SKU của product đó)
+    public function getFeedbacksByProductId($productId) {
+        $stmt = $this->db->prepare("
+            SELECT 
+                f.FeedbackID,
+                f.Rating,
+                f.Comment,
+                f.CreateDate,
+                CONCAT(c.FirstName, ' ', c.LastName) as CustomerName,
+                s.Attribute as SKUAttribute,
+                p.ProductName
+            FROM FEEDBACK f
+            JOIN CUSTOMER c ON f.CustomerID = c.CustomerID
+            JOIN SKU s ON f.SKUID = s.SKUID
+            JOIN PRODUCT p ON s.ProductID = p.ProductID
+            WHERE s.ProductID = ? AND f.Status = 'approved'
+            ORDER BY f.CreateDate DESC
+        ");
+        $stmt->execute([$productId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Tính điểm trung bình và số lượng đánh giá theo ProductID
+    public function getProductRatingStatsByProductId($productId) {
+        $stmt = $this->db->prepare("
+            SELECT 
+                COALESCE(AVG(f.Rating), 0) as average_rating,
+                COUNT(*) as total_reviews
+            FROM FEEDBACK f
+            JOIN SKU s ON f.SKUID = s.SKUID
+            WHERE s.ProductID = ? AND f.Status = 'approved'
+        ");
+        $stmt->execute([$productId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
 ?>

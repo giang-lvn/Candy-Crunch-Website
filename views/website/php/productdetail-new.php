@@ -406,6 +406,53 @@ include(__DIR__ . '/../../../partials/header.php');
                         </span>
                     </div>
 
+                    <?php 
+                    // Dynamic Customer Reviews from Database
+                    if (!empty($customerReviews)): 
+                        foreach ($customerReviews as $review):
+                            // Calculate relative time
+                            $reviewDate = new DateTime($review['CreateDate']);
+                            $now = new DateTime();
+                            $diff = $now->diff($reviewDate);
+                            
+                            if ($diff->days == 0) {
+                                $timeAgo = 'Today';
+                            } elseif ($diff->days == 1) {
+                                $timeAgo = 'Yesterday';
+                            } elseif ($diff->days < 30) {
+                                $timeAgo = 'Last ' . $diff->days . ' days';
+                            } elseif ($diff->m < 12) {
+                                $timeAgo = $diff->m . ' month' . ($diff->m > 1 ? 's' : '') . ' ago';
+                            } else {
+                                $timeAgo = $diff->y . ' year' . ($diff->y > 1 ? 's' : '') . ' ago';
+                            }
+                    ?>
+                    <!-- Customer Review Card -->
+                    <div class="card-comment">
+                        <div class="card-top">
+                            <div class="user">
+                                <span class="username"><?php echo htmlspecialchars($review['CustomerName']); ?></span>
+                                <div class="rating-comment">
+                                    <span class="rating-number"><?php echo number_format($review['Rating'], 1); ?></span>
+                                    <span class="rating-star">
+                                        <img src="<?php echo $ROOT; ?>/views/website/img/Icon _ Star.svg" alt="star" />
+                                    </span>
+                                </div>
+                            </div>
+                            <span class="created-time"><?php echo $timeAgo; ?></span>
+                        </div>
+
+                        <?php if (!empty($review['Comment'])): ?>
+                        <span class="comment-text"><?php echo nl2br(htmlspecialchars($review['Comment'])); ?></span>
+                        <?php else: ?>
+                        <span class="comment-text"><em>No comment provided.</em></span>
+                        <?php endif; ?>
+                    </div>
+                    <?php 
+                        endforeach;
+                    endif; 
+                    ?>
+
                     <!-- Pagination -->
                     <div class="pagination">
                         <div class="page-list" aria-label="Pagination">

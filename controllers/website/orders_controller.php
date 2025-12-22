@@ -45,6 +45,7 @@ class OrderController {
                     'statusText' => $this->mapStatusText($o['OrderStatus']),
                     'date' => date('d F Y', strtotime($o['OrderDate'])),
                     'products' => [],
+                    'productSkuIds' => [],
                     'totalRaw' => 0,
                     'voucher' => [
                         'code' => $o['VoucherCode'],
@@ -64,6 +65,9 @@ class OrderController {
                 'quantity' => (int)$o['Quantity'],
                 'price' => number_format($o['SubTotal'], 0, ',', '.') . ' VND'
             ];
+            
+            // Add SKUID for rating
+            $grouped[$id]['productSkuIds'][] = $o['SKUID'] ?? '';
 
             // Accumulate subtotal
             $grouped[$id]['totalRaw'] += $o['SubTotal'];

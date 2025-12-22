@@ -213,9 +213,169 @@ function handleOrderAction(action, orderId) {
         case 'Pay Now':
             console.log('Pay now for order:', orderId);
             break;
+        case 'Buy Again':
+            // Redirect to reOrder action
+            window.location.href = `/Candy-Crunch-Website/index.php?controller=OrderDetail&action=reOrder&id=${orderId}`;
+            break;
+        case 'Write Review':
+            showRatingPopup(orderId);
+            break;
         default:
             console.warn('Unknown action:', action);
     }
+}
+
+/*********************************
+ * RATING POPUP LOGIC
+ *********************************/
+let ratingOverlay, ratingPopup, currentRating = 0;
+
+function initRatingPopup() {
+    ratingOverlay = document.getElementById('rating-overlay');
+    ratingPopup = document.querySelector('.rating-popup');
+
+    // Star rating functionality
+    const stars = document.querySelectorAll('.star-rating .star');
+    const starRating = document.querySelector('.star-rating');
+
+    if (stars.length > 0 && starRating) {
+        stars.forEach((star) => {
+            star.addEventListener('click', () => {
+                currentRating = parseInt(star.dataset.value);
+                starRating.dataset.rating = currentRating;
+                updateStars(currentRating);
+            });
+
+            star.addEventListener('mouseenter', () => {
+                updateStars(parseInt(star.dataset.value));
+            });
+        });
+
+        starRating.addEventListener('mouseleave', () => {
+            updateStars(currentRating);
+        });
+    }
+
+    // Close button
+    const closeBtn = document.getElementById('closeRatingPopup');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', hideRatingPopup);
+    }
+
+    // Click outside to close
+    if (ratingOverlay) {
+        ratingOverlay.addEventListener('click', (e) => {
+            if (e.target === ratingOverlay) hideRatingPopup();
+        });
+    }
+
+    // Submit button
+    const submitBtn = document.getElementById('submitRating');
+    if (submitBtn) {
+        submitBtn.addEventListener('click', submitRating);
+    }
+}
+
+function updateStars(rating) {
+    const stars = document.querySelectorAll('.star-rating .star');
+    stars.forEach((star) => {
+        if (parseInt(star.dataset.value) <= rating) {
+            star.classList.add('active');
+        } else {
+            star.classList.remove('active');
+        }
+    });
+}
+
+function showRatingPopup(orderId) {
+    if (!ratingOverlay) initRatingPopup();
+
+    // Find order products to populate dropdown
+    const order = ordersData.find(o => o.id === orderId);
+    const productSelect = document.getElementById('rating-product-select');
+
+    if (productSelect && order && order.products) {
+        productSelect.innerHTML = '';
+        order.products.forEach((p, idx) => {
+            const skuId = order.productSkuIds ? order.productSkuIds[idx] : '';
+            const option = document.createElement('option');
+            option.value = skuId;
+            option.textContent = `${p.name} - ${p.weight}`;
+            productSelect.appendChild(option);
+        });
+    }
+
+    // Store order ID
+    document.getElementById('rating-order-id').value = orderId;
+
+    // Reset form
+    currentRating = 0;
+    updateStars(0);
+    const reviewText = document.getElementById('rating-review-text');
+    if (reviewText) reviewText.value = '';
+
+    if (ratingOverlay) {
+        ratingOverlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function hideRatingPopup() {
+    if (ratingOverlay) {
+        ratingOverlay.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+}
+
+function submitRating() {
+    const productSelect = document.getElementById('rating-product-select');
+    const reviewText = document.getElementById('rating-review-text');
+    const skuID = productSelect ? productSelect.value : '';
+    const comment = reviewText ? reviewText.value.trim() : '';
+    const submitBtn = document.getElementById('submitRating');
+
+    if (currentRating === 0) {
+        alert('Please select a rating!');
+        return;
+    }
+
+    if (!skuID) {
+        alert('Please select a product!');
+        return;
+    }
+
+    // Disable button
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+    }
+
+    fetch('/Candy-Crunch-Website/controllers/website/RatingController.php?action=submit', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `sku_id=${encodeURIComponent(skuID)}&rating=${currentRating}&comment=${encodeURIComponent(comment)}`
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                hideRatingPopup();
+            } else {
+                alert(data.message || 'Failed to submit review. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        })
+        .finally(() => {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit';
+            }
+        });
 }
 
 /*********************************

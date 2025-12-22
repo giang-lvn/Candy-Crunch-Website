@@ -3,15 +3,18 @@
 
 require_once __DIR__ . '/../../models/website/CartModel.php';
 require_once __DIR__ . '/../../models/website/ProductDetailNewModel.php';
+require_once __DIR__ . '/../../models/website/RatingModel.php';
 require_once __DIR__ . '/../../models/db.php';
 
 class ProductDetailNewController
 {
     private $model;
+    private $ratingModel;
 
     public function __construct()
     {
         $this->model = new ProductDetailNewModel();
+        $this->ratingModel = new RatingModel();
     }
 
     /**
@@ -55,7 +58,11 @@ class ProductDetailNewController
         }
         unset($relatedProduct); // Break reference
 
-        // 8. Truyền dữ liệu sang View
+        // 8. Lấy customer reviews/feedback
+        $customerReviews = $this->ratingModel->getFeedbacksByProductId($productId);
+        $ratingStats = $this->ratingModel->getProductRatingStatsByProductId($productId);
+
+        // 9. Truyền dữ liệu sang View
         require_once __DIR__ . '/../../views/website/php/productdetail-new.php';
     }
 

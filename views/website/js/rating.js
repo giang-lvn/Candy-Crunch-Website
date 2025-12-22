@@ -1,104 +1,152 @@
-const stars = document.querySelectorAll(".star");
-const starRating = document.querySelector(".star-rating");
-const skuID = document.getElementById("skuID").value;
+// ===== RATING POPUP FOR ORDER DETAIL PAGE =====
 
-let currentRating = 0;
+document.addEventListener('DOMContentLoaded', function () {
+    // ===== STAR RATING FUNCTIONALITY =====
+    const stars = document.querySelectorAll('.star-rating .star');
+    const starRating = document.querySelector('.star-rating');
+    let currentRating = 0;
 
-stars.forEach((star) => {
-    star.addEventListener("click", () => {
-        currentRating = star.dataset.value;
-        starRating.dataset.rating = currentRating;
-        updateStars(currentRating);
-    });
+    if (stars.length > 0 && starRating) {
+        stars.forEach((star) => {
+            // Click to select rating
+            star.addEventListener('click', () => {
+                currentRating = parseInt(star.dataset.value);
+                starRating.dataset.rating = currentRating;
+                updateStars(currentRating);
+            });
 
-    star.addEventListener("mouseenter", () => {
-        updateStars(star.dataset.value);
-    });
-});
+            // Hover effect
+            star.addEventListener('mouseenter', () => {
+                updateStars(parseInt(star.dataset.value));
+            });
+        });
 
-starRating.addEventListener("mouseleave", () => {
-    updateStars(currentRating);
-});
-
-function updateStars(rating) {
-    stars.forEach((star) => {
-        if (star.dataset.value <= rating) {
-            star.classList.add("active");
-            } 
-        else {
-            star.classList.remove("active");
-        }
-    });
-}
-
-// ===== OPEN POPUP =====
-function openRatingPopup() {
-    const overlay = document.getElementById("rating-overlay");
-    if (overlay) {
-        overlay.classList.remove("hidden");
-        document.body.style.overflow = "hidden"; // khóa scroll nền
-    }
-}
-
-// ===== CLOSE POPUP =====
-function closeRatingPopup() {
-    const overlay = document.getElementById("rating-overlay");
-    if (overlay) {
-        overlay.classList.add("hidden");
-        document.body.style.overflow = ""; // mở lại scroll
-    }
-}
-
-// ===== CLOSE BUTTON (X) =====
-document.addEventListener("click", function (e) {
-    if (e.target.id === "cancelPopupClose") {
-        closeRatingPopup();
-    }
-});
-
-// ===== CLICK RA NGOÀI POPUP ĐỂ ĐÓNG =====
-document.getElementById("rating-overlay").addEventListener("click", function (e) {
-    if (e.target.id === "rating-overlay") {
-        closeRatingPopup();
-    }
-});
-
-// ===== SUBMIT RATING =====
-document.querySelector(".btn-primary-medium").addEventListener("click", function() {
-    const rating = currentRating;
-    const comment = document.querySelector(".input-field input").value.trim();
-    const skuID = "SKU001"; // TODO: Lấy từ data attribute hoặc hidden input
-
-    // Validate
-    if (rating === 0) {
-        alert("Please select a rating!");
-        return;
+        // Reset to selected rating when mouse leaves
+        starRating.addEventListener('mouseleave', () => {
+            updateStars(currentRating);
+        });
     }
 
-    // Gửi AJAX
-    fetch('../../controllers/website/RatingController.php?action=submit', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `sku_id=${skuID}&rating=${rating}&comment=${encodeURIComponent(comment)}`
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert(data.message);
-            closeRatingPopup();
+    function updateStars(rating) {
+        stars.forEach((star) => {
+            if (parseInt(star.dataset.value) <= rating) {
+                star.classList.add('active');
+            } else {
+                star.classList.remove('active');
+            }
+        });
+    }
+
+    // ===== OPEN POPUP =====
+    const writeReviewBtn = document.querySelector('.btn-write-review');
+    if (writeReviewBtn) {
+        writeReviewBtn.addEventListener('click', function () {
+            openRatingPopup();
+        });
+    }
+
+    function openRatingPopup() {
+        const overlay = document.getElementById('rating-overlay');
+        if (overlay) {
+            overlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
             // Reset form
             currentRating = 0;
             updateStars(0);
-            document.querySelector(".input-field input").value = "";
-        } else {
-            alert(data.message);
+            if (starRating) {
+                starRating.dataset.rating = 0;
+            }
+            const reviewText = document.getElementById('rating-review-text');
+            if (reviewText) {
+                reviewText.value = '';
+            }
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred. Please try again.');
-    });
-});
+    }
 
+    // ===== CLOSE POPUP =====
+    function closeRatingPopup() {
+        const overlay = document.getElementById('rating-overlay');
+        if (overlay) {
+            overlay.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+    }
+
+    // Close button (X)
+    const closeBtn = document.getElementById('closeRatingPopup');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function () {
+            closeRatingPopup();
+        });
+    }
+
+    // Click outside popup to close
+    const ratingOverlay = document.getElementById('rating-overlay');
+    if (ratingOverlay) {
+        ratingOverlay.addEventListener('click', function (e) {
+            if (e.target.id === 'rating-overlay') {
+                closeRatingPopup();
+            }
+        });
+    }
+
+    // ===== SUBMIT RATING =====
+    const submitBtn = document.getElementById('submitRating');
+    if (submitBtn) {
+        submitBtn.addEventListener('click', function () {
+            const rating = currentRating;
+            const reviewText = document.getElementById('rating-review-text');
+            const comment = reviewText ? reviewText.value.trim() : '';
+            const productSelect = document.getElementById('rating-product-select');
+            const skuID = productSelect ? productSelect.value : '';
+
+            // Validate
+            if (rating === 0) {
+                alert('Please select a rating!');
+                return;
+            }
+
+            if (!skuID) {
+                alert('Please select a product!');
+                return;
+            }
+
+            // Disable button during submission
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            // Send AJAX request
+            fetch('/Candy-Crunch-Website/controllers/website/RatingController.php?action=submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `sku_id=${encodeURIComponent(skuID)}&rating=${rating}&comment=${encodeURIComponent(comment)}`
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        closeRatingPopup();
+                        // Reset form
+                        currentRating = 0;
+                        updateStars(0);
+                        if (reviewText) {
+                            reviewText.value = '';
+                        }
+                    } else {
+                        alert(data.message || 'Failed to submit review. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit';
+                });
+        });
+    }
+});

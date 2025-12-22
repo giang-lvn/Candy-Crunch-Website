@@ -174,6 +174,49 @@ require_once('../../../partials/header.php');
             <p id="cancelMessage" style="text-align: center; margin-top: 10px;"></p>
         </div>
     </div>
+
+    <!-- Rating Popup -->
+    <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/rating.css">
+    <div id="rating-overlay" class="overlay hidden">
+        <div class="rating-popup">
+            <button class="close-btn" id="closeRatingPopup">&times;</button>
+            <h2 class="rating-title">Rating</h2>
+            <p class="rating-desc">Share your thoughts and help Candy Crunch get even sweeter!</p>
+            
+            <input type="hidden" id="rating-order-id" value="">
+            
+            <div class="input">
+                <label class="input-label">Select Product</label>
+                <div class="input-field">
+                    <select id="rating-product-select">
+                        <!-- Products will be populated dynamically -->
+                    </select>
+                </div>
+            </div>
+
+            <div class="input">
+                <label class="input-label">Your Rating</label>
+                <div class="star-rating" data-rating="0">
+                    <span class="star" data-value="1">&#9733;</span>
+                    <span class="star" data-value="2">&#9733;</span>
+                    <span class="star" data-value="3">&#9733;</span>
+                    <span class="star" data-value="4">&#9733;</span>
+                    <span class="star" data-value="5">&#9733;</span>
+                </div>
+            </div>
+
+            <div class="input">
+                <label class="input-label">Product Review</label>
+                <div class="input-field">
+                    <textarea id="rating-review-text" placeholder="Provide a detailed review..." rows="3"></textarea>
+                </div>
+            </div>
+
+            <div class="return-submit">
+                <button class="btn-primary-medium" id="submitRating">Submit</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
 <?php

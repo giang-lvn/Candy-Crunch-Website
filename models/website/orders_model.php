@@ -65,7 +65,8 @@ class OrderModel {
 
             p.ProductName,
             p.Image,
-            s.Attribute
+            s.Attribute,
+            s.SKUID
 
         FROM ORDERS o
         JOIN ORDER_DETAIL od ON o.OrderID = od.OrderID
@@ -77,7 +78,7 @@ class OrderModel {
 
         WHERE o.CustomerID = ?
 
-        GROUP BY o.OrderID, v.VoucherID, p.ProductName, p.Image, s.Attribute
+        GROUP BY o.OrderID, v.VoucherID, p.ProductName, p.Image, s.Attribute, s.SKUID
         ORDER BY o.OrderDate DESC
         ";
 

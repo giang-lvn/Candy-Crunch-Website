@@ -110,92 +110,12 @@ include __DIR__ . '/../../../partials/header.php';
                             <?php echo htmlspecialchars($data['shippingAddress']['Country']); ?>
                         </span>
                     </div>
-
-                    <div class="info-row">
-                        <span class="label">Postal Code:</span>
-                        <span class="value"><?php echo htmlspecialchars($data['shippingAddress']['PostalCode']); ?></span>
-                    </div>
                 <?php else: ?>
                     <p>No shipping address found.</p>
                 <?php endif; ?>
             </div>
         </div>
 
-        <!-- STATUS -->
-        <div class="status-detail">
-            <div class="status-title">
-                <h3>Order Status</h3>
-            </div>
-
-            <!-- STATUS LIST -->
-            <div class="status-list">
-                <?php
-                // Định nghĩa các trạng thái và logic hiển thị
-                $statusFlow = [
-                    'Waiting Payment' => ['time' => $data['order']['OrderDate'], 'active' => true],
-                    'Pending Confirmation' => ['time' => null, 'active' => false],
-                    'Pending' => ['time' => null, 'active' => false],
-                    'On Shipping' => ['time' => null, 'active' => false],
-                    'Complete' => ['time' => null, 'active' => false]
-                ];
-
-                $currentStatus = $data['order']['OrderStatus'];
-                $statusReached = true;
-
-                foreach ($statusFlow as $status => $info):
-                    if ($status === $currentStatus) {
-                        $statusReached = false;
-                    }
-                    
-                    $isActive = ($status === $currentStatus || $statusReached) ? 'active' : '';
-                ?>
-                    <div class="status-item <?php echo $isActive; ?>">
-                        <div class="status-icon"></div>
-                        
-                        <?php if ($info['time']): ?>
-                            <div class="time"><?php echo date('H:i', strtotime($info['time'])); ?></div>
-                            <div class="date"><?php echo date('d-m-Y', strtotime($info['time'])); ?></div>
-                        <?php else: ?>
-                            <div class="time">--:--</div>
-                            <div class="date">--/--/----</div>
-                        <?php endif; ?>
-                        
-                        <div class="status-text"><?php echo $status; ?></div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-
-            <!-- ACTIONS BUTTONS -->
-            <div class="order-actions">
-                <?php if ($data['buttons']['pay_now']): ?>
-                    <button class="btn-primary-medium btn-pay-now">Pay Now</button>
-                <?php endif; ?>
-
-                <?php if ($data['buttons']['change_method']): ?>
-                    <button class="btn-primary-outline-medium btn-change-method">Change Method</button>
-                <?php endif; ?>
-
-                <?php if ($data['buttons']['buy_again']): ?>
-                    <button class="btn-primary-medium btn-buy-again">Buy Again</button>
-                <?php endif; ?>
-
-                <?php if ($data['buttons']['write_review']): ?>
-                    <button class="btn-primary-outline-medium btn-write-review">Write Review</button>
-                <?php endif; ?>
-
-                <?php if ($data['buttons']['return']): ?>
-                    <button class="btn-secondary-outline-medium btn-return">Return</button>
-                <?php endif; ?>
-
-                <?php if ($data['buttons']['cancel']): ?>
-                    <button class="btn-secondary-medium btn-cancel-order">Cancel</button>
-                <?php endif; ?>
-
-                <?php if ($data['buttons']['contact']): ?>
-                    <button class="btn-secondary-outline-medium btn-contact">Contact</button>
-                <?php endif; ?>
-            </div>
-        </div>
 
         <!-- PRODUCTS -->
         <div class="detail">
@@ -275,6 +195,37 @@ include __DIR__ . '/../../../partials/header.php';
                 <span class="label">Total</span>
                 <span class="value-payment"><?php echo number_format($data['summary']['total'], 0, ',', '.'); ?> VND</span>
             </div>
+
+            <!-- ACTIONS BUTTONS -->
+            <div class="order-actions">
+                <?php if ($data['buttons']['pay_now']): ?>
+                    <button class="btn-primary-medium btn-pay-now">Pay Now</button>
+                <?php endif; ?>
+
+                <?php if ($data['buttons']['change_method']): ?>
+                    <button class="btn-primary-outline-medium btn-change-method">Change Method</button>
+                <?php endif; ?>
+
+                <?php if ($data['buttons']['buy_again']): ?>
+                    <button class="btn-primary-medium btn-buy-again">Buy Again</button>
+                <?php endif; ?>
+
+                <?php if ($data['buttons']['write_review']): ?>
+                    <button class="btn-primary-outline-medium btn-write-review">Write Review</button>
+                <?php endif; ?>
+
+                <?php if ($data['buttons']['return']): ?>
+                    <button class="btn-secondary-outline-medium btn-return">Return</button>
+                <?php endif; ?>
+
+                <?php if ($data['buttons']['cancel']): ?>
+                    <button class="btn-secondary-medium btn-cancel-order">Cancel</button>
+                <?php endif; ?>
+
+                <?php if ($data['buttons']['contact']): ?>
+                    <button class="btn-secondary-outline-medium btn-contact">Contact</button>
+                <?php endif; ?>
+            </div>
         </div>
 
     </div>
@@ -288,7 +239,7 @@ include __DIR__ . '/../../../partials/header.php';
             
             <input type="hidden" id="rating-order-id" value="">
             
-            <div class="input" data-size="medium">
+            <div class="input">
                 <label class="input-label">Select Product</label>
                 <div class="input-field">
                     <select id="rating-product-select">
@@ -312,7 +263,7 @@ include __DIR__ . '/../../../partials/header.php';
                 </div>
             </div>
 
-            <div class="input" data-optional="true" data-size="medium">
+            <div class="input">
                 <label class="input-label">Product Review</label>
                 <div class="input-field">
                     <textarea id="rating-review-text" placeholder="Provide a detailed review..." rows="3"></textarea>

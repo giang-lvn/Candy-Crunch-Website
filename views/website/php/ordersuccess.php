@@ -182,8 +182,7 @@ include(__DIR__ . '/../../../partials/header.php');
 
             <!-- Action Buttons -->
             <div class="action-buttons">
-                <a href="<?= $ROOT ?>/views/website/php/my_orders.php" class="btn-primary-outline-large">View Order
-                    Detail</a>
+                <a href="<?= $ROOT ?>/index.php?controller=OrderDetail&action=index&id=<?= htmlspecialchars($orderId) ?>" class="btn-primary-outline-large">View Order Detail</a>
                 <a href="<?= $ROOT ?>/views/website/php/shop.php" class="btn-primary-large">Continue Shopping</a>
             </div>
         </div>

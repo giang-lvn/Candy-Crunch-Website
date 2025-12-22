@@ -101,6 +101,8 @@
     color: #d1d5db;
     /* sao xám */
     transition: color 0.2s ease;
+    cursor: pointer;
+    user-select: none;
 }
 
 /* Sao được chọn */
@@ -109,34 +111,9 @@
     /* vàng */
 }
 
-/* Hover */
-.star-rating:hover .star {
+/* Hover - highlight all stars up to hovered one */
+.star:hover {
     color: #fbbf24;
-}
-
-.star:hover,
-.star:hover~.star {
-    color: #d1d5db;
-}
-
-.star-rating .star:hover,
-.star-rating .star:hover~.star {
-    color: #d1d5db;
-}
-
-.star-rating .star:hover,
-.star-rating .star:hover~.star {
-    color: #d1d5db;
-}
-
-.star-rating .star:hover,
-.star-rating .star:hover~.star {
-    color: #d1d5db;
-}
-
-.star-rating .star:hover,
-.star-rating .star:hover~.star {
-    color: #d1d5db;
 }
 
 @media (max-width: 768px) {
