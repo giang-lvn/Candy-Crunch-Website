@@ -215,13 +215,13 @@ class OrderDetailModel
     {
         // Kiểm tra trạng thái hiện tại
         $order = $this->getOrderById($orderId);
-        
+
         if (!$order) {
             return false;
         }
 
         $allowedStatuses = ['Waiting Payment', 'Pending Confirmation'];
-        
+
         if (!in_array($order['OrderStatus'], $allowedStatuses)) {
             return false; // Không cho phép hủy
         }
@@ -237,7 +237,7 @@ class OrderDetailModel
     public function confirmReceived($orderId)
     {
         $order = $this->getOrderById($orderId);
-        
+
         if (!$order || $order['OrderStatus'] !== 'On Shipping') {
             return false;
         }

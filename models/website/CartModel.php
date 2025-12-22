@@ -17,8 +17,9 @@ class CartModel
      */
     private function getProductThumbnailPath($imageData)
     {
-        if (empty($imageData)) return '';
-        
+        if (empty($imageData))
+            return '';
+
         $decoded = json_decode($imageData, true);
         if (is_array($decoded)) {
             // Find the thumbnail image
@@ -33,7 +34,7 @@ class CartModel
             }
             return '';
         }
-        
+
         return $imageData;
     }
 
@@ -66,12 +67,12 @@ class CartModel
 
         $result = $stmt->get_result();
         $items = $result->fetch_all(MYSQLI_ASSOC);
-        
+
         // Process thumbnail images
         foreach ($items as &$item) {
             $item['Image'] = $this->getProductThumbnailPath($item['Image']);
         }
-        
+
         return $items;
     }
 
@@ -101,7 +102,7 @@ class CartModel
         $stmt->bind_param("ss", $cartId, $skuId);
         return $stmt->execute();
     }
-    
+
     // Lấy tất cả SKUs của một sản phẩm (cho attribute dropdown)
     public function getProductSKUs($productId)
     {
@@ -123,7 +124,7 @@ class CartModel
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
     }
-    
+
     // Đổi attribute (đổi SKUID) trong giỏ hàng
     public function changeAttribute($cartId, $oldSkuId, $newSkuId)
     {
@@ -132,10 +133,10 @@ class CartModel
         if ($currentQty <= 0) {
             return false;
         }
-        
+
         // Kiểm tra xem SKU mới đã có trong giỏ chưa
         $existingQty = $this->getQuantity($cartId, $newSkuId);
-        
+
         if ($existingQty > 0) {
             // Nếu SKU mới đã có -> cộng dồn quantity và xóa SKU cũ
             $this->updateQuantity($cartId, $newSkuId, $existingQty + $currentQty);
@@ -147,12 +148,12 @@ class CartModel
                 SET SKUID = ?
                 WHERE CartID = ? AND SKUID = ?
             ";
-            
+
             $stmt = $this->conn->prepare($sql);
             $stmt->bind_param("sss", $newSkuId, $cartId, $oldSkuId);
             return $stmt->execute();
         }
-        
+
         return true;
     }
 
@@ -357,27 +358,28 @@ class CartModel
     // Validate Voucher - returns [success => bool, message => string]
     public function validateVoucher($voucher, $subtotal)
     {
-        if (!$voucher) return ['success' => false, 'message' => 'Voucher không tồn tại'];
-        
+        if (!$voucher)
+            return ['success' => false, 'message' => 'Voucher không tồn tại'];
+
         $today = date('Y-m-d');
         $startDate = $voucher['StartDate'];
         $endDate = $voucher['EndDate'];
-        $minOrder = (float)$voucher['MinOrder'];
-        
+        $minOrder = (float) $voucher['MinOrder'];
+
         // 1. Check Date
         if (strtotime($startDate) > strtotime($today)) {
             return ['success' => false, 'message' => 'Voucher chưa đến ngày áp dụng (Bắt đầu: ' . date('d/m/Y', strtotime($startDate)) . ')'];
         }
-        
+
         if (strtotime($today) > strtotime($endDate)) {
             return ['success' => false, 'message' => 'Voucher đã hết hạn sử dụng (Hết hạn: ' . date('d/m/Y', strtotime($endDate)) . ')'];
         }
-        
+
         // 2. Check Min Order
         if ($minOrder > 0 && $subtotal < $minOrder) {
             return ['success' => false, 'message' => 'Đơn hàng chưa đạt giá trị tối thiểu ' . number_format($minOrder, 0, ',', '.') . 'đ'];
         }
-        
+
         return ['success' => true, 'message' => 'Áp dụng voucher thành công'];
     }
 
@@ -424,7 +426,7 @@ class CartModel
     {
         // Tạo CartID dạng VARCHAR(10) - VD: "CA001"
         $cartId = $this->generateCartId();
-        
+
         $sql = "
             INSERT INTO CART (CartID, CustomerID, TimeUpdate)
             VALUES (?, ?, NOW())
@@ -436,14 +438,14 @@ class CartModel
 
         return $cartId;
     }
-    
+
     // Tạo CartID mới theo format VARCHAR(10) - VD: "CA001"
     private function generateCartId(): string
     {
         $sql = "SELECT CartID FROM CART ORDER BY CartID DESC LIMIT 1";
         $result = $this->conn->query($sql);
         $row = $result->fetch_assoc();
-        
+
         if ($row) {
             // Lấy số từ CartID hiện tại và tăng lên 1
             $lastId = $row['CartID'];

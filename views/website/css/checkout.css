@@ -264,6 +264,67 @@ body {
   font: var(--body-regular);
 }
 
+.no-banking {
+  color: var(--text-subtitle);
+  font: var(--body-regular);
+  text-align: center;
+  padding: var(--spacing-16) 0;
+  width: 100%;
+}
+
+/* Selected Banking Card */
+.selected-banking-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-16);
+  padding: var(--spacing-24);
+  border-radius: var(--border-radius-12);
+  border: 1px solid var(--gray-300);
+  background: var(--beige-500);
+  align-self: stretch;
+}
+
+.selected-banking-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.selected-banking-header h2 {
+  color: var(--text-black);
+  font: var(--body-medium);
+  margin: 0;
+}
+
+.selected-banking-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.selected-banking-info .bank-name {
+  color: var(--text-black);
+  font: var(--body-regular);
+}
+
+.selected-banking-info .account-number {
+  color: var(--text-subtitle);
+  font: var(--body-regular);
+}
+
+/* Banking Selection List */
+.banking-selection-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-24);
+  align-self: stretch;
+}
+
+/* Bank account card selected state */
+.bank-account-card.selected {
+  border-color: var(--green-500);
+  background: var(--green-50);
+}
 
 
 /* =======================
@@ -463,6 +524,22 @@ body {
   align-self: stretch;
 }
 
+/* Reset .shipping styles to prevent conflict with my_account.css */
+.summary-header .shipping {
+  border-radius: 0;
+  border: none;
+  overflow: visible;
+  box-shadow: none;
+  transition: none;
+  flex-direction: row;
+  background: transparent;
+}
+
+.summary-header .shipping:hover {
+  box-shadow: none;
+}
+
+
 .summary-header .subtotal .label,
 .summary-header .discount .label,
 .summary-header .shipping .label,
@@ -473,25 +550,28 @@ body {
   align-self: stretch;
 }
 
-.subtotal .value {
+.checkout-right .subtotal .value {
   color: var(--green-500);
   font: var(--body-large-semibold);
 }
 
-.discount .value {
+.checkout-right .discount .value {
   color: var(--red-500);
   text-align: right;
   font: var(--body-large-semibold);
 }
 
-.promo .value,
-.shipping .value {
+.checkout-right .promo .value,
+.checkout-right .shipping .value {
   color: var(--text-black);
   font: var(--body-large-semibold);
 }
 
+.checkout-right .summary-header .input-field {
+  align-self: stretch;
+}
 
-.summary-footer {
+.checkout-right .summary-footer {
   display: flex;
   padding-top: 20px;
   justify-content: space-between;
@@ -500,23 +580,23 @@ body {
   border-top: 2px solid var(--gray-300);
 }
 
-.total-label {
+.checkout-right .total-label {
   color: var(--text-black);
 
   font: var(--body-large-medium);
 }
 
-.total-value {
+.checkout-right .total-value {
   color: var(--green-500);
 
   font: var(--body-large-semibold);
 }
 
-.summary-container .checkbox-item {
+.checkout-right .summary-container .checkbox-item {
   padding: 0 var(--spacing-24);
 }
 
-.summary-container .btn-primary-large {
+.checkout-right .summary-container .btn-primary-large {
   display: flex;
   width: 100%;
   justify-content: center;

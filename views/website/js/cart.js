@@ -27,11 +27,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // CHECKOUT BUTTON ← THÊM VÀO ĐÂY
+    // CHECKOUT BUTTON
     const checkoutBtn = document.querySelector('.checkout-btn');
     if (checkoutBtn) {
         checkoutBtn.addEventListener('click', () => {
-            window.location.href = 'checkout.html';
+            // Redirect to checkout page - cart data will be fetched from session
+            window.location.href = '/Candy-Crunch-Website/views/website/php/checkout.php';
         });
     }
 
@@ -138,7 +139,7 @@ function refreshCartContent() {
             const checkoutBtn = document.querySelector('.checkout-btn');
             if (checkoutBtn) {
                 checkoutBtn.addEventListener('click', () => {
-                    window.location.href = 'checkout.html';
+                    window.location.href = '/Candy-Crunch-Website/views/website/php/checkout.php';
                 });
             }
         })

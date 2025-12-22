@@ -49,8 +49,9 @@ class WishlistModel
      */
     private function getProductThumbnailPath($imageData)
     {
-        if (empty($imageData)) return '';
-        
+        if (empty($imageData))
+            return '';
+
         $decoded = json_decode($imageData, true);
         if (is_array($decoded)) {
             foreach ($decoded as $img) {
@@ -63,7 +64,7 @@ class WishlistModel
             }
             return '';
         }
-        
+
         return $imageData;
     }
 
@@ -108,7 +109,7 @@ class WishlistModel
     public function removeFromWishlist($customerId, $productId)
     {
         $resolvedId = $this->resolveProductId($productId);
-        
+
         if (!$resolvedId) {
             return false;
         }
@@ -158,8 +159,9 @@ class WishlistModel
         // However, if we are passing an ALREADY resolved ID (like inside addToWishlist), it's redundant but harmless if cached?
         // Actually, to be safe against external calls:
         $resolvedId = $this->resolveProductId($productId);
-        
-        if (!$resolvedId) return false;
+
+        if (!$resolvedId)
+            return false;
 
         $sql = "SELECT * FROM WISHLIST WHERE CustomerID = :customerId AND ProductID = :productId";
         $stmt = $this->db->prepare($sql);

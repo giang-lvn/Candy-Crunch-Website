@@ -610,10 +610,10 @@ body {
     flex-shrink: 0;
 }
 
-.value,
-.value6,
-.value7,
-.value9 {
+.my-account .value,
+.my-account .value6,
+.my-account .value7,
+.my-account .value9 {
     flex: 1;
     display: flex;
     align-items: center;

@@ -4,9 +4,42 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Check login
+if (!isset($_SESSION['AccountID'])) {
+    header('Location: ' . $ROOT . '/views/website/php/login.php');
+    exit;
+}
+
+// Load CartModel to get cart data
+require_once __DIR__ . '/../../../models/website/CartModel.php';
+
+$cartModel = new CartModel();
+$cartId = $_SESSION['cart_id'] ?? null;
+$cartItems = [];
+$subtotal = 0;
+$discount = 0;
+$promo = 0;
+$shippingFee = 30000; // Default: Standard shipping = 30,000 VND
+
+if ($cartId) {
+    $cartItems = $cartModel->getCartItems($cartId);
+
+    if (!empty($cartItems)) {
+        $amount = $cartModel->calculateCartAmount($cartItems);
+        $subtotal = $amount['subtotal'];
+        $discount = $amount['discount'];
+    }
+}
+
+// Calculate total (shipping will be updated by JS based on delivery method)
+$total = $subtotal - $discount - $promo + $shippingFee;
+
 // Get user addresses from session
 $addresses = $_SESSION['user_addresses'] ?? [];
 $selectedAddressId = $_SESSION['selected_shipping_address'] ?? null;
+
+// Get user banking info from session
+$banking = $_SESSION['user_banking'] ?? [];
 
 // Find default or selected address
 $currentAddress = null;
@@ -132,21 +165,68 @@ include(__DIR__ . '/../../../partials/header.php');
                     <span class="radio-label">Bank Transfer</span>
                 </label>
 
-                <!-- Bank Accounts List (Hidden by default) -->
+                <!-- Selected Banking Account Display (similar to Delivery Address) -->
+                <?php
+                // Find default or selected banking
+                $currentBanking = null;
+                $selectedBankingId = $_SESSION['selected_banking'] ?? null;
+                if (!empty($banking)) {
+                    foreach ($banking as $bank) {
+                        if ($selectedBankingId && $bank['BankingID'] == $selectedBankingId) {
+                            $currentBanking = $bank;
+                            break;
+                        }
+                        if (($bank['IsDefault'] ?? '') === 'Yes') {
+                            $currentBanking = $bank;
+                        }
+                    }
+                    // If no default, use first banking
+                    if (!$currentBanking) {
+                        $currentBanking = $banking[0];
+                    }
+                }
+                ?>
                 <div class="bank-accounts-container" id="bankAccountsContainer">
-                    <div class="card-container">
-                        <div class="bank-account-card">
-                            <span class="bank-account-name">Shinhan Bank</span>
-                            <p class="bank-account-number">1234567890</p>
+                    <!-- Selected Banking Card -->
+                    <div class="selected-banking-card" id="selectedBankingCard"
+                        style="<?php echo $currentBanking ? '' : 'display:none;'; ?>">
+                        <div class="selected-banking-header">
+                            <h2>Banking Account</h2>
+                            <button class="btn-primary-outline-small" id="changeBankingBtn">Change</button>
                         </div>
-
-                        <div class="bank-account-card">
-                            <span class="bank-account-name">Shinhan Bank</span>
-                            <p class="bank-account-number">1234567890</p>
+                        <div class="selected-banking-info">
+                            <span class="bank-name"
+                                id="displayBankName"><?php echo htmlspecialchars($currentBanking['BankName'] ?? ''); ?></span>
+                            <span class="account-number"
+                                id="displayAccountNumber">****<?php echo substr($currentBanking['AccountNumber'] ?? '', -4); ?></span>
                         </div>
+                        <input type="hidden" id="selectedBankingId"
+                            value="<?php echo htmlspecialchars($currentBanking['BankingID'] ?? ''); ?>">
                     </div>
 
-                    <button class="btn-primary-outline-small">Add Banking Account</button>
+                    <!-- Banking Selection List (Hidden when a banking is selected) -->
+                    <div class="banking-selection-list" id="bankingSelectionList"
+                        style="<?php echo $currentBanking ? 'display:none;' : ''; ?>">
+                        <div class="card-container">
+                            <?php if (!empty($banking)): ?>
+                                <?php foreach ($banking as $bank): ?>
+                                    <div class="bank-account-card"
+                                        data-banking-id="<?php echo htmlspecialchars($bank['BankingID'] ?? ''); ?>"
+                                        data-bank-name="<?php echo htmlspecialchars($bank['BankName'] ?? ''); ?>"
+                                        data-account-number="<?php echo htmlspecialchars($bank['AccountNumber'] ?? ''); ?>">
+                                        <span
+                                            class="bank-account-name"><?php echo htmlspecialchars($bank['BankName'] ?? 'Unknown Bank'); ?></span>
+                                        <p class="bank-account-number">
+                                            ****<?php echo substr($bank['AccountNumber'] ?? '', -4); ?></p>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <p class="no-banking">No banking accounts found.</p>
+                            <?php endif; ?>
+                        </div>
+
+                        <button class="btn-primary-outline-small" id="addNewBankingBtn">Add Banking Account</button>
+                    </div>
                 </div>
 
             </div>
@@ -160,78 +240,38 @@ include(__DIR__ . '/../../../partials/header.php');
                 <h1>ORDER SUMMARY</h1>
 
                 <div class="cart-container">
-                    <!-- Card 1 -->
-                    <div class="cart-card">
-                        <div class="left">
-                            <img src="../img/product-img/main-thumb-example.png" alt="Product Image">
-                            <div class="product-info">
-                                <h3 class="product-name">Product Name</h3>
-                                <div class="attribute-quantity">
-                                    <span class="attribute">175g</span>
-                                    <span class="quantity">x 1</span>
+                    <?php if (!empty($cartItems)): ?>
+                        <?php foreach ($cartItems as $item): ?>
+                            <!-- Cart Card -->
+                            <div class="cart-card" data-skuid="<?= htmlspecialchars($item['SKUID']) ?>">
+                                <div class="left">
+                                    <img src="<?= htmlspecialchars($item['Image'] ?? $ROOT . '/views/website/img/product-img/main-thumb-example.png') ?>" 
+                                         alt="<?= htmlspecialchars($item['ProductName']) ?>">
+                                    <div class="product-info">
+                                        <h3 class="product-name"><?= htmlspecialchars($item['ProductName']) ?></h3>
+                                        <div class="attribute-quantity">
+                                            <span class="attribute"><?= htmlspecialchars($item['Attribute'] ?? '') ?></span>
+                                            <span class="quantity">x <?= (int)$item['CartQuantity'] ?></span>
+                                        </div>
+                                    </div>
                                 </div>
 
-                            </div>
-                        </div>
-
-                        <div class="right">
-                            <button class="remove">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none">
-                                    <path
-                                        d="M4 7H20M10 11V17M14 11V17M5 7L6 19C6 19.5304 6.21071 20.0391 6.58579 20.4142C6.96086 20.7893 7.46957 21 8 21H16C16.5304 21 17.0391 20.7893 17.4142 20.4142C17.7893 20.0391 18 19.5304 18 19L19 7M9 7V4C9 3.73478 9.10536 3.48043 9.29289 3.29289C9.48043 3.10536 9.73478 3 10 3H14C14.2652 3 14.5196 3.10536 14.7071 3.29289C14.8946 3.48043 15 3.73478 15 4V7"
-                                        stroke="black" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" />
-                                </svg>
-                            </button>
-
-                            <div class="price">
-                                <span class="price-old">100,000 VND</span>
-                                <span class="price-new">90,000 VND</span>
-                            </div>
-                        </div>
-                    </div>
-
-
-
-                    <!-- Card 2 -->
-                    <div class="cart-card">
-                        <div class="left">
-                            <img src="../img/product-img/main-thumb-example.png" alt="Product Image">
-                            <div class="product-info">
-                                <h3 class="product-name">Product Name</h3>
-                                <div class="attribute-quantity">
-                                    <span class="attribute">175g</span>
-                                    <span class="quantity">x 1</span>
+                                <div class="right">
+                                    <div class="price">
+                                        <?php if (!empty($item['PromotionPrice']) && $item['PromotionPrice'] < $item['OriginalPrice']): ?>
+                                            <span class="price-old"><?= number_format($item['OriginalPrice'], 0, ',', '.') ?> VND</span>
+                                            <span class="price-new"><?= number_format($item['PromotionPrice'] * $item['CartQuantity'], 0, ',', '.') ?> VND</span>
+                                        <?php else: ?>
+                                            <span class="price-new"><?= number_format($item['OriginalPrice'] * $item['CartQuantity'], 0, ',', '.') ?> VND</span>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
-
                             </div>
-                        </div>
-
-                        <div class="right">
-                            <button class="remove">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none">
-                                    <path
-                                        d="M4 7H20M10 11V17M14 11V17M5 7L6 19C6 19.5304 6.21071 20.0391 6.58579 20.4142C6.96086 20.7893 7.46957 21 8 21H16C16.5304 21 17.0391 20.7893 17.4142 20.4142C17.7893 20.0391 18 19.5304 18 19L19 7M9 7V4C9 3.73478 9.10536 3.48043 9.29289 3.29289C9.48043 3.10536 9.73478 3 10 3H14C14.2652 3 14.5196 3.10536 14.7071 3.29289C14.8946 3.48043 15 3.73478 15 4V7"
-                                        stroke="black" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" />
-                                </svg>
-                            </button>
-
-                            <div class="price">
-                                <span class="price-old">100,000 VND</span>
-                                <span class="price-new">90,000 VND</span>
-                            </div>
-                        </div>
-                    </div>
-
-
-
-
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p class="empty-cart">Your cart is empty.</p>
+                    <?php endif; ?>
                 </div>
-
-
             </div>
 
 
@@ -241,41 +281,41 @@ include(__DIR__ . '/../../../partials/header.php');
                     <div class="summary-header">
                         <div class="subtotal">
                             <span class="label">Subtotal</span>
-                            <span class="value">100,000 VND</span>
+                            <span class="value" id="summarySubtotal"><?= number_format($subtotal, 0, ',', '.') ?> VND</span>
                         </div>
                         <div class="discount">
                             <span class="label">Discount</span>
-                            <span class="value">- 10,000 VND</span>
+                            <span class="value" id="summaryDiscount"><?= $discount > 0 ? '- ' : '' ?><?= number_format($discount, 0, ',', '.') ?> VND</span>
                         </div>
                         <div class="shipping">
-                            <span class="label">Delivery Fee</span>
-                            <span class="value">10,000 VND</span>
+                            <span class="label">Shipping Fee</span>
+                            <span class="value" id="summaryShipping"><?= number_format($shippingFee, 0, ',', '.') ?> VND</span>
                         </div>
                         <div class="promo">
                             <span class="label">Promo</span>
-                            <span class="value">110,000 VND</span>
+                            <span class="value" id="summaryPromo"><?= $promo > 0 ? '- ' : '' ?><?= number_format($promo, 0, ',', '.') ?> VND</span>
                         </div>
                         <div class="input" data-type="text" data-state="default" data-size="medium">
                             <div class="input-field">
-                                <input type="text" placeholder="Enter promo code">
-                                <button class="btn-primary-outline-small">Apply</button>
+                                <input type="text" placeholder="Enter promo code" id="promoCodeInput">
+                                <button class="btn-primary-outline-small" id="applyPromoBtn">Apply</button>
                             </div>
                         </div>
                     </div>
 
                     <div class="summary-footer">
                         <span class="total-label">Total</span>
-                        <span class="total-value">110,000 VND</span>
+                        <span class="total-value" id="summaryTotal"><?= number_format($total, 0, ',', '.') ?> VND</span>
                     </div>
 
                 </div>
 
                 <label class="checkbox-item">
-                    <input type="checkbox" name="invoice">
+                    <input type="checkbox" name="terms" id="termsCheckbox">
                     I agree to the<a href="policy.php">Terms and Conditions</a>&<a href="policy.php">Privacy Policy</a>
                 </label>
 
-                <button class="btn-primary-large">Checkout</button>
+                <button class="btn-primary-large" id="checkoutBtn">Checkout</button>
             </div>
         </div>
 
@@ -411,6 +451,82 @@ include(__DIR__ . '/../../../partials/header.php');
             <div class="button-parent">
                 <button class="btn-primary-medium" id="saveNewAddressBtn">Save</button>
                 <button class="btn-secondary-outline-medium" id="cancelAddAddressBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD NEW BANKING MODAL -->
+    <div class="modal-overlay" id="addBankingModal">
+        <div class="new-address" style="max-width:520px">
+            <div class="edit-my-profile-wrapper">
+                <div class="edit-my-profile">Add Banking Account</div>
+            </div>
+            <div class="frame-parent-modal">
+                <!-- Row 1: Account Number & Bank Name (2 columns) -->
+                <div class="input-parent">
+                    <div class="input">
+                        <div class="head">
+                            <div class="label-edit">
+                                <div class="male">Account Number</div>
+                            </div>
+                            <div class="field">
+                                <input type="text" class="gender" id="newAccountNumber"
+                                    placeholder="Your Account Number">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input">
+                        <div class="head">
+                            <div class="label-edit">
+                                <div class="male">Bank</div>
+                            </div>
+                            <div class="field">
+                                <input type="text" class="gender" id="newBankName" placeholder="Bank Name">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 2: Bank Branch (full width) -->
+                <div class="input3">
+                    <div class="head">
+                        <div class="label-edit">
+                            <div class="male">Bank Branch</div>
+                        </div>
+                        <div class="field">
+                            <input type="text" class="gender" id="newBankBranch" placeholder="Bank Branch">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 3: Account Holder Name (full width) -->
+                <div class="input3">
+                    <div class="head">
+                        <div class="label-edit">
+                            <div class="male">Account Holder Name</div>
+                        </div>
+                        <div class="field">
+                            <input type="text" class="gender" id="newAccountHolderName"
+                                placeholder="Account Holder Name">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 4: ID Number (full width) -->
+                <div class="input3">
+                    <div class="head">
+                        <div class="label-edit">
+                            <div class="male">ID Number</div>
+                        </div>
+                        <div class="field">
+                            <input type="text" class="gender" id="newIDNumber" placeholder="ID Number">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="button-parent">
+                <button class="btn-primary-medium" id="saveNewBankingBtn">Save</button>
+                <button class="btn-secondary-outline-medium" id="cancelAddBankingBtn">Cancel</button>
             </div>
         </div>
     </div>
