@@ -139,7 +139,6 @@ class ProductDetailNewModel
             FROM SKU s
             LEFT JOIN PRODUCT p ON s.ProductID = p.ProductID
             LEFT JOIN INVENTORY i ON s.InventoryID = i.InventoryID
-            LEFT JOIN PRODUCT p ON s.ProductID = p.ProductID
             WHERE s.ProductID = :productId
             ORDER BY s.Attribute ASC
         ";
@@ -161,12 +160,13 @@ class ProductDetailNewModel
                 s.Attribute,
                 s.OriginalPrice,
                 s.PromotionPrice,
+                p.ProductName,
                 p.Image,
                 i.Stock
             FROM SKU s
             LEFT JOIN PRODUCT p ON s.ProductID = p.ProductID
             LEFT JOIN INVENTORY i ON s.InventoryID = i.InventoryID
-            LEFT JOIN PRODUCT p ON s.ProductID = p.ProductID
+
             WHERE s.SKUID = :skuId
         ";
 

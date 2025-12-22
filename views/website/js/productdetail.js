@@ -379,7 +379,63 @@ document.addEventListener('DOMContentLoaded', function () {
   if (btnWishlist) {
     btnWishlist.addEventListener('click', addToWishlist);
   }
+
+  const btnBuyNow = document.getElementById('btn-buy-now');
+  if (btnBuyNow) {
+    btnBuyNow.addEventListener('click', buyNow);
+  }
 });
+
+// Buy Now Function
+async function buyNow() {
+  const select = document.getElementById('sku-select');
+  const skuId = select ? select.value : null;
+
+  if (!skuId) {
+    showNotification('Please select a product option/SKU', 'warning');
+    return;
+  }
+
+  const btn = document.getElementById('btn-buy-now');
+  const originalText = btn ? btn.innerText : 'Buy now';
+  if (btn) {
+    btn.innerText = 'Processing...';
+    btn.disabled = true;
+  }
+
+  try {
+    const response = await fetch('/Candy-Crunch-Website/controllers/website/ProductDetailNewController.php?action=buyNow', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ skuid: skuId, quantity: currentQuantity })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      window.location.href = result.redirect;
+    } else {
+      if (result.redirect) {
+        showNotification(result.message || 'Please login to continue', 'warning');
+        setTimeout(() => {
+          window.location.href = result.redirect;
+        }, 1500);
+      } else {
+        showNotification(result.message || 'Cannot proceed to checkout', 'warning');
+      }
+    }
+  } catch (error) {
+    console.error('Buy now error:', error);
+    showNotification('Error processing buy now request', 'error');
+  } finally {
+    if (btn) {
+      btn.innerText = originalText;
+      btn.disabled = false;
+    }
+  }
+}
 
 // Add Related Product to Cart
 async function addRelatedToCart(skuId, btnElement) {

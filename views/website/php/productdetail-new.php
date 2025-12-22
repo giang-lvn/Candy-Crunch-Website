@@ -182,7 +182,7 @@ include(__DIR__ . '/../../../partials/header.php');
                     <!-- product actions -->
                     <div class="product-action">
 
-                        <button class="btn-primary-medium">Buy now</button>
+                        <button class="btn-primary-medium" id="btn-buy-now">Buy now</button>
                         <button class="btn-primary-outline-medium" id="btn-add-to-cart">Add to Cart</button>
                         <button class="btn-icon-primary-outline-small-square" id="btn-wishlist">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"

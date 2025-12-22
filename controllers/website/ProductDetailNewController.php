@@ -1,6 +1,7 @@
 <?php
 // controllers/website/ProductDetailNewController.php
 
+require_once __DIR__ . '/../../models/website/CartModel.php';
 require_once __DIR__ . '/../../models/website/ProductDetailNewModel.php';
 require_once __DIR__ . '/../../models/db.php';
 
@@ -88,6 +89,71 @@ class ProductDetailNewController
                 'Image' => $skuInfo['Image'] ?? ''
             ]
         ]);
+    }
+
+    /**
+     * AJAX: Xử lý Buy Now
+     */
+    public function buyNow()
+    {
+        try {
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+
+            header('Content-Type: application/json');
+
+            // Check login
+            if (!isset($_SESSION['AccountID'])) {
+                echo json_encode([
+                    'success' => false,
+                    'redirect' => '/Candy-Crunch-Website/views/website/php/login.php',
+                    'message' => 'Please login to continue'
+                ]);
+                return;
+            }
+
+            // Get input
+            $input = json_decode(file_get_contents('php://input'), true);
+            $skuId = $input['skuid'] ?? null;
+            $quantity = $input['quantity'] ?? 1;
+
+            if (!$skuId) {
+                echo json_encode(['success' => false, 'message' => 'Missing SKU ID']);
+                return;
+            }
+
+            // Validate SKU and Stock
+            $skuInfo = $this->model->getSkuById($skuId);
+            if (!$skuInfo) {
+                echo json_encode(['success' => false, 'message' => 'Product not found']);
+                return;
+            }
+
+            if (($skuInfo['Stock'] ?? 0) < $quantity) {
+                echo json_encode(['success' => false, 'message' => 'Not enough stock']);
+                return;
+            }
+
+            // Add to Database Cart
+            $cartModel = new CartModel();
+            $result = $cartModel->addToCart($_SESSION['AccountID'], $skuId, $quantity);
+
+            if ($result) {
+                echo json_encode([
+                    'success' => true,
+                    'redirect' => '/Candy-Crunch-Website/views/website/php/checkout.php' // Standard checkout link
+                ]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Failed to add item to cart']);
+            }
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+        } catch (Error $e) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+        }
     }
 }
 
