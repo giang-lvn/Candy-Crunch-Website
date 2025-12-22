@@ -23,7 +23,7 @@
     <section class="login-section">
         
         <div class="login-card">
-            <button class="close-btn" onclick="window.location.href='index.php'">&times;</button>
+            <button class="close-btn" onclick="window.location.href='landing.php'">&times;</button>
 
             <div class="login-header">
                 <h1 class="login-title">Login</h1>

@@ -38,7 +38,32 @@ class ShopManager {
     this.setupRatingFilter();
     this.initializeAnimations();
     this.setupKeyboardShortcuts();
+    this.parseUrlParams(); // Parse URL params before loading products
     this.loadAllProducts(); // Load tất cả sản phẩm 1 lần
+  }
+
+  // ============================================
+  // URL PARSING
+  // ============================================
+  parseUrlParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const category = urlParams.get('category');
+
+    if (category) {
+      // Update state
+      if (!this.state.filters.category.includes(category)) {
+        this.state.filters.category.push(category);
+      }
+
+      // Check the checkbox in UI
+      const checkbox = document.querySelector(`.filter-checkbox[data-filter="${category}"]`);
+      if (checkbox) {
+        checkbox.checked = true;
+      }
+
+      // Add visual tag
+      this.addFilterTag(category, 'category');
+    }
   }
 
   // ============================================
@@ -512,6 +537,7 @@ class ShopManager {
   createProductCard(product) {
     const card = document.createElement('article');
     card.className = 'product-card';
+    card.style.cursor = 'pointer';
 
     const placeholderImg = '/Candy-Crunch-Website/views/website/img/product1.png';
     const imageUrl = product.image || placeholderImg;
@@ -520,6 +546,9 @@ class ShopManager {
     const displayPrice = firstSku ? firstSku.salePrice : product.basePrice;
     const originalPrice = firstSku?.originalPrice;
     const hasDiscount = originalPrice && originalPrice > displayPrice;
+
+    // Product detail page URL
+    const productDetailUrl = `/Candy-Crunch-Website/controllers/website/ProductDetailNewController.php?productId=${product.id}`;
 
     card.innerHTML = `
       <img class="product-image" src="${imageUrl}" alt="${product.name}" onerror="this.src='${placeholderImg}'" />
@@ -559,8 +588,23 @@ class ShopManager {
     const addToCartBtn = card.querySelector('.btn-primary-small');
     const wishlistBtn = card.querySelector('.btn-icon-primary-outline-small-square');
 
-    addToCartBtn.addEventListener('click', () => this.addToCart(product, firstSku));
-    wishlistBtn.addEventListener('click', () => this.toggleWishlist(product));
+    // Click on card navigates to product detail (except when clicking buttons)
+    card.addEventListener('click', (e) => {
+      // Don't navigate if user clicked on Add to Cart or Wishlist buttons
+      if (e.target.closest('.btn-primary-small') || e.target.closest('.btn-icon-primary-outline-small-square')) {
+        return;
+      }
+      window.location.href = productDetailUrl;
+    });
+
+    addToCartBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.addToCart(product, firstSku);
+    });
+    wishlistBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.toggleWishlist(product);
+    });
 
     return card;
   }
