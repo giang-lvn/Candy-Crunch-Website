@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../models/db.php';
 require_once __DIR__ . '/../../models/website/CancelModel.php';
 
 class CancelController {
@@ -10,17 +11,38 @@ class CancelController {
 
     // Xử lý yêu cầu hủy đơn AJAX
     public function submitCancellationRequest() {
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         header('Content-Type: application/json');
 
         // Lấy dữ liệu từ POST
-        $orderID = isset($_POST['order_id']) ? intval($_POST['order_id']) : 0;
+        $orderID = isset($_POST['order_id']) ? trim($_POST['order_id']) : '';
         $reason = isset($_POST['reason']) ? trim($_POST['reason']) : '';
-        $customerID = isset($_SESSION['CustomerID']) ? intval($_SESSION['CustomerID']) : 0;
+        
+        // Check multiple session variable names for compatibility
+        $customerID = null;
+        if (isset($_SESSION['user_data']['CustomerID'])) {
+            $customerID = $_SESSION['user_data']['CustomerID'];
+        } elseif (isset($_SESSION['customer_id'])) {
+            $customerID = $_SESSION['customer_id'];
+        } elseif (isset($_SESSION['CustomerID'])) {
+            $customerID = $_SESSION['CustomerID'];
+        }
 
         // Validate dữ liệu
-        if (!$orderID || !$reason || !$customerID) {
-            echo json_encode(['success' => false, 'message' => 'Invalid request.']);
+        if (empty($orderID)) {
+            echo json_encode(['success' => false, 'message' => 'Order ID is required.']);
+            return;
+        }
+        
+        if (empty($reason)) {
+            echo json_encode(['success' => false, 'message' => 'Please select a reason.']);
+            return;
+        }
+        
+        if (empty($customerID)) {
+            echo json_encode(['success' => false, 'message' => 'You must be logged in to cancel an order.']);
             return;
         }
 
@@ -30,18 +52,25 @@ class CancelController {
             return;
         }
 
-        // Kiểm tra đơn chưa hủy
+        // Kiểm tra đơn chưa có yêu cầu hủy
         if (!$this->model->isOrderNotCancelled($orderID)) {
             echo json_encode(['success' => false, 'message' => 'Order has already been cancelled.']);
             return;
         }
 
-        // Lưu yêu cầu hủy đơn
-        if ($this->model->createCancellation($orderID, $reason)) {
-            // (Optional) Cập nhật trạng thái đơn
-            $this->model->markOrderCancelled($orderID);
+        // Kiểm tra đơn hàng có thể hủy không
+        if (!$this->model->canCancelOrder($orderID)) {
+            echo json_encode(['success' => false, 'message' => 'This order cannot be cancelled. It may already be shipping or completed.']);
+            return;
+        }
 
-            echo json_encode(['success' => true, 'message' => 'Cancel request submitted successfully.']);
+        // Đặt trạng thái thành Pending Cancel (chờ admin duyệt)
+        if ($this->model->markOrderPendingCancel($orderID)) {
+            echo json_encode([
+                'success' => true, 
+                'message' => 'Cancel request submitted successfully. Waiting for admin approval.',
+                'redirect' => '/Candy-Crunch-Website/views/website/php/my_orders.php'
+            ]);
         } else {
             echo json_encode(['success' => false, 'message' => 'Failed to submit cancel request.']);
         }

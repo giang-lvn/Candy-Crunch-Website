@@ -27,6 +27,8 @@ function getOrderStatuses() {
         'Pending' => 'Đang xử lý',
         'On Shipping' => 'Đang giao hàng',
         'Complete' => 'Hoàn thành',
+        'Pending Cancel' => 'Chờ duyệt hủy',
+        'Pending Return' => 'Chờ duyệt trả hàng',
         'Cancelled' => 'Đã hủy',
         'Returned' => 'Đã trả hàng'
     ];
@@ -42,6 +44,8 @@ function getStatusColor($status) {
         'Pending Confirmation' => 'warning',
         'Pending' => 'primary',
         'Waiting Payment' => 'secondary',
+        'Pending Cancel' => 'danger',
+        'Pending Return' => 'warning',
         'Cancelled', 'Canceled' => 'danger',
         'Returned' => 'dark',
         default => 'secondary'

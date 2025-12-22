@@ -292,10 +292,10 @@ class CartController
         $skuId = trim($data['skuid']); // SKUID is VARCHAR(20)
         $quantity = (int)($data['quantity'] ?? 1);
 
-        // Gọi function addToCart() từ CartModel
-        $result = $this->cartModel->addToCart($customerId, $skuId, $quantity);
+        // Gọi function addToCartWithMessage() từ CartModel để có thông báo chi tiết
+        $result = $this->cartModel->addToCartWithMessage($customerId, $skuId, $quantity);
 
-        if ($result) {
+        if ($result['success']) {
             // Lấy lại cart items sau khi thêm
             $cartId = $_SESSION['cart_id'];
             $cartItems = $this->cartModel->getCartItems($cartId);
@@ -317,7 +317,7 @@ class CartController
                 'html' => $html
             ]);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Failed to add product']);
+            echo json_encode(['success' => false, 'message' => $result['message']]);
         }
     }
 

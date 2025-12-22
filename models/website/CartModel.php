@@ -460,17 +460,30 @@ class CartModel
     //Thêm sản phẩm vào giỏ hàng
     public function addToCart($customerId, string $skuId, int $quantity = 1): bool
     {
+        // Kiểm tra tồn kho trước khi thêm vào giỏ
+        $stockInfo = $this->getStockBySku($skuId);
+        if (!$stockInfo) {
+            return false; // SKU không tồn tại
+        }
+        
+        $availableStock = (int)$stockInfo['Stock'];
+        
         // Lấy hoặc tạo cart cho customer
         $cart = $this->findActiveCartByCustomer($customerId);
         $cartId = $cart ? $cart['CartID'] : $this->createCart($customerId);
 
         // Kiểm tra xem sản phẩm đã có trong giỏ chưa
         $existingQty = $this->getQuantity($cartId, $skuId);
+        $totalQtyNeeded = $existingQty + $quantity;
+        
+        // Kiểm tra nếu tổng số lượng vượt quá tồn kho
+        if ($totalQtyNeeded > $availableStock) {
+            return false; // Không đủ hàng
+        }
 
         if ($existingQty > 0) {
             // Nếu đã có, cập nhật số lượng (cộng thêm)
-            $newQty = $existingQty + $quantity;
-            return $this->updateQuantity($cartId, $skuId, $newQty);
+            return $this->updateQuantity($cartId, $skuId, $totalQtyNeeded);
         } else {
             // Nếu chưa có, thêm mới
             $sql = "
@@ -482,6 +495,86 @@ class CartModel
             $stmt->bind_param("ssi", $cartId, $skuId, $quantity);
             return $stmt->execute();
         }
+    }
+    
+    /**
+     * Lấy thông tin tồn kho của SKU
+     */
+    public function getStockBySku(string $skuId): ?array
+    {
+        $sql = "
+            SELECT i.Stock, i.InventoryStatus, p.ProductName, s.Attribute
+            FROM SKU s
+            JOIN INVENTORY i ON s.InventoryID = i.InventoryID
+            JOIN PRODUCT p ON s.ProductID = p.ProductID
+            WHERE s.SKUID = ?
+            LIMIT 1
+        ";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("s", $skuId);
+        $stmt->execute();
+        
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        return $row ?: null;
+    }
+    
+    /**
+     * Thêm sản phẩm vào giỏ với thông tin chi tiết về lỗi
+     * Trả về array với success và message
+     */
+    public function addToCartWithMessage($customerId, string $skuId, int $quantity = 1): array
+    {
+        // Kiểm tra tồn kho trước khi thêm vào giỏ
+        $stockInfo = $this->getStockBySku($skuId);
+        if (!$stockInfo) {
+            return ['success' => false, 'message' => 'Product not found'];
+        }
+        
+        $availableStock = (int)$stockInfo['Stock'];
+        $productName = $stockInfo['ProductName'] . ' (' . $stockInfo['Attribute'] . 'g)';
+        
+        if ($availableStock <= 0) {
+            return ['success' => false, 'message' => "Sorry, '{$productName}' is out of stock"];
+        }
+        
+        // Lấy hoặc tạo cart cho customer
+        $cart = $this->findActiveCartByCustomer($customerId);
+        $cartId = $cart ? $cart['CartID'] : $this->createCart($customerId);
+
+        // Kiểm tra xem sản phẩm đã có trong giỏ chưa
+        $existingQty = $this->getQuantity($cartId, $skuId);
+        $totalQtyNeeded = $existingQty + $quantity;
+        
+        // Kiểm tra nếu tổng số lượng vượt quá tồn kho
+        if ($totalQtyNeeded > $availableStock) {
+            $canAdd = $availableStock - $existingQty;
+            if ($canAdd <= 0) {
+                return ['success' => false, 'message' => "You already have the maximum available quantity ({$availableStock}) in your cart"];
+            }
+            return ['success' => false, 'message' => "Only {$canAdd} more items available. You have {$existingQty} in cart, stock is {$availableStock}"];
+        }
+
+        if ($existingQty > 0) {
+            // Nếu đã có, cập nhật số lượng (cộng thêm)
+            $success = $this->updateQuantity($cartId, $skuId, $totalQtyNeeded);
+        } else {
+            // Nếu chưa có, thêm mới
+            $sql = "
+                INSERT INTO CART_DETAIL (CartID, SKUID, CartQuantity)
+                VALUES (?, ?, ?)
+            ";
+
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("ssi", $cartId, $skuId, $quantity);
+            $success = $stmt->execute();
+        }
+        
+        if ($success) {
+            return ['success' => true, 'message' => 'Product added to cart successfully'];
+        }
+        return ['success' => false, 'message' => 'Failed to add product to cart'];
     }
 
 

@@ -7,35 +7,51 @@ class OrderController {
     public function getMyOrder() {
         session_start();
 
-        if (!isset($_SESSION['user_data']['CustomerID'])) {
+        // Check multiple session variable names for compatibility
+        $customerId = null;
+        
+        if (isset($_SESSION['user_data']['CustomerID'])) {
+            $customerId = $_SESSION['user_data']['CustomerID'];
+        } elseif (isset($_SESSION['customer_id'])) {
+            $customerId = $_SESSION['customer_id'];
+        } elseif (isset($_SESSION['CustomerID'])) {
+            $customerId = $_SESSION['CustomerID'];
+        }
+
+        if (!$customerId) {
             http_response_code(401);
             echo json_encode(['success' => false, 'message' => 'Unauthorized']);
             exit;
         }
 
-        $customerId = $_SESSION['user_data']['CustomerID'];
-        $model = new OrderModel();
+        try {
+            $model = new OrderModel();
 
-        $orders = $model->getOrdersByCustomer($customerId);
+            $rawOrders = $model->getOrdersByCustomer($customerId);
 
-        // 🔍 DEBUG – bật khi cần
-        /*
-        echo '<pre>';
-        print_r($orders);
-        exit;
-        */
+            // Gộp các sản phẩm có cùng OrderID thành 1 đơn hàng
+            $groupedOrders = $this->groupOrdersByOrderId($rawOrders);
 
-        echo json_encode([
-            'success' => true,
-            'orders' => $this->mapOrders($orders)
-        ]);
+            echo json_encode([
+                'success' => true,
+                'orders' => $groupedOrders
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ]);
+        }
         exit;
     }
 
-    private function mapOrders($orders) {
+    /**
+     * Gộp các dòng có cùng OrderID thành 1 đơn hàng với danh sách products
+     */
+    private function groupOrdersByOrderId($rawOrders) {
         $grouped = [];
 
-        foreach ($orders as $o) {
+        foreach ($rawOrders as $o) {
             $id = $o['OrderID'];
 
             if (!isset($grouped[$id])) {
@@ -48,29 +64,34 @@ class OrderController {
                     'productSkuIds' => [],
                     'totalRaw' => 0,
                     'voucher' => [
-                        'code' => $o['VoucherCode'],
-                        'amount' => $o['DiscountAmount'],
-                        'percent' => $o['DiscountPercent'],
-                        'min' => $o['MinOrder']
+                        'code' => $o['VoucherCode'] ?? null,
+                        'amount' => $o['DiscountAmount'] ?? 0,
+                        'percent' => $o['DiscountPercent'] ?? 0,
+                        'min' => $o['MinOrder'] ?? 0
                     ],
-                    'buttons' => $this->mapButtons($o['OrderStatus'])
+                    'buttons' => $this->mapButtons($o['OrderStatus']),
+                    'canCancel' => $this->canCancel($o['OrderStatus']),
+                    'canReturn' => $this->canReturn($o['OrderStatus'])
                 ];
             }
 
-            // Add product
-            $grouped[$id]['products'][] = [
-                'name' => $o['ProductName'],
-                'image' => $this->parseProductImage($o['Image']),
-                'weight' => $o['Attribute'] . 'g',
-                'quantity' => (int)$o['Quantity'],
-                'price' => number_format($o['SubTotal'], 0, ',', '.') . ' VND'
-            ];
-            
-            // Add SKUID for rating
-            $grouped[$id]['productSkuIds'][] = $o['SKUID'] ?? '';
+            // Chỉ thêm sản phẩm nếu có ProductName
+            if (!empty($o['ProductName'])) {
+                // Add product
+                $grouped[$id]['products'][] = [
+                    'name' => $o['ProductName'],
+                    'image' => $this->parseProductImage($o['Image']),
+                    'weight' => ($o['Attribute'] ?? '') . 'g',
+                    'quantity' => (int)($o['Quantity'] ?? 0),
+                    'itemTotal' => number_format($o['SubTotal'] ?? 0, 0, ',', '.') . ' VND'
+                ];
+                
+                // Add SKUID for rating
+                $grouped[$id]['productSkuIds'][] = $o['SKUID'] ?? '';
 
-            // Accumulate subtotal
-            $grouped[$id]['totalRaw'] += $o['SubTotal'];
+                // Accumulate subtotal
+                $grouped[$id]['totalRaw'] += floatval($o['SubTotal'] ?? 0);
+            }
         }
 
         // Finalize totals
@@ -86,17 +107,46 @@ class OrderController {
                     $discount = $v['amount'];
                 }
             }
+
+            $total = $subTotal - $discount;
+            $order['total'] = number_format($total, 0, ',', '.') . ' VND';
             
-            // Ensure total is not negative
-            $finalTotal = max(0, $subTotal - $discount);
-            $order['total'] = number_format($finalTotal, 0, ',', '.') . ' VND';
-            
-            // Clean up temporary keys
-            unset($order['totalRaw']);
+            // Xóa các field không cần thiết cho frontend
             unset($order['voucher']);
+            unset($order['totalRaw']);
         }
 
+        // Chuyển từ associative array sang indexed array
         return array_values($grouped);
+    }
+
+    /**
+     * Parse ảnh sản phẩm từ JSON và trả về URL thumbnail
+     */
+    private function parseProductImage($imageData) {
+        if (empty($imageData)) {
+            return null;
+        }
+        
+        // Thử parse JSON
+        $decoded = json_decode($imageData, true);
+        
+        if (is_array($decoded)) {
+            // Tìm ảnh thumbnail
+            foreach ($decoded as $img) {
+                if (isset($img['is_thumbnail']) && $img['is_thumbnail']) {
+                    return $img['path'] ?? null;
+                }
+            }
+            // Nếu không có thumbnail, lấy ảnh đầu tiên
+            if (!empty($decoded[0])) {
+                return is_array($decoded[0]) ? ($decoded[0]['path'] ?? null) : $decoded[0];
+            }
+            return null;
+        }
+        
+        // Nếu không phải JSON, trả về nguyên bản
+        return $imageData;
     }
 
     private function mapStatus($status) {
@@ -105,6 +155,8 @@ class OrderController {
             'Complete', 'Completed'  => 'completed',
             'Pending'                => 'pending',
             'On Shipping'            => 'on-shipping',
+            'Pending Cancel'         => 'pending-cancel',
+            'Pending Return'         => 'pending-return',
             'Returned'               => 'return',
             'Cancelled', 'Canceled'  => 'cancel',
             'Pending Confirmation'   => 'pending-confirm',
@@ -118,8 +170,10 @@ class OrderController {
             'Complete', 'Completed'  => 'Completed',
             'Pending'                => 'Pending',
             'On Shipping'            => 'On Shipping',
-            'Returned'               => 'Return',
-            'Cancelled', 'Canceled'  => 'Cancel',
+            'Pending Cancel'         => 'Pending Cancel',
+            'Pending Return'         => 'Pending Return',
+            'Returned'               => 'Returned',
+            'Cancelled', 'Canceled'  => 'Cancelled',
             'Pending Confirmation'   => 'Pending Confirmation',
             default                  => 'Pending'
         };
@@ -127,42 +181,27 @@ class OrderController {
 
     private function mapButtons($status) {
         return match ($status) {
-            'Waiting Payment'        => ['Pay Now', 'Change Method'],
-            'Complete', 'Completed'  => ['Buy Again', 'Return', 'Write Review'],
-            'Pending'                => ['Contact'],
-            'On Shipping'            => ['Cancel', 'Contact'],
-            'Returned'               => ['Contact'],
-            'Cancelled', 'Canceled'  => ['Contact', 'Buy Again'],
+            'Waiting Payment'        => ['Pay Now', 'Cancel'],
             'Pending Confirmation'   => ['Cancel'],
+            'Pending'                => ['Cancel', 'Contact'],
+            'On Shipping'            => ['Contact'],
+            'Complete', 'Completed'  => ['Buy Again', 'Return', 'Write Review'],
+            'Pending Cancel'         => ['Contact'],
+            'Pending Return'         => ['Contact'],
+            'Returned'               => ['Contact', 'Buy Again'],
+            'Cancelled', 'Canceled'  => ['Contact', 'Buy Again'],
             default                  => ['Contact']
         };
     }
 
-    private function parseProductImage($imageField) {
-        if (empty($imageField)) return null;
+    // Kiểm tra có thể hủy đơn không
+    private function canCancel($status) {
+        return in_array($status, ['Waiting Payment', 'Pending Confirmation', 'Pending']);
+    }
 
-        // Try to decode JSON
-        $images = json_decode($imageField, true);
-        if (json_last_error() === JSON_ERROR_NONE && is_array($images)) {
-            // Find thumbnail
-            foreach ($images as $img) {
-                if (isset($img['is_thumbnail']) && $img['is_thumbnail']) {
-                    return $img['path'];
-                }
-            }
-            // Fallback to first image
-            return $images[0]['path'] ?? null;
-        }
-
-        // Handle legacy plain filenames (assume they are in ../img/)
-        // Check if it's already a path
-        if (strpos($imageField, '/') !== false) {
-            return $imageField;
-        }
-
-        // If it is a simple filename, prepend standard image path
-        // (Adjust this path based on where legacy images are actually stored)
-        return '../img/' . $imageField;
+    // Kiểm tra có thể trả hàng không
+    private function canReturn($status) {
+        return in_array($status, ['Complete', 'Completed']);
     }
 }
 

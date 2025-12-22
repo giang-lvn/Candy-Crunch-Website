@@ -21,7 +21,7 @@ require_once('../../../partials/header.php');
     <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/main.css">
     <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/my_account.css">
     <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/my_orders.css">
-    <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/cancel.css">
+    <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/rating.css">
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Modak&family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
@@ -55,7 +55,7 @@ require_once('../../../partials/header.php');
             <!-- SIDEBAR -->
             <div class="card-account">
                 <div class="user-card">
-                    <img class="avatar-icon" src="<?php echo !empty($customer['Avatar']) ? htmlspecialchars($customer['Avatar']) : $ROOT . '/views/website/img/ot-longvo.png'; ?>" alt="avatar">
+                    <img class="avatar-icon" src="<?php echo $ROOT; ?>/views/website/img/ot-longvo.png" alt="avatar">
                     <div class="user-name">
                         <div class="john-doe">
                             <?php
@@ -74,7 +74,7 @@ require_once('../../../partials/header.php');
                         <img class="icon-key" src="<?php echo $ROOT; ?>/views/website/img/key.svg" alt="change password">
                         <div class="sidebar-ele"><div class="my-orders2">Change Password</div></div>
                     </a>
-                    <a href="<?php echo $ROOT; ?>/views/website/my_orders.php" class="account-menu">
+                    <a href="<?php echo $ROOT; ?>/views/website/my_orders.php" class="account-menu active">
                         <img class="icon-account-outline" src="<?php echo $ROOT; ?>/views/website/img/order.svg" alt="orders">
                         <div class="sidebar-ele"><div class="my-orders2">My Orders</div></div>
                     </a>
@@ -111,8 +111,10 @@ require_once('../../../partials/header.php');
                                 <li data-value="pending">Pending</li>
                                 <li data-value="on-shipping">On Shipping</li>
                                 <li data-value="completed">Completed</li>
-                                <li data-value="return">Return</li>
-                                <li data-value="cancel">Cancel</li>
+                                <li data-value="pending-cancel">Pending Cancel</li>
+                                <li data-value="pending-return">Pending Return</li>
+                                <li data-value="return">Returned</li>
+                                <li data-value="cancel">Cancelled</li>
                             </ul>
                         </div>
                         <div class="filter2" id="timeFilter">
@@ -138,45 +140,7 @@ require_once('../../../partials/header.php');
         </div>
     </div>
 
-    <!-- JS -->
-    <script src="<?php echo $ROOT; ?>/views/website/js/my_orders.js"></script>
-
-    <!-- Popup Cancel Order -->
-    <div id="cancel-order-overlay" class="cancel-overlay hidden">
-        <div class="cancel-popup">
-            <button class="close-btn" id="cancelPopupClose">&times;</button>
-            <h2 class="cancel-title">Cancel Order</h2>
-            <p class="cancel-desc">
-                Please let Candy Crunch know the reason for canceling your order.
-                Paid orders will be refunded according to our refund policy.
-            </p>
-            <div class="input" data-type="dropdown" data-size="medium">
-                <label class="input-label">Return reason</label>
-                <div class="input-field">
-                    <div class="dropdown-trigger" id="dropdownTrigger">
-                        <span class="dropdown-text">Select a return reason</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="dropdown-arrow">
-                        <path d="M18 9L12 15L6 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <div class="dropdown-menu" id="dropdownMenu">
-                        <button class="dropdown-option" data-value="Changed my mind">Changed my mind</button>
-                        <button class="dropdown-option" data-value="Ordered wrong item">Ordered wrong item</button>
-                        <button class="dropdown-option" data-value="Found a better price">Found a better price</button>
-                        <button class="dropdown-option" data-value="Other">Other</button>
-                    </div>
-                </div>
-            </div>
-            <input type="hidden" id="cancelOrderID" value="">
-            <div class="return-submit">
-                <button class="btn-primary-medium" id="submitCancelOrder">Send Request</button>
-            </div>
-            <p id="cancelMessage" style="text-align: center; margin-top: 10px;"></p>
-        </div>
-    </div>
-
     <!-- Rating Popup -->
-    <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/rating.css">
     <div id="rating-overlay" class="overlay hidden">
         <div class="rating-popup">
             <button class="close-btn" id="closeRatingPopup">&times;</button>
@@ -217,6 +181,9 @@ require_once('../../../partials/header.php');
             </div>
         </div>
     </div>
+
+    <!-- JS -->
+    <script src="<?php echo $ROOT; ?>/views/website/js/my_orders.js"></script>
 </body>
 </html>
 <?php

@@ -132,7 +132,35 @@ function placeOrder()
             $shippingFee
         ]);
 
-        // Insert order details
+        // Kiểm tra tồn kho trước khi đặt hàng
+        foreach ($cartItems as $item) {
+            $skuId = $item['SKUID'];
+            $requestedQty = (int)$item['CartQuantity'];
+            
+            // Lấy stock hiện tại
+            $stockStmt = $db->prepare("
+                SELECT i.Stock, p.ProductName, s.Attribute
+                FROM SKU s
+                JOIN INVENTORY i ON s.InventoryID = i.InventoryID
+                JOIN PRODUCT p ON s.ProductID = p.ProductID
+                WHERE s.SKUID = ?
+            ");
+            $stockStmt->execute([$skuId]);
+            $stockInfo = $stockStmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$stockInfo) {
+                throw new PDOException("Product not found: " . $skuId);
+            }
+            
+            $currentStock = (int)$stockInfo['Stock'];
+            
+            if ($currentStock < $requestedQty) {
+                $productName = $stockInfo['ProductName'] . ' (' . $stockInfo['Attribute'] . 'g)';
+                throw new PDOException("Sorry, '{$productName}' only has {$currentStock} items in stock. Please adjust your quantity.");
+            }
+        }
+        
+        // Insert order details và cập nhật tồn kho
         foreach ($cartItems as $item) {
             $itemPrice = !empty($item['PromotionPrice']) ? $item['PromotionPrice'] : $item['OriginalPrice'];
 
@@ -149,10 +177,19 @@ function placeOrder()
             ]);
 
             // Update stock quantity when order is placed
-            $db->prepare("UPDATE INVENTORY i 
-                          JOIN SKU s ON i.InventoryID = s.InventoryID 
-                          SET i.Stock = i.Stock - ? 
-                          WHERE s.SKUID = ?")->execute([$item['CartQuantity'], $item['SKUID']]);
+            // Constraint: Stock >= 20 = 'Available', Stock < 20 & > 0 = 'Low in stock', Stock = 0 = 'Out of stock'
+            $db->prepare("
+                UPDATE INVENTORY i 
+                JOIN SKU s ON i.InventoryID = s.InventoryID 
+                SET i.Stock = i.Stock - ?,
+                    i.InventoryStatus = CASE 
+                        WHEN (i.Stock - ?) >= 20 THEN 'Available'
+                        WHEN (i.Stock - ?) > 0 AND (i.Stock - ?) < 20 THEN 'Low in stock'
+                        ELSE 'Out of stock'
+                    END,
+                    i.LastestUpdate = NOW()
+                WHERE s.SKUID = ?
+            ")->execute([$item['CartQuantity'], $item['CartQuantity'], $item['CartQuantity'], $item['CartQuantity'], $item['SKUID']]);
         }
 
 

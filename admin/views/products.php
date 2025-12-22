@@ -168,6 +168,35 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $allProducts = $stmt->fetchAll();
 
+// Lấy thông tin stock theo từng SKU variant cho mỗi sản phẩm
+$skuStockQuery = $pdo->query("
+    SELECT 
+        s.ProductID,
+        s.SKUID,
+        s.Attribute,
+        i.Stock,
+        i.InventoryStatus
+    FROM SKU s
+    JOIN INVENTORY i ON s.InventoryID = i.InventoryID
+    ORDER BY s.ProductID, s.Attribute
+");
+$allSkuStocks = $skuStockQuery->fetchAll(PDO::FETCH_ASSOC);
+
+// Nhóm SKU stocks theo ProductID
+$skuStocksByProduct = [];
+foreach ($allSkuStocks as $sku) {
+    $productId = $sku['ProductID'];
+    if (!isset($skuStocksByProduct[$productId])) {
+        $skuStocksByProduct[$productId] = [];
+    }
+    $skuStocksByProduct[$productId][] = [
+        'skuId' => $sku['SKUID'],
+        'attribute' => $sku['Attribute'],
+        'stock' => (int)$sku['Stock'],
+        'status' => $sku['InventoryStatus']
+    ];
+}
+
 // Lọc theo trạng thái tồn kho 
 if (!empty($statusFilter)) {
     $products = array_filter($allProducts, function($p) use ($statusFilter) {
@@ -371,6 +400,7 @@ if (isset($_GET['deleted'])) {
                         <th style="width: 80px;">Ảnh</th>
                         <th>Tên sản phẩm</th>
                         <th>Danh mục</th>
+                        <th>Variants (SKU)</th>
                         <th class="text-center">Tồn kho</th>
                         <th>Giá bán</th>
                         <th class="text-center">Trạng thái</th>
@@ -418,21 +448,65 @@ if (isset($_GET['deleted'])) {
                             </span>
                         </td>
                         
-                        <!-- Tổng tồn kho -->
+                        <!-- Variants (SKU) -->
+                        <td>
+                            <?php 
+                            $productId = $product['ProductID'];
+                            $variants = $skuStocksByProduct[$productId] ?? [];
+                            if (!empty($variants)): 
+                            ?>
+                            <div class="small">
+                                <?php foreach ($variants as $idx => $variant): ?>
+                                <div class="d-flex align-items-center mb-1">
+                                    <span class="badge bg-secondary me-1" style="min-width: 50px;">
+                                        <?php echo htmlspecialchars($variant['attribute']); ?>g
+                                    </span>
+                                    <code class="text-muted small"><?php echo htmlspecialchars($variant['skuId']); ?></code>
+                                </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <?php else: ?>
+                            <span class="text-muted">-</span>
+                            <?php endif; ?>
+                        </td>
+                        
+                        <!-- Tồn kho theo từng variant -->
                         <td class="text-center">
                             <?php 
-                            $stock = (int)$product['TotalStock'];
-                            if ($stock >= 20) {
-                                $stockClass = 'text-success';
-                            } elseif ($stock > 0) {
-                                $stockClass = 'text-warning';
-                            } else {
-                                $stockClass = 'text-danger';
-                            }
+                            $productId = $product['ProductID'];
+                            $variants = $skuStocksByProduct[$productId] ?? [];
+                            if (!empty($variants)): 
                             ?>
-                            <span class="fw-bold <?php echo $stockClass; ?>">
-                                <?php echo number_format($stock); ?>
-                            </span>
+                            <div class="small">
+                                <?php foreach ($variants as $variant): 
+                                    $variantStock = $variant['stock'];
+                                    if ($variantStock >= 20) {
+                                        $variantClass = 'text-success';
+                                        $variantBadge = 'bg-success';
+                                    } elseif ($variantStock > 0) {
+                                        $variantClass = 'text-warning';
+                                        $variantBadge = 'bg-warning text-dark';
+                                    } else {
+                                        $variantClass = 'text-danger';
+                                        $variantBadge = 'bg-danger';
+                                    }
+                                ?>
+                                <div class="mb-1">
+                                    <span class="badge <?php echo $variantBadge; ?>" style="min-width: 35px;">
+                                        <?php echo number_format($variantStock); ?>
+                                    </span>
+                                </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <?php else: ?>
+                            <span class="text-muted">-</span>
+                            <?php endif; ?>
+                            <hr class="my-1">
+                            <?php 
+                            $totalStock = (int)$product['TotalStock'];
+                            $totalClass = $totalStock >= 20 ? 'text-success' : ($totalStock > 0 ? 'text-warning' : 'text-danger');
+                            ?>
+                            <small class="<?php echo $totalClass; ?> fw-bold">Σ <?php echo number_format($totalStock); ?></small>
                         </td>
                         
                         <!-- Giá bán (min - max) -->
@@ -560,7 +634,7 @@ $(document).ready(function() {
         pageLength: 10,
         order: [[0, 'desc']],
         columnDefs: [
-            { orderable: false, targets: [1, 7] }
+            { orderable: false, targets: [1, 4, 5, 8] } // Ảnh, Variants, Tồn kho, Thao tác
         ]
     });
 });

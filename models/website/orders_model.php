@@ -8,6 +8,7 @@ class OrderModel {
     }
 
     public function getOrdersByCustomer(string $customerId): array {
+        // Query lấy thông tin sản phẩm riêng biệt
         $sql = "
         SELECT
             o.OrderID,
@@ -15,53 +16,15 @@ class OrderModel {
             o.OrderDate,
 
             SUM(od.OrderQuantity) AS Quantity,
+            
+            -- Giá của từng sản phẩm trong order detail
+            SUM(od.OrderQuantity * IFNULL(s.PromotionPrice, s.OriginalPrice)) AS SubTotal,
 
-            SUM(
-                od.OrderQuantity * IFNULL(s.PromotionPrice, s.OriginalPrice)
-            ) AS SubTotal,
-
+            -- Thông tin voucher
             v.Code AS VoucherCode,
             v.DiscountPercent,
             v.DiscountAmount,
             v.MinOrder,
-
-            CASE
-                WHEN v.VoucherID IS NULL THEN 0
-
-                WHEN v.DiscountPercent IS NOT NULL
-                     AND SUM(od.OrderQuantity * IFNULL(s.PromotionPrice, s.OriginalPrice)) >= v.MinOrder
-                THEN
-                    SUM(od.OrderQuantity * IFNULL(s.PromotionPrice, s.OriginalPrice))
-                    * v.DiscountPercent / 100
-
-                WHEN v.DiscountAmount IS NOT NULL
-                     AND SUM(od.OrderQuantity * IFNULL(s.PromotionPrice, s.OriginalPrice)) >= v.MinOrder
-                THEN
-                    v.DiscountAmount
-
-                ELSE 0
-            END AS VoucherDiscount,
-
-            (
-                SUM(od.OrderQuantity * IFNULL(s.PromotionPrice, s.OriginalPrice))
-                -
-                CASE
-                    WHEN v.VoucherID IS NULL THEN 0
-
-                    WHEN v.DiscountPercent IS NOT NULL
-                         AND SUM(od.OrderQuantity * IFNULL(s.PromotionPrice, s.OriginalPrice)) >= v.MinOrder
-                    THEN
-                        SUM(od.OrderQuantity * IFNULL(s.PromotionPrice, s.OriginalPrice))
-                        * v.DiscountPercent / 100
-
-                    WHEN v.DiscountAmount IS NOT NULL
-                         AND SUM(od.OrderQuantity * IFNULL(s.PromotionPrice, s.OriginalPrice)) >= v.MinOrder
-                    THEN
-                        v.DiscountAmount
-
-                    ELSE 0
-                END
-            ) AS TotalPrice,
 
             p.ProductName,
             p.Image,
@@ -69,21 +32,59 @@ class OrderModel {
             s.SKUID
 
         FROM ORDERS o
-        JOIN ORDER_DETAIL od ON o.OrderID = od.OrderID
-        JOIN SKU s ON od.SKUID = s.SKUID
-        JOIN PRODUCT p ON s.ProductID = p.ProductID
+        LEFT JOIN ORDER_DETAIL od ON o.OrderID = od.OrderID
+        LEFT JOIN SKU s ON od.SKUID = s.SKUID
+        LEFT JOIN PRODUCT p ON s.ProductID = p.ProductID
         LEFT JOIN VOUCHER v ON o.VoucherID = v.VoucherID
             AND v.VoucherStatus = 'Active'
             AND CURDATE() BETWEEN v.StartDate AND v.EndDate
 
         WHERE o.CustomerID = ?
 
-        GROUP BY o.OrderID, v.VoucherID, p.ProductName, p.Image, s.Attribute, s.SKUID
-        ORDER BY o.OrderDate DESC
+        GROUP BY o.OrderID, o.OrderStatus, o.OrderDate, v.VoucherID, v.Code, v.DiscountPercent, v.DiscountAmount, v.MinOrder, p.ProductName, p.Image, s.Attribute, s.SKUID
+        ORDER BY o.OrderDate DESC, o.OrderID
         ";
 
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([$customerId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $rows;
+    }
+
+    /**
+     * Lấy tổng tiền của một đơn hàng (bao gồm tính voucher)
+     */
+    public function getOrderTotal(string $orderId): float {
+        $sql = "
+        SELECT 
+            SUM(od.OrderQuantity * IFNULL(s.PromotionPrice, s.OriginalPrice)) AS SubTotal,
+            v.DiscountPercent,
+            v.DiscountAmount,
+            v.MinOrder
+        FROM ORDERS o
+        JOIN ORDER_DETAIL od ON o.OrderID = od.OrderID
+        JOIN SKU s ON od.SKUID = s.SKUID
+        LEFT JOIN VOUCHER v ON o.VoucherID = v.VoucherID
+        WHERE o.OrderID = ?
+        GROUP BY o.OrderID, v.VoucherID
+        ";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$orderId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$result) return 0;
+
+        $subTotal = $result['SubTotal'];
+        $discount = 0;
+
+        if ($result['DiscountPercent'] && $subTotal >= ($result['MinOrder'] ?? 0)) {
+            $discount = $subTotal * $result['DiscountPercent'] / 100;
+        } elseif ($result['DiscountAmount'] && $subTotal >= ($result['MinOrder'] ?? 0)) {
+            $discount = $result['DiscountAmount'];
+        }
+
+        return $subTotal - $discount;
     }
 }

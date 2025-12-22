@@ -105,16 +105,42 @@ class ReturnModel
     // Kiểm tra đơn hàng đã có refund chưa
     public function checkRefundExistByOrder($orderId)
     {
-        $sql = "
-            SELECT COUNT(*)
-            FROM REFUND
-            WHERE OrderID = ?
-        ";
+        try {
+            $sql = "
+                SELECT COUNT(*)
+                FROM REFUND
+                WHERE OrderID = ?
+            ";
 
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute([$orderId]);
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$orderId]);
 
-        return $stmt->fetchColumn() > 0;
+            return $stmt->fetchColumn() > 0;
+        } catch (PDOException $e) {
+            // Bảng REFUND có thể chưa tồn tại
+            return false;
+        }
+    }
+
+    // Đảm bảo bảng REFUND tồn tại
+    private function ensureRefundTableExists()
+    {
+        try {
+            $this->conn->exec("
+                CREATE TABLE IF NOT EXISTS REFUND (
+                    RefundID VARCHAR(10) PRIMARY KEY,
+                    OrderID VARCHAR(20) NOT NULL,
+                    RefundDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    RefundReason TEXT,
+                    RefundDescription TEXT,
+                    RefundImage VARCHAR(255),
+                    RefundStatus VARCHAR(20) DEFAULT 'Pending',
+                    FOREIGN KEY (OrderID) REFERENCES ORDERS(OrderID) ON DELETE CASCADE
+                )
+            ");
+        } catch (PDOException $e) {
+            // Table might already exist, ignore
+        }
     }
 
     // Tạo RefundID tự động 
@@ -135,39 +161,47 @@ class ReturnModel
     // Tạo yêu cầu refund 
     public function createRefundRequest($data)
     {
-        $refundId = $this->generateRefundId();
+        try {
+            // Đảm bảo bảng REFUND tồn tại
+            $this->ensureRefundTableExists();
+            
+            $refundId = $this->generateRefundId();
 
-        $sql = "
-            INSERT INTO REFUND (
-                RefundID,
-                OrderID,
-                RefundDate,
-                RefundReason,
-                RefundDescription,
-                RefundImage,
-                RefundStatus
-            ) VALUES (
-                :refund_id,
-                :order_id,
-                NOW(),
-                :refund_reason,
-                :refund_description,
-                :refund_image,
-                'Pending'
-            )
-        ";
+            $sql = "
+                INSERT INTO REFUND (
+                    RefundID,
+                    OrderID,
+                    RefundDate,
+                    RefundReason,
+                    RefundDescription,
+                    RefundImage,
+                    RefundStatus
+                ) VALUES (
+                    :refund_id,
+                    :order_id,
+                    NOW(),
+                    :refund_reason,
+                    :refund_description,
+                    :refund_image,
+                    'Pending'
+                )
+            ";
 
-        $stmt = $this->conn->prepare($sql);
+            $stmt = $this->conn->prepare($sql);
 
-        $success = $stmt->execute([
-            ':refund_id'          => $refundId,
-            ':order_id'           => $data['order_id'],
-            ':refund_reason'      => $data['refund_reason'],
-            ':refund_description' => $data['refund_description'],
-            ':refund_image'       => $data['refund_image']
-        ]);
+            $success = $stmt->execute([
+                ':refund_id'          => $refundId,
+                ':order_id'           => $data['order_id'],
+                ':refund_reason'      => $data['refund_reason'],
+                ':refund_description' => $data['refund_description'],
+                ':refund_image'       => $data['refund_image']
+            ]);
 
-        return $success ? $refundId : false;
+            return $success ? $refundId : false;
+        } catch (PDOException $e) {
+            error_log("ReturnModel::createRefundRequest error: " . $e->getMessage());
+            return false;
+        }
     }
 
     // Upload ảnh refund

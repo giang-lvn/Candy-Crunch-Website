@@ -6,12 +6,29 @@ let currentStatusFilter = 'all';
 let currentTimeFilter = '30';
 
 /*********************************
+ * CANCEL & RETURN REASONS
+ *********************************/
+const cancelReasons = [
+    { value: 'voucher', text: 'Tôi tìm thấy thêm voucher cho đơn hàng', redirectToCheckout: true },
+    { value: 'no_need', text: 'Tôi không có nhu cầu mua nữa', redirectToCheckout: false },
+    { value: 'edit_order', text: 'Tôi muốn chỉnh sửa lại chi tiết đơn hàng', redirectToCheckout: true }
+];
+
+const returnReasons = [
+    { value: 'not_as_expected', text: 'Sản phẩm không như mong đợi của tôi' },
+    { value: 'no_need', text: 'Tôi không còn nhu cầu sử dụng nữa' },
+    { value: 'unsatisfied', text: 'Tôi không hài lòng với dịch vụ của Candy Crunch' }
+];
+
+/*********************************
  * INIT
  *********************************/
 document.addEventListener('DOMContentLoaded', () => {
     initMenuNavigation();
     setupDropdowns();
     loadOrders();
+    createCancelModal();
+    createReturnModal();
 });
 
 /*********************************
@@ -79,7 +96,7 @@ function handleMenuAction(action) {
 }
 
 /*********************************
- * RENDER ORDERS
+ * RENDER ORDERS - Hiển thị nhiều sản phẩm trong 1 thẻ
  *********************************/
 function renderOrders() {
     const orderList = document.getElementById('orderList');
@@ -94,7 +111,7 @@ function renderOrders() {
             <header class="header2">
                 <div>
                     <div class="order-id">Order ID</div>
-                    <b><a href="/Candy-Crunch-Website/index.php?controller=OrderDetail&action=index&id=${order.id}" style="text-decoration: none; color: inherit; cursor: pointer;">${order.id}</a></b>
+                    <b>${order.id}</b>
                 </div>
                 <div>
                     <span class="status ${order.status}">${order.statusText}</span>
@@ -103,14 +120,12 @@ function renderOrders() {
             </header>
 
             <div class="details">
-                ${renderProductsHtml(order.products)}
+                ${renderProducts(order.products)}
             </div>
 
             <footer class="order-action">
                 <div class="order-action-left">
-                <div class="order-action-left">
-                    ${renderButtons(order.buttons, order.id)}
-                </div>
+                    ${renderButtons(order)}
                 </div>
                 <div class="order-action-right">
                     <span class="total-label">Total:</span>
@@ -125,44 +140,42 @@ function renderOrders() {
         totalOrders.textContent = `${filteredOrders.length} Orders`;
     }
 
-    // Attach event listeners to buttons
-    attachButtonListeners();
+    // Rebind button events
+    bindOrderButtons();
 }
 
-function renderProductsHtml(products) {
-    let html = '';
-    products.forEach((p, index) => {
-        html += `
-            <div class="product">
-                <img class="product-img" src="${p.image || '../img/pr2.svg'}" onerror="this.src='../img/pr2.svg'">
+/*********************************
+ * RENDER PRODUCTS - Hiển thị danh sách sản phẩm trong đơn hàng
+ *********************************/
+function renderProducts(products) {
+    if (!products || products.length === 0) {
+        return '<div class="product"><p>No products found</p></div>';
+    }
 
-                <div class="product-info">
-                    <div class="fruit-filled-candy">${p.name}</div>
+    return products.map((product, index) => `
+        <div class="product ${index > 0 ? 'product-border-top' : ''}">
+            <img class="product-img" src="${product.image || '../img/pr2.svg'}" alt="${product.name}" onerror="this.src='../img/pr2.svg'">
 
-                    <div class="product-meta">
-                        <div class="unit-related-product">
-                            <div class="g-wrapper">
-                                <span class="g">${p.weight}</span>
-                            </div>
-                        </div>
-                        <div class="quantity-text">
-                            Quantity: <b>${p.quantity}</b>
+            <div class="product-info">
+                <div class="fruit-filled-candy">${product.name}</div>
+
+                <div class="product-meta">
+                    <div class="unit-related-product">
+                        <div class="g-wrapper">
+                            <span class="g">${product.weight}</span>
                         </div>
                     </div>
-                </div>
-
-                <div class="price">
-                    <div class="new">${p.price}</div>
+                    <div class="quantity-text">
+                        Quantity: <b>${product.quantity}</b>
+                    </div>
                 </div>
             </div>
-        `;
 
-        // Add separator if not the last item
-        if (index < products.length - 1) {
-            html += '<div style="margin: 10px 0; border-bottom: 1px solid #eee;"></div>';
-        }
-    });
-    return html;
+            <div class="price">
+                <div class="new">${product.itemTotal}</div>
+            </div>
+        </div>
+    `).join('');
 }
 
 /*********************************
@@ -179,298 +192,231 @@ const buttonClassMap = {
     'Write Review': 'btn-primary-outline-small'
 };
 
-function renderButtons(buttons = [], orderId) {
-    return buttons.map(text => {
+function renderButtons(order) {
+    return order.buttons.map(text => {
         const className = buttonClassMap[text] || 'btn-outline';
-        return `<button class="${className}" data-action="${text}" data-id="${orderId}">${text}</button>`;
+        return `<button class="${className}" data-action="${text}" data-order-id="${order.id}">${text}</button>`;
     }).join('');
 }
 
-function attachButtonListeners() {
-    const orderList = document.getElementById('orderList');
-    if (!orderList) return;
-
-    const buttons = orderList.querySelectorAll('button[data-action]');
-    buttons.forEach(btn => {
-        btn.addEventListener('click', e => {
-            e.preventDefault();
-            const action = btn.dataset.action;
-            const orderId = btn.dataset.id;
+function bindOrderButtons() {
+    document.querySelectorAll('[data-action]').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const action = this.dataset.action;
+            const orderId = this.dataset.orderId;
             handleOrderAction(action, orderId);
         });
     });
 }
 
 function handleOrderAction(action, orderId) {
-    console.log('Action:', action, 'OrderId:', orderId);
     switch (action) {
         case 'Cancel':
-            showCancelPopup(orderId);
+            showCancelModal(orderId);
+            break;
+        case 'Return':
+            showReturnModal(orderId);
             break;
         case 'Contact':
-            console.log('Contact support for order:', orderId);
-            break;
-        case 'Pay Now':
-            console.log('Pay now for order:', orderId);
+            window.location.href = '/Candy-Crunch-Website/views/website/policy.php';
             break;
         case 'Buy Again':
-            // Redirect to reOrder action
-            window.location.href = `/Candy-Crunch-Website/index.php?controller=OrderDetail&action=reOrder&id=${orderId}`;
+            // TODO: Implement buy again
+            alert('Buy Again functionality coming soon!');
+            break;
+        case 'Pay Now':
+            window.location.href = `/Candy-Crunch-Website/views/website/php/checkout.php?order_id=${orderId}`;
             break;
         case 'Write Review':
-            showRatingPopup(orderId);
+            // TODO: Implement review
+            alert('Write Review functionality coming soon!');
             break;
         default:
-            console.warn('Unknown action:', action);
+            console.log('Unknown action:', action);
     }
 }
 
 /*********************************
- * RATING POPUP LOGIC
+ * CANCEL MODAL
  *********************************/
-let ratingOverlay, ratingPopup, currentRating = 0;
-
-function initRatingPopup() {
-    ratingOverlay = document.getElementById('rating-overlay');
-    ratingPopup = document.querySelector('.rating-popup');
-
-    // Star rating functionality
-    const stars = document.querySelectorAll('.star-rating .star');
-    const starRating = document.querySelector('.star-rating');
-
-    if (stars.length > 0 && starRating) {
-        stars.forEach((star) => {
-            star.addEventListener('click', () => {
-                currentRating = parseInt(star.dataset.value);
-                starRating.dataset.rating = currentRating;
-                updateStars(currentRating);
-            });
-
-            star.addEventListener('mouseenter', () => {
-                updateStars(parseInt(star.dataset.value));
-            });
-        });
-
-        starRating.addEventListener('mouseleave', () => {
-            updateStars(currentRating);
-        });
-    }
-
-    // Close button
-    const closeBtn = document.getElementById('closeRatingPopup');
-    if (closeBtn) {
-        closeBtn.addEventListener('click', hideRatingPopup);
-    }
-
-    // Click outside to close
-    if (ratingOverlay) {
-        ratingOverlay.addEventListener('click', (e) => {
-            if (e.target === ratingOverlay) hideRatingPopup();
-        });
-    }
-
-    // Submit button
-    const submitBtn = document.getElementById('submitRating');
-    if (submitBtn) {
-        submitBtn.addEventListener('click', submitRating);
-    }
+function createCancelModal() {
+    const modal = document.createElement('div');
+    modal.id = 'cancelModal';
+    modal.className = 'order-modal';
+    modal.innerHTML = `
+        <div class="order-modal-content">
+            <div class="order-modal-header">
+                <h3>Xác nhận hủy đơn hàng</h3>
+                <button class="order-modal-close" onclick="closeCancelModal()">&times;</button>
+            </div>
+            <div class="order-modal-body">
+                <p>Vui lòng chọn lý do hủy đơn hàng:</p>
+                <input type="hidden" id="cancelOrderId" value="">
+                <div class="reason-select-container">
+                    <select id="cancelReasonSelect" class="reason-select">
+                        <option value="">-- Chọn lý do --</option>
+                        ${cancelReasons.map(r => `<option value="${r.value}" data-redirect="${r.redirectToCheckout}">${r.text}</option>`).join('')}
+                    </select>
+                </div>
+            </div>
+            <div class="order-modal-footer">
+                <button class="btn-modal-secondary" onclick="closeCancelModal()">Đóng</button>
+                <button class="btn-modal-primary" onclick="submitCancelRequest()" id="confirmCancelBtn">Xác nhận hủy</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
 }
 
-function updateStars(rating) {
-    const stars = document.querySelectorAll('.star-rating .star');
-    stars.forEach((star) => {
-        if (parseInt(star.dataset.value) <= rating) {
-            star.classList.add('active');
-        } else {
-            star.classList.remove('active');
-        }
-    });
+function showCancelModal(orderId) {
+    document.getElementById('cancelOrderId').value = orderId;
+    document.getElementById('cancelReasonSelect').value = '';
+    document.getElementById('cancelModal').classList.add('show');
 }
 
-function showRatingPopup(orderId) {
-    if (!ratingOverlay) initRatingPopup();
-
-    // Find order products to populate dropdown
-    const order = ordersData.find(o => o.id === orderId);
-    const productSelect = document.getElementById('rating-product-select');
-
-    if (productSelect && order && order.products) {
-        productSelect.innerHTML = '';
-        order.products.forEach((p, idx) => {
-            const skuId = order.productSkuIds ? order.productSkuIds[idx] : '';
-            const option = document.createElement('option');
-            option.value = skuId;
-            option.textContent = `${p.name} - ${p.weight}`;
-            productSelect.appendChild(option);
-        });
-    }
-
-    // Store order ID
-    document.getElementById('rating-order-id').value = orderId;
-
-    // Reset form
-    currentRating = 0;
-    updateStars(0);
-    const reviewText = document.getElementById('rating-review-text');
-    if (reviewText) reviewText.value = '';
-
-    if (ratingOverlay) {
-        ratingOverlay.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    }
+function closeCancelModal() {
+    document.getElementById('cancelModal').classList.remove('show');
 }
 
-function hideRatingPopup() {
-    if (ratingOverlay) {
-        ratingOverlay.classList.add('hidden');
-        document.body.style.overflow = '';
-    }
-}
+function submitCancelRequest() {
+    const orderId = document.getElementById('cancelOrderId').value;
+    const selectEl = document.getElementById('cancelReasonSelect');
+    const reason = selectEl.options[selectEl.selectedIndex]?.text || '';
+    const reasonValue = selectEl.value;
 
-function submitRating() {
-    const productSelect = document.getElementById('rating-product-select');
-    const reviewText = document.getElementById('rating-review-text');
-    const skuID = productSelect ? productSelect.value : '';
-    const comment = reviewText ? reviewText.value.trim() : '';
-    const submitBtn = document.getElementById('submitRating');
-
-    if (currentRating === 0) {
-        alert('Please select a rating!');
+    if (!reasonValue) {
+        alert('Vui lòng chọn lý do hủy đơn hàng!');
         return;
     }
 
-    if (!skuID) {
-        alert('Please select a product!');
-        return;
-    }
+    // Disable button while processing
+    const confirmBtn = document.getElementById('confirmCancelBtn');
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Đang xử lý...';
 
-    // Disable button
-    if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Submitting...';
-    }
+    // Send cancel request
+    const formData = new FormData();
+    formData.append('order_id', orderId);
+    formData.append('reason', reason);
 
-    fetch('/Candy-Crunch-Website/controllers/website/RatingController.php?action=submit', {
+    fetch('/Candy-Crunch-Website/controllers/website/CancelController.php', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `sku_id=${encodeURIComponent(skuID)}&rating=${currentRating}&comment=${encodeURIComponent(comment)}`
+        body: formData
     })
-        .then(response => response.json())
+        .then(res => res.json())
         .then(data => {
             if (data.success) {
                 alert(data.message);
-                hideRatingPopup();
+                closeCancelModal();
+
+                // Redirect based on reason
+                const selectedOption = selectEl.options[selectEl.selectedIndex];
+                const redirectToCheckout = selectedOption.dataset.redirect === 'true';
+
+                if (redirectToCheckout) {
+                    window.location.href = `/Candy-Crunch-Website/views/website/php/checkout.php?order_id=${orderId}`;
+                } else {
+                    window.location.reload();
+                }
             } else {
-                alert(data.message || 'Failed to submit review. Please try again.');
+                alert('Error: ' + data.message);
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = 'Xác nhận hủy';
             }
         })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred. Please try again.');
-        })
-        .finally(() => {
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit';
-            }
+        .catch(err => {
+            console.error('Cancel request failed:', err);
+            alert('Có lỗi xảy ra. Vui lòng thử lại.');
+            confirmBtn.disabled = false;
+            confirmBtn.textContent = 'Xác nhận hủy';
         });
 }
 
 /*********************************
- * CANCEL POPUP LOGIC
+ * RETURN MODAL
  *********************************/
-let cancelOverlay, cancelPopupClose, closeContactBtn, dropdownTrigger, dropdownMenu, dropdownText, submitCancelBtn, cancelMessage;
-
-function initCancelPopup() {
-    cancelOverlay = document.getElementById("cancel-order-overlay");
-    cancelPopupClose = document.getElementById("cancelPopupClose");
-    closeContactBtn = document.getElementById("closeContactBtn");
-    dropdownTrigger = document.getElementById('dropdownTrigger');
-    dropdownMenu = document.getElementById('dropdownMenu');
-    dropdownText = dropdownTrigger ? dropdownTrigger.querySelector('.dropdown-text') : null;
-    submitCancelBtn = document.getElementById('submitCancelOrder');
-    cancelMessage = document.getElementById('cancelMessage');
-
-    if (cancelPopupClose) cancelPopupClose.addEventListener("click", hideCancelPopup);
-    if (closeContactBtn) closeContactBtn.addEventListener("click", hideCancelPopup);
-
-    if (cancelOverlay) {
-        cancelOverlay.addEventListener("click", (e) => {
-            if (e.target === cancelOverlay) hideCancelPopup();
-        });
-    }
-
-    if (dropdownTrigger && dropdownMenu) {
-        dropdownTrigger.addEventListener('click', () => {
-            dropdownMenu.classList.toggle('show');
-        });
-
-        dropdownMenu.querySelectorAll('.dropdown-option').forEach(option => {
-            option.addEventListener('click', () => {
-                const value = option.dataset.value;
-                if (dropdownText) dropdownText.textContent = value;
-                dropdownTrigger.dataset.value = value;
-                dropdownMenu.classList.remove('show');
-            });
-        });
-    }
-
-    if (submitCancelBtn) {
-        submitCancelBtn.addEventListener('click', submitCancelOrder);
-    }
+function createReturnModal() {
+    const modal = document.createElement('div');
+    modal.id = 'returnModal';
+    modal.className = 'order-modal';
+    modal.innerHTML = `
+        <div class="order-modal-content">
+            <div class="order-modal-header">
+                <h3>Yêu cầu trả hàng</h3>
+                <button class="order-modal-close" onclick="closeReturnModal()">&times;</button>
+            </div>
+            <div class="order-modal-body">
+                <p>Vui lòng chọn lý do trả hàng:</p>
+                <input type="hidden" id="returnOrderId" value="">
+                <div class="reason-select-container">
+                    <select id="returnReasonSelect" class="reason-select">
+                        <option value="">-- Chọn lý do --</option>
+                        ${returnReasons.map(r => `<option value="${r.value}">${r.text}</option>`).join('')}
+                    </select>
+                </div>
+            </div>
+            <div class="order-modal-footer">
+                <button class="btn-modal-secondary" onclick="closeReturnModal()">Đóng</button>
+                <button class="btn-modal-primary" onclick="submitReturnRequest()" id="confirmReturnBtn">Gửi yêu cầu</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
 }
 
-function showCancelPopup(orderId) {
-    if (!cancelOverlay) initCancelPopup();
-
-    document.getElementById('cancelOrderID').value = orderId;
-    if (dropdownText) dropdownText.textContent = 'Select a return reason';
-    if (dropdownTrigger) delete dropdownTrigger.dataset.value;
-    if (cancelMessage) cancelMessage.textContent = '';
-    if (cancelOverlay) cancelOverlay.classList.remove("hidden");
+function showReturnModal(orderId) {
+    document.getElementById('returnOrderId').value = orderId;
+    document.getElementById('returnReasonSelect').value = '';
+    document.getElementById('returnModal').classList.add('show');
 }
 
-function hideCancelPopup() {
-    if (cancelOverlay) cancelOverlay.classList.add("hidden");
+function closeReturnModal() {
+    document.getElementById('returnModal').classList.remove('show');
 }
 
-function submitCancelOrder() {
-    const orderID = document.getElementById('cancelOrderID').value;
-    const reason = dropdownTrigger ? dropdownTrigger.dataset.value : '';
+function submitReturnRequest() {
+    const orderId = document.getElementById('returnOrderId').value;
+    const selectEl = document.getElementById('returnReasonSelect');
+    const reason = selectEl.options[selectEl.selectedIndex]?.text || '';
+    const reasonValue = selectEl.value;
 
-    if (!reason) {
-        if (cancelMessage) {
-            cancelMessage.style.color = 'red';
-            cancelMessage.textContent = 'Please select a reason.';
-        }
+    if (!reasonValue) {
+        alert('Vui lòng chọn lý do trả hàng!');
         return;
     }
 
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', '/Candy-Crunch-Website/controllers/website/CancelController.php', true);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            try {
-                const res = JSON.parse(xhr.responseText);
-                if (cancelMessage) {
-                    cancelMessage.style.color = res.success ? 'green' : 'red';
-                    cancelMessage.textContent = res.message;
-                }
-                if (res.success) {
-                    setTimeout(() => {
-                        hideCancelPopup();
-                        loadOrders(); // Reload orders to update status
-                    }, 1500);
-                }
-            } catch (e) {
-                console.error(e);
+    // Disable button while processing
+    const confirmBtn = document.getElementById('confirmReturnBtn');
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Đang xử lý...';
+
+    // Send return request
+    const formData = new FormData();
+    formData.append('order_id', orderId);
+    formData.append('reason', reason);
+
+    fetch('/Candy-Crunch-Website/controllers/website/ReturnApiController.php', {
+        method: 'POST',
+        body: formData
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                closeReturnModal();
+                window.location.reload();
+            } else {
+                alert('Error: ' + data.message);
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = 'Gửi yêu cầu';
             }
-        }
-    };
-    xhr.send('order_id=' + encodeURIComponent(orderID) + '&reason=' + encodeURIComponent(reason));
+        })
+        .catch(err => {
+            console.error('Return request failed:', err);
+            alert('Có lỗi xảy ra. Vui lòng thử lại.');
+            confirmBtn.disabled = false;
+            confirmBtn.textContent = 'Gửi yêu cầu';
+        });
 }
 
 /*********************************
@@ -498,11 +444,14 @@ function setupDropdown(filterId, menuId, labelId, onSelect) {
     const label = document.getElementById(labelId);
     if (!filter || !menu) return;
 
-    filter.querySelector('.attribute2').addEventListener('click', e => {
-        e.stopPropagation();
-        menu.classList.toggle('show');
-        filter.classList.toggle('active');
-    });
+    const attribute = filter.querySelector('.attribute2');
+    if (attribute) {
+        attribute.addEventListener('click', e => {
+            e.stopPropagation();
+            menu.classList.toggle('show');
+            filter.classList.toggle('active');
+        });
+    }
 
     menu.addEventListener('click', e => {
         if (e.target.tagName === 'LI') {

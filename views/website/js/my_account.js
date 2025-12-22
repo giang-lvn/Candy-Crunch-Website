@@ -86,12 +86,12 @@ function performLogout() {
     })
         .then(res => res.json())
         .then(res => {
-            window.history.replaceState(null, '', '/Candy-Crunch-Website/views/website/php/index.php');
-            window.location.replace('/Candy-Crunch-Website/views/website/php/index.php');
+            window.history.replaceState(null, '', '/Candy-Crunch-Website/views/website/php/landing.php');
+            window.location.replace('/Candy-Crunch-Website/views/website/php/landing.php');
         })
         .catch(err => {
-            window.history.replaceState(null, '', '/Candy-Crunch-Website/views/website/php/index.php');
-            window.location.replace('/Candy-Crunch-Website/views/website/php/index.php');
+            window.history.replaceState(null, '', '/Candy-Crunch-Website/views/website/php/landing.php');
+            window.location.replace('/Candy-Crunch-Website/views/website/php/landing.php');
         });
 }
 

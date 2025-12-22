@@ -162,7 +162,7 @@ try {
                 
                 <!-- Orders Dropdown -->
                 <?php 
-                $orderActions = ['orders', 'add_order', 'view_order', 'edit_order'];
+                $orderActions = ['orders', 'add_order', 'view_order', 'edit_order', 'cancelled_returned_orders'];
                 $isOrderSection = in_array($action, $orderActions);
                 ?>
                 <li class="nav-item mb-2">
@@ -184,6 +184,12 @@ try {
                             <a href="<?php echo BASE_URL; ?>index.php?action=add_order" 
                                class="nav-link text-white py-1 <?php echo $action == 'add_order' ? 'active bg-white text-dark' : ''; ?>">
                                 <i class="bi bi-plus-circle me-2"></i> Thêm đơn hàng
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo BASE_URL; ?>index.php?action=cancelled_returned_orders" 
+                               class="nav-link text-white py-1 <?php echo $action == 'cancelled_returned_orders' ? 'active bg-white text-dark' : ''; ?>">
+                                <i class="bi bi-x-circle me-2"></i> Hủy & Trả hàng
                             </a>
                         </li>
                     </ul>
@@ -258,6 +264,7 @@ try {
                         'add_order' => 'Thêm đơn hàng mới',
                         'view_order' => 'Chi tiết đơn hàng',
                         'edit_order' => 'Chỉnh sửa đơn hàng',
+                        'cancelled_returned_orders' => 'Quản lý hủy & trả hàng',
                         'customers' => 'Quản lý khách hàng',
                         'view_customer' => 'Chi tiết khách hàng',
                         'vouchers' => 'Quản lý Voucher',

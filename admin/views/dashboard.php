@@ -444,16 +444,26 @@ function getDashboardThumbnail($imageData) {
                 <canvas id="orderStatusChart" height="200"></canvas>
                 <div class="mt-3">
                     <?php 
-                    $statusColors = [
-                        'Complete' => 'success', 'On Shipping' => 'info', 'Pending' => 'primary',
-                        'Pending Confirmation' => 'warning', 'Waiting Payment' => 'secondary',
-                        'Cancelled' => 'danger', 'Returned' => 'dark'
+                    $statusHexColors = [
+                        'Complete' => '#198754',        // success - green
+                        'Completed' => '#198754',       // success - green
+                        'On Shipping' => '#0dcaf0',     // info - cyan
+                        'Pending' => '#0d6efd',         // primary - blue
+                        'Pending Confirmation' => '#ffc107', // warning - yellow
+                        'Waiting Payment' => '#6c757d', // secondary - gray
+                        'Cancelled' => '#dc3545',       // danger - red
+                        'Pending Cancel' => '#fd7e14',  // orange
+                        'Pending Return' => '#20c997',  // teal
+                        'Returned' => '#212529'         // dark - black
                     ];
                     foreach ($orderStatusData as $status => $count): 
-                        $color = $statusColors[$status] ?? 'secondary';
+                        $hexColor = $statusHexColors[$status] ?? '#6c757d';
                     ?>
                     <div class="d-flex justify-content-between small mb-1">
-                        <span><span class="badge bg-<?php echo $color; ?> me-1">&nbsp;</span><?php echo $status; ?></span>
+                        <span>
+                            <span class="d-inline-block me-1" style="width: 12px; height: 12px; border-radius: 2px; background-color: <?php echo $hexColor; ?>;"></span>
+                            <?php echo $status; ?>
+                        </span>
                         <strong><?php echo $count; ?></strong>
                     </div>
                     <?php endforeach; ?>
@@ -730,15 +740,34 @@ new Chart(revenueCtx, {
     }
 });
 
-// Order Status Chart
+// Order Status Chart với màu đúng theo status
 const statusCtx = document.getElementById('orderStatusChart').getContext('2d');
+
+// Mapping màu theo status (khớp với Bootstrap colors)
+const statusColorMap = {
+    'Complete': '#198754',        // success - green
+    'Completed': '#198754',       // success - green
+    'On Shipping': '#0dcaf0',     // info - cyan
+    'Pending': '#0d6efd',         // primary - blue
+    'Pending Confirmation': '#ffc107', // warning - yellow
+    'Waiting Payment': '#6c757d', // secondary - gray
+    'Cancelled': '#dc3545',       // danger - red
+    'Pending Cancel': '#fd7e14',  // orange
+    'Pending Return': '#20c997',  // teal
+    'Returned': '#212529'         // dark - black
+};
+
+const statusLabels = <?php echo json_encode(array_keys($orderStatusData)); ?>;
+const statusValues = <?php echo json_encode(array_values($orderStatusData)); ?>;
+const statusColors = statusLabels.map(label => statusColorMap[label] || '#6c757d');
+
 new Chart(statusCtx, {
     type: 'doughnut',
     data: {
-        labels: <?php echo json_encode(array_keys($orderStatusData)); ?>,
+        labels: statusLabels,
         datasets: [{
-            data: <?php echo json_encode(array_values($orderStatusData)); ?>,
-            backgroundColor: ['#198754', '#0dcaf0', '#0d6efd', '#ffc107', '#6c757d', '#dc3545', '#212529']
+            data: statusValues,
+            backgroundColor: statusColors
         }]
     },
     options: {
