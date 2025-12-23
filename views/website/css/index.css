@@ -1005,7 +1005,8 @@ nav.nav-visible {
   /* Remove padding, scalloped edge is absolute */
   padding-top: 20px;
   /* Space for absolute scalloped edge (30px height - 15px overlap) */
-  padding-bottom: var(--spacing-16);
+  padding-bottom: var(--spacing-20);
+  /* Increased padding for longer product names */
   padding-left: var(--spacing-20);
   padding-right: var(--spacing-20);
   width: 100%;
@@ -1015,11 +1016,11 @@ nav.nav-visible {
   left: 0;
   right: 0;
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  /* Show only scalloped edge (30px) + title (~30px) + margin (16px) = ~76px at bottom */
-  /* Calculate based on content height: move up by (total height - 76px) */
-  /* Use a more reliable calculation: show bottom 76px, hide the rest above */
-  transform: translateY(calc(100% - 76px));
-  /* Show scalloped edge and title at bottom */
+  /* Show only scalloped edge (30px) + title (~45px for 2 lines) + margin (20px) = ~95px at bottom */
+  /* Calculate based on content height: move up by (total height - 95px) */
+  /* Use a more reliable calculation: show bottom 95px, hide the rest above */
+  transform: translateY(calc(100% - 95px));
+  /* Show scalloped edge and title at bottom - increased for longer product names */
 }
 
 .featured-card-green .featured-card-slideup {
@@ -2017,7 +2018,7 @@ nav.nav-visible {
   position: relative;
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   gap: var(--spacing-32);
   width: 100%;

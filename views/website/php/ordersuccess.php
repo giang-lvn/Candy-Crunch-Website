@@ -35,7 +35,7 @@ $shippingAddress = [
 // Load data from database if we have valid orderId
 if (!empty($orderId)) {
     require_once __DIR__ . '/../../../models/db.php';
-    
+
     // 1. Get order info from ORDERS table using PDO ($db)
     $stmtOrder = $db->prepare("
         SELECT 
@@ -52,14 +52,14 @@ if (!empty($orderId)) {
     ");
     $stmtOrder->execute([$orderId]);
     $orderInfo = $stmtOrder->fetch(PDO::FETCH_ASSOC);
-    
+
     if ($orderInfo) {
         $orderDate = $orderInfo['OrderDate'];
         $paymentMethod = $orderInfo['PaymentMethod'];
-        $shippingFee = (int)$orderInfo['ShippingFee'];
+        $shippingFee = (int) $orderInfo['ShippingFee'];
         $orderStatus = $orderInfo['OrderStatus'];
         $expectedDelivery = date('d/m/Y', strtotime($orderDate . ' +3 days'));
-        
+
         // 2. Get order items from ORDER_DETAIL + SKU + PRODUCT
         $stmtItems = $db->prepare("
             SELECT 
@@ -78,7 +78,7 @@ if (!empty($orderId)) {
         ");
         $stmtItems->execute([$orderId]);
         $orderItems = $stmtItems->fetchAll(PDO::FETCH_ASSOC);
-        
+
         // 3. Process images and calculate subtotal/discount
         foreach ($orderItems as &$item) {
             // Process image JSON
@@ -98,35 +98,35 @@ if (!empty($orderId)) {
                     $item['Image'] = $thumbPath;
                 }
             }
-            
+
             // Calculate amounts
-            $qty = (int)$item['OrderQuantity'];
-            $originalPrice = (float)$item['OriginalPrice'];
-            $promoPrice = !empty($item['PromotionPrice']) ? (float)$item['PromotionPrice'] : $originalPrice;
-            
+            $qty = (int) $item['OrderQuantity'];
+            $originalPrice = (float) $item['OriginalPrice'];
+            $promoPrice = !empty($item['PromotionPrice']) ? (float) $item['PromotionPrice'] : $originalPrice;
+
             // Add to CartQuantity for display compatibility
             $item['CartQuantity'] = $qty;
-            
+
             // Subtotal = sum of original prices
             $subtotal += $originalPrice * $qty;
-            
+
             // Discount = difference when promo price is lower
             if ($promoPrice < $originalPrice) {
                 $discount += ($originalPrice - $promoPrice) * $qty;
             }
         }
         unset($item); // Break reference
-        
+
         // 4. Calculate voucher discount (promo)
         if (!empty($orderInfo['VoucherID'])) {
             $afterDiscount = $subtotal - $discount;
             if (!empty($orderInfo['DiscountPercent']) && $orderInfo['DiscountPercent'] > 0) {
                 $promo = round($afterDiscount * ($orderInfo['DiscountPercent'] / 100));
             } elseif (!empty($orderInfo['DiscountAmount']) && $orderInfo['DiscountAmount'] > 0) {
-                $promo = min((int)$orderInfo['DiscountAmount'], $afterDiscount);
+                $promo = min((int) $orderInfo['DiscountAmount'], $afterDiscount);
             }
         }
-        
+
         // 5. Calculate total
         $total = $subtotal - $discount - $promo + $shippingFee;
     }
@@ -168,7 +168,7 @@ include(__DIR__ . '/../../../partials/header.php');
             </div>
 
             <!-- Success Title -->
-            <h1 class="success-title">Order Placed Successfully!</h1>
+            <h1 class="success-title">ORDER PLACED SUCCESSFULLY!</h1>
 
             <!-- Order ID and Status -->
             <div class="order-header">
@@ -179,107 +179,6 @@ include(__DIR__ . '/../../../partials/header.php');
                 <span class="status-tag pending"><?= htmlspecialchars($orderStatus) ?></span>
             </div>
 
-            <!-- Payment Method -->
-            <div class="info-section">
-                <h3 class="section-label">Payment Method</h3>
-                <p class="section-value"><?= $paymentMethod === 'COD' ? 'Cash On Delivery (COD)' : 'Bank Transfer' ?>
-                </p>
-            </div>
-
-            <!-- Expected Delivery -->
-            <div class="info-section">
-                <h3 class="section-label">Expected Delivery Date</h3>
-                <p class="section-value"><?= $expectedDelivery ?></p>
-            </div>
-
-            <!-- Shipping Address -->
-            <div class="info-section shipping-section">
-                <h3 class="section-label">Shipping Address</h3>
-                <div class="shipping-card">
-                    <div class="shipping-header">
-                        <span
-                            class="customer-name"><?= htmlspecialchars($shippingAddress['Fullname'] ?? 'Customer') ?></span>
-                        <?php if (!empty($shippingAddress['Phone'])): ?>
-                            <span class="separator">•</span>
-                            <span class="customer-phone"><?= htmlspecialchars($shippingAddress['Phone']) ?></span>
-                        <?php endif; ?>
-                    </div>
-                    <p class="shipping-address-text">
-                        <?php
-                        $addrParts = array_filter([
-                            $shippingAddress['Address'] ?? '',
-                            $shippingAddress['City'] ?? '',
-                            $shippingAddress['Country'] ?? ''
-                        ]);
-                        echo htmlspecialchars(implode(', ', $addrParts) ?: 'No address');
-                        ?>
-                    </p>
-                </div>
-            </div>
-
-            <!-- Ordered Products -->
-            <div class="info-section products-section">
-                <h3 class="section-label">Ordered Products</h3>
-                <div class="products-list">
-                    <?php if (!empty($orderItems)): ?>
-                        <?php foreach ($orderItems as $item): ?>
-                            <div class="product-item">
-                                <div class="product-left">
-                                    <div class="product-image-wrapper">
-                                        <img src="<?= htmlspecialchars($item['Image'] ?? $ROOT . '/views/website/img/product-img/main-thumb-example.png') ?>"
-                                            alt="<?= htmlspecialchars($item['ProductName'] ?? 'Product') ?>">
-                                        <span class="product-quantity"><?= (int) ($item['CartQuantity'] ?? 1) ?></span>
-                                    </div>
-                                    <div class="product-info">
-                                        <span
-                                            class="product-name"><?= htmlspecialchars($item['ProductName'] ?? 'Product Name') ?></span>
-                                        <span class="product-attribute"><?= htmlspecialchars($item['Attribute'] ?? '') ?></span>
-                                    </div>
-                                </div>
-                                <div class="product-right">
-                                    <?php
-                                    $itemPrice = !empty($item['PromotionPrice']) ? $item['PromotionPrice'] : $item['OriginalPrice'];
-                                    $lineTotal = $itemPrice * ($item['CartQuantity'] ?? 1);
-                                    ?>
-                                    <?php if (!empty($item['PromotionPrice']) && $item['PromotionPrice'] < $item['OriginalPrice']): ?>
-                                        <span
-                                            class="price-old"><?= number_format($item['OriginalPrice'] * ($item['CartQuantity'] ?? 1), 0, ',', '.') ?>đ</span>
-                                    <?php endif; ?>
-                                    <span class="price-new"><?= number_format($lineTotal, 0, ',', '.') ?>đ</span>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <p class="no-products">No products in this order.</p>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <!-- Order Summary -->
-            <div class="order-summary">
-                <div class="summary-row">
-                    <span class="summary-label">Subtotal</span>
-                    <span class="summary-value"><?= number_format($subtotal, 0, ',', '.') ?>đ</span>
-                </div>
-                <div class="summary-row discount">
-                    <span class="summary-label">Product Discount</span>
-                    <span
-                        class="summary-value"><?= $discount > 0 ? '-' : '' ?><?= number_format($discount, 0, ',', '.') ?>đ</span>
-                </div>
-                <div class="summary-row">
-                    <span class="summary-label">Shipping Fee</span>
-                    <span class="summary-value"><?= number_format($shippingFee, 0, ',', '.') ?>đ</span>
-                </div>
-                <div class="summary-row promo">
-                    <span class="summary-label">Voucher Discount</span>
-                    <span
-                        class="summary-value"><?= $promo > 0 ? '-' : '' ?><?= number_format($promo, 0, ',', '.') ?>đ</span>
-                </div>
-                <div class="summary-row total">
-                    <span class="summary-label">Total</span>
-                    <span class="summary-value"><?= number_format($total, 0, ',', '.') ?>đ</span>
-                </div>
-            </div>
 
             <!-- Action Buttons -->
             <div class="action-buttons">

@@ -270,12 +270,15 @@ $recentFeedbackQuery = $pdo->query("
 $recentFeedback = $recentFeedbackQuery->fetchAll();
 
 // Helper function để lấy thumbnail
-function getDashboardThumbnail($imageData) {
-    if (empty($imageData)) return '';
+function getDashboardThumbnail($imageData)
+{
+    if (empty($imageData))
+        return '';
     $decoded = json_decode($imageData, true);
     if (is_array($decoded)) {
         foreach ($decoded as $img) {
-            if (isset($img['is_thumbnail']) && $img['is_thumbnail']) return $img['path'];
+            if (isset($img['is_thumbnail']) && $img['is_thumbnail'])
+                return $img['path'];
         }
         return !empty($decoded[0]) ? (is_array($decoded[0]) ? $decoded[0]['path'] : $decoded[0]) : '';
     }
@@ -287,39 +290,120 @@ function getDashboardThumbnail($imageData) {
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-.dashboard-card {
-    border: none;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-.dashboard-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-}
-.kpi-card {
-    background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
-    color: white;
-    border-radius: 16px;
-    padding: 24px;
-}
-.kpi-card.revenue { --bg-start: #667eea; --bg-end: #764ba2; }
-.kpi-card.orders { --bg-start: #11998e; --bg-end: #38ef7d; }
-.kpi-card.customers { --bg-start: #ee0979; --bg-end: #ff6a00; }
-.kpi-card.conversion { --bg-start: #2193b0; --bg-end: #6dd5ed; }
-.kpi-value { font-size: 2rem; font-weight: 700; }
-.kpi-label { opacity: 0.9; font-size: 0.9rem; }
-.kpi-change { font-size: 0.85rem; padding: 4px 8px; border-radius: 20px; }
-.kpi-change.positive { background: rgba(255,255,255,0.25); }
-.kpi-change.negative { background: rgba(255,0,0,0.25); }
-.section-title { font-weight: 600; color: #333; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-.section-title i { color: #667eea; }
-.mini-table { font-size: 0.9rem; }
-.mini-table td, .mini-table th { padding: 10px 12px; }
-.product-thumb { width: 40px; height: 40px; object-fit: cover; border-radius: 8px; }
-.avatar-thumb { width: 36px; height: 36px; object-fit: cover; border-radius: 50%; }
-.urgent-badge { animation: pulse 2s infinite; }
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    .dashboard-card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .kpi-card {
+        background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
+        color: white;
+        border-radius: 16px;
+        padding: 24px;
+    }
+
+    .kpi-card.revenue {
+        --bg-start: #667eea;
+        --bg-end: #764ba2;
+    }
+
+    .kpi-card.orders {
+        --bg-start: #11998e;
+        --bg-end: #38ef7d;
+    }
+
+    .kpi-card.customers {
+        --bg-start: #ee0979;
+        --bg-end: #ff6a00;
+    }
+
+    .kpi-card.conversion {
+        --bg-start: #2193b0;
+        --bg-end: #6dd5ed;
+    }
+
+    .kpi-value {
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    .kpi-label {
+        opacity: 0.9;
+        font-size: 0.9rem;
+    }
+
+    .kpi-change {
+        font-size: 0.85rem;
+        padding: 4px 8px;
+        border-radius: 20px;
+    }
+
+    .kpi-change.positive {
+        background: rgba(255, 255, 255, 0.25);
+    }
+
+    .kpi-change.negative {
+        background: rgba(255, 0, 0, 0.25);
+    }
+
+    .section-title {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .section-title i {
+        color: #667eea;
+    }
+
+    .mini-table {
+        font-size: 0.9rem;
+    }
+
+    .mini-table td,
+    .mini-table th {
+        padding: 10px 12px;
+    }
+
+    .product-thumb {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .avatar-thumb {
+        width: 36px;
+        height: 36px;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .urgent-badge {
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.6;
+        }
+    }
 </style>
 
 <!-- Filter Bar -->
@@ -352,7 +436,8 @@ function getDashboardThumbnail($imageData) {
             <div class="col-md-3 text-end">
                 <small class="text-muted">
                     <i class="bi bi-calendar3 me-1"></i>
-                    <?php echo date('d/m/Y', strtotime($startDate)); ?> - <?php echo date('d/m/Y', strtotime($endDate)); ?>
+                    <?php echo date('d/m/Y', strtotime($startDate)); ?> -
+                    <?php echo date('d/m/Y', strtotime($endDate)); ?>
                 </small>
             </div>
         </form>
@@ -384,11 +469,11 @@ function getDashboardThumbnail($imageData) {
                 <div>
                     <div class="kpi-label">Tổng đơn hàng</div>
                     <div class="kpi-value"><?php echo number_format($currentOrders); ?></div>
-                    <small class="opacity-75">TB: <?php echo number_format($avgOrderValue, 0, ',', '.'); ?>đ/đơn</small>
                 </div>
                 <i class="bi bi-cart-check fs-2 opacity-50"></i>
             </div>
-            <div class="mt-2">
+            <div class="d-flex justify-content-between align-items-center mt-2">
+                <small class="opacity-75">TB: <?php echo number_format($avgOrderValue, 0, ',', '.'); ?>đ/đơn</small>
                 <span class="kpi-change <?php echo $ordersChange >= 0 ? 'positive' : 'negative'; ?>">
                     <i class="bi bi-arrow-<?php echo $ordersChange >= 0 ? 'up' : 'down'; ?>"></i>
                     <?php echo number_format(abs($ordersChange), 1); ?>%
@@ -443,7 +528,7 @@ function getDashboardThumbnail($imageData) {
                 <h5 class="section-title"><i class="bi bi-pie-chart"></i>Trạng thái đơn hàng</h5>
                 <canvas id="orderStatusChart" height="200"></canvas>
                 <div class="mt-3">
-                    <?php 
+                    <?php
                     $statusHexColors = [
                         'Complete' => '#198754',        // success - green
                         'Completed' => '#198754',       // success - green
@@ -456,16 +541,17 @@ function getDashboardThumbnail($imageData) {
                         'Pending Return' => '#20c997',  // teal
                         'Returned' => '#212529'         // dark - black
                     ];
-                    foreach ($orderStatusData as $status => $count): 
+                    foreach ($orderStatusData as $status => $count):
                         $hexColor = $statusHexColors[$status] ?? '#6c757d';
-                    ?>
-                    <div class="d-flex justify-content-between small mb-1">
-                        <span>
-                            <span class="d-inline-block me-1" style="width: 12px; height: 12px; border-radius: 2px; background-color: <?php echo $hexColor; ?>;"></span>
-                            <?php echo $status; ?>
-                        </span>
-                        <strong><?php echo $count; ?></strong>
-                    </div>
+                        ?>
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span>
+                                <span class="d-inline-block me-1"
+                                    style="width: 12px; height: 12px; border-radius: 2px; background-color: <?php echo $hexColor; ?>;"></span>
+                                <?php echo $status; ?>
+                            </span>
+                            <strong><?php echo $count; ?></strong>
+                        </div>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -475,35 +561,45 @@ function getDashboardThumbnail($imageData) {
 
 <!-- Đơn hàng cần xử lý gấp -->
 <?php if (!empty($urgentOrders)): ?>
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card dashboard-card border-danger">
-            <div class="card-header bg-danger text-white">
-                <i class="bi bi-exclamation-triangle me-2 urgent-badge"></i>
-                Đơn hàng cần xử lý gấp (chờ > 2 ngày)
-            </div>
-            <div class="card-body p-0">
-                <table class="table mini-table mb-0">
-                    <thead class="table-light">
-                        <tr><th>Mã đơn</th><th>Khách hàng</th><th>Ngày đặt</th><th>Chờ</th><th>Tổng tiền</th><th></th></tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($urgentOrders as $order): ?>
-                        <tr>
-                            <td><code class="text-danger">#<?php echo htmlspecialchars($order['OrderID']); ?></code></td>
-                            <td><?php echo htmlspecialchars($order['CustomerName'] ?? 'Khách vãng lai'); ?></td>
-                            <td><?php echo date('d/m/Y H:i', strtotime($order['OrderDate'])); ?></td>
-                            <td><span class="badge bg-danger"><?php echo $order['DaysWaiting']; ?> ngày</span></td>
-                            <td class="text-success fw-bold"><?php echo number_format($order['Total'] ?? 0, 0, ',', '.'); ?>đ</td>
-                            <td><a href="<?php echo BASE_URL; ?>index.php?action=view_order&id=<?php echo $order['OrderID']; ?>" class="btn btn-sm btn-outline-danger">Xử lý</a></td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card dashboard-card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <i class="bi bi-exclamation-triangle me-2 urgent-badge"></i>
+                    Đơn hàng cần xử lý gấp (chờ > 2 ngày)
+                </div>
+                <div class="card-body p-0">
+                    <table class="table mini-table mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Mã đơn</th>
+                                <th>Khách hàng</th>
+                                <th>Ngày đặt</th>
+                                <th>Chờ</th>
+                                <th>Tổng tiền</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($urgentOrders as $order): ?>
+                                <tr>
+                                    <td><code class="text-danger">#<?php echo htmlspecialchars($order['OrderID']); ?></code>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($order['CustomerName'] ?? 'Khách vãng lai'); ?></td>
+                                    <td><?php echo date('d/m/Y H:i', strtotime($order['OrderDate'])); ?></td>
+                                    <td><span class="badge bg-danger"><?php echo $order['DaysWaiting']; ?> ngày</span></td>
+                                    <td class="text-success fw-bold">
+                                        <?php echo number_format($order['Total'] ?? 0, 0, ',', '.'); ?>đ</td>
+                                    <td><a href="<?php echo BASE_URL; ?>index.php?action=view_order&id=<?php echo $order['OrderID']; ?>"
+                                            class="btn btn-sm btn-outline-danger">Xử lý</a></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-</div>
 <?php endif; ?>
 
 <!-- 4. Top sản phẩm + Sắp hết hàng -->
@@ -514,27 +610,37 @@ function getDashboardThumbnail($imageData) {
                 <h5 class="section-title"><i class="bi bi-trophy"></i>Top 10 sản phẩm bán chạy</h5>
                 <table class="table mini-table">
                     <thead class="table-light">
-                        <tr><th>#</th><th>Sản phẩm</th><th class="text-center">Đã bán</th><th class="text-end">Doanh thu</th></tr>
+                        <tr>
+                            <th>#</th>
+                            <th>Sản phẩm</th>
+                            <th class="text-center">Đã bán</th>
+                            <th class="text-end">Doanh thu</th>
+                        </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($topProducts as $i => $product): 
+                        <?php foreach ($topProducts as $i => $product):
                             $thumb = getDashboardThumbnail($product['Image']);
-                        ?>
-                        <tr>
-                            <td><span class="badge bg-<?php echo $i < 3 ? 'warning text-dark' : 'secondary'; ?>"><?php echo $i + 1; ?></span></td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <?php if ($thumb): ?>
-                                    <img src="<?php echo htmlspecialchars($thumb); ?>" class="product-thumb me-2">
-                                    <?php endif; ?>
-                                    <a href="<?php echo BASE_URL; ?>index.php?action=view_product&id=<?php echo $product['ProductID']; ?>" class="text-decoration-none">
-                                        <?php echo htmlspecialchars($product['ProductName']); ?>
-                                    </a>
-                                </div>
-                            </td>
-                            <td class="text-center"><strong><?php echo number_format($product['TotalSold']); ?></strong></td>
-                            <td class="text-end text-success"><?php echo number_format($product['TotalRevenue'], 0, ',', '.'); ?>đ</td>
-                        </tr>
+                            ?>
+                            <tr>
+                                <td><span
+                                        class="badge bg-<?php echo $i < 3 ? 'warning text-dark' : 'secondary'; ?>"><?php echo $i + 1; ?></span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <?php if ($thumb): ?>
+                                            <img src="<?php echo htmlspecialchars($thumb); ?>" class="product-thumb me-2">
+                                        <?php endif; ?>
+                                        <a href="<?php echo BASE_URL; ?>index.php?action=view_product&id=<?php echo $product['ProductID']; ?>"
+                                            class="text-decoration-none">
+                                            <?php echo htmlspecialchars($product['ProductName']); ?>
+                                        </a>
+                                    </div>
+                                </td>
+                                <td class="text-center"><strong><?php echo number_format($product['TotalSold']); ?></strong>
+                                </td>
+                                <td class="text-end text-success">
+                                    <?php echo number_format($product['TotalRevenue'], 0, ',', '.'); ?>đ</td>
+                            </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -544,25 +650,34 @@ function getDashboardThumbnail($imageData) {
     <div class="col-md-5 mb-3">
         <div class="card dashboard-card h-100">
             <div class="card-body">
-                <h5 class="section-title"><i class="bi bi-exclamation-circle text-warning"></i>Sản phẩm sắp hết hàng</h5>
+                <h5 class="section-title"><i class="bi bi-exclamation-circle text-warning"></i>Sản phẩm sắp hết hàng
+                </h5>
                 <?php if (empty($lowStockProducts)): ?>
-                <div class="text-center text-muted py-4"><i class="bi bi-check-circle text-success fs-1 d-block mb-2"></i>Tất cả sản phẩm còn đủ hàng</div>
+                    <div class="text-center text-muted py-4"><i
+                            class="bi bi-check-circle text-success fs-1 d-block mb-2"></i>Tất cả sản phẩm còn đủ hàng</div>
                 <?php else: ?>
-                <table class="table mini-table">
-                    <thead class="table-light"><tr><th>Sản phẩm</th><th class="text-center">Tồn kho</th></tr></thead>
-                    <tbody>
-                        <?php foreach ($lowStockProducts as $product): ?>
-                        <tr>
-                            <td>
-                                <a href="<?php echo BASE_URL; ?>index.php?action=edit_product&id=<?php echo $product['ProductID']; ?>" class="text-decoration-none">
-                                    <?php echo htmlspecialchars($product['ProductName']); ?>
-                                </a>
-                            </td>
-                            <td class="text-center"><span class="badge bg-danger"><?php echo $product['TotalStock']; ?></span></td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+                    <table class="table mini-table">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th class="text-center">Tồn kho</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($lowStockProducts as $product): ?>
+                                <tr>
+                                    <td>
+                                        <a href="<?php echo BASE_URL; ?>index.php?action=edit_product&id=<?php echo $product['ProductID']; ?>"
+                                            class="text-decoration-none">
+                                            <?php echo htmlspecialchars($product['ProductName']); ?>
+                                        </a>
+                                    </td>
+                                    <td class="text-center"><span
+                                            class="badge bg-danger"><?php echo $product['TotalStock']; ?></span></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 <?php endif; ?>
             </div>
         </div>
@@ -593,22 +708,27 @@ function getDashboardThumbnail($imageData) {
                 <table class="table mini-table">
                     <tbody>
                         <?php foreach ($topCustomers as $customer): ?>
-                        <tr>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <?php if (!empty($customer['Avatar'])): ?>
-                                    <img src="<?php echo htmlspecialchars($customer['Avatar']); ?>" class="avatar-thumb me-2">
-                                    <?php else: ?>
-                                    <div class="avatar-thumb bg-secondary d-flex align-items-center justify-content-center me-2"><i class="bi bi-person text-white"></i></div>
-                                    <?php endif; ?>
-                                    <div>
-                                        <strong><?php echo htmlspecialchars($customer['CustomerName']); ?></strong>
-                                        <br><small class="text-muted"><?php echo $customer['TotalOrders']; ?> đơn</small>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <?php if (!empty($customer['Avatar'])): ?>
+                                            <img src="<?php echo htmlspecialchars($customer['Avatar']); ?>"
+                                                class="avatar-thumb me-2">
+                                        <?php else: ?>
+                                            <div
+                                                class="avatar-thumb bg-secondary d-flex align-items-center justify-content-center me-2">
+                                                <i class="bi bi-person text-white"></i></div>
+                                        <?php endif; ?>
+                                        <div>
+                                            <strong><?php echo htmlspecialchars($customer['CustomerName']); ?></strong>
+                                            <br><small class="text-muted"><?php echo $customer['TotalOrders']; ?>
+                                                đơn</small>
+                                        </div>
                                     </div>
-                                </div>
-                            </td>
-                            <td class="text-end text-success fw-bold"><?php echo number_format($customer['TotalSpent'], 0, ',', '.'); ?>đ</td>
-                        </tr>
+                                </td>
+                                <td class="text-end text-success fw-bold">
+                                    <?php echo number_format($customer['TotalSpent'], 0, ',', '.'); ?>đ</td>
+                            </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -620,27 +740,39 @@ function getDashboardThumbnail($imageData) {
             <div class="card-body">
                 <h5 class="section-title"><i class="bi bi-ticket-perforated"></i>Hiệu quả khuyến mãi</h5>
                 <?php if (empty($topVouchers)): ?>
-                <div class="text-center text-muted py-4"><i class="bi bi-ticket-perforated fs-1 d-block mb-2"></i>Chưa có voucher nào được sử dụng</div>
+                    <div class="text-center text-muted py-4"><i class="bi bi-ticket-perforated fs-1 d-block mb-2"></i>Chưa
+                        có voucher nào được sử dụng</div>
                 <?php else: ?>
-                <table class="table mini-table">
-                    <thead class="table-light"><tr><th>Mã voucher</th><th>Giảm giá</th><th class="text-center">Lượt dùng</th><th class="text-end">Doanh thu</th></tr></thead>
-                    <tbody>
-                        <?php foreach ($topVouchers as $voucher): ?>
-                        <tr>
-                            <td><span class="badge bg-dark"><?php echo htmlspecialchars($voucher['Code']); ?></span></td>
-                            <td>
-                                <?php if ($voucher['DiscountPercent'] > 0): ?>
-                                <span class="badge bg-warning text-dark"><?php echo $voucher['DiscountPercent']; ?>%</span>
-                                <?php else: ?>
-                                <span class="badge bg-info"><?php echo number_format($voucher['DiscountAmount'], 0, ',', '.'); ?>đ</span>
-                                <?php endif; ?>
-                            </td>
-                            <td class="text-center"><strong><?php echo $voucher['UsageCount']; ?></strong></td>
-                            <td class="text-end text-success"><?php echo number_format($voucher['TotalRevenue'], 0, ',', '.'); ?>đ</td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+                    <table class="table mini-table">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Mã voucher</th>
+                                <th>Giảm giá</th>
+                                <th class="text-center">Lượt dùng</th>
+                                <th class="text-end">Doanh thu</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($topVouchers as $voucher): ?>
+                                <tr>
+                                    <td><span class="badge bg-dark"><?php echo htmlspecialchars($voucher['Code']); ?></span>
+                                    </td>
+                                    <td>
+                                        <?php if ($voucher['DiscountPercent'] > 0): ?>
+                                            <span
+                                                class="badge bg-warning text-dark"><?php echo $voucher['DiscountPercent']; ?>%</span>
+                                        <?php else: ?>
+                                            <span
+                                                class="badge bg-info"><?php echo number_format($voucher['DiscountAmount'], 0, ',', '.'); ?>đ</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="text-center"><strong><?php echo $voucher['UsageCount']; ?></strong></td>
+                                    <td class="text-end text-success">
+                                        <?php echo number_format($voucher['TotalRevenue'], 0, ',', '.'); ?>đ</td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 <?php endif; ?>
             </div>
         </div>
@@ -654,16 +786,29 @@ function getDashboardThumbnail($imageData) {
             <div class="card-body">
                 <h5 class="section-title"><i class="bi bi-clock-history"></i>Đơn hàng mới nhất</h5>
                 <table class="table mini-table">
-                    <thead class="table-light"><tr><th>Mã đơn</th><th>Khách hàng</th><th>Thời gian</th><th>Trạng thái</th><th class="text-end">Tổng</th></tr></thead>
+                    <thead class="table-light">
+                        <tr>
+                            <th>Mã đơn</th>
+                            <th>Khách hàng</th>
+                            <th>Thời gian</th>
+                            <th>Trạng thái</th>
+                            <th class="text-end">Tổng</th>
+                        </tr>
+                    </thead>
                     <tbody>
                         <?php foreach ($recentOrders as $order): ?>
-                        <tr>
-                            <td><a href="<?php echo BASE_URL; ?>index.php?action=view_order&id=<?php echo $order['OrderID']; ?>" class="text-decoration-none">#<?php echo htmlspecialchars($order['OrderID']); ?></a></td>
-                            <td><?php echo htmlspecialchars($order['CustomerName'] ?? 'Khách vãng lai'); ?></td>
-                            <td><small><?php echo date('d/m H:i', strtotime($order['OrderDate'])); ?></small></td>
-                            <td><span class="badge bg-<?php echo getStatusColor($order['OrderStatus']); ?>"><?php echo getStatusText($order['OrderStatus']); ?></span></td>
-                            <td class="text-end text-success"><?php echo number_format($order['Total'] ?? 0, 0, ',', '.'); ?>đ</td>
-                        </tr>
+                            <tr>
+                                <td><a href="<?php echo BASE_URL; ?>index.php?action=view_order&id=<?php echo $order['OrderID']; ?>"
+                                        class="text-decoration-none">#<?php echo htmlspecialchars($order['OrderID']); ?></a>
+                                </td>
+                                <td><?php echo htmlspecialchars($order['CustomerName'] ?? 'Khách vãng lai'); ?></td>
+                                <td><small><?php echo date('d/m H:i', strtotime($order['OrderDate'])); ?></small></td>
+                                <td><span
+                                        class="badge bg-<?php echo getStatusColor($order['OrderStatus']); ?>"><?php echo getStatusText($order['OrderStatus']); ?></span>
+                                </td>
+                                <td class="text-end text-success">
+                                    <?php echo number_format($order['Total'] ?? 0, 0, ',', '.'); ?>đ</td>
+                            </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -675,24 +820,27 @@ function getDashboardThumbnail($imageData) {
             <div class="card-body">
                 <h5 class="section-title"><i class="bi bi-star"></i>Đánh giá mới nhất</h5>
                 <?php if (empty($recentFeedback)): ?>
-                <div class="text-center text-muted py-4"><i class="bi bi-chat-quote fs-1 d-block mb-2"></i>Chưa có đánh giá mới</div>
+                    <div class="text-center text-muted py-4"><i class="bi bi-chat-quote fs-1 d-block mb-2"></i>Chưa có đánh
+                        giá mới</div>
                 <?php else: ?>
-                <?php foreach ($recentFeedback as $fb): ?>
-                <div class="border-bottom pb-2 mb-2">
-                    <div class="d-flex justify-content-between">
-                        <strong class="small"><?php echo htmlspecialchars($fb['CustomerName']); ?></strong>
-                        <div class="text-warning small">
-                            <?php for ($i = 1; $i <= 5; $i++): ?>
-                            <i class="bi bi-star<?php echo $i <= $fb['Rating'] ? '-fill' : ''; ?>"></i>
-                            <?php endfor; ?>
+                    <?php foreach ($recentFeedback as $fb): ?>
+                        <div class="border-bottom pb-2 mb-2">
+                            <div class="d-flex justify-content-between">
+                                <strong class="small"><?php echo htmlspecialchars($fb['CustomerName']); ?></strong>
+                                <div class="text-warning small">
+                                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                                        <i class="bi bi-star<?php echo $i <= $fb['Rating'] ? '-fill' : ''; ?>"></i>
+                                    <?php endfor; ?>
+                                </div>
+                            </div>
+                            <small class="text-muted"><?php echo htmlspecialchars($fb['ProductName']); ?></small>
+                            <?php if (!empty($fb['Comment'])): ?>
+                                <p class="small mb-0 mt-1">
+                                    <?php echo htmlspecialchars(mb_substr($fb['Comment'], 0, 80)); ?>            <?php echo mb_strlen($fb['Comment']) > 80 ? '...' : ''; ?>
+                                </p>
+                            <?php endif; ?>
                         </div>
-                    </div>
-                    <small class="text-muted"><?php echo htmlspecialchars($fb['ProductName']); ?></small>
-                    <?php if (!empty($fb['Comment'])): ?>
-                    <p class="small mb-0 mt-1"><?php echo htmlspecialchars(mb_substr($fb['Comment'], 0, 80)); ?><?php echo mb_strlen($fb['Comment']) > 80 ? '...' : ''; ?></p>
-                    <?php endif; ?>
-                </div>
-                <?php endforeach; ?>
+                    <?php endforeach; ?>
                 <?php endif; ?>
             </div>
         </div>
@@ -700,79 +848,79 @@ function getDashboardThumbnail($imageData) {
 </div>
 
 <script>
-function toggleCustomDate(value) {
-    document.querySelectorAll('.custom-date').forEach(el => {
-        el.style.display = value === 'custom' ? 'block' : 'none';
-    });
-}
+    function toggleCustomDate(value) {
+        document.querySelectorAll('.custom-date').forEach(el => {
+            el.style.display = value === 'custom' ? 'block' : 'none';
+        });
+    }
 
-// Revenue Chart
-const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-new Chart(revenueCtx, {
-    type: 'line',
-    data: {
-        labels: <?php echo json_encode(array_column($chartData, 'period')); ?>,
-        datasets: [{
-            label: 'Doanh thu kỳ này',
-            data: <?php echo json_encode(array_column($chartData, 'revenue')); ?>,
-            borderColor: '#667eea',
-            backgroundColor: 'rgba(102, 126, 234, 0.1)',
-            fill: true,
-            tension: 0.4
-        }, {
-            label: 'Kỳ trước',
-            data: <?php echo json_encode(array_column($prevChartData, 'revenue')); ?>,
-            borderColor: '#ccc',
-            borderDash: [5, 5],
-            fill: false,
-            tension: 0.4
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: { legend: { position: 'top' } },
-        scales: {
-            y: { 
-                beginAtZero: true,
-                ticks: { callback: v => v.toLocaleString('vi-VN') + 'đ' }
+    // Revenue Chart
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    new Chart(revenueCtx, {
+        type: 'line',
+        data: {
+            labels: <?php echo json_encode(array_column($chartData, 'period')); ?>,
+            datasets: [{
+                label: 'Doanh thu kỳ này',
+                data: <?php echo json_encode(array_column($chartData, 'revenue')); ?>,
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                fill: true,
+                tension: 0.4
+            }, {
+                label: 'Kỳ trước',
+                data: <?php echo json_encode(array_column($prevChartData, 'revenue')); ?>,
+                borderColor: '#ccc',
+                borderDash: [5, 5],
+                fill: false,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'top' } },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { callback: v => v.toLocaleString('vi-VN') + 'đ' }
+                }
             }
         }
-    }
-});
+    });
 
-// Order Status Chart với màu đúng theo status
-const statusCtx = document.getElementById('orderStatusChart').getContext('2d');
+    // Order Status Chart với màu đúng theo status
+    const statusCtx = document.getElementById('orderStatusChart').getContext('2d');
 
-// Mapping màu theo status (khớp với Bootstrap colors)
-const statusColorMap = {
-    'Complete': '#198754',        // success - green
-    'Completed': '#198754',       // success - green
-    'On Shipping': '#0dcaf0',     // info - cyan
-    'Pending': '#0d6efd',         // primary - blue
-    'Pending Confirmation': '#ffc107', // warning - yellow
-    'Waiting Payment': '#6c757d', // secondary - gray
-    'Cancelled': '#dc3545',       // danger - red
-    'Pending Cancel': '#fd7e14',  // orange
-    'Pending Return': '#20c997',  // teal
-    'Returned': '#212529'         // dark - black
-};
+    // Mapping màu theo status (khớp với Bootstrap colors)
+    const statusColorMap = {
+        'Complete': '#198754',        // success - green
+        'Completed': '#198754',       // success - green
+        'On Shipping': '#0dcaf0',     // info - cyan
+        'Pending': '#0d6efd',         // primary - blue
+        'Pending Confirmation': '#ffc107', // warning - yellow
+        'Waiting Payment': '#6c757d', // secondary - gray
+        'Cancelled': '#dc3545',       // danger - red
+        'Pending Cancel': '#fd7e14',  // orange
+        'Pending Return': '#20c997',  // teal
+        'Returned': '#212529'         // dark - black
+    };
 
-const statusLabels = <?php echo json_encode(array_keys($orderStatusData)); ?>;
-const statusValues = <?php echo json_encode(array_values($orderStatusData)); ?>;
-const statusColors = statusLabels.map(label => statusColorMap[label] || '#6c757d');
+    const statusLabels = <?php echo json_encode(array_keys($orderStatusData)); ?>;
+    const statusValues = <?php echo json_encode(array_values($orderStatusData)); ?>;
+    const statusColors = statusLabels.map(label => statusColorMap[label] || '#6c757d');
 
-new Chart(statusCtx, {
-    type: 'doughnut',
-    data: {
-        labels: statusLabels,
-        datasets: [{
-            data: statusValues,
-            backgroundColor: statusColors
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: { legend: { display: false } }
-    }
-});
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: statusLabels,
+            datasets: [{
+                data: statusValues,
+                backgroundColor: statusColors
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } }
+        }
+    });
 </script>

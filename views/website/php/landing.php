@@ -508,90 +508,6 @@ include(__DIR__ . '/../../../partials/header.php');
     <!-- End Testimonials Section -->
 
 
-    <!-- Footer -->
-    <footer class="footer">
-        <video class="footer-video" autoplay loop muted playsinline>
-            <source src="<?php echo $ROOT; ?>/views/website/img/footervideo.mp4" type="video/mp4">
-        </video>
-        <div class="footer-overlay"></div>
-        <div class="upper">
-            <div class="line">
-                <div class="newsletter">
-                    <p class="text-wrapper">Subscribe for 15% off your first order and unlock your inner potential with
-                        us.</p>
-                    <div class="div-wrapper">
-                        <div class="div-wrapper">
-                            <div class="field">
-                                <div class="text-title">
-                                    <div class="text"><input class="div" placeholder="Your Email" type="email" /></div>
-                                </div>
-                                <div class="button"><img class="solar-arrow-right"
-                                        src="<?php echo $ROOT; ?>/views/website/img/solar-arrow-right-linear.svg"
-                                        alt="Subscribe" /></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="menus">
-                    <div class="menu-footer">
-                        <div class="menu">
-                            <div class="text-wrapper-2">About us</div>
-                        </div>
-                        <div class="menu-2">
-                            <div class="text-wrapper-2">Shop</div>
-                        </div>
-                        <div class="menu-2">
-                            <div class="text-wrapper-2">Contact</div>
-                        </div>
-                        <div class="menu-2">
-                            <div class="text-wrapper-2">Policy</div>
-                        </div>
-                    </div>
-                    <div class="menu-footer">
-                        <div class="menu-3">
-                            <div class="text-wrapper-2">FAQ</div>
-                        </div>
-                        <div class="menu-3">
-                            <div class="text-wrapper-2">Shipping Policy</div>
-                        </div>
-                        <div class="menu-3">
-                            <div class="text-wrapper-2">Refund Policy</div>
-                        </div>
-                        <div class="menu-3">
-                            <div class="text-wrapper-2">Journal</div>
-                        </div>
-                    </div>
-                    <div class="menu-footer">
-                        <div class="menu-3">
-                            <div class="text-wrapper-2">Tiktok</div>
-                        </div>
-                        <div class="menu-3">
-                            <div class="text-wrapper-2">Instagram</div>
-                        </div>
-                        <div class="menu-3">
-                            <div class="text-wrapper-2">Facebook</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="typo">
-                <div class="text-2">CANDY CRUNCH</div>
-            </div>
-        </div>
-        <div class="tags">
-            <div class="tag">
-                <p class="text-wrapper-3">These statements have not been evaluated by the FDA.</p>
-            </div>
-            <div class="tag">
-                <p class="text-wrapper-3">©2025 Innerwork. All Rights Reserved.</p>
-            </div>
-            <div class="tag">
-                <div class="text-wrapper-3">Designed by Group H</div>
-            </div>
-        </div>
-    </footer>
-    <!-- End Footer -->
-
     <!-- Scripts -->
     <!-- GSAP Core + ScrollTrigger Plugin -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -603,3 +519,5 @@ include(__DIR__ . '/../../../partials/header.php');
 </body>
 
 </html>
+
+<?php include(__DIR__ . '/../../../partials/footer_vid.php'); ?>
