@@ -20,14 +20,14 @@ function initMenuNavigation() {
 
     // Set active menu based on current URL
     const currentPage = window.location.pathname;
-    
+
     // Clear all active first
     menus.forEach(m => m.classList.remove('active'));
 
     // Find and set the correct active menu
     menus.forEach(menu => {
         const text = menu.querySelector('.my-orders, .my-orders2')?.textContent.trim();
-    
+
         if (text === 'Change Password' && currentPage.includes('changepass')) {
             menu.classList.add('active');
         } else if (text === 'My Orders' && currentPage.includes('orders')) {
@@ -56,7 +56,7 @@ function handleMenuAction(action) {
             window.location.href = '../php/my_vouchers.php';
             break;
         case 'Log out':
-            if (confirm('Are you sure you want to log out?')) window.location.href = '../php/login.html';
+            if (confirm('Are you sure you want to log out?')) window.location.href = '../php/login.php';
             break;
     }
 }
@@ -111,27 +111,27 @@ function initChangePassword() {
                 credentials: 'same-origin',
                 body: formData
             })
-            .then(response =>{
-                if (!response.ok) {
-                    throw new Error('HTTP status ' + response.status);
-                }
-                return response.json();
-            })
-            
-            .then(data => {
-                if(data.status === 'success') {
-                    alert('Password changed successfully!');
-                    currentPassword.value='';
-                    newPassword.value='';
-                    confirmPassword.value='';
-                } else {
-                    alert(data.message || 'Change password failed.');
-                }
-            })
-            .catch(error => {
-                console.error(error);
-                alert('Server error. Please try again.');
-            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('HTTP status ' + response.status);
+                    }
+                    return response.json();
+                })
+
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('Password changed successfully!');
+                        currentPassword.value = '';
+                        newPassword.value = '';
+                        confirmPassword.value = '';
+                    } else {
+                        alert(data.message || 'Change password failed.');
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert('Server error. Please try again.');
+                })
         }
     });
 
@@ -144,10 +144,10 @@ function initChangePassword() {
 // ================================================
 function addPasswordToggle() {
     const passwordFields = document.querySelectorAll('input[type="password"]');
-    
+
     passwordFields.forEach(field => {
         const toggleBtn = field.parentElement.querySelector('.icon-toggle');
-        
+
         if (toggleBtn) {
             toggleBtn.addEventListener('click', () => {
                 if (field.type === 'password') {

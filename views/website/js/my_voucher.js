@@ -34,7 +34,7 @@ function handleMenuAction(action) {
         'Change Password': 'changepass.php',
         'My Orders': 'my_orders.php',
         'My Vouchers': 'my_vouchers.php',
-        'Log out': 'login.html'
+        'Log out': 'login.php'
     };
 
     if (action === 'Log out') {

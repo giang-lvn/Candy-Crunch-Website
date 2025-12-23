@@ -32,12 +32,12 @@ class SignUpModel
                 INSERT INTO ACCOUNT (AccountID, Email, Password, AccountStatus)
                 VALUES (:accountId, :email, :password, 'Active')
             ";
-            
+
             $stmtAccount = $this->db->prepare($sqlAccount);
             $stmtAccount->execute([
                 'accountId' => $accountId,
-                'email'     => $data['email'],
-                'password'  => $data['password'] // Controller sẽ hash password trước khi truyền vào
+                'email' => $data['email'],
+                'password' => $data['password'] // Controller sẽ hash password trước khi truyền vào
             ]);
 
             // 3. Tạo CustomerID tự động (CUS + số tăng dần)
@@ -57,12 +57,12 @@ class SignUpModel
             $stmtCustomer = $this->db->prepare($sqlCustomer);
             $stmtCustomer->execute([
                 'customerId' => $customerId,
-                'accountId'  => $accountId,
-                'firstName'  => $data['first_name'],
-                'lastName'   => $data['last_name'],
-                'birth'      => $data['birth'],
-                'gender'     => $data['gender'],
-                'avatar'     => 'default_avatar.png' // Avatar mặc định
+                'accountId' => $accountId,
+                'firstName' => $data['first_name'],
+                'lastName' => $data['last_name'],
+                'birth' => $data['birth'],
+                'gender' => $data['gender'],
+                'avatar' => 'default_avatar.png' // Avatar mặc định
             ]);
 
             $this->db->commit();
@@ -78,11 +78,13 @@ class SignUpModel
     // Helper: Logic sinh ID giống hệt file account_model của bạn
     private function generateId(string $table, string $column, string $prefix): string
     {
-        // Lấy số lớn nhất hiện tại từ chuỗi con (VD: ACC005 -> lấy 5)
-        $sql = "SELECT MAX(CAST(SUBSTRING($column, 4) AS UNSIGNED)) FROM $table";
-        $stmt = $this->db->query($sql);
-        $next = ((int)$stmt->fetchColumn()) + 1;
-        
+        // Lấy số lớn nhất hiện tại từ chuỗi con, CHỈ LỌC các ID có prefix phù hợp
+        // (VD: ACC005 -> lấy 5, bỏ qua ADMIN001)
+        $sql = "SELECT MAX(CAST(SUBSTRING($column, 4) AS UNSIGNED)) FROM $table WHERE $column LIKE :prefix";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['prefix' => $prefix . '%']);
+        $next = ((int) $stmt->fetchColumn()) + 1;
+
         // Pad thêm số 0 vào trước (VD: ACC006)
         return $prefix . str_pad($next, 3, '0', STR_PAD_LEFT);
     }

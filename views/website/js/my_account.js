@@ -86,12 +86,12 @@ function performLogout() {
     })
         .then(res => res.json())
         .then(res => {
-            window.history.replaceState(null, '', '/Candy-Crunch-Website/views/website/php/landing.php');
-            window.location.replace('/Candy-Crunch-Website/views/website/php/landing.php');
+            // Redirect to home page using router
+            window.location.href = '/Candy-Crunch-Website/index.php';
         })
         .catch(err => {
-            window.history.replaceState(null, '', '/Candy-Crunch-Website/views/website/php/landing.php');
-            window.location.replace('/Candy-Crunch-Website/views/website/php/landing.php');
+            // Still redirect even if error
+            window.location.href = '/Candy-Crunch-Website/index.php';
         });
 }
 

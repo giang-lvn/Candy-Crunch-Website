@@ -7,11 +7,11 @@ if (session_status() === PHP_SESSION_NONE) {
 if (!isset($_SESSION['user_data']) && isset($_SESSION['AccountID'])) {
     require_once __DIR__ . '/../../../models/db.php';
     require_once __DIR__ . '/../../../models/website/account_model.php';
-    
+
     global $db;
     $accountModel = new AccountModel($db);
     $fullCustomerData = $accountModel->getCustomerByAccountId($_SESSION['AccountID']);
-    
+
     if ($fullCustomerData) {
         $_SESSION['user_data'] = $fullCustomerData;
         $_SESSION['user_addresses'] = $accountModel->getAddresses($fullCustomerData['CustomerID']);
@@ -19,9 +19,9 @@ if (!isset($_SESSION['user_data']) && isset($_SESSION['AccountID'])) {
     }
 }
 
-$customer  = $_SESSION['user_data'] ?? null;
+$customer = $_SESSION['user_data'] ?? null;
 $addresses = $_SESSION['user_addresses'] ?? [];
-$banking   = $_SESSION['user_banking'] ?? [];
+$banking = $_SESSION['user_banking'] ?? [];
 
 
 include '../../../partials/header.php';
@@ -29,6 +29,7 @@ include '../../../partials/header.php';
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, width=device-width">
@@ -36,20 +37,23 @@ include '../../../partials/header.php';
     <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/my_account.css">
     <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/main.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
-    <link href="https://fonts.googleapis.com/css2?family=Modak&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Modak&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
+
 <body>
     <div class="breadcrumb-container">
         <div class="breadcrumb">
-            <a href="index.html" class="breadcrumb-item home-icon">
+            <a href="<?php echo $ROOT; ?>/index.php" class="breadcrumb-item home-icon">
                 <i class="fas fa-home"></i>
             </a>
             <span class="separator"></span>
             <span class="breadcrumb-item active">My Account</span>
-        </div>          
-    </div> 
-    
+        </div>
+    </div>
+
     <div class="my-account-profile">
         <div class="title">
             <div class="my-account">MY ACCOUNT</div>
@@ -57,47 +61,66 @@ include '../../../partials/header.php';
         <div class="content">
             <div class="card-account">
                 <div class="user-card">
-                    <img class="avatar-icon" id="sidebarAvatar" src="<?php echo !empty($customer['Avatar']) ? htmlspecialchars($customer['Avatar']) : $ROOT . '/views/website/img/ot-longvo.png'; ?>" alt="avatar" onerror="this.src='<?php echo $ROOT; ?>/views/website/img/ot-longvo.png'">
+                    <img class="avatar-icon" id="sidebarAvatar"
+                        src="<?php echo !empty($customer['Avatar']) ? htmlspecialchars($customer['Avatar']) : $ROOT . '/views/website/img/ot-longvo.png'; ?>"
+                        alt="avatar" onerror="this.src='<?php echo $ROOT; ?>/views/website/img/ot-longvo.png'">
                     <div class="user-name">
                         <div class="john-doe">
-                            <?php 
-                                $fullName = trim(($customer['FirstName'] ?? '') . ' ' . ($customer['LastName'] ?? ''));
-                                echo htmlspecialchars($fullName ?: 'Guest User'); 
+                            <?php
+                            $fullName = trim(($customer['FirstName'] ?? '') . ' ' . ($customer['LastName'] ?? ''));
+                            echo htmlspecialchars($fullName ?: 'Guest User');
                             ?>
                         </div>
                     </div>
                 </div>
                 <div class="menus">
                     <div class="account-menu">
-                        <img class="icon-account-outline" src="<?php echo $ROOT; ?>/views/website/img/account.svg" alt="my account">
-                        <div class="sidebar-ele"><div class="my-orders">My Account</div></div>
+                        <img class="icon-account-outline" src="<?php echo $ROOT; ?>/views/website/img/account.svg"
+                            alt="my account">
+                        <div class="sidebar-ele">
+                            <div class="my-orders">My Account</div>
+                        </div>
                     </div>
                     <div class="account-menu" id="menuChangePassword">
                         <img class="icon-key" src="<?php echo $ROOT; ?>/views/website/img/key.svg" alt="change">
-                        <div class="sidebar-ele"><div class="my-orders2">Change Password</div></div>
+                        <div class="sidebar-ele">
+                            <div class="my-orders2">Change Password</div>
+                        </div>
                     </div>
                     <div class="account-menu">
-                        <img class="icon-account-outline" src="<?php echo $ROOT; ?>/views/website/img/order.svg" alt="orders">
-                        <div class="sidebar-ele"><div class="my-orders2">My Orders</div></div>
+                        <img class="icon-account-outline" src="<?php echo $ROOT; ?>/views/website/img/order.svg"
+                            alt="orders">
+                        <div class="sidebar-ele">
+                            <div class="my-orders2">My Orders</div>
+                        </div>
                     </div>
                     <div class="account-menu">
                         <img class="icon-key" src="<?php echo $ROOT; ?>/views/website/img/voucher.svg" alt="voucher">
-                        <div class="sidebar-ele"><div class="my-orders2">My Vouchers</div></div>
+                        <div class="sidebar-ele">
+                            <div class="my-orders2">My Vouchers</div>
+                        </div>
                     </div>
                     <div class="account-menu">
-                        <img class="icon-account-outline" src="<?php echo $ROOT; ?>/views/website/img/logout.svg" alt="logout">
-                        <div class="sidebar-ele"><div class="my-orders2">Log out</div></div>
+                        <img class="icon-account-outline" src="<?php echo $ROOT; ?>/views/website/img/logout.svg"
+                            alt="logout">
+                        <div class="sidebar-ele">
+                            <div class="my-orders2">Log out</div>
+                        </div>
                     </div>
                 </div>
             </div>
-            
+
             <div class="profile-parent">
                 <div class="profile">
                     <div class="title2">
                         <div class="heading">
-                            <div class="title3"><div class="text">My profile</div></div>
+                            <div class="title3">
+                                <div class="text">My profile</div>
+                            </div>
                             <div class="button" id="editProfileBtn">
-                                <div class="texttitle"><div class="text4">Edit Information</div></div>
+                                <div class="texttitle">
+                                    <div class="text4">Edit Information</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -105,24 +128,48 @@ include '../../../partials/header.php';
                         <div class="frame-div">
                             <div class="info">
                                 <div class="line">
-                                    <div class="label"><div class="gender">Email</div></div>
-                                    <div class="value"><div class="male" id="displayEmail"><?php echo htmlspecialchars($customer['Email'] ?? '-'); ?></div></div>
+                                    <div class="label">
+                                        <div class="gender">Email</div>
+                                    </div>
+                                    <div class="value">
+                                        <div class="male" id="displayEmail">
+                                            <?php echo htmlspecialchars($customer['Email'] ?? '-'); ?></div>
+                                    </div>
                                 </div>
                                 <div class="line2">
-                                    <div class="label"><div class="gender">First name</div></div>
-                                    <div class="value"><div class="male" id="displayFirstName"><?php echo htmlspecialchars($customer['FirstName'] ?? '-'); ?></div></div>
+                                    <div class="label">
+                                        <div class="gender">First name</div>
+                                    </div>
+                                    <div class="value">
+                                        <div class="male" id="displayFirstName">
+                                            <?php echo htmlspecialchars($customer['FirstName'] ?? '-'); ?></div>
+                                    </div>
                                 </div>
                                 <div class="line2">
-                                    <div class="label"><div class="gender">Last name</div></div>
-                                    <div class="value"><div class="male" id="displayLastName"><?php echo htmlspecialchars($customer['LastName'] ?? '-'); ?></div></div>
+                                    <div class="label">
+                                        <div class="gender">Last name</div>
+                                    </div>
+                                    <div class="value">
+                                        <div class="male" id="displayLastName">
+                                            <?php echo htmlspecialchars($customer['LastName'] ?? '-'); ?></div>
+                                    </div>
                                 </div>
                                 <div class="line2">
-                                    <div class="label"><div class="gender">Gender</div></div>
-                                    <div class="value"><div class="male" id='displayGender'><?php echo htmlspecialchars($customer['CustomerGender'] ?? 'Other'); ?></div></div>
+                                    <div class="label">
+                                        <div class="gender">Gender</div>
+                                    </div>
+                                    <div class="value">
+                                        <div class="male" id='displayGender'>
+                                            <?php echo htmlspecialchars($customer['CustomerGender'] ?? 'Other'); ?>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="line2">
-                                    <div class="label"><div class="gender">Date of Birth</div></div>
-                                    <div class="value"><div class="male" id="displayDOB"><?php 
+                                    <div class="label">
+                                        <div class="gender">Date of Birth</div>
+                                    </div>
+                                    <div class="value">
+                                        <div class="male" id="displayDOB"><?php
                                         $dob = $customer['CustomerBirth'] ?? '';
                                         if (!empty($dob)) {
                                             $date = DateTime::createFromFormat('Y-m-d', $dob) ?: DateTime::createFromFormat('Y/m/d', $dob);
@@ -130,14 +177,24 @@ include '../../../partials/header.php';
                                         } else {
                                             echo '-';
                                         }
-                                    ?></div></div>
+                                        ?></div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="avatar">
-                                <img class="avatar-icon2" id="profileAvatar" src="<?php echo !empty($customer['Avatar']) ? htmlspecialchars($customer['Avatar']) : $ROOT . '/views/website/img/ot-longvo.png'; ?>" alt="avatar" onerror="this.src='<?php echo $ROOT; ?>/views/website/img/ot-longvo.png'">
+                                <img class="avatar-icon2" id="profileAvatar"
+                                    src="<?php echo !empty($customer['Avatar']) ? htmlspecialchars($customer['Avatar']) : $ROOT . '/views/website/img/ot-longvo.png'; ?>"
+                                    alt="avatar"
+                                    onerror="this.src='<?php echo $ROOT; ?>/views/website/img/ot-longvo.png'">
                                 <input type="file" id="avatarInput" accept="image/jpeg,image/png" style="display:none;">
-                                <div class="button2" id="chooseAvatarBtn"><div class="texttitle"><div class="text4">Choose image</div></div></div>
-                                <div class="caption"><div class="gender">Max: 1 MB (.JPEG, .PNG)</div></div>
+                                <div class="button2" id="chooseAvatarBtn">
+                                    <div class="texttitle">
+                                        <div class="text4">Choose image</div>
+                                    </div>
+                                </div>
+                                <div class="caption">
+                                    <div class="gender">Max: 1 MB (.JPEG, .PNG)</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -146,15 +203,21 @@ include '../../../partials/header.php';
                 <div class="profile">
                     <div class="title2">
                         <div class="heading">
-                            <div class="title3"><div class="text">Banking Information</div></div>
+                            <div class="title3">
+                                <div class="text">Banking Information</div>
+                            </div>
                             <div class="button-group">
-                            <div class="button3" id="editBankingInfoBtn">
-                                    <div class="texttitle"><div class="text4">Edit Information</div></div>
+                                <div class="button3" id="editBankingInfoBtn">
+                                    <div class="texttitle">
+                                        <div class="text4">Edit Information</div>
+                                    </div>
+                                </div>
+                                <div class="button4" id="addBankingBtn">
+                                    <div class="texttitle">
+                                        <div class="text4">Add Bank Account</div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="button4" id="addBankingBtn">
-                                <div class="texttitle"><div class="text4">Add Bank Account</div></div>
-                            </div>
-                        </div>
                         </div>
                     </div>
                     <div class="profile4">
@@ -174,7 +237,9 @@ include '../../../partials/header.php';
                                             <div class="frame-div">
                                                 <div class="frame-parent5">
                                                     <div class="john-doe-wrapper">
-                                                        <div class="text4"><?php echo htmlspecialchars($b['BankName'] ?? 'Bank Account'); ?></div>
+                                                        <div class="text4">
+                                                            <?php echo htmlspecialchars($b['BankName'] ?? 'Bank Account'); ?>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <?php if (($b['IsDefault'] ?? '') === 'Yes'): ?>
@@ -187,23 +252,27 @@ include '../../../partials/header.php';
                                             <div class="sunset-boulevard-los-angeles-wrapper">
                                                 <div class="gender">
                                                     <div class="account-row" style="display:flex; align-items:center; gap:8px;">
-                                                        <span class="acc-val" data-original="<?php echo htmlspecialchars($b['AccountNumber'] ?? ''); ?>">
+                                                        <span class="acc-val"
+                                                            data-original="<?php echo htmlspecialchars($b['AccountNumber'] ?? ''); ?>">
                                                             ************<?php echo substr($b['AccountNumber'] ?? '', -4); ?>
                                                         </span>
                                                     </div>
                                                     <br>
-                                                    <div>Owner: <?php echo htmlspecialchars($b['AccountHolderName'] ?? '-'); ?></div>
+                                                    <div>Owner: <?php echo htmlspecialchars($b['AccountHolderName'] ?? '-'); ?>
+                                                    </div>
                                                     <br>
-                                                    
+
                                                     <div class="id-row" style="display:flex; align-items:center; gap:8px;">
-                                                        ID: <span class="id-val" data-original="<?php echo htmlspecialchars($b['IDNumber'] ?? ''); ?>">************<?php echo substr($b['IDNumber'] ?? '', -4); ?></span>
+                                                        ID: <span class="id-val"
+                                                            data-original="<?php echo htmlspecialchars($b['IDNumber'] ?? ''); ?>">************<?php echo substr($b['IDNumber'] ?? '', -4); ?></span>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     <?php endforeach; ?>
                                 <?php else: ?>
-                                    <p style="text-align: center; color: #999; padding: 20px; width:100%;">No banking info found.</p>
+                                    <p style="text-align: center; color: #999; padding: 20px; width:100%;">No banking info
+                                        found.</p>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -213,13 +282,19 @@ include '../../../partials/header.php';
                 <div class="profile">
                     <div class="title2">
                         <div class="heading">
-                            <div class="title3"><div class="text">Shipping Information</div></div>
+                            <div class="title3">
+                                <div class="text">Shipping Information</div>
+                            </div>
                             <div class="button-group">
                                 <div class="button3" id="editAddressBtn">
-                                    <div class="texttitle"><div class="text4">Edit Information</div></div>
+                                    <div class="texttitle">
+                                        <div class="text4">Edit Information</div>
+                                    </div>
                                 </div>
                                 <div class="button4" id="addAddressBtn">
-                                    <div class="texttitle"><div class="text4">Add New Address</div></div>
+                                    <div class="texttitle">
+                                        <div class="text4">Add New Address</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -229,32 +304,35 @@ include '../../../partials/header.php';
                             <div class="frame-group">
                                 <?php if (!empty($addresses)): ?>
                                     <?php foreach ($addresses as $address): ?>
-                                        <div class="frame-container address-item" 
-                                             data-address-id="<?= $address['AddressID'] ?>"
-                                             data-phone="<?= htmlspecialchars($address['Phone'] ?? '') ?>"
-                                             data-address="<?= htmlspecialchars($address['Address'] ?? '') ?>"
-                                             data-city="<?= htmlspecialchars($address['City'] ?? '') ?>"
-                                             data-country="<?= htmlspecialchars($address['Country'] ?? '') ?>"
-                                             data-alias="<?= htmlspecialchars($address['Alias'] ?? '') ?>"
-                                             data-is-default="<?= ($address['IsDefault'] ?? 'No') ?>">
+                                        <div class="frame-container address-item" data-address-id="<?= $address['AddressID'] ?>"
+                                            data-phone="<?= htmlspecialchars($address['Phone'] ?? '') ?>"
+                                            data-address="<?= htmlspecialchars($address['Address'] ?? '') ?>"
+                                            data-city="<?= htmlspecialchars($address['City'] ?? '') ?>"
+                                            data-country="<?= htmlspecialchars($address['Country'] ?? '') ?>"
+                                            data-alias="<?= htmlspecialchars($address['Alias'] ?? '') ?>"
+                                            data-is-default="<?= ($address['IsDefault'] ?? 'No') ?>">
                                             <div class="frame-div">
                                                 <div class="frame-parent5">
                                                     <div class="john-doe-wrapper">
-                                                        <div class="text4 ship-name"><?php echo htmlspecialchars($address['Fullname'] ?? '-'); ?></div>
+                                                        <div class="text4 ship-name">
+                                                            <?php echo htmlspecialchars($address['Fullname'] ?? '-'); ?></div>
                                                     </div>
                                                 </div>
-                                                <div class="status-tag<?php echo ($address['IsDefault'] ?? 'No') !== 'Yes' ? ' hidden-tag' : ''; ?>" style="<?php echo ($address['IsDefault'] ?? 'No') !== 'Yes' ? 'display:none;' : ''; ?>">
+                                                <div class="status-tag<?php echo ($address['IsDefault'] ?? 'No') !== 'Yes' ? ' hidden-tag' : ''; ?>"
+                                                    style="<?php echo ($address['IsDefault'] ?? 'No') !== 'Yes' ? 'display:none;' : ''; ?>">
                                                     <div class="completed">Default</div>
                                                 </div>
                                                 <?php if (!empty($address['Alias'])): ?>
-                                                    <span class="alias-tag"><?php echo htmlspecialchars($address['Alias']); ?></span>
+                                                    <span
+                                                        class="alias-tag"><?php echo htmlspecialchars($address['Alias']); ?></span>
                                                 <?php endif; ?>
                                             </div>
                                             <div class="sunset-boulevard-los-angeles-wrapper">
-                                                <div class="gender ship-address" data-phone="<?= htmlspecialchars($address['Phone'] ?? '') ?>">
-                                                    <?php 
-                                                        $addr = array_filter([$address['Address']??'', $address['City']??'', $address['Country']??'']);
-                                                        echo htmlspecialchars(implode(', ', $addr) ?: '-');
+                                                <div class="gender ship-address"
+                                                    data-phone="<?= htmlspecialchars($address['Phone'] ?? '') ?>">
+                                                    <?php
+                                                    $addr = array_filter([$address['Address'] ?? '', $address['City'] ?? '', $address['Country'] ?? '']);
+                                                    echo htmlspecialchars(implode(', ', $addr) ?: '-');
                                                     ?>
                                                     <br>
                                                     <br>
@@ -264,7 +342,8 @@ include '../../../partials/header.php';
                                         </div>
                                     <?php endforeach; ?>
                                 <?php else: ?>
-                                    <p style="text-align: center; color: #999; padding: 20px; width:100%;">No addresses found.</p>
+                                    <p style="text-align: center; color: #999; padding: 20px; width:100%;">No addresses
+                                        found.</p>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -412,7 +491,8 @@ include '../../../partials/header.php';
                                 <div class="male">Account Number</div>
                             </div>
                             <div class="field">
-                                <input type="text" class="gender" id="bankAccountNumber" placeholder="Your Account Number">
+                                <input type="text" class="gender" id="bankAccountNumber"
+                                    placeholder="Your Account Number">
                             </div>
                         </div>
                     </div>
@@ -463,10 +543,10 @@ include '../../../partials/header.php';
                 <label for="bankIsDefault" style="cursor:pointer;color:#333;">Set as default bank account</label>
             </div>
             <div class="button-parent">
-                    <button class="btn-primary-medium" id="saveBankingBtn" style="flex: 1;">Save</button>
-                    <button class="btn-secondary-outline-medium" id="cancelBankingBtn">Cancel</button>
-                    <button class="btn-error-outline-medium" id="deleteBankingBtn">Delete</button>
-            </div>  
+                <button class="btn-primary-medium" id="saveBankingBtn" style="flex: 1;">Save</button>
+                <button class="btn-secondary-outline-medium" id="cancelBankingBtn">Cancel</button>
+                <button class="btn-error-outline-medium" id="deleteBankingBtn">Delete</button>
+            </div>
         </div>
     </div>
 
@@ -547,14 +627,15 @@ include '../../../partials/header.php';
                 <label for="shipIsDefault" style="cursor:pointer;color:#333;">Set as default address</label>
             </div>
             <div class="button-parent">
-                    <button class="btn-primary-medium" id="saveShippingBtn">Save</button>
-                    <button class="btn-secondary-outline-medium" id="cancelShippingBtn" style="flex: 1;">Cancel</button>
-                    <button class="btn-error-outline-medium" id="deleteShippingBtn">Delete</button>
+                <button class="btn-primary-medium" id="saveShippingBtn">Save</button>
+                <button class="btn-secondary-outline-medium" id="cancelShippingBtn" style="flex: 1;">Cancel</button>
+                <button class="btn-error-outline-medium" id="deleteShippingBtn">Delete</button>
             </div>
         </div>
     </div>
 
     <script src="<?php echo $ROOT; ?>/views/website/js/my_account.js"></script>
 </body>
+
 </html>
 <?php include __DIR__ . '/../../../partials/footer_kovid.php'; ?>

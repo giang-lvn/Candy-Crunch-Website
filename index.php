@@ -249,7 +249,14 @@ switch ($controller) {
     // ========== SIGNUP ==========
     case 'signup':
         require_once 'controllers/website/sign_up_controller.php';
-        // sign_up_controller tự xử lý
+        $signupController = new SignUpController($db);
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $signupController->handleSignUp();
+        } else {
+            // Hiển thị form đăng ký
+            require_once __DIR__ . '/views/website/php/sign_up.php';
+        }
         break;
 
     // ========== ORDER SUCCESS ==========

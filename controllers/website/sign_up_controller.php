@@ -1,6 +1,6 @@
 <?php
 
-require_once 'sign_up_model.php';
+require_once __DIR__ . '/../../models/website/sign_up_model.php';
 // require_once 'config/database.php'; // Đảm bảo bạn đã include kết nối DB
 
 class SignUpController
@@ -21,12 +21,12 @@ class SignUpController
 
         // 1. Lấy dữ liệu từ form
         $firstName = trim($_POST['first_name'] ?? '');
-        $lastName  = trim($_POST['last_name'] ?? '');
-        $email     = trim($_POST['email'] ?? '');
-        $password  = $_POST['password'] ?? '';
-        $confirm   = $_POST['confirm_password'] ?? '';
-        $birth     = $_POST['birth'] ?? null;
-        $gender    = $_POST['gender'] ?? 'Other';
+        $lastName = trim($_POST['last_name'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $password = $_POST['password'] ?? '';
+        $confirm = $_POST['confirm_password'] ?? '';
+        $birth = $_POST['birth'] ?? null;
+        $gender = $_POST['gender'] ?? 'Other';
 
         // 2. Validate cơ bản
         $errors = [];
@@ -48,7 +48,7 @@ class SignUpController
         }
 
         if (empty($birth)) {
-             $errors[] = "Date of birth is required.";
+            $errors[] = "Date of birth is required.";
         }
 
         // 3. Kiểm tra Email đã tồn tại chưa (gọi Model)
@@ -71,11 +71,11 @@ class SignUpController
         // 6. Chuẩn bị data gửi sang Model
         $userData = [
             'first_name' => $firstName,
-            'last_name'  => $lastName,
-            'email'      => $email,
-            'password'   => $hashedPassword,
-            'birth'      => $birth,
-            'gender'     => $gender
+            'last_name' => $lastName,
+            'email' => $email,
+            'password' => $hashedPassword,
+            'birth' => $birth,
+            'gender' => $gender
         ];
 
         // 7. Gọi Model để đăng ký

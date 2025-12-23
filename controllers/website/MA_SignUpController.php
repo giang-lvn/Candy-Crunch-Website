@@ -5,12 +5,14 @@ require_once __DIR__ . '/../../models/db.php';
 require_once __DIR__ . '/../../models/website/MA_AccountModel.php';
 require_once __DIR__ . '/../../models/website/MA_CustomerModel.php';
 
-class MA_SignUpController {
+class MA_SignUpController
+{
     private $db;
     private $accountModel;
     private $customerModel;
 
-    public function __construct() {
+    public function __construct()
+    {
         global $db;
         $this->db = $db;
         $this->accountModel = new MA_AccountModel($this->db);
@@ -20,14 +22,16 @@ class MA_SignUpController {
     /**
      * Hiển thị trang đăng ký
      */
-    public function showRegisterForm() {
+    public function showRegisterForm()
+    {
         include __DIR__ . '/../../views/website/php/sign_up.php';
     }
 
     /**
      * Xử lý đăng ký tài khoản
      */
-    public function register() {
+    public function register()
+    {
         // Set header cho JSON response
         header('Content-Type: application/json');
 
@@ -105,9 +109,14 @@ class MA_SignUpController {
 
         } catch (Exception $e) {
             error_log("Registration error: " . $e->getMessage());
+            error_log("Registration error trace: " . $e->getTraceAsString());
             echo json_encode([
                 'success' => false,
-                'message' => 'Registration failed. Please try again.'
+                'message' => 'Registration failed: ' . $e->getMessage(),
+                'debug' => [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ]
             ]);
         }
     }
@@ -115,7 +124,8 @@ class MA_SignUpController {
     /**
      * Validate dữ liệu đầu vào
      */
-    private function validateInput($data) {
+    private function validateInput($data)
+    {
         $errors = [];
 
         // Kiểm tra các trường bắt buộc

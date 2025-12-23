@@ -1,10 +1,10 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('newPwForm');
     const btnReset = document.getElementById('btnReset');
 
     // Ripple
     if (btnReset) {
-        btnReset.addEventListener('click', function(e) {
+        btnReset.addEventListener('click', function (e) {
             let ripple = document.createElement('span');
             ripple.classList.add('ripple-effect');
             let rect = this.getBoundingClientRect();
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Logic Đổi Mật Khẩu
     if (form) {
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', function (e) {
             e.preventDefault();
             const newPass = document.getElementById('new_password').value;
             const confirmPass = document.getElementById('confirm_new_password').value;
@@ -57,12 +57,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Cập nhật mật khẩu mới
                 users[userIndex].password = newPass;
                 localStorage.setItem('candy_crunch_users', JSON.stringify(users));
-                
+
                 // Xóa email tạm
                 localStorage.removeItem('reset_email');
 
                 alert('Đổi mật khẩu thành công! Vui lòng đăng nhập lại.');
-                window.location.href = 'login.html';
+                window.location.href = 'login.php';
             } else {
                 alert('Có lỗi xảy ra, không tìm thấy tài khoản!');
             }

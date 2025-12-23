@@ -23,7 +23,7 @@ class AccountController
     public function index()
     {
         if (!isset($_SESSION['AccountID'])) {
-            header('Location: ../../views/website/php/login.html');
+            header('Location: /Candy-Crunch-Website/views/website/php/login.php');
             exit;
         }
 
@@ -357,5 +357,49 @@ class AccountController
             ]);
         }
         $this->sendJSON(['success' => false]);
+    }
+}
+
+// ==================================================
+// XỬ LÝ REQUEST KHI GỌI TRỰC TIẾP TỪ JAVASCRIPT
+// ==================================================
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    global $db;
+    $controller = new AccountController($db);
+
+    $action = $_POST['action'] ?? '';
+
+    switch ($action) {
+        case 'updateProfile':
+            $controller->updateProfile();
+            break;
+        case 'addBanking':
+            $controller->addBanking();
+            break;
+        case 'updateBanking':
+            $controller->editBanking();
+            break;
+        case 'deleteBanking':
+            $controller->deleteBanking();
+            break;
+        case 'addAddress':
+            $controller->addAddress();
+            break;
+        case 'updateAddress':
+            $controller->updateAddress();
+            break;
+        case 'deleteAddress':
+            $controller->deleteAddress();
+            break;
+        case 'uploadAvatar':
+            $controller->uploadAvatar();
+            break;
+        case 'logout':
+            $controller->logout();
+            break;
+        default:
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Invalid action: ' . $action]);
+            break;
     }
 }
