@@ -10,26 +10,41 @@ $end_date = $_GET['end_date'] ?? '';
 // Xử lý xóa đơn hàng
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
     $orderId = $_POST['order_id'] ?? '';
-    
+
     try {
         $pdo->beginTransaction();
-        
+
         // Xóa order details trước
         $deleteDetails = $pdo->prepare("DELETE FROM ORDER_DETAIL WHERE OrderID = ?");
         $deleteDetails->execute([$orderId]);
-        
+
         // Xóa order
         $deleteOrder = $pdo->prepare("DELETE FROM ORDERS WHERE OrderID = ?");
         $deleteOrder->execute([$orderId]);
-        
+
         $pdo->commit();
-        
+
         echo "<script>showToast('Đã xóa đơn hàng thành công!', 'success'); setTimeout(function(){ window.location.href = '" . BASE_URL . "index.php?action=orders'; }, 1500);</script>";
     } catch (Exception $e) {
         if ($pdo->inTransaction()) {
             $pdo->rollBack();
         }
         echo "<script>showToast('Lỗi: " . addslashes($e->getMessage()) . "', 'error');</script>";
+    }
+}
+
+// Xử lý cập nhật trạng thái - PHẢI xử lý TRƯỚC khi fetch data
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
+    $order_id = $_POST['order_id'];
+    $new_status = $_POST['status'];
+
+    try {
+        $update_stmt = $pdo->prepare("UPDATE ORDERS SET OrderStatus = ? WHERE OrderID = ?");
+        $update_stmt->execute([$new_status, $order_id]);
+
+        echo '<script>showToast("Cập nhật trạng thái thành công!", "success");</script>';
+    } catch (Exception $e) {
+        echo '<script>showToast("Có lỗi xảy ra: ' . $e->getMessage() . '", "error");</script>';
     }
 }
 
@@ -103,21 +118,6 @@ $stats_sql = "SELECT
                 SUM(CASE WHEN OrderStatus = 'Cancelled' THEN 1 ELSE 0 END) as cancelled_orders
               FROM ORDERS";
 $stats = $pdo->query($stats_sql)->fetch();
-
-// Xử lý cập nhật trạng thái
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
-    $order_id = $_POST['order_id'];
-    $new_status = $_POST['status'];
-    
-    try {
-        $update_stmt = $pdo->prepare("UPDATE ORDERS SET OrderStatus = ? WHERE OrderID = ?");
-        $update_stmt->execute([$new_status, $order_id]);
-        
-        echo '<script>showToast("Cập nhật trạng thái thành công!", "success"); setTimeout(function(){ location.reload(); }, 1500);</script>';
-    } catch (Exception $e) {
-        echo '<script>showToast("Có lỗi xảy ra: ' . $e->getMessage() . '", "error");</script>';
-    }
-}
 ?>
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4>Quản lý đơn hàng</h4>
@@ -176,42 +176,41 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
     <div class="card-body">
         <form method="GET" class="row g-3">
             <input type="hidden" name="action" value="orders">
-            
+
             <div class="col-md-3">
                 <label class="form-label small fw-semibold">Trạng thái</label>
                 <select name="status" class="form-select" onchange="this.form.submit()">
                     <option value="">Tất cả trạng thái</option>
                     <?php foreach (getOrderStatuses() as $key => $label): ?>
-                    <option value="<?php echo $key; ?>" <?php echo $status == $key ? 'selected' : ''; ?>>
-                        <?php echo $label; ?>
-                    </option>
+                        <option value="<?php echo $key; ?>" <?php echo $status == $key ? 'selected' : ''; ?>>
+                            <?php echo $label; ?>
+                        </option>
                     <?php endforeach; ?>
                 </select>
             </div>
-            
+
             <div class="col-md-3">
                 <label class="form-label small fw-semibold">Từ ngày</label>
-                <input type="date" name="start_date" class="form-control" 
-                       value="<?php echo htmlspecialchars($start_date); ?>">
+                <input type="date" name="start_date" class="form-control"
+                    value="<?php echo htmlspecialchars($start_date); ?>">
             </div>
-            
+
             <div class="col-md-3">
                 <label class="form-label small fw-semibold">Đến ngày</label>
-                <input type="date" name="end_date" class="form-control" 
-                       value="<?php echo htmlspecialchars($end_date); ?>">
+                <input type="date" name="end_date" class="form-control"
+                    value="<?php echo htmlspecialchars($end_date); ?>">
             </div>
-            
+
             <div class="col-md-3 d-flex align-items-end">
                 <button type="submit" class="btn btn-primary w-100">
                     <i class="bi bi-filter me-1"></i>Lọc
                 </button>
             </div>
         </form>
-        
+
         <div class="mt-3">
-            <input type="text" id="searchInput" class="form-control" 
-                   placeholder="Tìm kiếm theo mã đơn, tên, số điện thoại, email..." 
-                   onkeyup="filterOrders()">
+            <input type="text" id="searchInput" class="form-control"
+                placeholder="Tìm kiếm theo mã đơn, tên, số điện thoại, email..." onkeyup="filterOrders()">
         </div>
     </div>
 </div>
@@ -234,81 +233,84 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
                 </thead>
                 <tbody>
                     <?php if (empty($orders)): ?>
-                    <tr>
-                        <td colspan="7" class="text-center py-4">
-                            <i class="bi bi-inbox display-6 text-muted d-block mb-2"></i>
-                            Không có đơn hàng nào
-                        </td>
-                    </tr>
+                        <tr>
+                            <td colspan="7" class="text-center py-4">
+                                <i class="bi bi-inbox display-6 text-muted d-block mb-2"></i>
+                                Không có đơn hàng nào
+                            </td>
+                        </tr>
                     <?php else: ?>
-                    <?php foreach ($orders as $order): 
-                        $subTotal = $order['SubTotal'] ?? 0;
-                        $discount = 0;
-                        if (!empty($order['DiscountPercent'])) {
-                            $discount = $subTotal * $order['DiscountPercent'] / 100;
-                        } elseif (!empty($order['DiscountAmount'])) {
-                            $discount = $order['DiscountAmount'];
-                        }
-                        $total = $subTotal - $discount + ($order['ShippingFee'] ?? 0);
-                    ?>
-                    <tr>
-                        <td>
-                            <strong class="text-primary">#<?php echo htmlspecialchars($order['OrderID']); ?></strong>
-                            <?php if ($order['VoucherCode']): ?>
-                            <br><small class="text-success"><i class="bi bi-ticket-perforated"></i> <?php echo htmlspecialchars($order['VoucherCode']); ?></small>
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <?php if ($order['CustomerName']): ?>
-                            <div><strong><?php echo htmlspecialchars(trim($order['CustomerName'])); ?></strong></div>
-                            <small class="text-muted"><?php echo htmlspecialchars($order['CustomerPhone'] ?? ''); ?></small>
-                            <?php if ($order['CustomerEmail']): ?>
-                            <br><small class="text-muted"><?php echo htmlspecialchars($order['CustomerEmail']); ?></small>
-                            <?php endif; ?>
-                            <?php else: ?>
-                            <span class="text-muted">Khách vãng lai</span>
-                            <?php endif; ?>
-                        </td>
-                        <td><?php echo formatDate($order['OrderDate']); ?></td>
-                        <td>
-                            <strong class="text-success"><?php echo formatCurrency($total); ?></strong>
-                            <?php if ($order['ShippingFee'] > 0): ?>
-                            <br><small class="text-muted">Ship: <?php echo formatCurrency($order['ShippingFee']); ?></small>
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <span class="badge bg-<?php echo getStatusColor($order['OrderStatus']); ?>">
-                                <?php echo getStatusText($order['OrderStatus']); ?>
-                            </span>
-                        </td>
-                        <td>
-                            <span class="badge bg-secondary">
-                                <?php 
-                                $paymentMethods = getPaymentMethods();
-                                echo $paymentMethods[$order['PaymentMethod']] ?? $order['PaymentMethod'];
-                                ?>
-                            </span>
-                        </td>
-                        <td>
-                            <div class="btn-group btn-group-sm">
-                                <a href="<?php echo BASE_URL; ?>index.php?action=view_order&id=<?php echo $order['OrderID']; ?>" 
-                                   class="btn btn-outline-primary" title="Xem chi tiết">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                                <button class="btn btn-outline-info" 
-                                        onclick="showUpdateStatusModal('<?php echo $order['OrderID']; ?>', '<?php echo $order['OrderStatus']; ?>')"
-                                        title="Cập nhật trạng thái">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="btn btn-outline-danger" 
-                                        onclick="showDeleteModal('<?php echo $order['OrderID']; ?>')"
-                                        title="Xóa đơn hàng">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
+                        <?php foreach ($orders as $order):
+                            $subTotal = $order['SubTotal'] ?? 0;
+                            $discount = 0;
+                            if (!empty($order['DiscountPercent'])) {
+                                $discount = $subTotal * $order['DiscountPercent'] / 100;
+                            } elseif (!empty($order['DiscountAmount'])) {
+                                $discount = $order['DiscountAmount'];
+                            }
+                            $total = $subTotal - $discount + ($order['ShippingFee'] ?? 0);
+                            ?>
+                            <tr>
+                                <td>
+                                    <strong class="text-primary">#<?php echo htmlspecialchars($order['OrderID']); ?></strong>
+                                    <?php if ($order['VoucherCode']): ?>
+                                        <br><small class="text-success"><i class="bi bi-ticket-perforated"></i>
+                                            <?php echo htmlspecialchars($order['VoucherCode']); ?></small>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <?php if ($order['CustomerName']): ?>
+                                        <div><strong><?php echo htmlspecialchars(trim($order['CustomerName'])); ?></strong></div>
+                                        <small
+                                            class="text-muted"><?php echo htmlspecialchars($order['CustomerPhone'] ?? ''); ?></small>
+                                        <?php if ($order['CustomerEmail']): ?>
+                                            <br><small
+                                                class="text-muted"><?php echo htmlspecialchars($order['CustomerEmail']); ?></small>
+                                        <?php endif; ?>
+                                    <?php else: ?>
+                                        <span class="text-muted">Khách vãng lai</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td><?php echo formatDate($order['OrderDate']); ?></td>
+                                <td>
+                                    <strong class="text-success"><?php echo formatCurrency($total); ?></strong>
+                                    <?php if ($order['ShippingFee'] > 0): ?>
+                                        <br><small class="text-muted">Ship:
+                                            <?php echo formatCurrency($order['ShippingFee']); ?></small>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <span class="badge bg-<?php echo getStatusColor($order['OrderStatus']); ?>">
+                                        <?php echo getStatusText($order['OrderStatus']); ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        <?php
+                                        $paymentMethods = getPaymentMethods();
+                                        echo $paymentMethods[$order['PaymentMethod']] ?? $order['PaymentMethod'];
+                                        ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="<?php echo BASE_URL; ?>index.php?action=view_order&id=<?php echo $order['OrderID']; ?>"
+                                            class="btn btn-outline-primary" title="Xem chi tiết">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <button class="btn btn-outline-info"
+                                            onclick="showUpdateStatusModal('<?php echo $order['OrderID']; ?>', '<?php echo $order['OrderStatus']; ?>')"
+                                            title="Cập nhật trạng thái">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger"
+                                            onclick="showDeleteModal('<?php echo $order['OrderID']; ?>')" title="Xóa đơn hàng">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
                     <?php endif; ?>
                 </tbody>
             </table>
@@ -343,19 +345,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
                 <div class="modal-body">
                     <input type="hidden" name="order_id" id="updateOrderId">
                     <input type="hidden" name="update_status" value="1">
-                    
+
                     <div class="mb-3">
                         <label class="form-label">Trạng thái mới</label>
                         <select name="status" class="form-select" id="updateStatusSelect" required>
                             <?php foreach (getOrderStatuses() as $key => $label): ?>
-                            <option value="<?php echo $key; ?>"><?php echo $label; ?></option>
+                                <option value="<?php echo $key; ?>"><?php echo $label; ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="form-label">Ghi chú (tùy chọn)</label>
-                        <textarea name="notes" class="form-control" rows="3" placeholder="Nhập ghi chú nếu có..."></textarea>
+                        <textarea name="notes" class="form-control" rows="3"
+                            placeholder="Nhập ghi chú nếu có..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -397,56 +400,56 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
 </div>
 
 <script>
-$(document).ready(function() {
-    // Khởi tạo DataTable
-    if ($('#ordersTable tbody tr').length > 1 || ($('#ordersTable tbody tr').length === 1 && !$('#ordersTable tbody tr td').hasClass('text-center'))) {
-        $('#ordersTable').DataTable({
-            language: {
-                url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/vi.json'
-            },
-            order: [[2, 'desc']],
-            pageLength: 25,
-            columnDefs: [
-                { orderable: false, targets: [6] }
-            ]
-        });
-    }
-});
-
-function filterOrders() {
-    const input = document.getElementById('searchInput');
-    const filter = input.value.toLowerCase();
-    const table = document.getElementById('ordersTable');
-    const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
-    
-    for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
-        const cells = row.getElementsByTagName('td');
-        let found = false;
-        
-        for (let j = 0; j < cells.length; j++) {
-            const cell = cells[j];
-            if (cell.textContent.toLowerCase().includes(filter)) {
-                found = true;
-                break;
-            }
+    $(document).ready(function () {
+        // Khởi tạo DataTable
+        if ($('#ordersTable tbody tr').length > 1 || ($('#ordersTable tbody tr').length === 1 && !$('#ordersTable tbody tr td').hasClass('text-center'))) {
+            $('#ordersTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/vi.json'
+                },
+                order: [[2, 'desc']],
+                pageLength: 25,
+                columnDefs: [
+                    { orderable: false, targets: [6] }
+                ]
+            });
         }
-        
-        row.style.display = found ? '' : 'none';
+    });
+
+    function filterOrders() {
+        const input = document.getElementById('searchInput');
+        const filter = input.value.toLowerCase();
+        const table = document.getElementById('ordersTable');
+        const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const cells = row.getElementsByTagName('td');
+            let found = false;
+
+            for (let j = 0; j < cells.length; j++) {
+                const cell = cells[j];
+                if (cell.textContent.toLowerCase().includes(filter)) {
+                    found = true;
+                    break;
+                }
+            }
+
+            row.style.display = found ? '' : 'none';
+        }
     }
-}
 
-function showUpdateStatusModal(orderId, currentStatus) {
-    $('#updateOrderId').val(orderId);
-    $('#updateStatusSelect').val(currentStatus);
-    
-    const modal = new bootstrap.Modal(document.getElementById('updateStatusModal'));
-    modal.show();
-}
+    function showUpdateStatusModal(orderId, currentStatus) {
+        $('#updateOrderId').val(orderId);
+        $('#updateStatusSelect').val(currentStatus);
 
-function viewOrderDetail(orderId) {
-    // Hiển thị loading
-    $('#orderDetailContent').html(`
+        const modal = new bootstrap.Modal(document.getElementById('updateStatusModal'));
+        modal.show();
+    }
+
+    function viewOrderDetail(orderId) {
+        // Hiển thị loading
+        $('#orderDetailContent').html(`
         <div class="text-center py-5">
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
@@ -454,110 +457,110 @@ function viewOrderDetail(orderId) {
             <p class="mt-3">Đang tải thông tin...</p>
         </div>
     `);
-    
-    // Show modal
-    const modal = new bootstrap.Modal(document.getElementById('orderDetailModal'));
-    modal.show();
-    
-    // Load dữ liệu bằng AJAX
-    $.ajax({
-        url: 'ajax/get_order_detail.php',
-        method: 'GET',
-        data: { order_id: orderId },
-        success: function(response) {
-            $('#orderDetailContent').html(response);
-        },
-        error: function() {
-            $('#orderDetailContent').html(`
+
+        // Show modal
+        const modal = new bootstrap.Modal(document.getElementById('orderDetailModal'));
+        modal.show();
+
+        // Load dữ liệu bằng AJAX
+        $.ajax({
+            url: 'ajax/get_order_detail.php',
+            method: 'GET',
+            data: { order_id: orderId },
+            success: function (response) {
+                $('#orderDetailContent').html(response);
+            },
+            error: function () {
+                $('#orderDetailContent').html(`
                 <div class="alert alert-danger">
                     <i class="bi bi-exclamation-triangle me-2"></i>
                     Không thể tải thông tin đơn hàng. Vui lòng thử lại.
                 </div>
             `);
-        }
-    });
-}
-
-function showDeleteModal(orderId) {
-    $('#deleteOrderId').val(orderId);
-    $('#deleteOrderIdText').text('#' + orderId);
-    
-    const modal = new bootstrap.Modal(document.getElementById('deleteOrderModal'));
-    modal.show();
-}
-
-function exportOrders() {
-    const table = document.getElementById('ordersTable');
-    const rows = table.querySelectorAll('tbody tr');
-    let csvContent = "data:text/csv;charset=utf-8,";
-    
-    // Header
-    const headers = ['Mã đơn', 'Khách hàng', 'Ngày đặt', 'Tổng tiền', 'Trạng thái', 'Thanh toán'];
-    csvContent += headers.join(",") + "\n";
-    
-    // Data
-    rows.forEach(row => {
-        if (row.style.display !== 'none') {
-            const cells = row.querySelectorAll('td');
-            const rowData = [];
-            
-            for (let i = 0; i < cells.length - 1; i++) {
-                let cellText = cells[i].textContent.trim();
-                cellText = cellText.replace(/(\r\n|\n|\r)/gm, " ");
-                cellText = cellText.replace(/,/g, ";");
-                rowData.push('"' + cellText + '"');
             }
-            
-            csvContent += rowData.join(",") + "\n";
-        }
-    });
-    
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "don_hang_" + new Date().toISOString().slice(0,10) + ".csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
+        });
+    }
+
+    function showDeleteModal(orderId) {
+        $('#deleteOrderId').val(orderId);
+        $('#deleteOrderIdText').text('#' + orderId);
+
+        const modal = new bootstrap.Modal(document.getElementById('deleteOrderModal'));
+        modal.show();
+    }
+
+    function exportOrders() {
+        const table = document.getElementById('ordersTable');
+        const rows = table.querySelectorAll('tbody tr');
+        let csvContent = "data:text/csv;charset=utf-8,";
+
+        // Header
+        const headers = ['Mã đơn', 'Khách hàng', 'Ngày đặt', 'Tổng tiền', 'Trạng thái', 'Thanh toán'];
+        csvContent += headers.join(",") + "\n";
+
+        // Data
+        rows.forEach(row => {
+            if (row.style.display !== 'none') {
+                const cells = row.querySelectorAll('td');
+                const rowData = [];
+
+                for (let i = 0; i < cells.length - 1; i++) {
+                    let cellText = cells[i].textContent.trim();
+                    cellText = cellText.replace(/(\r\n|\n|\r)/gm, " ");
+                    cellText = cellText.replace(/,/g, ";");
+                    rowData.push('"' + cellText + '"');
+                }
+
+                csvContent += rowData.join(",") + "\n";
+            }
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "don_hang_" + new Date().toISOString().slice(0, 10) + ".csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 </script>
 
 <style>
-.stat-card {
-    text-align: center;
-    padding: 20px;
-    border-radius: 10px;
-    background: white;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    transition: transform 0.3s;
-}
+    .stat-card {
+        text-align: center;
+        padding: 20px;
+        border-radius: 10px;
+        background: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s;
+    }
 
-.stat-card:hover {
-    transform: translateY(-5px);
-}
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
 
-.stat-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 15px;
-    font-size: 24px;
-}
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+        font-size: 24px;
+    }
 
-.stat-number {
-    font-size: 28px;
-    font-weight: 700;
-    color: #333;
-    margin-bottom: 5px;
-}
+    .stat-number {
+        font-size: 28px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 5px;
+    }
 
-.stat-label {
-    color: #6c757d;
-    font-size: 14px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
+    .stat-label {
+        color: #6c757d;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
 </style>
