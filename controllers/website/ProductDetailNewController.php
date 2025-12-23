@@ -163,13 +163,3 @@ class ProductDetailNewController
         }
     }
 }
-
-// Router - xử lý action
-$action = $_GET['action'] ?? 'index';
-$controller = new ProductDetailNewController();
-
-if (method_exists($controller, $action)) {
-    $controller->$action();
-} else {
-    die("Action not found");
-}

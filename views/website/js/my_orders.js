@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
  * LOAD ORDERS FROM API
  *********************************/
 function loadOrders() {
-    fetch('/Candy-Crunch-Website/controllers/website/orders_controller.php')
+    fetch('/Candy-Crunch-Website/index.php?controller=orders&action=getMyOrder')
         .then(res => res.json())
         .then(data => {
             if (!data.success) {
@@ -152,7 +152,7 @@ function renderOrders() {
                 return;
             }
             const orderId = card.querySelector('b').textContent; // Assuming order ID is in the <b> tag
-            window.location.href = `/Candy-Crunch-Website/controllers/website/OrderDetailController.php?id=${orderId}`;
+            window.location.href = `/Candy-Crunch-Website/index.php?controller=OrderDetail&action=index&id=${orderId}`;
         });
     });
 }
@@ -430,7 +430,7 @@ function submitCancelRequest() {
     formData.append('order_id', orderId);
     formData.append('reason', cancelSelectedReason);
 
-    fetch('/Candy-Crunch-Website/controllers/website/CancelController.php', {
+    fetch('/Candy-Crunch-Website/index.php?controller=cancel&action=submitCancellationRequest', {
         method: 'POST',
         body: formData
     })

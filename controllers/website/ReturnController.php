@@ -32,7 +32,7 @@ class ReturnController
     public function index()
     {
         $customerId = $this->getCustomerId();
-        
+
         if (!$customerId) {
             header('Location: /Candy-Crunch-Website/views/website/login.php');
             exit;
@@ -67,8 +67,8 @@ class ReturnController
 
         // Truyền dữ liệu sang view
         $data = [
-            'orderId'  => $orderId,
-            'orderDate'=> $order['OrderDate'],
+            'orderId' => $orderId,
+            'orderDate' => $order['OrderDate'],
             'products' => $products
         ];
 
@@ -79,7 +79,7 @@ class ReturnController
     public function submitReturn()
     {
         $customerId = $this->getCustomerId();
-        
+
         // Debug log session
         error_log("ReturnController submitReturn: customerId=" . ($customerId ?? 'null'));
         error_log("ReturnController session keys: " . implode(', ', array_keys($_SESSION ?? [])));
@@ -90,11 +90,11 @@ class ReturnController
         }
 
         // Lấy dữ liệu form
-        $orderId            = trim($_POST['order_id'] ?? '');
-        $refundReason       = trim($_POST['refund_reason'] ?? '');
-        $refundDescription  = trim($_POST['refund_description'] ?? '');
-        $refundMethod       = trim($_POST['refund_method'] ?? '');
-        $refundImage        = $_FILES['refund_image'] ?? null;
+        $orderId = trim($_POST['order_id'] ?? '');
+        $refundReason = trim($_POST['refund_reason'] ?? '');
+        $refundDescription = trim($_POST['refund_description'] ?? '');
+        $refundMethod = trim($_POST['refund_method'] ?? '');
+        $refundImage = $_FILES['refund_image'] ?? null;
 
         // Validate cơ bản
         if (empty($orderId) || empty($refundReason)) {
@@ -121,11 +121,11 @@ class ReturnController
 
         // Lưu REFUND
         $refundId = $this->returnModel->createRefundRequest([
-            'order_id'          => $orderId,
-            'refund_reason'     => $refundReason,
-            'refund_description'=> $refundDescription,
-            'refund_method'     => $refundMethod,
-            'refund_image'      => $imagePath
+            'order_id' => $orderId,
+            'refund_reason' => $refundReason,
+            'refund_description' => $refundDescription,
+            'refund_method' => $refundMethod,
+            'refund_image' => $imagePath
         ]);
 
         if (!$refundId) {
@@ -142,17 +142,4 @@ class ReturnController
         header('Location: /Candy-Crunch-Website/views/website/php/my_orders.php');
         exit;
     }
-}
-
-// ROUTING
-$controller = new ReturnController();
-$action = $_GET['action'] ?? 'index';
-
-switch ($action) {
-    case 'submitReturn':
-        $controller->submitReturn();
-        break;
-    default:
-        $controller->index();
-        break;
 }

@@ -2,15 +2,18 @@
 require_once __DIR__ . '/../../models/db.php';
 require_once __DIR__ . '/../../models/website/CancelModel.php';
 
-class CancelController {
+class CancelController
+{
     private $model;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->model = new CancelModel();
     }
 
     // Xử lý yêu cầu hủy đơn AJAX
-    public function submitCancellationRequest() {
+    public function submitCancellationRequest()
+    {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -19,7 +22,7 @@ class CancelController {
         // Lấy dữ liệu từ POST
         $orderID = isset($_POST['order_id']) ? trim($_POST['order_id']) : '';
         $reason = isset($_POST['reason']) ? trim($_POST['reason']) : '';
-        
+
         // Check multiple session variable names for compatibility
         $customerID = null;
         if (isset($_SESSION['user_data']['CustomerID'])) {
@@ -35,12 +38,12 @@ class CancelController {
             echo json_encode(['success' => false, 'message' => 'Order ID is required.']);
             return;
         }
-        
+
         if (empty($reason)) {
             echo json_encode(['success' => false, 'message' => 'Please select a reason.']);
             return;
         }
-        
+
         if (empty($customerID)) {
             echo json_encode(['success' => false, 'message' => 'You must be logged in to cancel an order.']);
             return;
@@ -67,7 +70,7 @@ class CancelController {
         // Đặt trạng thái thành Pending Cancel (chờ admin duyệt)
         if ($this->model->markOrderPendingCancel($orderID)) {
             echo json_encode([
-                'success' => true, 
+                'success' => true,
                 'message' => 'Cancel request submitted successfully. Waiting for admin approval.',
                 'redirect' => '/Candy-Crunch-Website/views/website/php/my_orders.php'
             ]);
@@ -76,10 +79,3 @@ class CancelController {
         }
     }
 }
-
-// Execute if requested
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $controller = new CancelController();
-    $controller->submitCancellationRequest();
-}
-?>

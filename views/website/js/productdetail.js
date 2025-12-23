@@ -404,7 +404,7 @@ async function buyNow() {
   }
 
   try {
-    const response = await fetch('/Candy-Crunch-Website/controllers/website/ProductDetailNewController.php?action=buyNow', {
+    const response = await fetch('/Candy-Crunch-Website/index.php?controller=productdetail&action=buyNow', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

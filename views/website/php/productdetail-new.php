@@ -449,7 +449,7 @@ include(__DIR__ . '/../../../partials/header.php');
                                     <span class="comment-text"><em>No comment provided.</em></span>
                                 <?php endif; ?>
                             </div>
-                        <?php
+                            <?php
                         endforeach;
                     endif;
                     ?>
@@ -507,12 +507,12 @@ include(__DIR__ . '/../../../partials/header.php');
                         <article class="product-card">
                             <img class="product-image" src="<?php echo htmlspecialchars($item['Thumbnail']); ?>"
                                 alt="<?php echo htmlspecialchars($item['ProductName']); ?>" style="cursor: pointer;"
-                                onclick="window.location.href='<?php echo $ROOT; ?>/controllers/website/ProductDetailNewController.php?productId=<?php echo $item['ProductID']; ?>'" />
+                                onclick="window.location.href='<?php echo $ROOT; ?>/index.php?controller=productdetail&productId=<?php echo $item['ProductID']; ?>'" />
 
                             <div class="product-info">
                                 <div class="product-top">
                                     <h4 class="product-name" style="cursor: pointer;"
-                                        onclick="window.location.href='<?php echo $ROOT; ?>/controllers/website/ProductDetailNewController.php?productId=<?php echo $item['ProductID']; ?>'">
+                                        onclick="window.location.href='<?php echo $ROOT; ?>/index.php?controller=productdetail&productId=<?php echo $item['ProductID']; ?>'">
                                         <?php echo htmlspecialchars($item['ProductName']); ?>
                                     </h4>
 

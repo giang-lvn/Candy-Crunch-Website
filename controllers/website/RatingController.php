@@ -1,15 +1,18 @@
 <?php
 require_once __DIR__ . '/../../models/website/RatingModel.php';
 
-class RatingController {
+class RatingController
+{
     private $model;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->model = new RatingModel();
     }
 
     // Xử lý submit rating từ AJAX
-    public function submitRating() {
+    public function submitRating()
+    {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -19,7 +22,7 @@ class RatingController {
         $skuID = isset($_POST['sku_id']) ? trim($_POST['sku_id']) : '';
         $rating = isset($_POST['rating']) ? intval($_POST['rating']) : 0;
         $comment = isset($_POST['comment']) ? trim($_POST['comment']) : '';
-        
+
         // Lấy CustomerID từ session - kiểm tra cả 2 cách lưu session
         $customerID = '';
         if (isset($_SESSION['user_data']['CustomerID'])) {
@@ -72,11 +75,12 @@ class RatingController {
     }
 
     // Lấy danh sách feedback của sản phẩm (để hiển thị)
-    public function getProductReviews() {
+    public function getProductReviews()
+    {
         header('Content-Type: application/json');
-        
+
         $skuID = isset($_GET['sku_id']) ? trim($_GET['sku_id']) : '';
-        
+
         if (!$skuID) {
             echo json_encode(['success' => false, 'message' => 'Product ID is required.']);
             return;
@@ -93,21 +97,3 @@ class RatingController {
         ]);
     }
 }
-
-// Routing - xử lý các request
-$action = $_GET['action'] ?? '';
-$controller = new RatingController();
-
-switch ($action) {
-    case 'submit':
-        $controller->submitRating();
-        break;
-    case 'reviews':
-        $controller->getProductReviews();
-        break;
-    default:
-        header('Content-Type: application/json');
-        echo json_encode(['success' => false, 'message' => 'Invalid action']);
-        break;
-}
-?>

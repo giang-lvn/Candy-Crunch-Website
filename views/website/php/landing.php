@@ -1,57 +1,8 @@
 <?php
 $ROOT = '/Candy-Crunch-Website';
 include(__DIR__ . '/../../../partials/header.php');
-$uri = $_SERVER['REQUEST_URI'];
-$path = parse_url($uri, PHP_URL_PATH);
-$file = basename($path);
-
-/*
-|--------------------------------------------------------------------------
-| ROUTER
-|--------------------------------------------------------------------------
-*/
-
-// Nếu truy cập trực tiếp folder hoặc index.php → landing
-if ($file === '' || $file === 'landing.php' || $file === 'index.php') {
-    // Không require gì cả
-    // Chạy HTML landing phía dưới
-} else {
-    switch ($file) {
-        case 'shop.php':
-            require 'shop.php';
-            exit;
-
-        case 'checkout.php':
-            require 'checkout.php';
-            exit;
-
-        case 'my_account.php':
-            require 'my_account.php';
-            exit;
-
-        case 'changepass.php':
-            require 'changepass.php';
-            exit;
-
-        case 'my_orders.php':
-            require 'my_orders.php';
-            exit;
-
-        case 'my_vouchers.php':
-            require 'my_vouchers.php';
-            exit;
-
-        case '':
-
-
-
-        default:
-            http_response_code(404);
-            echo '404 - Page not found';
-            exit;
-    }
-}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -221,7 +172,7 @@ if ($file === '' || $file === 'landing.php' || $file === 'index.php') {
                 </div>
             </div>
 
-            <button class="btn-primary-large">Go to shop</button>
+            <button class="btn-primary-large" onclick="window.location.href = 'shop.php';">Go to shop</button>
         </div>
 
         <div class="joy-products">
@@ -252,235 +203,10 @@ if ($file === '' || $file === 'landing.php' || $file === 'index.php') {
 
         <div class="featured-carousel-container">
             <div class="featured-carousel-track">
-                <!-- Card 1: Coffee Candy - Green -->
-                <div class="featured-card featured-card-green">
-                    <div class="featured-card-slideup">
-                        <svg viewBox="0 0 280 30" preserveAspectRatio="none" class="scalloped-edge">
-                            <defs>
-                                <pattern id="scallop-green" x="0" y="0" width="30" height="30"
-                                    patternUnits="userSpaceOnUse">
-                                    <circle cx="15" cy="30" r="25" fill="currentColor" />
-                                </pattern>
-                            </defs>
-                            <rect width="280" height="30" fill="url(#scallop-green)" />
-                        </svg>
-                        <h3 class="featured-card-title">Coffee Candy</h3>
-                        <div class="featured-card-content">
-                            <p class="featured-card-description">This candy make me feel dasdaosdadasdasdasdasd</p>
-                            <div class="featured-card-buttons">
-                                <button class="btn-add-cart">Add to cart</button>
-                                <button class="btn-wishlist">Wishlist</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 2: Chocolate Delight - Red -->
-                <div class="featured-card featured-card-red">
-                    <div class="featured-card-slideup">
-                        <svg viewBox="0 0 280 30" preserveAspectRatio="none" class="scalloped-edge">
-                            <defs>
-                                <pattern id="scallop-red" x="0" y="0" width="30" height="30"
-                                    patternUnits="userSpaceOnUse">
-                                    <circle cx="15" cy="30" r="25" fill="currentColor" />
-                                </pattern>
-                            </defs>
-                            <rect width="280" height="30" fill="url(#scallop-red)" />
-                        </svg>
-                        <h3 class="featured-card-title">Chocolate Delight</h3>
-                        <div class="featured-card-content">
-                            <p class="featured-card-description">This candy make me feel dasdaosdadasdasdasdasd</p>
-                            <div class="featured-card-buttons">
-                                <button class="btn-add-cart">Add to cart</button>
-                                <button class="btn-wishlist">Wishlist</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 3: Strawberry Dream - Yellow -->
-                <div class="featured-card featured-card-yellow">
-                    <div class="featured-card-slideup">
-                        <svg viewBox="0 0 280 30" preserveAspectRatio="none" class="scalloped-edge">
-                            <defs>
-                                <pattern id="scallop-yellow" x="0" y="0" width="30" height="30"
-                                    patternUnits="userSpaceOnUse">
-                                    <circle cx="15" cy="30" r="25" fill="currentColor" />
-                                </pattern>
-                            </defs>
-                            <rect width="280" height="30" fill="url(#scallop-yellow)" />
-                        </svg>
-                        <h3 class="featured-card-title">Strawberry Dream</h3>
-                        <div class="featured-card-content">
-                            <p class="featured-card-description">This candy make me feel dasdaosdadasdasdasdasd</p>
-                            <div class="featured-card-buttons">
-                                <button class="btn-add-cart">Add to cart</button>
-                                <button class="btn-wishlist">Wishlist</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 4: Mint Fresh - Pink -->
-                <div class="featured-card featured-card-pink">
-                    <div class="featured-card-slideup">
-                        <svg viewBox="0 0 280 30" preserveAspectRatio="none" class="scalloped-edge">
-                            <defs>
-                                <pattern id="scallop-pink" x="0" y="0" width="30" height="30"
-                                    patternUnits="userSpaceOnUse">
-                                    <circle cx="15" cy="30" r="25" fill="currentColor" />
-                                </pattern>
-                            </defs>
-                            <rect width="280" height="30" fill="url(#scallop-pink)" />
-                        </svg>
-                        <h3 class="featured-card-title">Mint Fresh</h3>
-                        <div class="featured-card-content">
-                            <p class="featured-card-description">This candy make me feel dasdaosdadasdasdasdasd</p>
-                            <div class="featured-card-buttons">
-                                <button class="btn-add-cart">Add to cart</button>
-                                <button class="btn-wishlist">Wishlist</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 5: Caramel Bliss - Green -->
-                <div class="featured-card featured-card-green">
-                    <div class="featured-card-slideup">
-                        <svg viewBox="0 0 280 30" preserveAspectRatio="none" class="scalloped-edge">
-                            <defs>
-                                <pattern id="scallop-green-2" x="0" y="0" width="30" height="30"
-                                    patternUnits="userSpaceOnUse">
-                                    <circle cx="15" cy="30" r="25" fill="currentColor" />
-                                </pattern>
-                            </defs>
-                            <rect width="280" height="30" fill="url(#scallop-green-2)" />
-                        </svg>
-                        <h3 class="featured-card-title">Caramel Bliss</h3>
-                        <div class="featured-card-content">
-                            <p class="featured-card-description">This candy make me feel dasdaosdadasdasdasdasd</p>
-                            <div class="featured-card-buttons">
-                                <button class="btn-add-cart">Add to cart</button>
-                                <button class="btn-wishlist">Wishlist</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 6: Lemon Zest - Red -->
-                <div class="featured-card featured-card-red">
-                    <div class="featured-card-slideup">
-                        <svg viewBox="0 0 280 30" preserveAspectRatio="none" class="scalloped-edge">
-                            <defs>
-                                <pattern id="scallop-red-2" x="0" y="0" width="30" height="30"
-                                    patternUnits="userSpaceOnUse">
-                                    <circle cx="15" cy="30" r="25" fill="currentColor" />
-                                </pattern>
-                            </defs>
-                            <rect width="280" height="30" fill="url(#scallop-red-2)" />
-                        </svg>
-                        <h3 class="featured-card-title">Lemon Zest</h3>
-                        <div class="featured-card-content">
-                            <p class="featured-card-description">This candy make me feel dasdaosdadasdasdasdasd</p>
-                            <div class="featured-card-buttons">
-                                <button class="btn-add-cart">Add to cart</button>
-                                <button class="btn-wishlist">Wishlist</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Duplicate cards for seamless infinite scroll -->
-                <!-- Card 7: Coffee Candy - Green (Duplicate) -->
-                <div class="featured-card featured-card-green">
-                    <div class="featured-card-slideup">
-                        <svg viewBox="0 0 280 30" preserveAspectRatio="none" class="scalloped-edge">
-                            <defs>
-                                <pattern id="scallop-green-3" x="0" y="0" width="30" height="30"
-                                    patternUnits="userSpaceOnUse">
-                                    <circle cx="15" cy="30" r="25" fill="currentColor" />
-                                </pattern>
-                            </defs>
-                            <rect width="280" height="30" fill="url(#scallop-green-3)" />
-                        </svg>
-                        <h3 class="featured-card-title">Coffee Candy</h3>
-                        <div class="featured-card-content">
-                            <p class="featured-card-description">This candy make me feel dasdaosdadasdasdasdasd</p>
-                            <div class="featured-card-buttons">
-                                <button class="btn-add-cart">Add to cart</button>
-                                <button class="btn-wishlist">Wishlist</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 8: Chocolate Delight - Red (Duplicate) -->
-                <div class="featured-card featured-card-red">
-                    <div class="featured-card-slideup">
-                        <svg viewBox="0 0 280 30" preserveAspectRatio="none" class="scalloped-edge">
-                            <defs>
-                                <pattern id="scallop-red-3" x="0" y="0" width="30" height="30"
-                                    patternUnits="userSpaceOnUse">
-                                    <circle cx="15" cy="30" r="25" fill="currentColor" />
-                                </pattern>
-                            </defs>
-                            <rect width="280" height="30" fill="url(#scallop-red-3)" />
-                        </svg>
-                        <h3 class="featured-card-title">Chocolate Delight</h3>
-                        <div class="featured-card-content">
-                            <p class="featured-card-description">This candy make me feel dasdaosdadasdasdasdasd</p>
-                            <div class="featured-card-buttons">
-                                <button class="btn-add-cart">Add to cart</button>
-                                <button class="btn-wishlist">Wishlist</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 9: Strawberry Dream - Yellow (Duplicate) -->
-                <div class="featured-card featured-card-yellow">
-                    <div class="featured-card-slideup">
-                        <svg viewBox="0 0 280 30" preserveAspectRatio="none" class="scalloped-edge">
-                            <defs>
-                                <pattern id="scallop-yellow-2" x="0" y="0" width="30" height="30"
-                                    patternUnits="userSpaceOnUse">
-                                    <circle cx="15" cy="30" r="25" fill="currentColor" />
-                                </pattern>
-                            </defs>
-                            <rect width="280" height="30" fill="url(#scallop-yellow-2)" />
-                        </svg>
-                        <h3 class="featured-card-title">Strawberry Dream</h3>
-                        <div class="featured-card-content">
-                            <p class="featured-card-description">This candy make me feel dasdaosdadasdasdasdasd</p>
-                            <div class="featured-card-buttons">
-                                <button class="btn-add-cart">Add to cart</button>
-                                <button class="btn-wishlist">Wishlist</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 10: Mint Fresh - Pink (Duplicate) -->
-                <div class="featured-card featured-card-pink">
-                    <div class="featured-card-slideup">
-                        <svg viewBox="0 0 280 30" preserveAspectRatio="none" class="scalloped-edge">
-                            <defs>
-                                <pattern id="scallop-pink-2" x="0" y="0" width="30" height="30"
-                                    patternUnits="userSpaceOnUse">
-                                    <circle cx="15" cy="30" r="25" fill="currentColor" />
-                                </pattern>
-                            </defs>
-                            <rect width="280" height="30" fill="url(#scallop-pink-2)" />
-                        </svg>
-                        <h3 class="featured-card-title">Mint Fresh</h3>
-                        <div class="featured-card-content">
-                            <p class="featured-card-description">This candy make me feel dasdaosdadasdasdasdasd</p>
-                            <div class="featured-card-buttons">
-                                <button class="btn-add-cart">Add to cart</button>
-                                <button class="btn-wishlist">Wishlist</button>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Products will be loaded dynamically by JavaScript -->
+                <div class="featured-loading"
+                    style="grid-column: 1/-1; text-align: center; padding: 60px 20px; width: 100%;">
+                    <p style="font-size: 16px; color: var(--teal-500);">Loading products...</p>
                 </div>
             </div>
         </div>
@@ -872,6 +598,7 @@ if ($file === '' || $file === 'landing.php' || $file === 'index.php') {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
     <script src="<?php echo $ROOT; ?>/views/website/js/main.js"></script>
+    <script src="<?php echo $ROOT; ?>/views/website/js/featured_products.js"></script>
     <script src="<?php echo $ROOT; ?>/views/website/js/index.js"></script>
 </body>
 

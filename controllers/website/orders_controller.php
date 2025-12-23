@@ -2,14 +2,22 @@
 require_once __DIR__ . '/../../models/db.php';
 require_once __DIR__ . '/../../models/website/orders_model.php';
 
-class OrderController {
+class OrderController
+{
 
-    public function getMyOrder() {
-        session_start();
+    public function getMyOrder()
+    {
+        // Only start session if not already started
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // Set JSON response header
+        header('Content-Type: application/json');
 
         // Check multiple session variable names for compatibility
         $customerId = null;
-        
+
         if (isset($_SESSION['user_data']['CustomerID'])) {
             $customerId = $_SESSION['user_data']['CustomerID'];
         } elseif (isset($_SESSION['customer_id'])) {
@@ -48,7 +56,8 @@ class OrderController {
     /**
      * Gộp các dòng có cùng OrderID thành 1 đơn hàng với danh sách products
      */
-    private function groupOrdersByOrderId($rawOrders) {
+    private function groupOrdersByOrderId($rawOrders)
+    {
         $grouped = [];
 
         foreach ($rawOrders as $o) {
@@ -83,10 +92,10 @@ class OrderController {
                     'name' => $o['ProductName'],
                     'image' => $this->parseProductImage($o['Image']),
                     'weight' => ($o['Attribute'] ?? '') . 'g',
-                    'quantity' => (int)($o['Quantity'] ?? 0),
+                    'quantity' => (int) ($o['Quantity'] ?? 0),
                     'itemTotal' => number_format($o['SubTotal'] ?? 0, 0, ',', '.') . ' VND'
                 ];
-                
+
                 // Add SKUID for rating (backward compatibility)
                 $grouped[$id]['productSkuIds'][] = $o['SKUID'] ?? '';
 
@@ -111,7 +120,7 @@ class OrderController {
 
             $total = $subTotal - $discount;
             $order['total'] = number_format($total, 0, ',', '.') . ' VND';
-            
+
             // Xóa các field không cần thiết cho frontend
             unset($order['voucher']);
             unset($order['totalRaw']);
@@ -124,14 +133,15 @@ class OrderController {
     /**
      * Parse ảnh sản phẩm từ JSON và trả về URL thumbnail
      */
-    private function parseProductImage($imageData) {
+    private function parseProductImage($imageData)
+    {
         if (empty($imageData)) {
             return null;
         }
-        
+
         // Thử parse JSON
         $decoded = json_decode($imageData, true);
-        
+
         if (is_array($decoded)) {
             // Tìm ảnh thumbnail
             foreach ($decoded as $img) {
@@ -145,67 +155,76 @@ class OrderController {
             }
             return null;
         }
-        
+
         // Nếu không phải JSON, trả về nguyên bản
         return $imageData;
     }
 
-    private function mapStatus($status) {
+    private function mapStatus($status)
+    {
         return match ($status) {
-            'Waiting Payment'        => 'waiting-payment',
-            'Complete', 'Completed'  => 'completed',
-            'Pending'                => 'pending',
-            'On Shipping'            => 'on-shipping',
-            'Pending Cancel'         => 'pending-cancel',
-            'Pending Return'         => 'pending-return',
-            'Returned'               => 'return',
-            'Cancelled'              => 'cancel',
-            'Pending Confirmation'   => 'pending-confirm',
-            default                  => 'pending'
+            'Waiting Payment' => 'waiting-payment',
+            'Complete', 'Completed' => 'completed',
+            'Pending' => 'pending',
+            'On Shipping' => 'on-shipping',
+            'Pending Cancel' => 'pending-cancel',
+            'Pending Return' => 'pending-return',
+            'Returned' => 'return',
+            'Cancelled' => 'cancel',
+            'Pending Confirmation' => 'pending-confirm',
+            default => 'pending'
         };
     }
 
-    private function mapStatusText($status) {
+    private function mapStatusText($status)
+    {
         return match ($status) {
-            'Waiting Payment'        => 'Waiting Payment',
-            'Complete', 'Completed'  => 'Completed',
-            'Pending'                => 'Pending',
-            'On Shipping'            => 'On Shipping',
-            'Pending Cancel'         => 'Pending Cancel',
-            'Pending Return'         => 'Pending Return',
-            'Returned'               => 'Returned',
-            'Cancelled'              => 'Cancelled',
-            'Pending Confirmation'   => 'Pending Confirmation',
-            default                  => 'Pending'
+            'Waiting Payment' => 'Waiting Payment',
+            'Complete', 'Completed' => 'Completed',
+            'Pending' => 'Pending',
+            'On Shipping' => 'On Shipping',
+            'Pending Cancel' => 'Pending Cancel',
+            'Pending Return' => 'Pending Return',
+            'Returned' => 'Returned',
+            'Cancelled' => 'Cancelled',
+            'Pending Confirmation' => 'Pending Confirmation',
+            default => 'Pending'
         };
     }
 
-    private function mapButtons($status) {
+    private function mapButtons($status)
+    {
         return match ($status) {
-            'Waiting Payment'        => ['Pay Now', 'Cancel'],
-            'Pending Confirmation'   => ['Cancel'],
-            'Pending'                => ['Cancel', 'Contact'],
-            'On Shipping'            => ['Contact'],
-            'Complete', 'Completed'  => ['Buy Again', 'Return', 'Write Review'],
-            'Pending Cancel'         => ['Contact'],
-            'Pending Return'         => ['Contact'],
-            'Returned'               => ['Contact', 'Buy Again'],
-            'Cancelled'              => ['Contact', 'Buy Again'],
-            default                  => ['Contact']
+            'Waiting Payment' => ['Pay Now', 'Cancel'],
+            'Pending Confirmation' => ['Cancel'],
+            'Pending' => ['Cancel', 'Contact'],
+            'On Shipping' => ['Contact'],
+            'Complete', 'Completed' => ['Buy Again', 'Return', 'Write Review'],
+            'Pending Cancel' => ['Contact'],
+            'Pending Return' => ['Contact'],
+            'Returned' => ['Contact', 'Buy Again'],
+            'Cancelled' => ['Contact', 'Buy Again'],
+            default => ['Contact']
         };
     }
 
     // Kiểm tra có thể hủy đơn không
-    private function canCancel($status) {
+    private function canCancel($status)
+    {
         return in_array($status, ['Waiting Payment', 'Pending Confirmation', 'Pending']);
     }
 
     // Kiểm tra có thể trả hàng không
-    private function canReturn($status) {
+    private function canReturn($status)
+    {
         return in_array($status, ['Complete', 'Completed']);
     }
-}
 
-/* 🔥 BẮT BUỘC PHẢI CÓ */
-$controller = new OrderController();
-$controller->getMyOrder();
+    /**
+     * Hiển thị trang My Orders
+     */
+    public function index()
+    {
+        require_once __DIR__ . '/../../views/website/php/my_orders.php';
+    }
+}

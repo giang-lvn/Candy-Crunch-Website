@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // AJAX POST
             const xhr = new XMLHttpRequest();
-            xhr.open('POST', '/controllers/website/CancelController.php', true);
+            xhr.open('POST', '/Candy-Crunch-Website/index.php?controller=cancel&action=submitCancellationRequest', true);
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4 && xhr.status === 200) {

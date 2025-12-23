@@ -11,23 +11,21 @@ class ShopController
         global $db;
         $this->model = new ShopModel($db);
     }
-    public function handleRequest(): void
+
+    /**
+     * Hiển thị trang shop
+     */
+    public function index(): void
+    {
+        require_once __DIR__ . '/../../views/website/php/shop.php';
+    }
+
+    /**
+     * API: Lấy danh sách sản phẩm (AJAX)
+     */
+    public function getProducts(): void
     {
         header('Content-Type: application/json');
-        $action = $_GET['action'] ?? 'list';
-
-        switch ($action) {
-            case 'add-to-cart':
-                $this->addToCart();
-                break;
-            case 'list':
-            default:
-                $this->getProducts();
-                break;
-        }
-    }
-    private function getProducts(): void
-    {
 
         $params = [
             'search' => $_GET['search'] ?? null,
@@ -45,13 +43,4 @@ class ShopController
             JSON_UNESCAPED_UNICODE
         );
     }
-    private function addToCart(): void
-    {
-        $skuId = $_POST['sku_id'] ?? null;
-        echo json_encode(['success' => true, 'message' => 'Done']);
-    }
 }
-
-// ROUTER
-$controller = new ShopController();
-$controller->handleRequest();

@@ -303,14 +303,30 @@ document.addEventListener('DOMContentLoaded', () => {
   // FEATURED PRODUCTS CAROUSEL
   // ============================================
 
-  const carouselTrack = document.querySelector('.featured-carousel-track');
-  const prevBtn = document.querySelector('.featured-nav-prev');
-  const nextBtn = document.querySelector('.featured-nav-next');
-  const cards = document.querySelectorAll('.featured-card');
-
-  if (carouselTrack && prevBtn && nextBtn && cards.length > 0) {
-    // Ensure track has correct height
+  // Function to initialize or reinitialize the carousel
+  // This is exposed to window so featured_products.js can call it after loading products
+  window.initFeaturedCarousel = function () {
+    const carouselTrack = document.querySelector('.featured-carousel-track');
+    const prevBtn = document.querySelector('.featured-nav-prev');
+    const nextBtn = document.querySelector('.featured-nav-next');
+    const cards = document.querySelectorAll('.featured-card');
     const container = document.querySelector('.featured-carousel-container');
+
+    // Guard: Don't initialize if elements don't exist or no cards
+    if (!carouselTrack || !prevBtn || !nextBtn || cards.length === 0) {
+      console.log('Featured carousel: Elements not ready, waiting for products to load...');
+      return;
+    }
+
+    console.log(`Featured carousel: Initializing with ${cards.length} cards`);
+
+    // Cleanup any existing GSAP animations on the track
+    gsap.killTweensOf(carouselTrack);
+
+    // Reset track position
+    gsap.set(carouselTrack, { x: 0 });
+
+    // Ensure track has correct height
     if (container) {
       carouselTrack.style.height = '100%';
       carouselTrack.style.minHeight = '350px';
@@ -319,39 +335,54 @@ document.addEventListener('DOMContentLoaded', () => {
     const cardWidth = 280;
     const gap = 24;
     const cardTotalWidth = cardWidth + gap;
-    const totalCards = cards.length;
 
-    // Original set has 6 cards, duplicate set has 4 more = 10 total
-    // For seamless infinite scroll, we only move the width of original set (6 cards)
-    const originalSetCards = 6;
+    // Calculate original set size dynamically
+    // Products are duplicated, so original set is half of total cards
+    const originalSetCards = Math.ceil(cards.length / 2);
     const originalSetWidth = (cardWidth * originalSetCards) + (gap * (originalSetCards - 1));
 
-    // Seamless infinite animation using modulo technique
-    // Start from position 0, continuously move left
+    console.log(`Featured carousel: originalSetCards=${originalSetCards}, originalSetWidth=${originalSetWidth}`);
+
+    // Base duration for full cycle
+    const baseDuration = 30; // 30 seconds for full originalSetWidth
+
+    // State variables for animation control
     let animationActive = true;
+    let isUserControlling = false;
+    let resumeTimeout;
 
     function animateCarousel() {
       if (!animationActive) return;
 
+      // Get current position to calculate remaining distance
+      const currentX = gsap.getProperty(carouselTrack, 'x') || 0;
+
+      // Calculate remaining distance to end of original set
+      const remainingDistance = Math.abs(-originalSetWidth - currentX);
+
+      // Calculate proportional duration based on remaining distance
+      // If we're near the start (x ≈ 0), duration ≈ baseDuration
+      // If we're near the end (x ≈ -originalSetWidth), duration ≈ 0
+      const proportionalDuration = (remainingDistance / originalSetWidth) * baseDuration;
+
+      // Minimum duration to prevent instant jumps
+      const duration = Math.max(proportionalDuration, 0.5);
+
       gsap.to(carouselTrack, {
         x: -originalSetWidth,
-        duration: 30, // 30 seconds for full cycle (smooth, not too fast)
+        duration: duration,
         ease: 'none', // Linear movement for smoothness
+        overwrite: true, // Kill any existing animations on this property
         onComplete: () => {
           // Seamlessly wrap back to start
           gsap.set(carouselTrack, { x: 0 });
-          // Continue animation
-          animateCarousel();
+          // Continue animation from start
+          if (animationActive) {
+            animateCarousel();
+          }
         }
       });
     }
-
-    // Start the animation
-    animateCarousel();
-
-    // Store reference for pause/resume
-    let isUserControlling = false;
-    let resumeTimeout;
 
     // Function to get current position
     function getCurrentPosition() {
@@ -402,23 +433,30 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
+    // Remove old event listeners by cloning buttons
+    const newPrevBtn = prevBtn.cloneNode(true);
+    const newNextBtn = nextBtn.cloneNode(true);
+    prevBtn.parentNode.replaceChild(newPrevBtn, prevBtn);
+    nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
+
     // Navigation button handlers
-    nextBtn.addEventListener('click', () => {
+    newNextBtn.addEventListener('click', () => {
       moveCarousel('next');
     });
 
-    prevBtn.addEventListener('click', () => {
+    newPrevBtn.addEventListener('click', () => {
       moveCarousel('prev');
     });
 
     // Enable button interactions
-    nextBtn.style.pointerEvents = 'auto';
-    prevBtn.style.pointerEvents = 'auto';
-    nextBtn.style.opacity = '1';
-    prevBtn.style.opacity = '1';
+    newNextBtn.style.pointerEvents = 'auto';
+    newPrevBtn.style.pointerEvents = 'auto';
+    newNextBtn.style.opacity = '1';
+    newPrevBtn.style.opacity = '1';
 
     // Pause animation when hovering over any card
     cards.forEach(card => {
+      // Remove old listeners by cloning (simplified approach)
       card.addEventListener('mouseenter', () => {
         gsap.killTweensOf(carouselTrack);
         animationActive = false;
@@ -447,52 +485,46 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Animate cards position only (CSS handles opacity with !important)
-    // Cards slide up when scrolling into view
-    gsap.from('.featured-card', {
-      y: 50,
-      duration: 0.8,
-      stagger: 0.15,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: '.featured-products',
-        start: 'top 80%',
-        once: true,
-        markers: false
-      },
-      clearProps: 'y' // Clear y transform after animation completes
-    });
+    // Start the animation
+    animateCarousel();
 
-    // Animate header
-    gsap.from('.featured-header', {
-      opacity: 0,
-      y: -30,
-      duration: 0.8,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: '.featured-products',
-        start: 'top 85%',
-        once: true,
-        markers: false
-      }
-    });
+    // Animate cards slide up when first visible (only once)
+    if (!window.featuredCardsAnimated) {
+      window.featuredCardsAnimated = true;
 
-    // Animate navigation buttons
-    gsap.from('.featured-nav', {
-      opacity: 0,
-      y: 30,
-      duration: 0.8,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: '.featured-products',
-        start: 'top 75%',
-        once: true,
-        markers: false
-      }
-    });
+      gsap.from('.featured-card', {
+        y: 50,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: 'power2.out',
+        clearProps: 'y'
+      });
 
-    console.log('Featured Products carousel initialized');
-  }
+      // Animate header
+      gsap.from('.featured-header', {
+        opacity: 0,
+        y: -30,
+        duration: 0.8,
+        ease: 'power2.out'
+      });
+
+      // Animate navigation buttons
+      gsap.from('.featured-nav', {
+        opacity: 0,
+        y: 30,
+        duration: 0.8,
+        ease: 'power2.out'
+      });
+    }
+
+    console.log('Featured Products carousel initialized successfully');
+  };
+
+  // Try to initialize carousel on page load (for static cards)
+  // If products are loaded dynamically, featured_products.js will call this again
+  setTimeout(() => {
+    window.initFeaturedCarousel();
+  }, 100);
 
   // ============================================
   // ARC SECTION ANIMATIONS

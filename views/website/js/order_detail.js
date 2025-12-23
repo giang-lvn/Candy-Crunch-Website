@@ -212,7 +212,7 @@ function submitCancelRequest() {
     formData.append('order_id', orderId);
     formData.append('reason', cancelSelectedReason);
 
-    fetch('/Candy-Crunch-Website/controllers/website/CancelController.php', {
+    fetch('/Candy-Crunch-Website/index.php?controller=cancel&action=submitCancellationRequest', {
         method: 'POST',
         body: formData
     })
@@ -421,7 +421,7 @@ function handleSubmitRating() {
         return;
     }
 
-    fetch('/Candy-Crunch-Website/controllers/website/RatingController.php', {
+    fetch('/Candy-Crunch-Website/index.php?controller=rating&action=submit', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',

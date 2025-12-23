@@ -24,7 +24,7 @@ class ShopManager {
       isLoading: false
     };
 
-    this.API_BASE = '/Candy-Crunch-Website/controllers/website/shop_controller.php';
+    this.API_BASE = '/Candy-Crunch-Website/index.php?controller=shop&action=getProducts';
     this.init();
   }
 
@@ -82,7 +82,8 @@ class ShopManager {
         sort: 'name'
       });
 
-      const response = await fetch(`${this.API_BASE}?${params.toString()}`);
+      // Sử dụng & vì API_BASE đã có ? trong URL
+      const response = await fetch(`${this.API_BASE}&${params.toString()}`);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -548,7 +549,7 @@ class ShopManager {
     const hasDiscount = originalPrice && originalPrice > displayPrice;
 
     // Product detail page URL
-    const productDetailUrl = `/Candy-Crunch-Website/controllers/website/ProductDetailNewController.php?productId=${product.id}`;
+    const productDetailUrl = `/Candy-Crunch-Website/index.php?controller=productdetail&productId=${product.id}`;
 
     card.innerHTML = `
       <img class="product-image" src="${imageUrl}" alt="${product.name}" onerror="this.src='${placeholderImg}'" />
