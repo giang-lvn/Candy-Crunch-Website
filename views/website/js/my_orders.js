@@ -142,6 +142,19 @@ function renderOrders() {
 
     // Rebind button events
     bindOrderButtons();
+
+    // Add click event to order cards
+    document.querySelectorAll('.card-order').forEach(card => {
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', (e) => {
+            // Prevent redirect if clicking on buttons or their children
+            if (e.target.closest('button') || e.target.closest('.btn-primary-medium') || e.target.closest('.btn-secondary-medium') || e.target.closest('.btn-primary-outline-medium') || e.target.closest('.btn-secondary-outline-medium') || e.target.closest('.btn-error-outline-small') || e.target.closest('.btn-error-small')) {
+                return;
+            }
+            const orderId = card.querySelector('b').textContent; // Assuming order ID is in the <b> tag
+            window.location.href = `/Candy-Crunch-Website/controllers/website/OrderDetailController.php?id=${orderId}`;
+        });
+    });
 }
 
 /*********************************

@@ -19,16 +19,12 @@ $cartItems = [];
 $subtotal = 0;
 $discount = 0;
 $promo = 0;
-$shippingFee = 30000; // Default: Standard shipping = 30,000 VND
-
-if ($cartId) {
-    $cartItems = $cartModel->getCartItems($cartId);
-
-    if (!empty($cartItems)) {
-        $amount = $cartModel->calculateCartAmount($cartItems);
-        $subtotal = $amount['subtotal'];
-        $discount = $amount['discount'];
-    }
+// Calculate Shipping Fee
+$effectiveTotal = $subtotal - $discount;
+if ($effectiveTotal > 200000) {
+    $shippingFee = 0;
+} else {
+    $shippingFee = 30000; // Default Standard shipping
 }
 
 // Calculate total (shipping will be updated by JS based on delivery method)

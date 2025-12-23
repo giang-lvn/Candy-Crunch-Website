@@ -205,3 +205,22 @@ class OrderDetailController {
     }
 }
 
+/* 🔥 BẮT BUỘC PHẢI CÓ ROUTING */
+$controller = new OrderDetailController();
+
+$action = $_GET['action'] ?? 'index';
+
+if ($action === 'reOrder') {
+    $controller->reOrder();
+} elseif ($action === 'payNow') {
+    $controller->payNow();
+} elseif ($action === 'changeMethod') {
+    $controller->changeMethod();
+} elseif ($action === 'cancel') {
+    $controller->cancel();
+} elseif ($action === 'confirmReceived') {
+    $controller->confirmReceived();
+} else {
+    $controller->index();
+}
+

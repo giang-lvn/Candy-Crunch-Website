@@ -109,19 +109,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Function to update shipping and total
   function updateShippingFee(shippingAmount) {
+    const subtotal = parseVND(summarySubtotal?.textContent);
+    let discount = parseVND(summaryDiscount?.textContent);
+
+    // Handle negative discount display
+    if (summaryDiscount?.textContent?.includes('-')) {
+      discount = Math.abs(discount);
+    }
+
+    // Rule: if (subtotal - discount) > 200,000 => Free Shipping
+    if ((subtotal - discount) > 200000) {
+      shippingAmount = 0;
+    }
+
     if (summaryShipping) {
       summaryShipping.textContent = formatVND(shippingAmount);
     }
 
     // Recalculate total
-    const subtotal = parseVND(summarySubtotal?.textContent);
-    let discount = parseVND(summaryDiscount?.textContent);
     let promo = parseVND(summaryPromo?.textContent);
-
-    // Make discount and promo negative if they have minus sign
-    if (summaryDiscount?.textContent?.includes('-')) {
-      discount = Math.abs(discount);
-    }
     if (summaryPromo?.textContent?.includes('-')) {
       promo = Math.abs(promo);
     }

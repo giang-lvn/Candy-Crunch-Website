@@ -94,6 +94,11 @@ function placeOrder()
     // Shipping fee based on delivery method
     $shippingFee = ($deliveryMethod === 'fast') ? 50000 : 30000;
 
+    // RULE: If (subtotal - discount) > 200,000 => Free Shipping
+    if (($subtotal - $discount) > 200000) {
+        $shippingFee = 0;
+    }
+
     // Calculate total
     $total = $subtotal - $discount - $promo + $shippingFee;
 
