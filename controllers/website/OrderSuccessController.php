@@ -82,28 +82,25 @@ function placeOrder()
         ]));
     }
 
-    // Calculate amounts
-    $amount = $cartModel->calculateCartAmount($cartItems);
-    $subtotal = $amount['subtotal'];
-    $discount = $amount['discount'];
-    $promo = 0; // Voucher discount (if applied)
-
-    // Debug: Log calculated amounts
-    error_log("OrderSuccessController - Calculated: subtotal=$subtotal, discount=$discount");
-
-    // Shipping fee based on delivery method
-    $shippingFee = ($deliveryMethod === 'fast') ? 50000 : 30000;
-
-    // RULE: If (subtotal - discount) > 200,000 => Free Shipping
-    if (($subtotal - $discount) > 200000) {
-        $shippingFee = 0;
+    // Get payment values from POST (sent from checkout UI - already calculated and displayed)
+    $subtotal = (int)($_POST['subtotal'] ?? 0);
+    $discount = (int)($_POST['discount'] ?? 0);
+    $promo = (int)($_POST['promo'] ?? 0);
+    $shippingFee = (int)($_POST['shipping'] ?? 30000);
+    $total = (int)($_POST['total'] ?? 0);
+    
+    // Get voucher ID from session (for saving to database)
+    $voucherId = null;
+    $voucherCode = $_SESSION['voucher_code'] ?? '';
+    if (!empty($voucherCode)) {
+        $voucher = $cartModel->findVoucherByCode($voucherCode);
+        if ($voucher) {
+            $voucherId = $voucher['VoucherID'];
+        }
     }
 
-    // Calculate total
-    $total = $subtotal - $discount - $promo + $shippingFee;
-
-    // Debug: Log final total
-    error_log("OrderSuccessController - Final: total=$total, shipping=$shippingFee");
+    // Debug: Log received payment data
+    error_log("OrderSuccessController - Received from POST: subtotal=$subtotal, discount=$discount, promo=$promo, shipping=$shippingFee, total=$total");
 
     try {
         $db->beginTransaction();
@@ -120,10 +117,10 @@ function placeOrder()
 
         $stmt = $db->prepare("
             INSERT INTO ORDERS (
-                OrderID, CustomerID, OrderDate, 
+                OrderID, CustomerID, VoucherID, OrderDate, 
                 PaymentMethod, ShippingMethod, ShippingFee, OrderStatus
             ) VALUES (
-                ?, ?, ?,
+                ?, ?, ?, ?,
                 ?, ?, ?, 'Pending Confirmation'
             )
         ");
@@ -131,6 +128,7 @@ function placeOrder()
         $stmt->execute([
             $orderId,
             $customerId,
+            $voucherId, // Will be NULL if no voucher applied
             $orderDate,
             $paymentMethod,
             $shippingMethod,
@@ -211,7 +209,7 @@ function placeOrder()
 
         $db->commit();
 
-        // Set session variables for order success page
+        // Set session variables for order success page BEFORE any session manipulation
         $_SESSION['last_order_id'] = $orderId;
         $_SESSION['last_order_date'] = $orderDate;
         $_SESSION['last_payment_method'] = $paymentMethod;
@@ -222,9 +220,12 @@ function placeOrder()
         $_SESSION['last_order_promo'] = $promo;
         $_SESSION['last_order_total'] = $total;
         $_SESSION['last_order_address'] = $shippingAddress;
+        
+        // Clear voucher from session (already used in this order)
+        unset($_SESSION['voucher_code']);
 
         // Debug log
-        error_log("Order Success - Session Data:");
+        error_log("Order Success - Session Data Set:");
         error_log("Subtotal: " . $subtotal);
         error_log("Discount: " . $discount);
         error_log("Shipping: " . $shippingFee);
@@ -232,19 +233,14 @@ function placeOrder()
         error_log("Total: " . $total);
         error_log("Cart Items: " . count($cartItems));
 
-        // Ensure session is saved
-        session_write_close();
-        session_start();
-
-        // Clear the cart AFTER saving session but BEFORE sending response
-        // This ensures session data is preserved for ordersuccess.php
+        // Clear the cart from database
         $db->prepare("DELETE FROM CART_DETAIL WHERE CartID = ?")->execute([$cartId]);
 
         echo json_encode([
             'success' => true,
             'message' => 'Order placed successfully',
             'order_id' => $orderId,
-            'redirect' => $ROOT . '/views/website/php/ordersuccess.php'
+            'redirect' => $ROOT . '/views/website/php/ordersuccess.php?order_id=' . urlencode($orderId)
         ]);
 
     } catch (PDOException $e) {

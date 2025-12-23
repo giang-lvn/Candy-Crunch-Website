@@ -312,7 +312,6 @@ include __DIR__ . '/../../../partials/header.php';
 
             <div class="return-submit">
                 <button class="btn-primary-medium" id="submitCancelOrder">Send Request</button>
-                <button class="btn-secondary-outline-medium" id="cancelContactBtn">Contact</button>
             </div>
         </div>
     </div>

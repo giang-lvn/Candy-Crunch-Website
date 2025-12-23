@@ -45,12 +45,41 @@ document.addEventListener('DOMContentLoaded', () => {
       checkoutBtn.disabled = true;
       checkoutBtn.textContent = 'Processing...';
 
-      // Send order to server
+      // Helper function to parse VND format to number
+      function parseVND(text) {
+        if (!text) return 0;
+        return parseInt(text.replace(/[^\d-]/g, '')) || 0;
+      }
+
+      // Get payment values from the UI (same as displayed)
+      const subtotalEl = document.getElementById('summarySubtotal');
+      const discountEl = document.getElementById('summaryDiscount');
+      const promoEl = document.getElementById('summaryPromo');
+      const shippingEl = document.getElementById('summaryShipping');
+      const totalEl = document.getElementById('summaryTotal');
+
+      const subtotal = parseVND(subtotalEl?.textContent);
+      let discount = parseVND(discountEl?.textContent);
+      if (discountEl?.textContent?.includes('-')) discount = Math.abs(discount);
+      let promo = parseVND(promoEl?.textContent);
+      if (promoEl?.textContent?.includes('-')) promo = Math.abs(promo);
+      const shipping = parseVND(shippingEl?.textContent);
+      const total = parseVND(totalEl?.textContent);
+
+      // Send order to server with payment data
       const formData = new FormData();
       formData.append('action', 'place_order');
       formData.append('address_id', selectedAddressId);
       formData.append('delivery_method', deliveryMethod);
       formData.append('payment_method', paymentMethod === 'bank' ? 'Bank Transfer' : 'COD');
+
+      // Send payment values from UI
+      formData.append('subtotal', subtotal);
+      formData.append('discount', discount);
+      formData.append('promo', promo);
+      formData.append('shipping', shipping);
+      formData.append('total', total);
+
       if (bankingId) {
         formData.append('banking_id', bankingId);
       }
@@ -153,6 +182,93 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+
+// ======================================
+// VOUCHER/PROMO CODE APPLY
+// ======================================
+document.addEventListener('DOMContentLoaded', () => {
+  const ROOT = '/Candy-Crunch-Website';
+  const promoInput = document.getElementById('promoCodeInput');
+  const applyPromoBtn = document.getElementById('applyPromoBtn');
+  const summarySubtotal = document.getElementById('summarySubtotal');
+  const summaryDiscount = document.getElementById('summaryDiscount');
+  const summaryPromo = document.getElementById('summaryPromo');
+  const summaryShipping = document.getElementById('summaryShipping');
+  const summaryTotal = document.getElementById('summaryTotal');
+
+  if (!applyPromoBtn || !promoInput) return;
+
+  // Helper function to parse VND format to number
+  function parseVND(text) {
+    if (!text) return 0;
+    return parseInt(text.replace(/[^\d-]/g, '')) || 0;
+  }
+
+  // Helper function to format number to VND
+  function formatVND(amount) {
+    return new Intl.NumberFormat('vi-VN').format(Math.abs(amount)) + ' VND';
+  }
+
+  applyPromoBtn.addEventListener('click', () => {
+    const action = applyPromoBtn.dataset.action;
+    let code = promoInput.value.trim();
+
+    // If removing, send empty code
+    if (action === 'remove') {
+      code = '';
+    } else {
+      // If applying, validate input
+      if (!code) {
+        alert('Please enter a promo code.');
+        return;
+      }
+    }
+
+    // Disable button during request
+    applyPromoBtn.disabled = true;
+    applyPromoBtn.textContent = 'Processing...';
+
+    fetch(ROOT + '/index.php?controller=cart&action=applyVoucher', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          // Update summary values
+          if (summarySubtotal) summarySubtotal.textContent = formatVND(data.subtotal);
+          if (summaryDiscount) summaryDiscount.textContent = data.discount > 0 ? '- ' + formatVND(data.discount) : formatVND(0);
+          if (summaryPromo) summaryPromo.textContent = data.promo > 0 ? '- ' + formatVND(data.promo) : formatVND(0);
+          if (summaryShipping) summaryShipping.textContent = formatVND(data.shipping);
+          if (summaryTotal) summaryTotal.textContent = formatVND(data.total);
+
+          // Toggle button state
+          if (action === 'remove' || code === '') {
+            // Voucher removed
+            promoInput.value = '';
+            promoInput.readOnly = false;
+            applyPromoBtn.textContent = 'Apply';
+            applyPromoBtn.dataset.action = 'apply';
+          } else {
+            // Voucher applied
+            promoInput.readOnly = true;
+            applyPromoBtn.textContent = 'Remove';
+            applyPromoBtn.dataset.action = 'remove';
+          }
+        } else {
+          alert(data.message || 'Invalid voucher code.');
+        }
+        applyPromoBtn.disabled = false;
+      })
+      .catch(error => {
+        console.error('Error applying voucher:', error);
+        alert('An error occurred. Please try again.');
+        applyPromoBtn.disabled = false;
+        applyPromoBtn.textContent = action === 'remove' ? 'Remove' : 'Apply';
+      });
+  });
+});
 
 
 // BANKING ACCOUNT======================

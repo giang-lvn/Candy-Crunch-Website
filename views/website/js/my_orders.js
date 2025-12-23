@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initMenuNavigation();
     setupDropdowns();
     loadOrders();
-    createCancelModal();
+    setupCancelModalEvents();
     createReturnModal();
 });
 
@@ -214,7 +214,9 @@ function renderButtons(order) {
 
 function bindOrderButtons() {
     document.querySelectorAll('[data-action]').forEach(btn => {
-        btn.addEventListener('click', function () {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
             const action = this.dataset.action;
             const orderId = this.dataset.orderId;
             handleOrderAction(action, orderId);
@@ -232,7 +234,11 @@ function handleOrderAction(action, orderId) {
             window.location.href = `/Candy-Crunch-Website/views/website/php/return.php?order_id=${orderId}`;
             break;
         case 'Contact':
-            window.location.href = '/Candy-Crunch-Website/views/website/php/policy.php';
+            const subject = `Support Request for Order #${orderId}`;
+            const body = `Hi Candy Crunch Team,\n\nI have a question about my order #${orderId}.\n\n`;
+            // Use Gmail web interface since mailto is not working reliably
+            const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=support@candycrunch.com&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.open(gmailLink, '_blank');
             break;
         case 'Buy Again':
             handleBuyAgain(orderId);
@@ -323,57 +329,7 @@ function handleWriteReview(orderId) {
  *********************************/
 let cancelSelectedReason = '';
 
-function createCancelModal() {
-    const modal = document.createElement('div');
-    modal.id = 'cancel-order-overlay';
-    modal.className = 'cancel-overlay hidden';
-    modal.innerHTML = `
-        <div class="cancel-popup">
-            <!-- Nút đóng popup -->
-            <button class="close-btn" id="cancelPopupClose">&times;</button>
-        
-            <!-- Title -->
-            <h2 class="cancel-title">Cancel Order</h2>
-        
-            <!-- Description -->
-            <p class="cancel-desc">
-                Please let Candy Crunch know the reason for canceling your order.
-                Paid orders will be refunded according to our refund policy.
-            </p>
-        
-            <!-- Chọn lý do -->
-            <div class="input" data-type="dropdown" data-size="medium">
-                <label class="input-label">Cancel reason</label>
-                <div class="input-field">
-                    <div class="dropdown-trigger" id="cancelDropdownTrigger">
-                        <span class="dropdown-text">Select a cancel reason</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="dropdown-arrow">
-                        <path d="M18 9L12 15L6 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <div class="dropdown-menu" id="cancelDropdownMenu">
-                        <button class="dropdown-option" data-value="Changed my mind">Changed my mind</button>
-                        <button class="dropdown-option" data-value="Ordered wrong item">Ordered wrong item</button>
-                        <button class="dropdown-option" data-value="Found a better price">Found a better price</button>
-                        <button class="dropdown-option" data-value="Other">Other</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Input ẩn để gửi order_id -->
-            <input type="hidden" id="cancelOrderId" value="">
-
-            <div class="return-submit">
-                <button class="btn-primary-medium" id="submitCancelOrder">Send Request</button>
-                <button class="btn-secondary-outline-medium" id="cancelContactBtn">Contact</button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-
-    // Setup event listeners
-    setupCancelModalEvents();
-}
+// function createCancelModal() removed - using static HTML in my_orders.php
 
 function setupCancelModalEvents() {
     const overlay = document.getElementById('cancel-order-overlay');
@@ -382,7 +338,7 @@ function setupCancelModalEvents() {
     const dropdownMenu = document.getElementById('cancelDropdownMenu');
     const dropdownText = dropdownTrigger ? dropdownTrigger.querySelector('.dropdown-text') : null;
     const submitBtn = document.getElementById('submitCancelOrder');
-    const contactBtn = document.getElementById('cancelContactBtn');
+
 
     // Đóng popup
     if (closeBtn) {
@@ -422,12 +378,7 @@ function setupCancelModalEvents() {
         submitBtn.addEventListener('click', submitCancelRequest);
     }
 
-    // Contact button
-    if (contactBtn) {
-        contactBtn.addEventListener('click', () => {
-            window.location.href = '/Candy-Crunch-Website/views/website/policy.php';
-        });
-    }
+
 
     // Close dropdown when clicking outside
     document.addEventListener('click', () => {

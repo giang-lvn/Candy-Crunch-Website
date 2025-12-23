@@ -10,34 +10,61 @@ if (!isset($_SESSION['AccountID'])) {
     exit;
 }
 
-// Get order data from session (should be set after successful checkout)
-$orderId = $_SESSION['last_order_id'] ?? 'ORD001';
-$orderDate = $_SESSION['last_order_date'] ?? date('Y-m-d');
-$paymentMethod = $_SESSION['last_payment_method'] ?? 'COD';
+// Get order ID from URL parameter
+$orderId = isset($_GET['order_id']) ? trim($_GET['order_id']) : null;
+
+// Initialize all variables with defaults
+$orderDate = date('Y-m-d');
+$paymentMethod = 'COD';
 $orderStatus = 'Pending Confirmation';
+$expectedDelivery = date('d/m/Y', strtotime('+3 days'));
+$orderItems = [];
+$subtotal = 0;
+$discount = 0;
+$shippingFee = 0;
+$promo = 0;
+$total = 0;
+$shippingAddress = [
+    'Fullname' => 'Customer',
+    'Phone' => '',
+    'Address' => '',
+    'City' => '',
+    'Country' => ''
+];
 
-// Calculate expected delivery date (OrderDate + 3 days)
-$expectedDelivery = date('d/m/Y', strtotime($orderDate . ' +3 days'));
-
-// Get ALL order data from session (set by OrderSuccessController)
-$orderItems = $_SESSION['last_order_items'] ?? [];
-$subtotal = $_SESSION['last_order_subtotal'] ?? 0;
-$discount = $_SESSION['last_order_discount'] ?? 0;
-$shippingFee = $_SESSION['last_order_shipping'] ?? 30000;
-$promo = $_SESSION['last_order_promo'] ?? 0;
-$total = $_SESSION['last_order_total'] ?? 0;
-
-// If session data is missing or subtotal is 0, try to load from database
-if ($subtotal == 0 && !empty($orderId) && $orderId !== 'ORD001') {
+// Load data from database if we have valid orderId
+if (!empty($orderId)) {
     require_once __DIR__ . '/../../../models/db.php';
-    require_once __DIR__ . '/../../../models/website/CartModel.php';
-
-    try {
-        // Get order details from database
-        $stmt = $conn->prepare("
+    
+    // 1. Get order info from ORDERS table using PDO ($db)
+    $stmtOrder = $db->prepare("
+        SELECT 
+            o.OrderDate, 
+            o.PaymentMethod, 
+            o.ShippingFee, 
+            o.OrderStatus,
+            o.VoucherID, 
+            v.DiscountPercent, 
+            v.DiscountAmount
+        FROM ORDERS o
+        LEFT JOIN VOUCHER v ON o.VoucherID = v.VoucherID
+        WHERE o.OrderID = ?
+    ");
+    $stmtOrder->execute([$orderId]);
+    $orderInfo = $stmtOrder->fetch(PDO::FETCH_ASSOC);
+    
+    if ($orderInfo) {
+        $orderDate = $orderInfo['OrderDate'];
+        $paymentMethod = $orderInfo['PaymentMethod'];
+        $shippingFee = (int)$orderInfo['ShippingFee'];
+        $orderStatus = $orderInfo['OrderStatus'];
+        $expectedDelivery = date('d/m/Y', strtotime($orderDate . ' +3 days'));
+        
+        // 2. Get order items from ORDER_DETAIL + SKU + PRODUCT
+        $stmtItems = $db->prepare("
             SELECT 
                 od.SKUID,
-                od.OrderQuantity as CartQuantity,
+                od.OrderQuantity,
                 p.ProductName,
                 p.ProductID,
                 p.Image,
@@ -49,71 +76,66 @@ if ($subtotal == 0 && !empty($orderId) && $orderId !== 'ORD001') {
             JOIN PRODUCT p ON s.ProductID = p.ProductID
             WHERE od.OrderID = ?
         ");
-        $stmt->bind_param("s", $orderId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $orderItems = $result->fetch_all(MYSQLI_ASSOC);
-
-        // Process images
+        $stmtItems->execute([$orderId]);
+        $orderItems = $stmtItems->fetchAll(PDO::FETCH_ASSOC);
+        
+        // 3. Process images and calculate subtotal/discount
         foreach ($orderItems as &$item) {
+            // Process image JSON
             if (!empty($item['Image'])) {
                 $decoded = json_decode($item['Image'], true);
                 if (is_array($decoded)) {
+                    $thumbPath = '';
                     foreach ($decoded as $img) {
                         if (isset($img['is_thumbnail']) && $img['is_thumbnail']) {
-                            $item['Image'] = $img['path'] ?? '';
+                            $thumbPath = $img['path'] ?? '';
                             break;
                         }
                     }
-                    if (empty($item['Image']) && !empty($decoded[0])) {
-                        $item['Image'] = is_array($decoded[0]) ? ($decoded[0]['path'] ?? '') : $decoded[0];
+                    if (empty($thumbPath) && !empty($decoded[0])) {
+                        $thumbPath = is_array($decoded[0]) ? ($decoded[0]['path'] ?? '') : $decoded[0];
                     }
+                    $item['Image'] = $thumbPath;
                 }
             }
+            
+            // Calculate amounts
+            $qty = (int)$item['OrderQuantity'];
+            $originalPrice = (float)$item['OriginalPrice'];
+            $promoPrice = !empty($item['PromotionPrice']) ? (float)$item['PromotionPrice'] : $originalPrice;
+            
+            // Add to CartQuantity for display compatibility
+            $item['CartQuantity'] = $qty;
+            
+            // Subtotal = sum of original prices
+            $subtotal += $originalPrice * $qty;
+            
+            // Discount = difference when promo price is lower
+            if ($promoPrice < $originalPrice) {
+                $discount += ($originalPrice - $promoPrice) * $qty;
+            }
         }
-
-        // Recalculate amounts from order items
-        $cartModel = new CartModel();
-        $amount = $cartModel->calculateCartAmount($orderItems);
-        $subtotal = $amount['subtotal'];
-        $discount = $amount['discount'];
-
-        // Get shipping fee from ORDERS table
-        $stmt = $conn->prepare("SELECT ShippingFee FROM ORDERS WHERE OrderID = ?");
-        $stmt->bind_param("s", $orderId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($row = $result->fetch_assoc()) {
-            $shippingFee = $row['ShippingFee'] ?? 30000;
+        unset($item); // Break reference
+        
+        // 4. Calculate voucher discount (promo)
+        if (!empty($orderInfo['VoucherID'])) {
+            $afterDiscount = $subtotal - $discount;
+            if (!empty($orderInfo['DiscountPercent']) && $orderInfo['DiscountPercent'] > 0) {
+                $promo = round($afterDiscount * ($orderInfo['DiscountPercent'] / 100));
+            } elseif (!empty($orderInfo['DiscountAmount']) && $orderInfo['DiscountAmount'] > 0) {
+                $promo = min((int)$orderInfo['DiscountAmount'], $afterDiscount);
+            }
         }
-
-        // Recalculate total
+        
+        // 5. Calculate total
         $total = $subtotal - $discount - $promo + $shippingFee;
-
-        error_log("OrderSuccess.php - Loaded from database: Subtotal=$subtotal, Discount=$discount, Shipping=$shippingFee, Total=$total");
-
-    } catch (Exception $e) {
-        error_log("OrderSuccess.php - Error loading from database: " . $e->getMessage());
     }
-} else {
-    // Debug: Log session data
-    error_log("OrderSuccess.php - Session Data:");
-    error_log("Subtotal from session: " . ($subtotal));
-    error_log("Discount from session: " . ($discount));
-    error_log("Shipping from session: " . ($shippingFee));
-    error_log("Promo from session: " . ($promo));
-    error_log("Total from session: " . ($total));
-    error_log("Order Items count: " . count($orderItems));
 }
 
-// Get shipping address
-$shippingAddress = $_SESSION['last_order_address'] ?? [
-    'Fullname' => 'Customer Name',
-    'Phone' => '',
-    'Address' => '',
-    'City' => '',
-    'Country' => ''
-];
+// Get shipping address from session (fallback)
+if (isset($_SESSION['last_order_address']) && is_array($_SESSION['last_order_address'])) {
+    $shippingAddress = $_SESSION['last_order_address'];
+}
 
 include(__DIR__ . '/../../../partials/header.php');
 ?>

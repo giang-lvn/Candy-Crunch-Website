@@ -23,12 +23,12 @@
     align-items: center;
     justify-content: center;
 }
-  
+
 /* Ẩn popup */
 .hidden {
     display: none;
 }
-  
+
 /* Popup box */
 .cancel-popup {
     width: calc(100%/3);
@@ -38,15 +38,17 @@
     position: relative;
     animation: fadeIn 0.25s ease;
     border-radius: var(--border-radius-8, 8px);
-    background: var(--body-background, #F8F5EE);; 
+    background: var(--body-background, #F8F5EE);
+    ;
     display: flex;
     flex-direction: column;
-    gap: 20px;   
+    gap: 20px;
     align-items: center;
-    z-index: 9999; /* 👈 cao hơn overlay */
+    z-index: 9999;
+    /* 👈 cao hơn overlay */
 }
 
-  
+
 /* Close button */
 .close-btn {
     position: absolute;
@@ -58,7 +60,7 @@
     cursor: pointer;
     margin-bottom: 20px;
 }
-  
+
 
 /* Description */
 .cancel-desc {
@@ -74,8 +76,30 @@
         opacity: 0;
         transform: scale(0.95);
     }
+
     to {
         opacity: 1;
         transform: scale(1);
     }
+}
+
+.cancel-popup .input,
+.cancel-popup .input-field,
+.cancel-popup .dropdown-trigger {
+    width: 100%;
+}
+
+.cancel-popup .dropdown-trigger {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #ccc;
+    /* Add border to look like input */
+    border-radius: 8px;
+    /* Standard radius */
+    background: white;
+}
+
+.cancel-popup .dropdown-menu {
+    width: 100%;
 }

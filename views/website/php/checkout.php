@@ -11,16 +11,57 @@ if (!isset($_SESSION['AccountID'])) {
 }
 
 // Load CartModel to get cart data
+require_once __DIR__ . '/../../../models/db.php';
 require_once __DIR__ . '/../../../models/website/CartModel.php';
 
 $cartModel = new CartModel();
 $cartId = $_SESSION['cart_id'] ?? null;
 $cartItems = [];
-$subtotal = 0;
-$discount = 0;
+
+// Get cart items from database
+if ($cartId) {
+    $cartItems = $cartModel->getCartItems($cartId);
+}
+
+// Check if cart is empty - redirect to shop page with alert
+if (empty($cartItems)) {
+    echo "<script>
+        alert('Your cart is empty. Please add products to your cart before checkout.');
+        window.location.href = '" . $ROOT . "/views/website/php/shop.php';
+    </script>";
+    exit;
+}
+
+// Calculate subtotal and discount using CartModel (same logic as cart page)
+$amount = $cartModel->calculateCartAmount($cartItems);
+$subtotal = $amount['subtotal']; // Total based on OriginalPrice
+$discount = $amount['discount']; // Discount from PromotionPrice
+
+// Check and apply voucher from session
 $promo = 0;
+$voucherCode = $_SESSION['voucher_code'] ?? '';
+$voucherId = null;
+if (!empty($voucherCode)) {
+    $voucher = $cartModel->findVoucherByCode($voucherCode);
+    if ($voucher) {
+        $effectiveSubtotal = $subtotal - $discount; // Amount after product discount
+        $voucherValid = $cartModel->validateVoucher($voucher, $effectiveSubtotal);
+        if ($voucherValid['success']) {
+            $promo = $cartModel->calculateVoucherDiscount($voucher, $effectiveSubtotal);
+            $voucherId = $voucher['VoucherID'];
+        } else {
+            // Invalid voucher, clear it
+            unset($_SESSION['voucher_code']);
+            $voucherCode = '';
+        }
+    } else {
+        unset($_SESSION['voucher_code']);
+        $voucherCode = '';
+    }
+}
+
 // Calculate Shipping Fee
-$effectiveTotal = $subtotal - $discount;
+$effectiveTotal = $subtotal - $discount - $promo;
 if ($effectiveTotal > 200000) {
     $shippingFee = 0;
 } else {
@@ -293,8 +334,8 @@ include(__DIR__ . '/../../../partials/header.php');
                         </div>
                         <div class="input" data-type="text" data-state="default" data-size="medium">
                             <div class="input-field">
-                                <input type="text" placeholder="Enter promo code" id="promoCodeInput">
-                                <button class="btn-primary-outline-small" id="applyPromoBtn">Apply</button>
+                                <input type="text" placeholder="Enter promo code" id="promoCodeInput" value="<?= htmlspecialchars($voucherCode) ?>" <?= !empty($voucherCode) ? 'readonly' : '' ?>>
+                                <button class="btn-primary-outline-small" id="applyPromoBtn" data-action="<?= !empty($voucherCode) ? 'remove' : 'apply' ?>"><?= !empty($voucherCode) ? 'Remove' : 'Apply' ?></button>
                             </div>
                         </div>
                     </div>

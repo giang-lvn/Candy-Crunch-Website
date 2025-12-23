@@ -303,8 +303,9 @@ function handleContact(e) {
         `Thank you!`
     );
 
-    // Mở Gmail/Email client
-    window.location.href = `mailto:${supportEmail}?subject=${subject}&body=${body}`;
+    // Mở Gmail/Email client (Direct Link)
+    const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${supportEmail}&su=${subject}&body=${body}`;
+    window.open(gmailLink, '_blank');
 }
 
 /**

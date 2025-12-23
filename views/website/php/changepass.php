@@ -61,7 +61,7 @@ require_once('../../../partials/header.php');
             <!-- SIDEBAR -->
             <div class="card-account">
                 <div class="user-card">
-                    <img class="avatar-icon" src="<?php echo !empty($customer['Avatar']) ? htmlspecialchars($customer['Avatar']) : $ROOT . '/views/website/img/ot-longvo.png'; ?>" alt="avatar">
+                    <img class="avatar-icon" src="<?php echo !empty($customer['Avatar']) ? htmlspecialchars($customer['Avatar']) : $ROOT . '/views/website/img/ot-longvo.png'; ?>" alt="avatar" onerror="this.src='<?php echo $ROOT; ?>/views/website/img/ot-longvo.png'">
                     <div class="user-name">
                         <div class="john-doe">
                             <?php 

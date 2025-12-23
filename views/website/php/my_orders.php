@@ -56,7 +56,7 @@ require_once('../../../partials/header.php');
             <!-- SIDEBAR -->
             <div class="card-account">
                 <div class="user-card">
-                    <img class="avatar-icon" src="<?php echo !empty($customer['Avatar']) ? $ROOT . $customer['Avatar'] : $ROOT . '/views/website/img/default-avatar.png'; ?>" alt="avatar" onerror="this.src='<?php echo $ROOT; ?>/views/website/img/default-avatar.png'">
+                    <img class="avatar-icon" src="<?php echo !empty($customer['Avatar']) ? htmlspecialchars($customer['Avatar']) : $ROOT . '/views/website/img/ot-longvo.png'; ?>" alt="avatar" onerror="this.src='<?php echo $ROOT; ?>/views/website/img/ot-longvo.png'">
                     <div class="user-name">
                         <div class="john-doe">
                             <?php
@@ -179,6 +179,49 @@ require_once('../../../partials/header.php');
 
             <div class="return-submit">
                 <button class="btn-primary-medium" id="submitRating">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancel Order Popup -->
+    <div id="cancel-order-overlay" class="cancel-overlay hidden">
+        <div class="cancel-popup">
+            <!-- Close Button -->
+            <button class="close-btn" id="cancelPopupClose">&times;</button>
+        
+            <!-- Title -->
+            <h2 class="cancel-title">Cancel Order</h2>
+        
+            <!-- Description -->
+            <p class="cancel-desc">
+                Please let Candy Crunch know the reason for canceling your order.
+                Paid orders will be refunded according to our refund policy.
+            </p>
+        
+            <!-- Dropdown Reason -->
+            <div class="input" data-type="dropdown" data-size="medium">
+                <label class="input-label">Cancel reason</label>
+                <div class="input-field">
+                    <div class="dropdown-trigger" id="cancelDropdownTrigger">
+                        <span class="dropdown-text">Select a cancel reason</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="dropdown-arrow">
+                        <path d="M18 9L12 15L6 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="dropdown-menu" id="cancelDropdownMenu">
+                        <button class="dropdown-option" data-value="Changed my mind">Changed my mind</button>
+                        <button class="dropdown-option" data-value="Ordered wrong item">Ordered wrong item</button>
+                        <button class="dropdown-option" data-value="Found a better price">Found a better price</button>
+                        <button class="dropdown-option" data-value="Other">Other</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hidden input for order ID -->
+            <input type="hidden" id="cancelOrderId" value="">
+
+            <div class="return-submit">
+                <button class="btn-primary-medium" id="submitCancelOrder">Send Request</button>
             </div>
         </div>
     </div>
