@@ -6,6 +6,7 @@
             <div class="cart-title">
                 <h3>Your cart <span class="cart-count">(<?= !empty($cartItems) ? count($cartItems) : 0 ?>)</span></h3>
 
+
                 <button class="cart-close" aria-label="Close cart">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                         <path
@@ -15,17 +16,22 @@
                 </button>
             </div>
 
+
             <!-- CART PRODUCT -->
             <div class="cart-product">
+
 
                 <?php if (empty($cartItems)): ?>
                     <!-- EMPTY CART STATE -->
                     <p class="empty-cart">Your cart is empty.</p>
 
+
                 <?php else: ?>
+
 
                     <!-- HAS PRODUCT STATE -->
                     <div class="cart-has-product">
+
 
                         <!-- FREE SHIPPING INFO -->
                         <div class="free-shipping">
@@ -36,38 +42,44 @@
                                 <p><strong>You've got FREE SHIPPING!</strong></p>
                             <?php endif; ?>
 
+
                             <div class="shipping-bar">
                                 <span class="bar-yellow"></span>
                                 <span class="bar-green"></span>
                             </div>
                         </div>
 
+
                         <!-- PRODUCT LIST -->
                         <div class="product-list">
+
 
                             <?php foreach ($cartItems as $item): ?>
                                 <!-- SINGLE PRODUCT -->
                                 <div class="product-item">
+
 
                                     <!-- LEFT -->
                                     <div class="product-left">
                                         <img class="product-image" src="<?= htmlspecialchars($item['Image']) ?>"
                                             alt="<?= htmlspecialchars($item['ProductName']) ?>" />
 
+
                                         <div class="product-info-cart">
                                             <h4 class="product-name">
                                                 <?= htmlspecialchars($item['ProductName']) ?>
                                             </h4>
 
+
                                             <div class="product-meta-cart">
                                                 <!-- ATTRIBUTE -->
-                                                <?php 
+                                                <?php
                                                     // Fetch all SKUs for this product to show in dropdown
                                                     // Note: Ideally passed from controller, but fetching here for simplicity as per plan
                                                     $cartModel = new CartModel();
                                                     $productSkus = $cartModel->getProductSKUs($item['ProductID']);
                                                 ?>
-                                                
+                                               
                                                 <?php if (count($productSkus) > 1): ?>
                                                     <select class="product-attribute-select" data-old-sku="<?= $item['SKUID'] ?>">
                                                         <?php foreach ($productSkus as $sku): ?>
@@ -82,6 +94,7 @@
                                                     </button>
                                                 <?php endif; ?>
 
+
                                                 <!-- QUANTITY -->
                                                 <div class="quantity-control">
                                                     <button data-skuid="<?= $item['SKUID'] ?>" class="qty-minus">-</button>
@@ -91,6 +104,7 @@
                                             </div>
                                         </div>
                                     </div>
+
 
                                     <!-- RIGHT -->
                                     <div class="product-right">
@@ -103,6 +117,7 @@
                                                     fill="black" />
                                             </svg>
                                         </button>
+
 
                                         <div class="product-price-cart">
                                             <?php if (!empty($item['PromotionPrice'])): ?>
@@ -120,37 +135,49 @@
                                         </div>
                                     </div>
 
+
                                 </div>
+
 
                             <?php endforeach; ?>
 
+
                         </div>
+
 
                     </div>
 
+
                 <?php endif; ?>
+
 
             </div>
         </div>
 
+
         <!-- PAYMENT -->
         <div class="payment-section">
+
 
             <!-- INFO -->
             <div class="payment-info">
 
+
                 <!-- SUBTOTAL -->
                 <div class="payment-row subtotal">
                     <span class="label">Subtotal</span>
+
 
                     <span class="value-payment">
                         <?= number_format($subtotal ?? 0, 0, ',', '.') ?> VND
                     </span>
                 </div>
 
+
                 <!-- DISCOUNT -->
                 <div class="payment-row discount">
                     <span class="label">Discount</span>
+
 
                     <span class="value-payment">
                         <?= ($discount ?? 0) > 0 ? '-' : '' ?>
@@ -158,9 +185,11 @@
                     </span>
                 </div>
 
+
                 <!-- PROMO -->
                 <div class="payment-row promo">
                     <span class="label">Promo</span>
+
 
                     <span class="value-payment">
                         <?= ($promo ?? 0) > 0 ? '-' : '' ?>
@@ -168,19 +197,22 @@
                     </span>
                 </div>
 
+
                 <!-- SHIPPING -->
                 <div class="payment-row shippingfee">
                     <span class="label">Shipping fee</span>
+
 
                     <span class="value-payment">
                         <?= number_format($shipping ?? 0, 0, ',', '.') ?> VND
                     </span>
                 </div>
 
+
                 <!-- PROMO INPUT -->
                 <div class="promo-input">
                     <div class="promo-input-wrapper">
-                        <?php 
+                        <?php
                             $currentCode = $_SESSION['voucher_code'] ?? '';
                         ?>
                         <input type="text" name="voucher_code" class="promo-input-field" placeholder="Add promo code" value="<?= htmlspecialchars($currentCode) ?>">
@@ -190,16 +222,20 @@
                     </div>
                 </div>
 
+
             </div>
+
 
             <!-- TOTAL -->
             <div class="payment-total">
                 <span class="label">Total</span>
 
+
                 <span class="value-payment">
                     <?= number_format($total ?? 0, 0, ',', '.') ?> VND
                 </span>
             </div>
+
 
             <!-- BUTTON -->
             <button class="checkout-btn">
@@ -207,4 +243,8 @@
             </button>
         </div>
 
+
     </aside>
+
+
+

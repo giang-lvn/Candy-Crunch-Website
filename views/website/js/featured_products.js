@@ -20,7 +20,7 @@ class FeaturedProductsManager {
      */
     async loadFeaturedProducts() {
         try {
-            const response = await fetch(`${this.API_BASE}?limit=10`);
+            const response = await fetch(`${this.API_BASE}&limit=10`);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);

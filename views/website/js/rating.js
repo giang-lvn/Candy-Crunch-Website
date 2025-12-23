@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function () {
             submitBtn.textContent = 'Submitting...';
 
             // Send AJAX request
-            fetch('/Candy-Crunch-Website/controllers/website/RatingController.php?action=submit', {
+            fetch('/Candy-Crunch-Website/index.php?controller=rating&action=submit', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

@@ -426,7 +426,7 @@ function handleSubmitRating() {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `sku_id=${skuId}&rating=${starRating}&review=${encodeURIComponent(reviewText)}&order_id=${orderId}`
+        body: `sku_id=${skuId}&rating=${starRating}&comment=${encodeURIComponent(reviewText)}&order_id=${orderId}`
     })
         .then(response => response.json())
         .then(data => {
