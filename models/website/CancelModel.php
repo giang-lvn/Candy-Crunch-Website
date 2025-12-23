@@ -20,7 +20,7 @@ class CancelModel {
     public function isOrderNotCancelled($orderID) {
         $status = $this->getOrderStatus($orderID);
         // Đã hủy hoặc đang chờ hủy thì không cho hủy nữa
-        return !in_array($status, ['Cancelled', 'Canceled', 'Pending Cancel']);
+        return !in_array($status, ['Cancelled', 'Pending Cancel']);
     }
 
     // Lấy trạng thái hiện tại của đơn hàng

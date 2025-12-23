@@ -228,21 +228,20 @@ function handleOrderAction(action, orderId) {
             showCancelModal(orderId);
             break;
         case 'Return':
-            showReturnModal(orderId);
+            // Redirect to return.php (same as order_detail)
+            window.location.href = `/Candy-Crunch-Website/views/website/php/return.php?order_id=${orderId}`;
             break;
         case 'Contact':
-            window.location.href = '/Candy-Crunch-Website/views/website/policy.php';
+            window.location.href = '/Candy-Crunch-Website/views/website/php/policy.php';
             break;
         case 'Buy Again':
-            // TODO: Implement buy again
-            alert('Buy Again functionality coming soon!');
+            handleBuyAgain(orderId);
             break;
         case 'Pay Now':
             window.location.href = `/Candy-Crunch-Website/views/website/php/checkout.php?order_id=${orderId}`;
             break;
         case 'Write Review':
-            // TODO: Implement review
-            alert('Write Review functionality coming soon!');
+            handleWriteReview(orderId);
             break;
         default:
             console.log('Unknown action:', action);
@@ -250,67 +249,235 @@ function handleOrderAction(action, orderId) {
 }
 
 /*********************************
- * CANCEL MODAL
+ * BUY AGAIN - Thêm sản phẩm vào giỏ hàng và redirect
  *********************************/
+function handleBuyAgain(orderId) {
+    if (!orderId) {
+        alert('Error: Order ID not found');
+        return;
+    }
+
+    // Hiển thị thông báo đang xử lý
+    alert('Adding products to cart...');
+
+    // Chuyển hướng đến controller để thêm vào giỏ hàng
+    window.location.href = `/Candy-Crunch-Website/index.php?controller=OrderDetail&action=reOrder&id=${orderId}`;
+}
+
+/*********************************
+ * WRITE REVIEW - Mở popup rating
+ *********************************/
+function handleWriteReview(orderId) {
+    if (!orderId) {
+        alert('Error: Order ID not found');
+        return;
+    }
+
+    // Tìm đơn hàng trong dữ liệu
+    const order = ordersData.find(o => o.id === orderId);
+
+    if (!order || !order.products || order.products.length === 0) {
+        alert('No products found for this order.');
+        return;
+    }
+
+    // Populate product select dropdown
+    const productSelect = document.getElementById('rating-product-select');
+    if (productSelect) {
+        productSelect.innerHTML = order.products.map(product =>
+            `<option value="${product.sku_id}">${product.name} - ${product.weight}</option>`
+        ).join('');
+    }
+
+    // Set order ID
+    const orderIdInput = document.getElementById('rating-order-id');
+    if (orderIdInput) {
+        orderIdInput.value = orderId;
+    }
+
+    // Reset star rating
+    const starRating = document.querySelector('.star-rating');
+    if (starRating) {
+        starRating.dataset.rating = 0;
+        document.querySelectorAll('.star-rating .star').forEach(star => {
+            star.classList.remove('active');
+        });
+    }
+
+    // Reset review text
+    const reviewText = document.getElementById('rating-review-text');
+    if (reviewText) {
+        reviewText.value = '';
+    }
+
+    // Show rating popup
+    const ratingOverlay = document.getElementById('rating-overlay');
+    if (ratingOverlay) {
+        ratingOverlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+/*********************************
+ * CANCEL MODAL - Giống như cancel.php
+ *********************************/
+let cancelSelectedReason = '';
+
 function createCancelModal() {
     const modal = document.createElement('div');
-    modal.id = 'cancelModal';
-    modal.className = 'order-modal';
+    modal.id = 'cancel-order-overlay';
+    modal.className = 'cancel-overlay hidden';
     modal.innerHTML = `
-        <div class="order-modal-content">
-            <div class="order-modal-header">
-                <h3>Xác nhận hủy đơn hàng</h3>
-                <button class="order-modal-close" onclick="closeCancelModal()">&times;</button>
-            </div>
-            <div class="order-modal-body">
-                <p>Vui lòng chọn lý do hủy đơn hàng:</p>
-                <input type="hidden" id="cancelOrderId" value="">
-                <div class="reason-select-container">
-                    <select id="cancelReasonSelect" class="reason-select">
-                        <option value="">-- Chọn lý do --</option>
-                        ${cancelReasons.map(r => `<option value="${r.value}" data-redirect="${r.redirectToCheckout}">${r.text}</option>`).join('')}
-                    </select>
+        <div class="cancel-popup">
+            <!-- Nút đóng popup -->
+            <button class="close-btn" id="cancelPopupClose">&times;</button>
+        
+            <!-- Title -->
+            <h2 class="cancel-title">Cancel Order</h2>
+        
+            <!-- Description -->
+            <p class="cancel-desc">
+                Please let Candy Crunch know the reason for canceling your order.
+                Paid orders will be refunded according to our refund policy.
+            </p>
+        
+            <!-- Chọn lý do -->
+            <div class="input" data-type="dropdown" data-size="medium">
+                <label class="input-label">Cancel reason</label>
+                <div class="input-field">
+                    <div class="dropdown-trigger" id="cancelDropdownTrigger">
+                        <span class="dropdown-text">Select a cancel reason</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="dropdown-arrow">
+                        <path d="M18 9L12 15L6 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="dropdown-menu" id="cancelDropdownMenu">
+                        <button class="dropdown-option" data-value="Changed my mind">Changed my mind</button>
+                        <button class="dropdown-option" data-value="Ordered wrong item">Ordered wrong item</button>
+                        <button class="dropdown-option" data-value="Found a better price">Found a better price</button>
+                        <button class="dropdown-option" data-value="Other">Other</button>
+                    </div>
                 </div>
             </div>
-            <div class="order-modal-footer">
-                <button class="btn-modal-secondary" onclick="closeCancelModal()">Đóng</button>
-                <button class="btn-modal-primary" onclick="submitCancelRequest()" id="confirmCancelBtn">Xác nhận hủy</button>
+
+            <!-- Input ẩn để gửi order_id -->
+            <input type="hidden" id="cancelOrderId" value="">
+
+            <div class="return-submit">
+                <button class="btn-primary-medium" id="submitCancelOrder">Send Request</button>
+                <button class="btn-secondary-outline-medium" id="cancelContactBtn">Contact</button>
             </div>
         </div>
     `;
     document.body.appendChild(modal);
+
+    // Setup event listeners
+    setupCancelModalEvents();
+}
+
+function setupCancelModalEvents() {
+    const overlay = document.getElementById('cancel-order-overlay');
+    const closeBtn = document.getElementById('cancelPopupClose');
+    const dropdownTrigger = document.getElementById('cancelDropdownTrigger');
+    const dropdownMenu = document.getElementById('cancelDropdownMenu');
+    const dropdownText = dropdownTrigger ? dropdownTrigger.querySelector('.dropdown-text') : null;
+    const submitBtn = document.getElementById('submitCancelOrder');
+    const contactBtn = document.getElementById('cancelContactBtn');
+
+    // Đóng popup
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeCancelModal);
+    }
+
+    // Đóng popup khi click ngoài popup
+    if (overlay) {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                closeCancelModal();
+            }
+        });
+    }
+
+    // Dropdown lý do hủy
+    if (dropdownTrigger && dropdownMenu) {
+        dropdownTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('show');
+        });
+
+        dropdownMenu.querySelectorAll('.dropdown-option').forEach(option => {
+            option.addEventListener('click', (e) => {
+                e.stopPropagation();
+                cancelSelectedReason = option.dataset.value;
+                if (dropdownText) {
+                    dropdownText.textContent = cancelSelectedReason;
+                }
+                dropdownMenu.classList.remove('show');
+            });
+        });
+    }
+
+    // Submit button
+    if (submitBtn) {
+        submitBtn.addEventListener('click', submitCancelRequest);
+    }
+
+    // Contact button
+    if (contactBtn) {
+        contactBtn.addEventListener('click', () => {
+            window.location.href = '/Candy-Crunch-Website/views/website/policy.php';
+        });
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', () => {
+        if (dropdownMenu) {
+            dropdownMenu.classList.remove('show');
+        }
+    });
 }
 
 function showCancelModal(orderId) {
+    const overlay = document.getElementById('cancel-order-overlay');
+    const dropdownText = document.querySelector('#cancelDropdownTrigger .dropdown-text');
+
     document.getElementById('cancelOrderId').value = orderId;
-    document.getElementById('cancelReasonSelect').value = '';
-    document.getElementById('cancelModal').classList.add('show');
+    cancelSelectedReason = '';
+    if (dropdownText) {
+        dropdownText.textContent = 'Select a cancel reason';
+    }
+
+    if (overlay) {
+        overlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
 }
 
 function closeCancelModal() {
-    document.getElementById('cancelModal').classList.remove('show');
+    const overlay = document.getElementById('cancel-order-overlay');
+    if (overlay) {
+        overlay.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
 }
 
 function submitCancelRequest() {
     const orderId = document.getElementById('cancelOrderId').value;
-    const selectEl = document.getElementById('cancelReasonSelect');
-    const reason = selectEl.options[selectEl.selectedIndex]?.text || '';
-    const reasonValue = selectEl.value;
+    const submitBtn = document.getElementById('submitCancelOrder');
 
-    if (!reasonValue) {
-        alert('Vui lòng chọn lý do hủy đơn hàng!');
+    if (!cancelSelectedReason) {
+        alert('Please select a reason to cancel your order.');
         return;
     }
 
     // Disable button while processing
-    const confirmBtn = document.getElementById('confirmCancelBtn');
-    confirmBtn.disabled = true;
-    confirmBtn.textContent = 'Đang xử lý...';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Processing...';
 
     // Send cancel request
     const formData = new FormData();
     formData.append('order_id', orderId);
-    formData.append('reason', reason);
+    formData.append('reason', cancelSelectedReason);
 
     fetch('/Candy-Crunch-Website/controllers/website/CancelController.php', {
         method: 'POST',
@@ -321,27 +488,18 @@ function submitCancelRequest() {
             if (data.success) {
                 alert(data.message);
                 closeCancelModal();
-
-                // Redirect based on reason
-                const selectedOption = selectEl.options[selectEl.selectedIndex];
-                const redirectToCheckout = selectedOption.dataset.redirect === 'true';
-
-                if (redirectToCheckout) {
-                    window.location.href = `/Candy-Crunch-Website/views/website/php/checkout.php?order_id=${orderId}`;
-                } else {
-                    window.location.reload();
-                }
+                window.location.reload();
             } else {
                 alert('Error: ' + data.message);
-                confirmBtn.disabled = false;
-                confirmBtn.textContent = 'Xác nhận hủy';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send Request';
             }
         })
         .catch(err => {
             console.error('Cancel request failed:', err);
-            alert('Có lỗi xảy ra. Vui lòng thử lại.');
-            confirmBtn.disabled = false;
-            confirmBtn.textContent = 'Xác nhận hủy';
+            alert('An error occurred. Please try again.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Send Request';
         });
 }
 

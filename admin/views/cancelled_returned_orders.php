@@ -37,10 +37,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if (isset($_POST['approve_return'])) {
         $orderId = $_POST['order_id'] ?? '';
+        $refundId = $_POST['refund_id'] ?? '';
         try {
             // Cập nhật trạng thái đơn hàng thành Returned
             $stmt = $pdo->prepare("UPDATE ORDERS SET OrderStatus = 'Returned' WHERE OrderID = ?");
             $stmt->execute([$orderId]);
+            
+            // Cập nhật trạng thái REFUND thành Approved
+            if ($refundId) {
+                $stmt2 = $pdo->prepare("UPDATE REFUND SET RefundStatus = 'Approved' WHERE RefundID = ?");
+                $stmt2->execute([$refundId]);
+            }
             
             echo "<script>showToast('Đã duyệt yêu cầu trả hàng!', 'success'); setTimeout(function(){ location.reload(); }, 1500);</script>";
         } catch (Exception $e) {
@@ -50,10 +57,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if (isset($_POST['reject_return'])) {
         $orderId = $_POST['order_id'] ?? '';
+        $refundId = $_POST['refund_id'] ?? '';
         try {
             // Khôi phục trạng thái đơn hàng về Complete
             $stmt = $pdo->prepare("UPDATE ORDERS SET OrderStatus = 'Complete' WHERE OrderID = ?");
             $stmt->execute([$orderId]);
+            
+            // Cập nhật trạng thái REFUND thành Rejected
+            if ($refundId) {
+                $stmt2 = $pdo->prepare("UPDATE REFUND SET RefundStatus = 'Rejected' WHERE RefundID = ?");
+                $stmt2->execute([$refundId]);
+            }
             
             echo "<script>showToast('Đã từ chối yêu cầu trả hàng!', 'warning'); setTimeout(function(){ location.reload(); }, 1500);</script>";
         } catch (Exception $e) {
@@ -105,33 +119,31 @@ try {
 }
 
 try {
-    // Lấy đơn hàng có trạng thái Returned hoặc Pending Return
+    // Lấy dữ liệu từ bảng REFUND kết hợp với ORDERS và CUSTOMER
     $returnSql = "SELECT 
-        o.OrderID,
-        o.OrderID as RefundID,
+        r.RefundID,
+        r.OrderID,
+        r.RefundDate,
+        r.RefundReason,
+        r.RefundDescription,
+        r.RefundMethod,
+        r.RefundImage,
+        r.RefundStatus,
         o.OrderDate,
-        o.OrderDate as RefundDate,
-        'Khách hàng yêu cầu trả hàng' as RefundReason,
-        '' as RefundDescription,
-        '' as RefundImage,
-        CASE 
-            WHEN o.OrderStatus = 'Pending Return' THEN 'Pending'
-            WHEN o.OrderStatus = 'Returned' THEN 'Approved'
-            ELSE 'Unknown'
-        END as RefundStatus,
         o.OrderStatus,
         CONCAT(cu.FirstName, ' ', cu.LastName) as CustomerName,
         a.Email as CustomerEmail
-    FROM ORDERS o
+    FROM REFUND r
+    LEFT JOIN ORDERS o ON r.OrderID = o.OrderID
     LEFT JOIN CUSTOMER cu ON o.CustomerID = cu.CustomerID
     LEFT JOIN ACCOUNT a ON cu.AccountID = a.AccountID
-    WHERE o.OrderStatus IN ('Pending Return', 'Returned')";
+    WHERE 1=1";
 
     if (!empty($search)) {
-        $returnSql .= " AND (o.OrderID LIKE :search OR cu.FirstName LIKE :search OR cu.LastName LIKE :search)";
+        $returnSql .= " AND (r.RefundID LIKE :search OR r.OrderID LIKE :search OR cu.FirstName LIKE :search OR cu.LastName LIKE :search)";
     }
 
-    $returnSql .= " ORDER BY o.OrderDate DESC";
+    $returnSql .= " ORDER BY r.RefundDate DESC";
 
     $returnStmt = $pdo->prepare($returnSql);
     if (!empty($search)) {
@@ -326,7 +338,10 @@ $totalReturns = count($returns);
                                 <th>Mã đơn</th>
                                 <th>Khách hàng</th>
                                 <th>Ngày yêu cầu</th>
-                                <th>Lý do trả</th>
+                                <th>Lý do trả hàng</th>
+                                <th>Mô tả chi tiết</th>
+                                <th>Hình ảnh</th>
+                                <th>Phương thức hoàn tiền</th>
                                 <th>Trạng thái</th>
                                 <th>Thao tác</th>
                             </tr>
@@ -334,7 +349,7 @@ $totalReturns = count($returns);
                         <tbody>
                             <?php if (empty($returns)): ?>
                             <tr>
-                                <td colspan="7" class="text-center py-4">
+                                <td colspan="10" class="text-center py-4">
                                     <i class="bi bi-inbox display-6 text-muted d-block mb-2"></i>
                                     Không có yêu cầu trả hàng nào
                                 </td>
@@ -353,17 +368,30 @@ $totalReturns = count($returns);
                                 </td>
                                 <td><?php echo formatDate($return['RefundDate']); ?></td>
                                 <td>
-                                    <div class="text-wrap" style="max-width: 250px;">
-                                        <strong><?php echo htmlspecialchars($return['RefundReason']); ?></strong>
-                                        <?php if (!empty($return['RefundDescription'])): ?>
-                                        <br><small class="text-muted"><?php echo htmlspecialchars($return['RefundDescription']); ?></small>
-                                        <?php endif; ?>
-                                        <?php if (!empty($return['RefundImage'])): ?>
-                                        <br><a href="#" onclick="showImage('<?php echo htmlspecialchars($return['RefundImage']); ?>')" class="small">
-                                            <i class="bi bi-image"></i> Xem ảnh
-                                        </a>
-                                        <?php endif; ?>
+                                    <div class="text-wrap" style="max-width: 200px;">
+                                        <strong><?php echo htmlspecialchars($return['RefundReason'] ?? 'Không có'); ?></strong>
                                     </div>
+                                </td>
+                                <td>
+                                    <div class="text-wrap" style="max-width: 200px;">
+                                        <?php echo !empty($return['RefundDescription']) ? htmlspecialchars($return['RefundDescription']) : '<span class="text-muted">-</span>'; ?>
+                                    </div>
+                                </td>
+                                <td>
+                                    <?php if (!empty($return['RefundImage'])): ?>
+                                    <a href="#" onclick="showImage('<?php echo htmlspecialchars($return['RefundImage']); ?>')" class="btn btn-sm btn-outline-info">
+                                        <i class="bi bi-image"></i> Xem ảnh
+                                    </a>
+                                    <?php else: ?>
+                                    <span class="text-muted">Không có ảnh</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <?php if (!empty($return['RefundMethod'])): ?>
+                                    <span class="badge bg-info"><?php echo htmlspecialchars($return['RefundMethod']); ?></span>
+                                    <?php else: ?>
+                                    <span class="text-muted">-</span>
+                                    <?php endif; ?>
                                 </td>
                                 <td>
                                     <?php 
@@ -387,6 +415,7 @@ $totalReturns = count($returns);
                                     <div class="btn-group btn-group-sm">
                                         <form method="POST" class="d-inline">
                                             <input type="hidden" name="order_id" value="<?php echo $return['OrderID']; ?>">
+                                            <input type="hidden" name="refund_id" value="<?php echo $return['RefundID']; ?>">
                                             <input type="hidden" name="approve_return" value="1">
                                             <button type="submit" class="btn btn-success btn-sm" title="Duyệt" onclick="return confirm('Xác nhận duyệt yêu cầu trả hàng này?')">
                                                 <i class="bi bi-check-lg"></i>
@@ -394,21 +423,22 @@ $totalReturns = count($returns);
                                         </form>
                                         <form method="POST" class="d-inline">
                                             <input type="hidden" name="order_id" value="<?php echo $return['OrderID']; ?>">
+                                            <input type="hidden" name="refund_id" value="<?php echo $return['RefundID']; ?>">
                                             <input type="hidden" name="reject_return" value="1">
                                             <button type="submit" class="btn btn-danger btn-sm" title="Từ chối" onclick="return confirm('Xác nhận từ chối yêu cầu trả hàng này?')">
                                                 <i class="bi bi-x-lg"></i>
                                             </button>
                                         </form>
-                                        <a href="<?php echo BASE_URL; ?>index.php?action=view_order&id=<?php echo $return['OrderID']; ?>" 
-                                           class="btn btn-outline-primary btn-sm" title="Xem chi tiết">
+                                        <button type="button" class="btn btn-outline-info btn-sm" title="Xem chi tiết" 
+                                                onclick="showReturnDetails('<?php echo htmlspecialchars($return['RefundID']); ?>', '<?php echo htmlspecialchars($return['OrderID']); ?>', '<?php echo htmlspecialchars($return['RefundReason'] ?? ''); ?>', '<?php echo htmlspecialchars($return['RefundDescription'] ?? ''); ?>', '<?php echo htmlspecialchars($return['RefundMethod'] ?? ''); ?>', '<?php echo htmlspecialchars($return['RefundImage'] ?? ''); ?>')">
                                             <i class="bi bi-eye"></i>
-                                        </a>
+                                        </button>
                                     </div>
                                     <?php else: ?>
-                                    <a href="<?php echo BASE_URL; ?>index.php?action=view_order&id=<?php echo $return['OrderID']; ?>" 
-                                       class="btn btn-outline-primary btn-sm" title="Xem chi tiết">
+                                    <button type="button" class="btn btn-outline-info btn-sm" title="Xem chi tiết"
+                                            onclick="showReturnDetails('<?php echo htmlspecialchars($return['RefundID']); ?>', '<?php echo htmlspecialchars($return['OrderID']); ?>', '<?php echo htmlspecialchars($return['RefundReason'] ?? ''); ?>', '<?php echo htmlspecialchars($return['RefundDescription'] ?? ''); ?>', '<?php echo htmlspecialchars($return['RefundMethod'] ?? ''); ?>', '<?php echo htmlspecialchars($return['RefundImage'] ?? ''); ?>')">
                                         <i class="bi bi-eye"></i>
-                                    </a>
+                                    </button>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -432,6 +462,56 @@ $totalReturns = count($returns);
             </div>
             <div class="modal-body text-center">
                 <img id="modalImage" src="" class="img-fluid" alt="Refund Image">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal chi tiết yêu cầu trả hàng -->
+<div class="modal fade" id="returnDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title"><i class="bi bi-arrow-return-left me-2"></i>Chi tiết yêu cầu trả hàng</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="fw-bold text-muted">Mã yêu cầu:</label>
+                            <p id="detailRefundId" class="fs-5 text-info"></p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="fw-bold text-muted">Mã đơn hàng:</label>
+                            <p id="detailOrderId" class="fs-5"></p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="fw-bold text-muted">Lý do trả hàng:</label>
+                            <p id="detailReason" class="text-danger fw-medium"></p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="fw-bold text-muted">Mô tả chi tiết:</label>
+                            <p id="detailDescription"></p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="fw-bold text-muted">Phương thức hoàn tiền:</label>
+                            <p id="detailMethod"><span class="badge bg-info"></span></p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="fw-bold text-muted">Hình ảnh minh chứng:</label>
+                            <div id="detailImageContainer" class="border rounded p-3 text-center">
+                                <img id="detailImage" src="" class="img-fluid" style="max-height: 300px; display: none;">
+                                <p id="detailNoImage" class="text-muted mb-0">Không có hình ảnh</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
             </div>
         </div>
     </div>
@@ -463,9 +543,46 @@ $(document).ready(function() {
 
 function showImage(imagePath) {
     // Convert relative path to absolute
-    const basePath = '/Candy-Crunch-Website/views/website/';
-    document.getElementById('modalImage').src = basePath + imagePath;
+    let fullPath = imagePath;
+    if (!imagePath.startsWith('/Candy-Crunch-Website') && !imagePath.startsWith('http')) {
+        fullPath = '/Candy-Crunch-Website' + imagePath;
+    }
+    document.getElementById('modalImage').src = fullPath;
     const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+    modal.show();
+}
+
+function showReturnDetails(refundId, orderId, reason, description, method, image) {
+    document.getElementById('detailRefundId').textContent = refundId;
+    document.getElementById('detailOrderId').textContent = '#' + orderId;
+    document.getElementById('detailReason').textContent = reason || 'Không có';
+    document.getElementById('detailDescription').textContent = description || 'Không có mô tả';
+    
+    const methodEl = document.getElementById('detailMethod');
+    if (method) {
+        methodEl.innerHTML = '<span class="badge bg-info">' + method + '</span>';
+    } else {
+        methodEl.innerHTML = '<span class="text-muted">Chưa chọn</span>';
+    }
+    
+    const imgEl = document.getElementById('detailImage');
+    const noImgEl = document.getElementById('detailNoImage');
+    
+    if (image) {
+        let fullPath = image;
+        if (!image.startsWith('/Candy-Crunch-Website') && !image.startsWith('http')) {
+            fullPath = '/Candy-Crunch-Website' + image;
+        }
+        imgEl.src = fullPath;
+        imgEl.style.display = 'block';
+        noImgEl.style.display = 'none';
+    } else {
+        imgEl.src = '';
+        imgEl.style.display = 'none';
+        noImgEl.style.display = 'block';
+    }
+    
+    const modal = new bootstrap.Modal(document.getElementById('returnDetailModal'));
     modal.show();
 }
 </script>

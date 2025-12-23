@@ -57,7 +57,7 @@ include '../../../partials/header.php';
         <div class="content">
             <div class="card-account">
                 <div class="user-card">
-                    <img class="avatar-icon" id="sidebarAvatar" src="<?php echo !empty($customer['Avatar']) ? htmlspecialchars($customer['Avatar']) : $ROOT . '/views/website/img/ot-longvo.png'; ?>" alt="avatar">
+                    <img class="avatar-icon" id="sidebarAvatar" src="<?php echo !empty($customer['Avatar']) ? $ROOT . htmlspecialchars($customer['Avatar']) : $ROOT . '/views/website/img/ot-longvo.png'; ?>" alt="avatar" onerror="this.src='<?php echo $ROOT; ?>/views/website/img/ot-longvo.png'">
                     <div class="user-name">
                         <div class="john-doe">
                             <?php 
@@ -134,7 +134,7 @@ include '../../../partials/header.php';
                                 </div>
                             </div>
                             <div class="avatar">
-                                <img class="avatar-icon2" id="profileAvatar" src="<?php echo !empty($customer['Avatar']) ? htmlspecialchars($customer['Avatar']) : $ROOT . '/views/website/img/ot-longvo.png'; ?>" alt="avatar">
+                                <img class="avatar-icon2" id="profileAvatar" src="<?php echo !empty($customer['Avatar']) ? $ROOT . htmlspecialchars($customer['Avatar']) : $ROOT . '/views/website/img/ot-longvo.png'; ?>" alt="avatar" onerror="this.src='<?php echo $ROOT; ?>/views/website/img/ot-longvo.png'">
                                 <input type="file" id="avatarInput" accept="image/jpeg,image/png" style="display:none;">
                                 <div class="button2" id="chooseAvatarBtn"><div class="texttitle"><div class="text4">Choose image</div></div></div>
                                 <div class="caption"><div class="gender">Max: 1 MB (.JPEG, .PNG)</div></div>

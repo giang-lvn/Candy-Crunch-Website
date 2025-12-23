@@ -1,6 +1,8 @@
 <?php
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 require_once __DIR__ . '/../../models/website/ReturnModel.php';
 
@@ -13,39 +15,50 @@ class ReturnController
         $this->returnModel = new ReturnModel();
     }
 
+    // Get customer ID from session (multiple session variable names)
+    private function getCustomerId()
+    {
+        if (isset($_SESSION['user_data']['CustomerID'])) {
+            return $_SESSION['user_data']['CustomerID'];
+        } elseif (isset($_SESSION['customer_id'])) {
+            return $_SESSION['customer_id'];
+        } elseif (isset($_SESSION['CustomerID'])) {
+            return $_SESSION['CustomerID'];
+        }
+        return null;
+    }
+
     // Hiển thị trang Return
     public function index()
     {
-        // Kiểm tra đăng nhập
-        if (!isset($_SESSION['customer_id'])) {
-            header('Location: /index.php?controller=auth&action=login');
+        $customerId = $this->getCustomerId();
+        
+        if (!$customerId) {
+            header('Location: /Candy-Crunch-Website/views/website/login.php');
             exit;
         }
 
-        $customerId = $_SESSION['customer_id'];
-
-        // Lấy OrderID từ URL (hoặc session)
-        // ← THÊM: Lấy OrderID từ GET parameter
+        // Lấy OrderID từ URL
         $orderId = $_GET['order_id'] ?? null;
 
         if (!$orderId) {
             $_SESSION['error'] = 'Please select an order to return.';
-            header('Location: /index.php?controller=order&action=index'); // Redirect về trang order
+            header('Location: /Candy-Crunch-Website/views/website/php/my_orders.php');
             exit;
         }
 
         // Kiểm tra đơn hàng có thuộc customer không
         if (!$this->returnModel->checkOrderOwnership($orderId, $customerId)) {
             $_SESSION['error'] = 'Unauthorized action.';
-            header('Location: /index.php?controller=order&action=index');
+            header('Location: /Candy-Crunch-Website/views/website/php/my_orders.php');
             exit;
         }
 
         // Kiểm tra đơn hàng đã completed chưa
         $order = $this->returnModel->getOrderById($orderId);
-        if (!$order || $order['OrderStatus'] !== 'Completed') {
+        if (!$order || !in_array($order['OrderStatus'], ['Completed', 'Complete'])) {
             $_SESSION['error'] = 'This order cannot be returned.';
-            header('Location: /index.php?controller=order&action=index');
+            header('Location: /Candy-Crunch-Website/views/website/php/my_orders.php');
             exit;
         }
 
@@ -65,44 +78,38 @@ class ReturnController
     // XỬ LÝ SUBMIT YÊU CẦU TRẢ HÀNG
     public function submitReturn()
     {
-        // Kiểm tra đăng nhập
-        if (!isset($_SESSION['customer_id'])) {
-            header('Location: /index.php?controller=auth&action=login');
-            exit;
-        }
+        $customerId = $this->getCustomerId();
+        
+        // Debug log session
+        error_log("ReturnController submitReturn: customerId=" . ($customerId ?? 'null'));
+        error_log("ReturnController session keys: " . implode(', ', array_keys($_SESSION ?? [])));
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /index.php?controller=return&action=index');
+            header('Location: /Candy-Crunch-Website/views/website/php/my_orders.php');
             exit;
         }
-
-        $customerId = $_SESSION['customer_id'];
 
         // Lấy dữ liệu form
         $orderId            = trim($_POST['order_id'] ?? '');
         $refundReason       = trim($_POST['refund_reason'] ?? '');
         $refundDescription  = trim($_POST['refund_description'] ?? '');
-        $refundMethod       = $_POST['refund_method'] ?? null;
+        $refundMethod       = trim($_POST['refund_method'] ?? '');
         $refundImage        = $_FILES['refund_image'] ?? null;
 
         // Validate cơ bản
         if (empty($orderId) || empty($refundReason)) {
             $_SESSION['error'] = 'Order ID and refund reason are required.';
-            header('Location: /index.php?controller=return&action=index&order_id=' . $orderId);
+            header('Location: /Candy-Crunch-Website/views/website/php/return.php?order_id=' . $orderId);
             exit;
         }
 
-        // Kiểm tra đơn hàng có thuộc customer không
-        if (!$this->returnModel->checkOrderOwnership($orderId, $customerId)) {
-            $_SESSION['error'] = 'Unauthorized action.';
-            header('Location: /index.php?controller=order&action=index');
-            exit;
-        }
+        // Log for debugging
+        error_log("ReturnController: orderId=$orderId, customerId=$customerId, reason=$refundReason");
 
         // Kiểm tra đơn hàng đã refund chưa
         if ($this->returnModel->checkRefundExistByOrder($orderId)) {
             $_SESSION['error'] = 'This order has already been refunded.';
-            header('Location: /index.php?controller=return&action=index&order_id=' . $orderId);
+            header('Location: /Candy-Crunch-Website/views/website/php/return.php?order_id=' . $orderId);
             exit;
         }
 
@@ -117,18 +124,35 @@ class ReturnController
             'order_id'          => $orderId,
             'refund_reason'     => $refundReason,
             'refund_description'=> $refundDescription,
+            'refund_method'     => $refundMethod,
             'refund_image'      => $imagePath
         ]);
 
         if (!$refundId) {
             $_SESSION['error'] = 'Failed to submit refund request.';
-            header('Location: /index.php?controller=return&action=index&order_id=' . $orderId);
+            header('Location: /Candy-Crunch-Website/views/website/php/return.php?order_id=' . $orderId);
             exit;
         }
 
-        //Thành công
+        // Cập nhật trạng thái đơn hàng thành 'Pending Return'
+        $this->returnModel->updateOrderStatus($orderId, 'Pending Return');
+
+        // Thành công
         $_SESSION['success'] = 'Refund request submitted successfully. Refund ID: ' . $refundId;
-        header('Location: /index.php?controller=order&action=index'); // Redirect về order history
+        header('Location: /Candy-Crunch-Website/views/website/php/my_orders.php');
         exit;
     }
+}
+
+// ROUTING
+$controller = new ReturnController();
+$action = $_GET['action'] ?? 'index';
+
+switch ($action) {
+    case 'submitReturn':
+        $controller->submitReturn();
+        break;
+    default:
+        $controller->index();
+        break;
 }

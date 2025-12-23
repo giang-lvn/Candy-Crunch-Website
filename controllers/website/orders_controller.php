@@ -77,8 +77,9 @@ class OrderController {
 
             // Chỉ thêm sản phẩm nếu có ProductName
             if (!empty($o['ProductName'])) {
-                // Add product
+                // Add product with sku_id for rating
                 $grouped[$id]['products'][] = [
+                    'sku_id' => $o['SKUID'] ?? '',
                     'name' => $o['ProductName'],
                     'image' => $this->parseProductImage($o['Image']),
                     'weight' => ($o['Attribute'] ?? '') . 'g',
@@ -86,7 +87,7 @@ class OrderController {
                     'itemTotal' => number_format($o['SubTotal'] ?? 0, 0, ',', '.') . ' VND'
                 ];
                 
-                // Add SKUID for rating
+                // Add SKUID for rating (backward compatibility)
                 $grouped[$id]['productSkuIds'][] = $o['SKUID'] ?? '';
 
                 // Accumulate subtotal
@@ -158,7 +159,7 @@ class OrderController {
             'Pending Cancel'         => 'pending-cancel',
             'Pending Return'         => 'pending-return',
             'Returned'               => 'return',
-            'Cancelled', 'Canceled'  => 'cancel',
+            'Cancelled'              => 'cancel',
             'Pending Confirmation'   => 'pending-confirm',
             default                  => 'pending'
         };
@@ -173,7 +174,7 @@ class OrderController {
             'Pending Cancel'         => 'Pending Cancel',
             'Pending Return'         => 'Pending Return',
             'Returned'               => 'Returned',
-            'Cancelled', 'Canceled'  => 'Cancelled',
+            'Cancelled'              => 'Cancelled',
             'Pending Confirmation'   => 'Pending Confirmation',
             default                  => 'Pending'
         };
@@ -189,7 +190,7 @@ class OrderController {
             'Pending Cancel'         => ['Contact'],
             'Pending Return'         => ['Contact'],
             'Returned'               => ['Contact', 'Buy Again'],
-            'Cancelled', 'Canceled'  => ['Contact', 'Buy Again'],
+            'Cancelled'              => ['Contact', 'Buy Again'],
             default                  => ['Contact']
         };
     }

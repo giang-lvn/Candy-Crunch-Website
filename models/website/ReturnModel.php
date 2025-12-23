@@ -126,6 +126,7 @@ class ReturnModel
     private function ensureRefundTableExists()
     {
         try {
+            // Tạo bảng nếu chưa tồn tại
             $this->conn->exec("
                 CREATE TABLE IF NOT EXISTS REFUND (
                     RefundID VARCHAR(10) PRIMARY KEY,
@@ -133,13 +134,21 @@ class ReturnModel
                     RefundDate DATETIME DEFAULT CURRENT_TIMESTAMP,
                     RefundReason TEXT,
                     RefundDescription TEXT,
+                    RefundMethod VARCHAR(100),
                     RefundImage VARCHAR(255),
-                    RefundStatus VARCHAR(20) DEFAULT 'Pending',
-                    FOREIGN KEY (OrderID) REFERENCES ORDERS(OrderID) ON DELETE CASCADE
-                )
+                    RefundStatus VARCHAR(20) DEFAULT 'Pending'
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
             ");
+            
+            // Thêm cột RefundMethod nếu chưa tồn tại (cho bảng đã tạo trước đó)
+            try {
+                $this->conn->exec("ALTER TABLE REFUND ADD COLUMN RefundMethod VARCHAR(100) AFTER RefundDescription");
+            } catch (PDOException $e) {
+                // Cột đã tồn tại, bỏ qua lỗi
+            }
+            
         } catch (PDOException $e) {
-            // Table might already exist, ignore
+            error_log("ensureRefundTableExists error: " . $e->getMessage());
         }
     }
 
@@ -166,6 +175,9 @@ class ReturnModel
             $this->ensureRefundTableExists();
             
             $refundId = $this->generateRefundId();
+            
+            // Debug log
+            error_log("createRefundRequest: RefundID=$refundId, OrderID=" . $data['order_id'] . ", Reason=" . $data['refund_reason']);
 
             $sql = "
                 INSERT INTO REFUND (
@@ -174,6 +186,7 @@ class ReturnModel
                     RefundDate,
                     RefundReason,
                     RefundDescription,
+                    RefundMethod,
                     RefundImage,
                     RefundStatus
                 ) VALUES (
@@ -182,6 +195,7 @@ class ReturnModel
                     NOW(),
                     :refund_reason,
                     :refund_description,
+                    :refund_method,
                     :refund_image,
                     'Pending'
                 )
@@ -193,13 +207,32 @@ class ReturnModel
                 ':refund_id'          => $refundId,
                 ':order_id'           => $data['order_id'],
                 ':refund_reason'      => $data['refund_reason'],
-                ':refund_description' => $data['refund_description'],
+                ':refund_description' => $data['refund_description'] ?? '',
+                ':refund_method'      => $data['refund_method'] ?? null,
                 ':refund_image'       => $data['refund_image']
             ]);
+
+            error_log("createRefundRequest: success=$success, RefundID=$refundId");
 
             return $success ? $refundId : false;
         } catch (PDOException $e) {
             error_log("ReturnModel::createRefundRequest error: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    // Cập nhật trạng thái đơn hàng
+    public function updateOrderStatus($orderId, $status)
+    {
+        try {
+            $sql = "UPDATE ORDERS SET OrderStatus = :status WHERE OrderID = :order_id";
+            $stmt = $this->conn->prepare($sql);
+            return $stmt->execute([
+                ':status' => $status,
+                ':order_id' => $orderId
+            ]);
+        } catch (PDOException $e) {
+            error_log("ReturnModel::updateOrderStatus error: " . $e->getMessage());
             return false;
         }
     }
@@ -221,7 +254,7 @@ class ReturnModel
         $filePath = $uploadDir . $fileName;
 
         if (move_uploaded_file($file['tmp_name'], $filePath)) {
-            return '../img/refund/' . $fileName;
+            return '/views/website/img/refund/' . $fileName;
         }
 
         return null;

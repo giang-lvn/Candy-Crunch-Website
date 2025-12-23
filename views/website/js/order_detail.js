@@ -73,11 +73,16 @@ function initOrderDetail() {
     if (submitRatingBtn) {
         submitRatingBtn.addEventListener('click', handleSubmitRating);
     }
+
+    // Setup Cancel Popup Events
+    setupCancelPopupEvents();
 }
 
 /**
- * Xử lý hủy đơn hàng
+ * Xử lý hủy đơn hàng - Hiển thị popup
  */
+let cancelSelectedReason = '';
+
 function handleCancelOrder(e) {
     e.preventDefault();
 
@@ -88,35 +93,150 @@ function handleCancelOrder(e) {
         return;
     }
 
-    // Hiển thị confirm dialog
-    if (!confirm('Are you sure you want to cancel this order?')) {
+    // Hiển thị cancel popup
+    showCancelPopup();
+}
+
+/**
+ * Hiển thị cancel popup
+ */
+function showCancelPopup() {
+    const overlay = document.getElementById('cancel-order-overlay');
+    const dropdownText = document.querySelector('#cancelDropdownTrigger .dropdown-text');
+
+    cancelSelectedReason = '';
+    if (dropdownText) {
+        dropdownText.textContent = 'Select a cancel reason';
+    }
+
+    if (overlay) {
+        overlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+/**
+ * Đóng cancel popup
+ */
+function closeCancelPopup() {
+    const overlay = document.getElementById('cancel-order-overlay');
+    if (overlay) {
+        overlay.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+}
+
+/**
+ * Setup cancel popup events
+ */
+function setupCancelPopupEvents() {
+    const overlay = document.getElementById('cancel-order-overlay');
+    const closeBtn = document.getElementById('cancelPopupClose');
+    const dropdownTrigger = document.getElementById('cancelDropdownTrigger');
+    const dropdownMenu = document.getElementById('cancelDropdownMenu');
+    const dropdownText = dropdownTrigger ? dropdownTrigger.querySelector('.dropdown-text') : null;
+    const submitBtn = document.getElementById('submitCancelOrder');
+    const contactBtn = document.getElementById('cancelContactBtn');
+
+    // Đóng popup
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeCancelPopup);
+    }
+
+    // Đóng popup khi click ngoài popup
+    if (overlay) {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                closeCancelPopup();
+            }
+        });
+    }
+
+    // Dropdown lý do hủy
+    if (dropdownTrigger && dropdownMenu) {
+        dropdownTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('show');
+        });
+
+        dropdownMenu.querySelectorAll('.dropdown-option').forEach(option => {
+            option.addEventListener('click', (e) => {
+                e.stopPropagation();
+                cancelSelectedReason = option.dataset.value;
+                if (dropdownText) {
+                    dropdownText.textContent = cancelSelectedReason;
+                }
+                dropdownMenu.classList.remove('show');
+            });
+        });
+    }
+
+    // Submit button
+    if (submitBtn) {
+        submitBtn.addEventListener('click', submitCancelRequest);
+    }
+
+    // Contact button
+    if (contactBtn) {
+        contactBtn.addEventListener('click', () => {
+            window.location.href = '/Candy-Crunch-Website/views/website/policy.php';
+        });
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', () => {
+        if (dropdownMenu) {
+            dropdownMenu.classList.remove('show');
+        }
+    });
+}
+
+/**
+ * Submit cancel request
+ */
+function submitCancelRequest() {
+    const orderId = getOrderIdFromPage();
+    const submitBtn = document.getElementById('submitCancelOrder');
+
+    if (!cancelSelectedReason) {
+        showNotification('Please select a reason to cancel your order.', 'error');
         return;
     }
 
-    // Gửi AJAX request
-    fetch('/Candy-Crunch-Website/index.php?controller=OrderDetail&action=cancel', {
+    // Disable button while processing
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Processing...';
+
+    // Send cancel request
+    const formData = new FormData();
+    formData.append('order_id', orderId);
+    formData.append('reason', cancelSelectedReason);
+
+    fetch('/Candy-Crunch-Website/controllers/website/CancelController.php', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `order_id=${orderId}`
+        body: formData
     })
-        .then(response => response.json())
+        .then(res => res.json())
         .then(data => {
             if (data.success) {
                 showNotification(data.message, 'success');
+                closeCancelPopup();
 
                 // Reload trang sau 1.5s
                 setTimeout(() => {
                     window.location.reload();
                 }, 1500);
             } else {
-                showNotification(data.message, 'error');
+                showNotification('Error: ' + data.message, 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send Request';
             }
         })
-        .catch(error => {
-            console.error('Error:', error);
+        .catch(err => {
+            console.error('Cancel request failed:', err);
             showNotification('An error occurred. Please try again.', 'error');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Send Request';
         });
 }
 

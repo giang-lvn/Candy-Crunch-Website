@@ -22,6 +22,7 @@ require_once('../../../partials/header.php');
     <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/my_account.css">
     <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/my_orders.css">
     <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/rating.css">
+    <link rel="stylesheet" href="<?php echo $ROOT; ?>/views/website/css/cancel.css">
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Modak&family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
@@ -184,6 +185,7 @@ require_once('../../../partials/header.php');
 
     <!-- JS -->
     <script src="<?php echo $ROOT; ?>/views/website/js/my_orders.js"></script>
+    <script src="<?php echo $ROOT; ?>/views/website/js/rating.js"></script>
 </body>
 </html>
 <?php

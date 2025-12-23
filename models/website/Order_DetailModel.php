@@ -252,7 +252,7 @@ class OrderDetailModel
             return false; // Không cho phép hủy
         }
 
-        return $this->updateOrderStatus($orderId, 'Canceled');
+        return $this->updateOrderStatus($orderId, 'Cancelled');
     }
 
     /**

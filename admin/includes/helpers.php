@@ -46,7 +46,7 @@ function getStatusColor($status) {
         'Waiting Payment' => 'secondary',
         'Pending Cancel' => 'danger',
         'Pending Return' => 'warning',
-        'Cancelled', 'Canceled' => 'danger',
+        'Cancelled' => 'danger',
         'Returned' => 'dark',
         default => 'secondary'
     };

@@ -354,7 +354,7 @@ $totalSpent = array_sum(array_map(function($o) {
                                             'On Shipping' => 'bg-info',
                                             'Pending Confirmation' => 'bg-warning text-dark',
                                             'Waiting Payment' => 'bg-secondary',
-                                            'Cancelled', 'Canceled' => 'bg-danger',
+                                            'Cancelled' => 'bg-danger',
                                             default => 'bg-secondary'
                                         };
                                         $orderStatusText = match($orderStatus) {
@@ -362,7 +362,7 @@ $totalSpent = array_sum(array_map(function($o) {
                                             'On Shipping' => 'Đang giao',
                                             'Pending Confirmation' => 'Chờ xác nhận',
                                             'Waiting Payment' => 'Chờ thanh toán',
-                                            'Cancelled', 'Canceled' => 'Đã hủy',
+                                            'Cancelled' => 'Đã hủy',
                                             default => $orderStatus
                                         };
                                         ?>

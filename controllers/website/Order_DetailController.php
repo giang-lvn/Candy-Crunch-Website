@@ -125,7 +125,7 @@ class OrderDetailController
                 $buttons['contact'] = true;
                 break;
 
-            case 'Canceled':
+            case 'Cancelled':
                 $buttons['contact'] = true;
                 $buttons['buy_again'] = true;
                 break;

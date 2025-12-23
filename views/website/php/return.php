@@ -1,4 +1,22 @@
-<?php include '../../../partials/header.php'; ?>
+<?php 
+// Đảm bảo session được khởi tạo
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Lấy orderId từ URL nếu chưa có từ controller
+if (!isset($data)) {
+    $data = [
+        'orderId' => $_GET['order_id'] ?? '',
+        'products' => []
+    ];
+}
+
+// Kiểm tra đăng nhập
+$isLoggedIn = isset($_SESSION['user_data']) || isset($_SESSION['customer_id']) || isset($_SESSION['CustomerID']);
+
+include '../../../partials/header.php'; 
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -43,125 +61,68 @@
     </div>
 
     <!-- FORM -->
-    <form class="return-form" method="POST" action="/index.php?controller=return&action=submitReturn" enctype="multipart/form-data">
+    <form class="return-form" method="POST" action="/Candy-Crunch-Website/controllers/website/ReturnController.php?action=submitReturn" enctype="multipart/form-data" id="returnForm">
         
-        <!-- ← THÊM: Hidden input chứa OrderID -->
-        <input type="hidden" name="order_id" value="<?= htmlspecialchars($data['orderId']) ?>">
+        <!-- Hidden input chứa OrderID -->
+        <input type="hidden" name="order_id" value="<?= htmlspecialchars($data['orderId'] ?? ($_GET['order_id'] ?? '')) ?>">
+        <input type="hidden" name="refund_reason" id="refundReasonInput" value="">
+        <input type="hidden" name="refund_method" id="refundMethodInput" value="">
         
-        <!-- PRODUCTS -->
-        <div class="return-products">
-            <div class="return-products-title">
-                <h3>Product</h3>
-            </div>
-        
-            <div class="return-products-grid">
-                <?php if (!empty($data['products'])): ?>
-                    <?php foreach ($data['products'] as $product): ?>
-                        <div class="return-product-item">
-                            <div class="single-product">
-                                <!-- ← XÓA: Bỏ checkbox -->
-                                
-                                <div class="product-info">
-                                    <div class="product-image">
-                                        <img src="<?= htmlspecialchars($product['Image'] ?? '../img/default.jpg') ?>" alt="Product">
-                                    </div>
-                                
-                                    <div class="product-details">
-                                        <div class="product-name"><?= htmlspecialchars($product['ProductName']) ?></div>
-                                        <div class="product-attribute"><?= htmlspecialchars($product['Attribute']) ?>g</div>
-                                        <div class="product-price-qty">
-                                            <div class="product-quantity">Qty: <?= htmlspecialchars($product['OrderQuantity']) ?></div>
-                                            <div class="product-price">
-                                                <span class="price-old"><?= number_format($product['OriginalPrice'], 0, ',', '.') ?> VND</span>
-                                                <span class="price-new"><?= number_format($product['PromotionPrice'], 0, ',', '.') ?> VND</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <p>No products found in this order.</p>
-                <?php endif; ?>
+        <!-- Chọn lý do -->
+        <div class="input" data-type="dropdown" data-size="medium">
+            <label class="input-label">Return reason</label>
+            <div class="input-field">
+                <div class="dropdown-trigger" id="returnReasonTrigger">
+                    <span class="dropdown-text">Select a return reason</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="dropdown-arrow">
+                    <path d="M18 9L12 15L6 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="dropdown-menu" id="returnReasonMenu">
+                    <button type="button" class="dropdown-option" data-value="Product is crushed or deformed">Product is crushed or deformed</button>
+                    <button type="button" class="dropdown-option" data-value="Product is expired">Product is expired</button>
+                    <button type="button" class="dropdown-option" data-value="Wrong Item Received">Wrong Item Received</button>
+                    <button type="button" class="dropdown-option" data-value="Packaging has been tampered with">Packaging has been tampered with</button>
+                    <button type="button" class="dropdown-option" data-value="Other">Other</button>
+                </div>
             </div>
         </div>
-        
-        <!-- RETURN INFO -->
-        <div class="refurn">
     
-            <div class="return-products-title">
-                <h3>Return Request Form</h3>
+        <!-- Viết mô tả -->
+        <div class="input" data-optional="true" data-size="medium">
+            <label class="input-label">Description</label>
+            <div class="input-field">
+              <input type="text" name="refund_description" placeholder="Describe your problem">
             </div>
-        
-            <!-- Chọn lý do -->
-            <div class="input" data-type="dropdown" data-size="medium">
-                <label class="input-label">Return reason</label>
-                <div class="input-field">
-                    <div class="dropdown-trigger">
-                        <span class="dropdown-text">Select a return reason</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="dropdown-arrow">
-                        <path d="M18 9L12 15L6 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <div class="dropdown-menu">
-                        <button class="dropdown-option" data-value="Product is crushed or deformed">Product is crushed or deformed</button>
-                        <button class="dropdown-option" data-value="Product is expired">Product is expired</button>
-                        <button class="dropdown-option" data-value="Wrong Item Received">Wrong Item Received</button>
-                        <button class="dropdown-option" data-value="Packaging has been tampered with">Packaging has been tampered with</button>
-                        <button class="dropdown-option" data-value="Other">Other</button>
-                    </div>
+        </div>
+    
+        <!-- Upload ảnh -->
+         <div class="input" data-type="upload" data-size="medium">
+            <label class="input-label">Upload image</label>
+            <div class="input-field">
+                <input type="file" name="refund_image" class="file-input" accept="image/jpeg,image/png,image/webp">
+            </div>
+        </div>
+    
+        <!-- Chọn phương thức hoàn trả -->
+        <div class="input" data-type="dropdown" data-size="medium">
+            <label class="input-label">Refund method</label>
+            <div class="input-field">
+                <div class="dropdown-trigger" id="refundMethodTrigger">
+                    <span class="dropdown-text">Select a refund method</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="dropdown-arrow">
+                    <path d="M18 9L12 15L6 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="dropdown-menu" id="refundMethodMenu">
+                    <button type="button" class="dropdown-option" data-value="Refund via Bank transfer">Refund via Bank transfer</button>
+                    <button type="button" class="dropdown-option" data-value="Issue a Gift Card">Issue a Gift Card</button>
                 </div>
             </div>
-        
-            <!-- Viết mô tả -->
-            <div class="input" data-optional="true" data-size="medium">
-                <label class="input-label">Description</label>
-                <div class="input-field">
-                  <input type="text" placeholder="Describe your problem">
-                </div>
-            </div>
-        
-            <!-- Upload ảnh (Ngôn ngữ hiển thị theo trình duyệt )-->
-             <div class="input" data-type="upload" data-size="medium">
-                <label class="input-label">Upload image</label>
-                <div class="input-field">
-                    <input type="file" class="file-input">
-                </div>
-            </div>
-
-            <!-- Tùy chỉnh phần chữ hiển thị 
-            <div class="input" data-type="upload" data-size="medium">
-                <label class="input-label">Upload image</label>
-                <div class="input-field">
-                    <label class="custom-upload">
-                        <span class="upload-text">No file selected</span>
-                        <input type="file" accept="image/*" hidden>
-                    </label>
-                </div>
-            </div>  -->
-        
-            <!-- Chọn phương thức hoàn trả -->
-            <div class="input" data-type="dropdown" data-size="medium">
-                <label class="input-label">Refund method</label>
-                <div class="input-field">
-                    <div class="dropdown-trigger">
-                        <span class="dropdown-text">Select a refund method</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="dropdown-arrow">
-                        <path d="M18 9L12 15L6 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <div class="dropdown-menu">
-                        <button class="dropdown-option" data-value="Refund via Bank transfer">Refund via Bank transfer</button>
-                        <button class="dropdown-option" data-value="Issue a Gift Card">Issue a Gift Card</button>
-                    </div>
-                </div>
-            </div>
-        
-            <div class="return-submit">
-                <button class="btn-primary-large">Send Request</button>
-            </div>
-
+        </div>
+    
+        <div class="return-submit">
+            <button type="submit" class="btn-primary-large">Send Request</button>
         </div>
     </form>
     
