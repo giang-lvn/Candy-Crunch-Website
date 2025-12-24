@@ -13,22 +13,22 @@ $preselectedCategory = $_GET['category'] ?? '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
     try {
         $pdo->beginTransaction();
-        
+
         // 1. Lấy ProductID từ form (nhập thủ công)
         $newProductId = trim($_POST['product_id'] ?? '');
-        
+
         // Validate ProductID
         if (empty($newProductId)) {
             throw new Exception('Mã sản phẩm (ProductID) không được để trống');
         }
-        
+
         // Kiểm tra ProductID đã tồn tại chưa
         $checkProduct = $pdo->prepare("SELECT ProductID FROM PRODUCT WHERE ProductID = ?");
         $checkProduct->execute([$newProductId]);
         if ($checkProduct->fetch()) {
             throw new Exception('Mã sản phẩm "' . $newProductId . '" đã tồn tại. Vui lòng chọn mã khác.');
         }
-        
+
         // 2. Lấy dữ liệu PRODUCT từ form
         $productName = trim($_POST['product_name'] ?? '');
         $description = trim($_POST['description'] ?? '');
@@ -37,34 +37,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
         $ingredient = trim($_POST['ingredient'] ?? '');
         $categoryId = $_POST['category_id'] ?? null;
         $filter = trim($_POST['filter'] ?? '');
-        
+
         // Validate
         if (empty($productName)) {
             throw new Exception('Tên sản phẩm không được để trống');
         }
-        
+
         // 3. Xử lý upload ảnh sản phẩm (tối đa 5 ảnh)
         $uploadDir = __DIR__ . '/../../views/website/img/products/';
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0777, true);
         }
-        
+
         $productImages = [];
         $selectedThumbnail = intval($_POST['product_thumbnail'] ?? 0);
-        
+
         if (isset($_FILES['product_images']['name'])) {
             foreach ($_FILES['product_images']['name'] as $index => $fileName) {
-                if (empty($fileName)) continue;
-                if (count($productImages) >= 5) break;
-                
+                if (empty($fileName))
+                    continue;
+                if (count($productImages) >= 5)
+                    break;
+
                 $tmpName = $_FILES['product_images']['tmp_name'][$index];
                 $error = $_FILES['product_images']['error'][$index];
-                
+
                 if ($error === UPLOAD_ERR_OK) {
                     $ext = pathinfo($fileName, PATHINFO_EXTENSION);
                     $newFileName = $newProductId . '_' . time() . '_' . $index . '.' . $ext;
                     $targetPath = $uploadDir . $newFileName;
-                    
+
                     if (move_uploaded_file($tmpName, $targetPath)) {
                         $imagePath = '/Candy-Crunch-Website/views/website/img/products/' . $newFileName;
                         $productImages[] = [
@@ -75,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                 }
             }
         }
-        
+
         // Đảm bảo có ít nhất 1 thumbnail
         if (!empty($productImages)) {
             $hasThumbnail = false;
@@ -89,9 +91,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                 $productImages[0]['is_thumbnail'] = true;
             }
         }
-        
+
         $productImageJson = !empty($productImages) ? json_encode($productImages) : null;
-        
+
         // 4. INSERT vào bảng PRODUCT
         $stmt = $pdo->prepare("
             INSERT INTO PRODUCT (ProductID, ProductName, Description, Unit, Flavour, Ingredient, CategoryID, Filter, Image)
@@ -108,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
             'filter' => $filter,
             'image' => $productImageJson
         ]);
-        
+
         // 5. Xử lý các SKU
         $skuIds = $_POST['sku_id'] ?? [];
         $skuAttributes = $_POST['sku_attribute'] ?? [];
@@ -116,20 +118,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
         $skuPromotionPrices = $_POST['sku_promotion_price'] ?? [];
         $skuStocks = $_POST['sku_stock'] ?? [];
         $skuStatuses = $_POST['sku_status'] ?? [];
-        
+
         foreach ($skuIds as $index => $skuId) {
             $skuId = trim($skuId);
             $attribute = trim($skuAttributes[$index] ?? '');
-            
-            if (empty($skuId) || empty($attribute)) continue;
-            
+
+            if (empty($skuId) || empty($attribute))
+                continue;
+
             // Kiểm tra SKUID đã tồn tại chưa
             $checkSku = $pdo->prepare("SELECT SKUID FROM SKU WHERE SKUID = ?");
             $checkSku->execute([$skuId]);
             if ($checkSku->fetch()) {
                 throw new Exception('Mã SKU "' . $skuId . '" đã tồn tại. Vui lòng chọn mã khác.');
             }
-            
+
             // Tự động tạo InventoryID mới với format IVENxxx
             $lastInventory = $pdo->query("
                 SELECT InventoryID FROM INVENTORY 
@@ -143,7 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
             } else {
                 $newInventoryId = 'IVEN001';
             }
-            
+
             // INSERT vào INVENTORY
             $stock = intval($skuStocks[$index] ?? 0);
             // Tự động xác định InventoryStatus dựa trên Stock (thỏa mãn constraint Check_InventoryStatus_Stock)
@@ -154,7 +157,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
             } else {
                 $status = 'Out of stock';
             }
-            
+
             $stmtInv = $pdo->prepare("
                 INSERT INTO INVENTORY (InventoryID, Stock, InventoryStatus)
                 VALUES (:inventoryId, :stock, :status)
@@ -164,11 +167,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                 'stock' => $stock,
                 'status' => $status
             ]);
-            
+
             // INSERT vào SKU (không còn cột Image - ảnh được lưu ở PRODUCT)
             $originalPrice = floatval($skuOriginalPrices[$index] ?? 0);
             $promotionPrice = !empty($skuPromotionPrices[$index]) ? floatval($skuPromotionPrices[$index]) : null;
-            
+
             $stmtSku = $pdo->prepare("
                 INSERT INTO SKU (SKUID, ProductID, InventoryID, Attribute, OriginalPrice, PromotionPrice)
                 VALUES (:skuId, :productId, :inventoryId, :attribute, :originalPrice, :promotionPrice)
@@ -182,14 +185,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                 'promotionPrice' => $promotionPrice
             ]);
         }
-        
+
         $pdo->commit();
         $message = 'Thêm sản phẩm thành công! Mã sản phẩm: ' . $newProductId;
         $messageType = 'success';
-        
-        // Redirect về trang products sau 2 giây
-        header("Refresh: 2; url=" . BASE_URL . "index.php?action=products");
-        
+
+        // Flag để redirect bằng JavaScript (tránh lỗi "headers already sent")
+        $redirectAfterSuccess = true;
+
     } catch (Exception $e) {
         $pdo->rollBack();
         $message = 'Lỗi: ' . $e->getMessage();
@@ -216,11 +219,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
 
 <!-- Thông báo -->
 <?php if ($message): ?>
-<div class="alert alert-<?php echo $messageType; ?> alert-dismissible fade show" role="alert">
-    <i class="bi bi-<?php echo $messageType === 'success' ? 'check-circle' : 'exclamation-triangle'; ?> me-2"></i>
-    <?php echo htmlspecialchars($message); ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-</div>
+    <div class="alert alert-<?php echo $messageType; ?> alert-dismissible fade show" role="alert">
+        <i class="bi bi-<?php echo $messageType === 'success' ? 'check-circle' : 'exclamation-triangle'; ?> me-2"></i>
+        <?php echo htmlspecialchars($message); ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
 <?php endif; ?>
 
 <!-- Form -->
@@ -235,64 +238,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                 <div class="card-body">
                     <!-- Mã sản phẩm (ProductID) -->
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Mã sản phẩm (ProductID) <span class="text-danger">*</span></label>
-                        <input type="text" name="product_id" class="form-control" required 
-                               placeholder="Nhập mã sản phẩm..." value="<?php echo htmlspecialchars($_POST['product_id'] ?? ''); ?>">
-                        <small class="text-muted">Nhập mã sản phẩm duy nhất. Mã này không thể trùng với sản phẩm đã có.</small>
+                        <label class="form-label fw-semibold">Mã sản phẩm (ProductID) <span
+                                class="text-danger">*</span></label>
+                        <input type="text" name="product_id" class="form-control" required
+                            placeholder="Nhập mã sản phẩm..."
+                            value="<?php echo htmlspecialchars($_POST['product_id'] ?? ''); ?>">
+                        <small class="text-muted">Nhập mã sản phẩm duy nhất. Mã này không thể trùng với sản phẩm đã
+                            có.</small>
                     </div>
-                    
+
                     <!-- Tên sản phẩm -->
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Tên sản phẩm <span class="text-danger">*</span></label>
-                        <input type="text" name="product_name" class="form-control" required 
-                               placeholder="Nhập tên sản phẩm..." value="<?php echo htmlspecialchars($_POST['product_name'] ?? ''); ?>">
+                        <input type="text" name="product_name" class="form-control" required
+                            placeholder="Nhập tên sản phẩm..."
+                            value="<?php echo htmlspecialchars($_POST['product_name'] ?? ''); ?>">
                     </div>
-                    
+
                     <!-- Danh mục -->
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Danh mục</label>
                         <select name="category_id" class="form-select">
                             <option value="">-- Chọn danh mục --</option>
                             <?php foreach ($categories as $cat): ?>
-                            <option value="<?php echo $cat['CategoryID']; ?>"
-                                <?php echo (($_POST['category_id'] ?? $preselectedCategory) == $cat['CategoryID']) ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($cat['CategoryName']); ?>
-                            </option>
+                                <option value="<?php echo $cat['CategoryID']; ?>" <?php echo (($_POST['category_id'] ?? $preselectedCategory) == $cat['CategoryID']) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($cat['CategoryName']); ?>
+                                </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    
+
                     <!-- Mô tả -->
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Mô tả</label>
-                        <textarea name="description" class="form-control" rows="3" 
-                                  placeholder="Mô tả chi tiết sản phẩm..."><?php echo htmlspecialchars($_POST['description'] ?? ''); ?></textarea>
+                        <textarea name="description" class="form-control" rows="3"
+                            placeholder="Mô tả chi tiết sản phẩm..."><?php echo htmlspecialchars($_POST['description'] ?? ''); ?></textarea>
                     </div>
-                    
+
                     <!-- Unit -->
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Đơn vị</label>
                         <select name="unit" class="form-select">
                             <option value="">-- Chọn đơn vị --</option>
-                            <option value="Packet" <?php echo ($_POST['unit'] ?? '') === 'Packet' ? 'selected' : ''; ?>>Packet</option>
-                            <option value="Stick" <?php echo ($_POST['unit'] ?? '') === 'Stick' ? 'selected' : ''; ?>>Stick</option>
+                            <option value="Packet" <?php echo ($_POST['unit'] ?? '') === 'Packet' ? 'selected' : ''; ?>>
+                                Packet</option>
+                            <option value="Stick" <?php echo ($_POST['unit'] ?? '') === 'Stick' ? 'selected' : ''; ?>>
+                                Stick</option>
                         </select>
                     </div>
-                    
+
                     <!-- Hương vị -->
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Hương vị</label>
-                        <input type="text" name="flavour" class="form-control" 
-                               placeholder="Nhập hương vị..." value="<?php echo htmlspecialchars($_POST['flavour'] ?? ''); ?>">
+                        <input type="text" name="flavour" class="form-control" placeholder="Nhập hương vị..."
+                            value="<?php echo htmlspecialchars($_POST['flavour'] ?? ''); ?>">
                     </div>
-                    
+
                     <!-- Thành phần -->
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Thành phần</label>
-                        <textarea name="ingredient" class="form-control" rows="2" 
-                                  placeholder="Liệt kê thành phần..."><?php echo htmlspecialchars($_POST['ingredient'] ?? ''); ?></textarea>
+                        <textarea name="ingredient" class="form-control" rows="2"
+                            placeholder="Liệt kê thành phần..."><?php echo htmlspecialchars($_POST['ingredient'] ?? ''); ?></textarea>
                     </div>
-                    
+
                     <!-- Filter -->
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Filter/Tags</label>
@@ -303,24 +311,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                             <option value="On sales" <?php echo ($_POST['filter'] ?? '') === 'On sales' ? 'selected' : ''; ?>>On sales</option>
                         </select>
                     </div>
-                    
+
                     <!-- Ảnh sản phẩm -->
                     <div class="mb-3">
                         <label class="form-label fw-semibold">
-                            <i class="bi bi-images me-1"></i>Ảnh sản phẩm 
+                            <i class="bi bi-images me-1"></i>Ảnh sản phẩm
                             <span class="text-muted fw-normal">(Tối đa 5 ảnh)</span>
                         </label>
-                        <input type="file" name="product_images[]" class="form-control" accept="image/*" multiple id="productImagesInput">
+                        <input type="file" name="product_images[]" class="form-control" accept="image/*" multiple
+                            id="productImagesInput">
                         <input type="hidden" name="product_thumbnail" id="productThumbnailInput" value="0">
-                        <small class="text-muted">Chọn nhiều ảnh cùng lúc. Ảnh đầu tiên sẽ là thumbnail mặc định.</small>
-                        
+                        <small class="text-muted">Chọn nhiều ảnh cùng lúc. Ảnh đầu tiên sẽ là thumbnail mặc
+                            định.</small>
+
                         <!-- Preview images -->
                         <div id="imagePreviewContainer" class="d-flex flex-wrap gap-2 mt-2"></div>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Cột phải: SKU -->
         <div class="col-lg-7">
             <div class="card">
@@ -336,7 +346,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                         Mỗi SKU đại diện cho một biến thể của sản phẩm.
                         Bạn cần thêm ít nhất 1 SKU cho mỗi sản phẩm.
                     </div>
-                    
+
                     <!-- Container cho các SKU -->
                     <div id="skuContainer">
                         <!-- SKU mặc định -->
@@ -346,46 +356,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                                     <h6 class="text-primary mb-0">
                                         <i class="bi bi-tag me-2"></i>SKU #1
                                     </h6>
-                                    <button type="button" class="btn btn-outline-danger btn-sm remove-sku-btn" disabled title="Không thể xóa SKU đầu tiên">
+                                    <button type="button" class="btn btn-outline-danger btn-sm remove-sku-btn" disabled
+                                        title="Không thể xóa SKU đầu tiên">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
-                                
+
                                 <div class="row">
                                     <!-- Mã SKU -->
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label small fw-semibold">Mã SKU (SKUID) <span class="text-danger">*</span></label>
+                                        <label class="form-label small fw-semibold">Mã SKU (SKUID) <span
+                                                class="text-danger">*</span></label>
                                         <input type="text" name="sku_id[]" class="form-control" required
-                                               placeholder="Nhập mã SKU">
+                                            placeholder="Nhập mã SKU">
                                         <small class="text-muted">Mã SKU phải duy nhất</small>
                                     </div>
-                                    
+
                                     <!-- Thuộc tính -->
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label small fw-semibold">Thuộc tính <span class="text-danger">*</span></label>
+                                        <label class="form-label small fw-semibold">Thuộc tính <span
+                                                class="text-danger">*</span></label>
                                         <input type="text" name="sku_attribute[]" class="form-control" required
-                                               placeholder="Nhập thuộc tính">
+                                            placeholder="Nhập thuộc tính">
                                     </div>
-                                    
+
                                     <!-- Tồn kho -->
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label small fw-semibold">Số lượng tồn kho</label>
-                                        <input type="number" name="sku_stock[]" class="form-control" 
-                                               value="0" min="0" placeholder="0">
+                                        <input type="number" name="sku_stock[]" class="form-control" value="0" min="0"
+                                            placeholder="0">
                                     </div>
-                                    
+
                                     <!-- Giá gốc -->
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label small fw-semibold">Giá gốc (VNĐ) <span class="text-danger">*</span></label>
+                                        <label class="form-label small fw-semibold">Giá gốc (VNĐ) <span
+                                                class="text-danger">*</span></label>
                                         <input type="number" name="sku_original_price[]" class="form-control" required
-                                               min="0" step="1000" placeholder="0">
+                                            min="0" step="1000" placeholder="0">
                                     </div>
-                                    
+
                                     <!-- Giá khuyến mãi -->
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label small fw-semibold">Giá khuyến mãi (VNĐ)</label>
-                                        <input type="number" name="sku_promotion_price[]" class="form-control" 
-                                               min="0" step="1000" placeholder="Để trống nếu không giảm giá">
+                                        <input type="number" name="sku_promotion_price[]" class="form-control" min="0"
+                                            step="1000" placeholder="Để trống nếu không giảm giá">
                                     </div>
                                 </div>
                             </div>
@@ -393,7 +407,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                     </div>
                 </div>
             </div>
-            
+
             <!-- Nút submit -->
             <div class="mt-4 text-end">
                 <button type="reset" class="btn btn-outline-secondary me-2">
@@ -419,37 +433,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
                     <i class="bi bi-trash"></i>
                 </button>
             </div>
-            
+
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label small fw-semibold">Mã SKU (SKUID) <span class="text-danger">*</span></label>
+                    <label class="form-label small fw-semibold">Mã SKU (SKUID) <span
+                            class="text-danger">*</span></label>
                     <input type="text" name="sku_id[]" class="form-control sku-id-input" required
-                           placeholder="VD: SKU001, CANDY001-100G...">
+                        placeholder="VD: SKU001, CANDY001-100G...">
                     <small class="text-muted">Mã SKU phải duy nhất</small>
                 </div>
-                
+
                 <div class="col-md-6 mb-3">
                     <label class="form-label small fw-semibold">Thuộc tính <span class="text-danger">*</span></label>
                     <input type="text" name="sku_attribute[]" class="form-control" required
-                           placeholder="VD: 100g, Size M, Màu đỏ...">
+                        placeholder="VD: 100g, Size M, Màu đỏ...">
                 </div>
-                
+
                 <div class="col-md-6 mb-3">
                     <label class="form-label small fw-semibold">Số lượng tồn kho</label>
-                    <input type="number" name="sku_stock[]" class="form-control" 
-                           value="0" min="0" placeholder="0">
+                    <input type="number" name="sku_stock[]" class="form-control" value="0" min="0" placeholder="0">
                 </div>
-                
+
                 <div class="col-md-6 mb-3">
                     <label class="form-label small fw-semibold">Giá gốc (VNĐ) <span class="text-danger">*</span></label>
-                    <input type="number" name="sku_original_price[]" class="form-control" required
-                           min="0" step="1000" placeholder="0">
+                    <input type="number" name="sku_original_price[]" class="form-control" required min="0" step="1000"
+                        placeholder="0">
                 </div>
-                
+
                 <div class="col-md-6 mb-3">
                     <label class="form-label small fw-semibold">Giá khuyến mãi (VNĐ)</label>
-                    <input type="number" name="sku_promotion_price[]" class="form-control" 
-                           min="0" step="1000" placeholder="Để trống nếu không giảm giá">
+                    <input type="number" name="sku_promotion_price[]" class="form-control" min="0" step="1000"
+                        placeholder="Để trống nếu không giảm giá">
                 </div>
             </div>
         </div>
@@ -457,108 +471,108 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
 </template>
 
 <script>
-$(document).ready(function() {
-    let skuCount = 1;
-    
-    // Thêm SKU mới
-    $('#addSkuBtn').click(function() {
-        skuCount++;
-        
-        const template = document.getElementById('skuTemplate');
-        const clone = template.content.cloneNode(true);
-        
-        // Cập nhật số thứ tự
-        clone.querySelector('.sku-number').textContent = skuCount;
-        clone.querySelector('.sku-item').dataset.skuIndex = skuCount - 1;
-        
-        // Thêm vào container
-        document.getElementById('skuContainer').appendChild(clone);
-        
-        // Scroll đến SKU mới
-        const newSku = document.querySelector('.sku-item:last-child');
-        newSku.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    });
-    
-    // Xóa SKU
-    $(document).on('click', '.remove-sku-btn:not([disabled])', function() {
-        const skuItem = $(this).closest('.sku-item');
-        
-        if (confirm('Bạn có chắc muốn xóa SKU này?')) {
-            skuItem.fadeOut(300, function() {
-                $(this).remove();
-                
-                // Cập nhật lại số thứ tự
-                $('.sku-item').each(function(index) {
-                    $(this).find('.sku-number').text(index + 1);
-                    $(this).data('sku-index', index);
+    $(document).ready(function () {
+        let skuCount = 1;
+
+        // Thêm SKU mới
+        $('#addSkuBtn').click(function () {
+            skuCount++;
+
+            const template = document.getElementById('skuTemplate');
+            const clone = template.content.cloneNode(true);
+
+            // Cập nhật số thứ tự
+            clone.querySelector('.sku-number').textContent = skuCount;
+            clone.querySelector('.sku-item').dataset.skuIndex = skuCount - 1;
+
+            // Thêm vào container
+            document.getElementById('skuContainer').appendChild(clone);
+
+            // Scroll đến SKU mới
+            const newSku = document.querySelector('.sku-item:last-child');
+            newSku.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+
+        // Xóa SKU
+        $(document).on('click', '.remove-sku-btn:not([disabled])', function () {
+            const skuItem = $(this).closest('.sku-item');
+
+            if (confirm('Bạn có chắc muốn xóa SKU này?')) {
+                skuItem.fadeOut(300, function () {
+                    $(this).remove();
+
+                    // Cập nhật lại số thứ tự
+                    $('.sku-item').each(function (index) {
+                        $(this).find('.sku-number').text(index + 1);
+                        $(this).data('sku-index', index);
+                    });
+
+                    skuCount = $('.sku-item').length;
                 });
-                
-                skuCount = $('.sku-item').length;
-            });
-        }
-    });
-    
-    // Validate form trước khi submit
-    $('#addProductForm').on('submit', function(e) {
-        const skuItems = $('.sku-item');
-        
-        if (skuItems.length === 0) {
-            e.preventDefault();
-            showToast('Vui lòng thêm ít nhất 1 SKU cho sản phẩm!', 'warning');
-            return false;
-        }
-        
-        // Kiểm tra các trường required trong SKU
-        let valid = true;
-        let skuIdList = [];
-        
-        skuItems.each(function() {
-            const skuId = $(this).find('input[name="sku_id[]"]').val();
-            const attr = $(this).find('input[name="sku_attribute[]"]').val();
-            const price = $(this).find('input[name="sku_original_price[]"]').val();
-            
-            if (!skuId || !attr || !price) {
-                valid = false;
-                $(this).addClass('border-danger');
-            } else {
-                $(this).removeClass('border-danger');
-            }
-            
-            // Kiểm tra SKUID trùng lặp trong form
-            if (skuId) {
-                if (skuIdList.includes(skuId)) {
-                    valid = false;
-                    $(this).addClass('border-danger');
-                    showToast('Mã SKU "' + skuId + '" bị trùng lặp trong form!', 'error');
-                }
-                skuIdList.push(skuId);
             }
         });
-        
-        if (!valid) {
-            e.preventDefault();
-            showToast('Vui lòng điền đầy đủ thông tin cho tất cả các SKU (Mã SKU, Thuộc tính, Giá gốc)!', 'warning');
-            return false;
-        }
-    });
-    
-    // Preview ảnh sản phẩm
-    $('#productImagesInput').on('change', function() {
-        const container = $('#imagePreviewContainer');
-        container.empty();
-        
-        const files = this.files;
-        if (files.length > 5) {
-            showToast('Chỉ được chọn tối đa 5 ảnh!', 'warning');
-            this.value = '';
-            return;
-        }
-        
-        Array.from(files).forEach((file, index) => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const isThumbnail = index === 0;
-                const html = `
+
+        // Validate form trước khi submit
+        $('#addProductForm').on('submit', function (e) {
+            const skuItems = $('.sku-item');
+
+            if (skuItems.length === 0) {
+                e.preventDefault();
+                showToast('Vui lòng thêm ít nhất 1 SKU cho sản phẩm!', 'warning');
+                return false;
+            }
+
+            // Kiểm tra các trường required trong SKU
+            let valid = true;
+            let skuIdList = [];
+
+            skuItems.each(function () {
+                const skuId = $(this).find('input[name="sku_id[]"]').val();
+                const attr = $(this).find('input[name="sku_attribute[]"]').val();
+                const price = $(this).find('input[name="sku_original_price[]"]').val();
+
+                if (!skuId || !attr || !price) {
+                    valid = false;
+                    $(this).addClass('border-danger');
+                } else {
+                    $(this).removeClass('border-danger');
+                }
+
+                // Kiểm tra SKUID trùng lặp trong form
+                if (skuId) {
+                    if (skuIdList.includes(skuId)) {
+                        valid = false;
+                        $(this).addClass('border-danger');
+                        showToast('Mã SKU "' + skuId + '" bị trùng lặp trong form!', 'error');
+                    }
+                    skuIdList.push(skuId);
+                }
+            });
+
+            if (!valid) {
+                e.preventDefault();
+                showToast('Vui lòng điền đầy đủ thông tin cho tất cả các SKU (Mã SKU, Thuộc tính, Giá gốc)!', 'warning');
+                return false;
+            }
+        });
+
+        // Preview ảnh sản phẩm
+        $('#productImagesInput').on('change', function () {
+            const container = $('#imagePreviewContainer');
+            container.empty();
+
+            const files = this.files;
+            if (files.length > 5) {
+                showToast('Chỉ được chọn tối đa 5 ảnh!', 'warning');
+                this.value = '';
+                return;
+            }
+
+            Array.from(files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const isThumbnail = index === 0;
+                    const html = `
                     <div class="image-preview-item position-relative ${isThumbnail ? 'is-thumbnail' : ''}" 
                          data-index="${index}" onclick="setProductThumbnail(${index})">
                         <img src="${e.target.result}" class="rounded border" 
@@ -566,44 +580,57 @@ $(document).ready(function() {
                         ${isThumbnail ? '<span class="badge bg-warning text-dark position-absolute" style="bottom: 2px; left: 2px; font-size: 9px;"><i class="bi bi-star-fill"></i></span>' : ''}
                     </div>
                 `;
-                container.append(html);
-            };
-            reader.readAsDataURL(file);
-        });
-        
-        $('#productThumbnailInput').val(0);
-    });
-});
+                    container.append(html);
+                };
+                reader.readAsDataURL(file);
+            });
 
-function setProductThumbnail(index) {
-    $('.image-preview-item').removeClass('is-thumbnail').find('.badge').remove();
-    $(`.image-preview-item[data-index="${index}"]`)
-        .addClass('is-thumbnail')
-        .append('<span class="badge bg-warning text-dark position-absolute" style="bottom: 2px; left: 2px; font-size: 9px;"><i class="bi bi-star-fill"></i></span>');
-    $('#productThumbnailInput').val(index);
-}
+            $('#productThumbnailInput').val(0);
+        });
+    });
+
+    function setProductThumbnail(index) {
+        $('.image-preview-item').removeClass('is-thumbnail').find('.badge').remove();
+        $(`.image-preview-item[data-index="${index}"]`)
+            .addClass('is-thumbnail')
+            .append('<span class="badge bg-warning text-dark position-absolute" style="bottom: 2px; left: 2px; font-size: 9px;"><i class="bi bi-star-fill"></i></span>');
+        $('#productThumbnailInput').val(index);
+    }
 </script>
 
 <style>
-.sku-item {
-    transition: all 0.3s ease;
-}
-.sku-item:hover {
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-.sku-item.border-danger {
-    border: 2px solid #dc3545 !important;
-}
-.image-preview-item {
-    transition: all 0.2s ease;
-    border-radius: 8px;
-}
-.image-preview-item:hover {
-    transform: scale(1.05);
-}
-.image-preview-item.is-thumbnail img {
-    border: 3px solid #ffc107 !important;
-    box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
-}
+    .sku-item {
+        transition: all 0.3s ease;
+    }
+
+    .sku-item:hover {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .sku-item.border-danger {
+        border: 2px solid #dc3545 !important;
+    }
+
+    .image-preview-item {
+        transition: all 0.2s ease;
+        border-radius: 8px;
+    }
+
+    .image-preview-item:hover {
+        transform: scale(1.05);
+    }
+
+    .image-preview-item.is-thumbnail img {
+        border: 3px solid #ffc107 !important;
+        box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+    }
 </style>
 
+<?php if (isset($redirectAfterSuccess) && $redirectAfterSuccess): ?>
+    <script>
+        // Redirect về trang danh sách sản phẩm sau 2 giây
+        setTimeout(function () {
+            window.location.href = '<?php echo BASE_URL; ?>index.php?action=products';
+        }, 2000);
+    </script>
+<?php endif; ?>

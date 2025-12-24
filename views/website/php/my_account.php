@@ -133,7 +133,8 @@ include '../../../partials/header.php';
                                     </div>
                                     <div class="value">
                                         <div class="male" id="displayEmail">
-                                            <?php echo htmlspecialchars($customer['Email'] ?? '-'); ?></div>
+                                            <?php echo htmlspecialchars($customer['Email'] ?? '-'); ?>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="line2">
@@ -142,7 +143,8 @@ include '../../../partials/header.php';
                                     </div>
                                     <div class="value">
                                         <div class="male" id="displayFirstName">
-                                            <?php echo htmlspecialchars($customer['FirstName'] ?? '-'); ?></div>
+                                            <?php echo htmlspecialchars($customer['FirstName'] ?? '-'); ?>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="line2">
@@ -151,7 +153,8 @@ include '../../../partials/header.php';
                                     </div>
                                     <div class="value">
                                         <div class="male" id="displayLastName">
-                                            <?php echo htmlspecialchars($customer['LastName'] ?? '-'); ?></div>
+                                            <?php echo htmlspecialchars($customer['LastName'] ?? '-'); ?>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="line2">
@@ -315,7 +318,8 @@ include '../../../partials/header.php';
                                                 <div class="frame-parent5">
                                                     <div class="john-doe-wrapper">
                                                         <div class="text4 ship-name">
-                                                            <?php echo htmlspecialchars($address['Fullname'] ?? '-'); ?></div>
+                                                            <?php echo htmlspecialchars($address['Fullname'] ?? '-'); ?>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="status-tag<?php echo ($address['IsDefault'] ?? 'No') !== 'Yes' ? ' hidden-tag' : ''; ?>"

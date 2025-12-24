@@ -694,6 +694,11 @@ function deleteShipping() {
 // MODAL HELPERS
 // ==================================================
 function openBankingModal() {
+    // Update modal title based on mode
+    const modalTitle = document.getElementById('bankingModalTitle');
+    if (modalTitle) {
+        modalTitle.textContent = currentBankingMode === 'add' ? 'Add Banking Account' : 'Edit Banking Account';
+    }
     document.getElementById('BankingModal').style.display = 'flex';
     clearAllErrors(['bankAccountNumber', 'bankName', 'bankBranch', 'holderName', 'idNumber']);
 }
@@ -704,6 +709,11 @@ function closeBankingModal() {
 }
 
 function openShippingModal() {
+    // Update modal title based on mode
+    const modalTitle = document.getElementById('shippingModalTitle');
+    if (modalTitle) {
+        modalTitle.textContent = currentShippingCard ? 'Edit Shipping Address' : 'Add Shipping Address';
+    }
     document.getElementById('ShippingModal').style.display = 'flex';
     clearAllErrors(['shipName', 'shipPhone', 'shipAddress', 'shipCity', 'shipCountry']);
 }

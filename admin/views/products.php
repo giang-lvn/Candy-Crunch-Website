@@ -56,14 +56,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_product'])) {
             throw new Exception("Không thể xóa sản phẩm này vì đang có $orderCount đơn hàng liên quan.");
         }
         
-        // Xóa ảnh của các SKU
-        $skuImages = $pdo->prepare("SELECT Image FROM SKU WHERE ProductID = ?");
-        $skuImages->execute([$productId]);
-        while ($img = $skuImages->fetchColumn()) {
-            // Logic xóa file ảnh nếu cần
-            $filePath = __DIR__ . '/../../' . str_replace('/Candy-Crunch-Website/', '', $img);
-            if (file_exists($filePath)) {
-                @unlink($filePath);
+        
+        // Xóa ảnh của sản phẩm (cột Image nằm trong bảng PRODUCT, không phải SKU)
+        $productImage = $pdo->prepare("SELECT Image FROM PRODUCT WHERE ProductID = ?");
+        $productImage->execute([$productId]);
+        $imageData = $productImage->fetchColumn();
+        
+        if (!empty($imageData)) {
+            // Check if it's JSON format (multiple images)
+            $decoded = json_decode($imageData, true);
+            if (is_array($decoded)) {
+                foreach ($decoded as $img) {
+                    $imgPath = is_array($img) ? ($img['path'] ?? '') : $img;
+                    if (!empty($imgPath)) {
+                        $filePath = __DIR__ . '/../../' . str_replace('/Candy-Crunch-Website/', '', $imgPath);
+                        if (file_exists($filePath)) {
+                            @unlink($filePath);
+                        }
+                    }
+                }
+            } else {
+                // Single image path
+                $filePath = __DIR__ . '/../../' . str_replace('/Candy-Crunch-Website/', '', $imageData);
+                if (file_exists($filePath)) {
+                    @unlink($filePath);
+                }
             }
         }
         
