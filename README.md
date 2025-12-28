@@ -11,10 +11,10 @@
 
 | Role   | Name                  | Student_ID  | Task                                                                                      |
 | ------ | --------------------- | ----------- | ----------------------------------------------------------------------------------------- |
-| Member | Trần Mẩn Anh          | 31231023342 | UI Design (About Us, Login/Signup, Orders, Policy), Database Design (ERD), Backend, Admin |
-| Member | Lê Vũ Ngọc Giang      | 31231026206 | UI Design (Landing Page, Cart), Front-end, Checkout                                       |
-| Member | Nguyễn Vũ Thanh Giang | 31231026898 | UI Design (Shop, Product), Front-end, My Account, Orders                                  |
-| Member | Võ Trần Nhật Long     | 31231026859 | UI Design (Order Detail, Checkout, Policy), Front-end, Backend, Admin                     |
+| Member | Trần Mẩn Anh          | 31231023342 | UI Design, Frontend Database Design (ERD), Backend, Admin |
+| Member | Lê Vũ Ngọc Giang      | 31231026206 | UI Design, Front-end, Backend                                                             |
+| Member | Nguyễn Vũ Thanh Giang | 31231026898 | UI Design, Front-end, Backend                                |
+| Member | Võ Trần Nhật Long     | 31231026859 | UI Design, Front-end, Backend, Admin                     |
 
 ---
 
