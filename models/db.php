@@ -2,7 +2,7 @@
 // models/db.php
 
 $host = 'localhost';
-$dbname = 'Candy_Crunch';
+$dbname = 'candy_crunch';
 $username = 'root';
 $password = '';
 

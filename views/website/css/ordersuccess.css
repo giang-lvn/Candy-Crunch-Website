@@ -186,6 +186,7 @@ body {
     display: flex;
     gap: var(--spacing-16);
     width: 100%;
+    margin-top: 10px; /* Thêm khoảng trống nhỏ ở đây */
 }
 
 .action-buttons .btn-primary-outline-large,
@@ -195,7 +196,23 @@ body {
     text-align: center;
     text-decoration: none;
 }
+/* Nút phụ: Nhạt hơn */
+.btn-primary-outline-large {
+    border: 2px solid var(--green-500);
+    background: transparent;
+    color: var(--green-500) !important;
+}
 
+/* Nút chính: Đậm và có hiệu ứng */
+.btn-primary-large {
+    background: var(--green-500);
+    box-shadow: 0 4px 15px rgba(1, 126, 106, 0.2);
+}
+
+.btn-primary-large:hover {
+    background: var(--pink-500);
+    transform: scale(1.05);
+}
 /* ================================================
    RESPONSIVE
    ================================================ */
