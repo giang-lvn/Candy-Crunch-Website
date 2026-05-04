@@ -22,7 +22,6 @@ function formatDate($date) {
  */
 function getOrderStatuses() {
     return [
-        'Waiting Payment' => 'Chờ thanh toán',
         'Pending Confirmation' => 'Chờ xác nhận',
         'Pending' => 'Đang xử lý',
         'On Shipping' => 'Đang giao hàng',
@@ -43,7 +42,6 @@ function getStatusColor($status) {
         'On Shipping' => 'info',
         'Pending Confirmation' => 'warning',
         'Pending' => 'primary',
-        'Waiting Payment' => 'secondary',
         'Pending Cancel' => 'danger',
         'Pending Return' => 'warning',
         'Cancelled' => 'danger',

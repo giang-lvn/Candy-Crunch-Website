@@ -122,17 +122,6 @@ body {
     background: #EAB308;
 }
 
-/* Waiting Payment - Orange */
-.status-tag.waiting-payment {
-    background: #FFEDD5;
-    color: #C2410C;
-    border: 1px solid #FED7AA;
-}
-
-.status-tag.waiting-payment::before {
-    background: #F97316;
-}
-
 /* On Shipping - Blue */
 .status-tag.on-shipping {
     background: #DBEAFE;

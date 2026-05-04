@@ -233,7 +233,7 @@ class OrderDetailModel
     }
 
     /**
-     * Hủy đơn hàng (chỉ cho phép khi status = 'Waiting Payment' hoặc 'Pending Confirmation')
+     * Hủy đơn hàng (chỉ cho phép khi status = 'Pending Confirmation')
      * @param string $orderId
      * @return bool
      */
@@ -246,7 +246,7 @@ class OrderDetailModel
             return false;
         }
 
-        $allowedStatuses = ['Waiting Payment', 'Pending Confirmation'];
+        $allowedStatuses = ['Pending Confirmation'];
 
         if (!in_array($order['OrderStatus'], $allowedStatuses)) {
             return false; // Không cho phép hủy

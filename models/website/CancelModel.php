@@ -35,7 +35,7 @@ class CancelModel {
     public function canCancelOrder($orderID) {
         $status = $this->getOrderStatus($orderID);
         // Chỉ có thể hủy nếu chưa shipping hoặc hoàn thành
-        $cancellableStatuses = ['Waiting Payment', 'Pending Confirmation', 'Pending'];
+        $cancellableStatuses = ['Pending Confirmation', 'Pending'];
         return in_array($status, $cancellableStatuses);
     }
 

@@ -163,7 +163,6 @@ class OrderController
     private function mapStatus($status)
     {
         return match ($status) {
-            'Waiting Payment' => 'waiting-payment',
             'Complete', 'Completed' => 'completed',
             'Pending' => 'pending',
             'On Shipping' => 'on-shipping',
@@ -179,7 +178,6 @@ class OrderController
     private function mapStatusText($status)
     {
         return match ($status) {
-            'Waiting Payment' => 'Waiting Payment',
             'Complete', 'Completed' => 'Completed',
             'Pending' => 'Pending',
             'On Shipping' => 'On Shipping',
@@ -195,7 +193,6 @@ class OrderController
     private function mapButtons($status)
     {
         return match ($status) {
-            'Waiting Payment' => ['Pay Now', 'Cancel'],
             'Pending Confirmation' => ['Cancel'],
             'Pending' => ['Cancel', 'Contact'],
             'On Shipping' => ['Contact'],
@@ -211,7 +208,7 @@ class OrderController
     // Kiểm tra có thể hủy đơn không
     private function canCancel($status)
     {
-        return in_array($status, ['Waiting Payment', 'Pending Confirmation', 'Pending']);
+        return in_array($status, ['Pending Confirmation', 'Pending']);
     }
 
     // Kiểm tra có thể trả hàng không

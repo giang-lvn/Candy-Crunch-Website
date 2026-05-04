@@ -168,12 +168,10 @@ class OrderDetailController {
 
     private function getButtons($status) {
         return [
-            'pay_now'       => ($status === 'Waiting Payment'),
-            'change_method' => ($status === 'Waiting Payment'),
             'buy_again'     => ($status === 'Completed' || $status === 'Complete' || $status === 'Cancelled'),
             'return'        => ($status === 'Complete' || $status === 'Completed'),
             'write_review'  => ($status === 'Complete' || $status === 'Completed'),
-            'cancel'        => ($status === 'Waiting Payment' || $status === 'Pending' || $status === 'Pending Confirmation'), 
+            'cancel'        => ($$status === 'Pending' || $status === 'Pending Confirmation'), 
             'contact'       => true
         ];
     }

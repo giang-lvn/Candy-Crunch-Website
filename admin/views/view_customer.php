@@ -353,7 +353,6 @@ $totalSpent = array_sum(array_map(function($o) {
                                             'Complete' => 'bg-success',
                                             'On Shipping' => 'bg-info',
                                             'Pending Confirmation' => 'bg-warning text-dark',
-                                            'Waiting Payment' => 'bg-secondary',
                                             'Cancelled' => 'bg-danger',
                                             default => 'bg-secondary'
                                         };
@@ -361,7 +360,6 @@ $totalSpent = array_sum(array_map(function($o) {
                                             'Complete' => 'Hoàn thành',
                                             'On Shipping' => 'Đang giao',
                                             'Pending Confirmation' => 'Chờ xác nhận',
-                                            'Waiting Payment' => 'Chờ thanh toán',
                                             'Cancelled' => 'Đã hủy',
                                             default => $orderStatus
                                         };

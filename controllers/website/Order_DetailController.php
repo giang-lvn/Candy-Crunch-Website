@@ -99,11 +99,6 @@ class OrderDetailController
         ];
 
         switch ($status) {
-            case 'Waiting Payment':
-                $buttons['pay_now'] = true;
-                $buttons['change_method'] = true;
-                break;
-
             case 'Pending Confirmation':
                 $buttons['cancel'] = true;
                 $buttons['contact'] = true;

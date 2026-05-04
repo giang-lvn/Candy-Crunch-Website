@@ -767,11 +767,6 @@
     color: #000;
 }
 
-/* PROMO INPUT */
-.promo-input {
-    width: 100%;
-}
-
 /* INPUT + BUTTON CONTAINER */
 .promo-input-wrapper {
     position: relative;
@@ -917,12 +912,6 @@
 
     .payment-row .value-payment {
         font-size: 14px;
-    }
-
-    /* PROMO INPUT */
-    .promo-input-field {
-        font-size: 14px;
-        padding: 12px 88px 12px 12px;
     }
 
     .promo-apply {

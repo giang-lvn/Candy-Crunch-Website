@@ -154,7 +154,7 @@ $urgentOrdersQuery = $pdo->query("
            DATEDIFF(NOW(), o.OrderDate) as DaysWaiting
     FROM ORDERS o
     LEFT JOIN CUSTOMER c ON o.CustomerID = c.CustomerID
-    WHERE o.OrderStatus IN ('Pending', 'Pending Confirmation', 'Waiting Payment')
+    WHERE o.OrderStatus IN ('Pending', 'Pending Confirmation')
     AND DATEDIFF(NOW(), o.OrderDate) >= 2
     ORDER BY o.OrderDate ASC
     LIMIT 5
@@ -535,7 +535,6 @@ function getDashboardThumbnail($imageData)
                         'On Shipping' => '#0dcaf0',     // info - cyan
                         'Pending' => '#0d6efd',         // primary - blue
                         'Pending Confirmation' => '#ffc107', // warning - yellow
-                        'Waiting Payment' => '#6c757d', // secondary - gray
                         'Cancelled' => '#dc3545',       // danger - red
                         'Pending Cancel' => '#fd7e14',  // orange
                         'Pending Return' => '#20c997',  // teal
@@ -898,7 +897,6 @@ function getDashboardThumbnail($imageData)
         'On Shipping': '#0dcaf0',     // info - cyan
         'Pending': '#0d6efd',         // primary - blue
         'Pending Confirmation': '#ffc107', // warning - yellow
-        'Waiting Payment': '#6c757d', // secondary - gray
         'Cancelled': '#dc3545',       // danger - red
         'Pending Cancel': '#fd7e14',  // orange
         'Pending Return': '#20c997',  // teal

@@ -209,20 +209,6 @@
                 </div>
 
 
-                <!-- PROMO INPUT -->
-                <div class="promo-input">
-                    <div class="promo-input-wrapper">
-                        <?php
-                            $currentCode = $_SESSION['voucher_code'] ?? '';
-                        ?>
-                        <input type="text" name="voucher_code" class="promo-input-field" placeholder="Add promo code" value="<?= htmlspecialchars($currentCode) ?>">
-                        <button class="promo-apply" data-action="<?= $currentCode ? 'remove' : 'apply' ?>">
-                            <?= $currentCode ? 'Remove' : 'Apply' ?>
-                        </button>
-                    </div>
-                </div>
-
-
             </div>
 
 

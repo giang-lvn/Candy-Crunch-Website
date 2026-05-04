@@ -331,17 +331,6 @@ function renderEmptyCart() {
     updatePaymentRow('.payment-row.promo .value-payment', 0);
     updatePaymentRow('.payment-row.shippingfee .value-payment', 0);
     updatePaymentRow('.payment-total .value-payment', 0);
-
-    // Reset promo input
-    const promoInput = document.querySelector('.promo-input-field');
-    if (promoInput) {
-        promoInput.value = '';
-    }
-    const promoBtn = document.querySelector('.promo-apply');
-    if (promoBtn) {
-        promoBtn.textContent = 'Apply';
-        promoBtn.dataset.action = 'apply';
-    }
 }
 
 /* =========================

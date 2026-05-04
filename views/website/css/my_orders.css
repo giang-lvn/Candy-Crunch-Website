@@ -254,16 +254,6 @@
     border-radius: 50%;
 }
 
-.status.waiting-payment {
-    background-color: var(--orange-50);
-    border: 1px solid var(--orange-500);
-    color: var(--orange-500);
-}
-
-.status.waiting-payment::before {
-    background-color: var(--orange-500);
-}
-
 .status.pending {
     background-color: var(--amber-50);
     border: 1px solid var(--amber-500);
