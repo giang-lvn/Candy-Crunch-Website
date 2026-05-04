@@ -129,7 +129,6 @@ require_once('../../../partials/header.php');
                             <ul class="dropdown-menu" id="statusMenu">
                                 <li data-value="all">All</li>
                                 <li data-value="pending-confirm">Pending Confirmation</li>
-                                <li data-value="waiting-payment">Waiting Payment</li>
                                 <li data-value="pending">Pending</li>
                                 <li data-value="on-shipping">On Shipping</li>
                                 <li data-value="completed">Completed</li>

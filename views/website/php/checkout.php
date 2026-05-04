@@ -332,12 +332,6 @@ include(__DIR__ . '/../../../partials/header.php');
                             <span class="label">Promo</span>
                             <span class="value" id="summaryPromo"><?= $promo > 0 ? '- ' : '' ?><?= number_format($promo, 0, ',', '.') ?> VND</span>
                         </div>
-                        <div class="input" data-type="text" data-state="default" data-size="medium">
-                            <div class="input-field">
-                                <input type="text" placeholder="Enter promo code" id="promoCodeInput" value="<?= htmlspecialchars($voucherCode) ?>" <?= !empty($voucherCode) ? 'readonly' : '' ?>>
-                                <button class="btn-primary-outline-small" id="applyPromoBtn" data-action="<?= !empty($voucherCode) ? 'remove' : 'apply' ?>"><?= !empty($voucherCode) ? 'Remove' : 'Apply' ?></button>
-                            </div>
-                        </div>
                     </div>
 
                     <div class="summary-footer">
