@@ -188,7 +188,7 @@ include(__DIR__ . '/../../../partials/header.php');
             <!-- Success Title -->
             <h1 class="success-title">ORDER PLACED SUCCESSFULLY!</h1>
             <p
-                style="text-align: center; color: var(--text-subtitle); font-family: 'Poppins'; margin-top: -15px; margin-bottom: 20px; font-size: 15px; padding: 0 40px;">
+                style="text-align: center; color: var(--text-subtitle); font-family: 'Poppins'; margin-top: -15px; margin-bottom: 20px; font-size: 14px; padding: 0 40px;">
                 Thank you for choosing <strong>Candy Crunch</strong>! 🍭 <br>
                 Your order is currently being prepared and will be on its way to you soon.
             </p>
