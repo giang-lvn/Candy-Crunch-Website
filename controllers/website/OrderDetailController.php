@@ -171,7 +171,7 @@ class OrderDetailController {
             'buy_again'     => ($status === 'Completed' || $status === 'Complete' || $status === 'Cancelled'),
             'return'        => ($status === 'Complete' || $status === 'Completed'),
             'write_review'  => ($status === 'Complete' || $status === 'Completed'),
-            'cancel'        => ($$status === 'Pending' || $status === 'Pending Confirmation'), 
+            'cancel'        => ($status === 'Pending' || $status === 'Pending Confirmation'), 
             'contact'       => true
         ];
     }
