@@ -16,7 +16,7 @@ body {
 .order-success-container {
     display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
     padding: calc(var(--nav-height) + var(--spacing-48)) var(--spacing-120) var(--spacing-60);
     min-height: 100vh;
 }
@@ -175,7 +175,7 @@ body {
     display: flex;
     gap: var(--spacing-16);
     width: 100%;
-    margin-top: 10px; /* Thêm khoảng trống nhỏ ở đây */
+    margin-top: 20px; /* Thêm khoảng trống nhỏ ở đây */
 }
 
 .action-buttons .btn-primary-outline-large,
@@ -236,16 +236,3 @@ body {
     }
 }
 
-@media (max-width: 480px) {
-    .product-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--spacing-12);
-    }
-
-    .product-right {
-        align-self: flex-end;
-        flex-direction: row;
-        gap: var(--spacing-8);
-    }
-}
