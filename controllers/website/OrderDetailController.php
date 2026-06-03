@@ -167,12 +167,16 @@ class OrderDetailController {
     }
 
     private function getButtons($status) {
+        $isComplete = in_array($status, ['Complete', 'Completed'], true);
+
         return [
-            'buy_again'     => ($status === 'Completed' || $status === 'Complete' || $status === 'Cancelled'),
-            'return'        => ($status === 'Complete' || $status === 'Completed'),
-            'write_review'  => ($status === 'Complete' || $status === 'Completed'),
-            'cancel'        => ($status === 'Pending' || $status === 'Pending Confirmation'), 
-            'contact'       => true
+            'pay_now'        => false,
+            'change_method'  => ($status === 'Pending Confirmation'),
+            'buy_again'      => ($isComplete || $status === 'Cancelled'),
+            'return'         => $isComplete,
+            'write_review'   => $isComplete,
+            'cancel'         => in_array($status, ['Pending', 'Pending Confirmation'], true),
+            'contact'        => true,
         ];
     }
 

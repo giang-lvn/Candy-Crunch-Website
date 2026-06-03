@@ -62,11 +62,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_order'])) {
         
         // Thêm đơn hàng
         $insertOrderSql = "
-            INSERT INTO ORDERS (OrderID, CustomerID, VoucherID, OrderDate, PaymentMethod, ShippingMethod, ShippingFee, OrderStatus) 
-            VALUES (?, ?, ?, NOW(), ?, ?, ?, ?)
+            INSERT INTO ORDERS (OrderID, CustomerID, VoucherID, OrderDate, ShippingMethod, ShippingFee, OrderStatus) 
+            VALUES (?, ?, ?, NOW(), ?, ?, ?)
         ";
         $insertOrder = $pdo->prepare($insertOrderSql);
-        $insertOrder->execute([$orderId, $customerId, $voucherId, $paymentMethod, $shippingMethod, $shippingFee, $orderStatus]);
+        $insertOrder->execute([$orderId, $customerId, $voucherId, $shippingMethod, $shippingFee, $orderStatus]);
         
         // Thêm chi tiết đơn hàng
         $insertDetailSql = "INSERT INTO ORDER_DETAIL (OrderID, SKUID, OrderQuantity) VALUES (?, ?, ?)";
@@ -77,6 +77,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_order'])) {
                 $insertDetail->execute([$orderId, $skuId, $quantities[$index]]);
             }
         }
+
+        $amountStmt = $pdo->prepare("
+            SELECT COALESCE(SUM(COALESCE(s.PromotionPrice, s.OriginalPrice) * od.OrderQuantity), 0)
+            FROM ORDER_DETAIL od
+            JOIN SKU s ON od.SKUID = s.SKUID
+            WHERE od.OrderID = ?
+        ");
+        $amountStmt->execute([$orderId]);
+        $orderAmount = (float) $amountStmt->fetchColumn() + $shippingFee;
+
+        $txStmt = $pdo->query("SELECT MAX(CAST(SUBSTRING(TransactionID, 3) AS UNSIGNED)) AS maxNum FROM transaction");
+        $txRow = $txStmt->fetch(PDO::FETCH_ASSOC);
+        $txNum = ($txRow['maxNum'] ?? 0) + 1;
+        $transactionId = 'TX' . str_pad($txNum, 6, '0', STR_PAD_LEFT);
+
+        $pdo->prepare("
+            INSERT INTO transaction
+                (TransactionID, OrderID, TransactionType, PaymentMethod, PaymentStatus, Amount, Note, CreatedAt)
+            VALUES (?, ?, 'Payment', ?, 'Pending', ?, 'Admin created order', NOW())
+        ")->execute([$transactionId, $orderId, $paymentMethod, $orderAmount]);
         
         $pdo->commit();
         

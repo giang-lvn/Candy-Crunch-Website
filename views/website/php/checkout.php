@@ -217,10 +217,13 @@ include(__DIR__ . '/../../../partials/header.php');
                 <!-- PayPal info hint (hiện khi chọn PayPal) -->
                 <div id="paypalInfo" style="display:none; margin-top:10px; padding:12px 16px;
                      background:#f5f9ff; border:1px solid #b3d4f5; border-radius:8px; font-size:13px; color:#444;">
-                    <strong>💳 PayPal Sandbox</strong><br>
-                    You will be redirected to the PayPal website to complete your payment.<br>
+                    <strong>PayPal</strong><br>
+                    You will be redirected to <code>sandbox.paypal.com</code> to pay.<br>
+                    <strong style="color:#b45309;">⚠️ Login with Buyer (Personal) account, do not use Business/Seller account</strong> — if you use the seller account, PayPal will return an error.<br>
+                    Create/view test account at
+                    <a href="https://developer.paypal.com/dashboard/accounts" target="_blank" rel="noopener">PayPal Developer → Sandbox Accounts</a>.<br>
                     <span style="color:#888; font-size:12px;">
-                        Number of units converted: ~<span id="paypalUSD">0.00</span> USD
+                        Amount converted: ~<span id="paypalUSD">0.00</span> USD
                     </span>
                 </div>
 

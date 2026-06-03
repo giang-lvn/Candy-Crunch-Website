@@ -64,7 +64,9 @@ function getStatusText($status) {
 function getPaymentMethods() {
     return [
         'COD' => 'Thanh toán khi nhận hàng',
+        'Bank Transfer' => 'Chuyển khoản ngân hàng',
         'Banking' => 'Chuyển khoản ngân hàng',
+        'PayPal' => 'PayPal',
         'Momo' => 'Ví MoMo',
         'ZaloPay' => 'Ví ZaloPay',
         'VNPay' => 'VNPay',

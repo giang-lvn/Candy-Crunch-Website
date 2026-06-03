@@ -25,6 +25,9 @@ if (empty($orderId)) {
 $orderSql = "
     SELECT 
         o.*,
+        (SELECT t.PaymentMethod FROM transaction t 
+         WHERE t.OrderID = o.OrderID AND t.TransactionType = 'Payment' 
+         ORDER BY t.CreatedAt DESC LIMIT 1) as PaymentMethod,
         CONCAT(c.FirstName, ' ', c.LastName) as CustomerName,
         (SELECT addr.Phone FROM ADDRESS addr WHERE addr.CustomerID = c.CustomerID ORDER BY addr.AddressDefault DESC LIMIT 1) as CustomerPhone,
         a.Email as CustomerEmail,

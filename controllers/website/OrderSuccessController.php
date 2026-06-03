@@ -116,21 +116,20 @@ function placeOrder()
         $shippingMethod = ($deliveryMethod === 'fast') ? 'Express' : 'Standard';
 
         $stmt = $db->prepare("
-            INSERT INTO ORDERS (
-                OrderID, CustomerID, VoucherID, OrderDate, 
-                PaymentMethod, ShippingMethod, ShippingFee, OrderStatus
+            INSERT INTO orders (
+                OrderID, CustomerID, VoucherID, OrderDate,
+                ShippingMethod, ShippingFee, OrderStatus
             ) VALUES (
                 ?, ?, ?, ?,
-                ?, ?, ?, 'Pending Confirmation'
+                ?, ?, 'Pending Confirmation'
             )
         ");
 
         $stmt->execute([
             $orderId,
             $customerId,
-            $voucherId, // Will be NULL if no voucher applied
+            $voucherId,
             $orderDate,
-            $paymentMethod,
             $shippingMethod,
             $shippingFee
         ]);
@@ -195,7 +194,23 @@ function placeOrder()
             ")->execute([$item['CartQuantity'], $item['CartQuantity'], $item['CartQuantity'], $item['CartQuantity'], $item['SKUID']]);
         }
 
+        // Record payment in transaction table
+        $txStmt = $db->query("SELECT MAX(CAST(SUBSTRING(TransactionID, 3) AS UNSIGNED)) AS maxNum FROM transaction");
+        $txRow = $txStmt->fetch(PDO::FETCH_ASSOC);
+        $txNum = ($txRow['maxNum'] ?? 0) + 1;
+        $transactionId = 'TX' . str_pad($txNum, 6, '0', STR_PAD_LEFT);
 
+        $db->prepare("
+            INSERT INTO transaction
+                (TransactionID, OrderID, TransactionType, PaymentMethod, PaymentStatus, Amount, Note, CreatedAt)
+            VALUES (?, ?, 'Payment', ?, 'Pending', ?, ?, NOW())
+        ")->execute([
+            $transactionId,
+            $orderId,
+            $paymentMethod,
+            $total,
+            $paymentMethod === 'Bank Transfer' ? 'Awaiting bank transfer' : 'Cash on delivery'
+        ]);
 
         // Get shipping address details from session
         $shippingAddress = null;

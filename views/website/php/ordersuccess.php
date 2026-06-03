@@ -40,22 +40,27 @@ if (!empty($orderId)) {
     $stmtOrder = $db->prepare("
         SELECT 
             o.OrderDate, 
-            o.PaymentMethod, 
             o.ShippingFee, 
             o.OrderStatus,
             o.VoucherID, 
             v.DiscountPercent, 
-            v.DiscountAmount
-        FROM ORDERS o
-        LEFT JOIN VOUCHER v ON o.VoucherID = v.VoucherID
+            v.DiscountAmount,
+            t.PaymentMethod
+        FROM orders o
+        LEFT JOIN voucher v ON o.VoucherID = v.VoucherID
+        LEFT JOIN transaction t ON t.OrderID = o.OrderID AND t.TransactionType = 'Payment'
         WHERE o.OrderID = ?
+        ORDER BY t.CreatedAt DESC
+        LIMIT 1
     ");
     $stmtOrder->execute([$orderId]);
     $orderInfo = $stmtOrder->fetch(PDO::FETCH_ASSOC);
 
     if ($orderInfo) {
         $orderDate = $orderInfo['OrderDate'];
-        $paymentMethod = $orderInfo['PaymentMethod'];
+        $paymentMethod = $orderInfo['PaymentMethod']
+            ?? $_SESSION['last_payment_method']
+            ?? (isset($_GET['method']) && $_GET['method'] === 'paypal' ? 'PayPal' : 'COD');
         $shippingFee = (int) $orderInfo['ShippingFee'];
         $orderStatus = $orderInfo['OrderStatus'];
         $expectedDelivery = date('d/m/Y', strtotime($orderDate . ' +3 days'));

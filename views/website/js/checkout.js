@@ -1,7 +1,8 @@
 
 
 // ======================================
-// PLACE ORDER (CHECKOUT BUTTON)
+// PLACE ORDER (CHECKOUT BUTTON) - Unified Handler
+// Handles COD, Bank Transfer, and PayPal flows
 // ======================================
 document.addEventListener('DOMContentLoaded', () => {
   const ROOT = '/Candy-Crunch-Website';
@@ -9,7 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const termsCheckbox = document.getElementById('termsCheckbox');
 
   if (checkoutBtn) {
-    checkoutBtn.addEventListener('click', () => {
+    checkoutBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+
       // Validate terms checkbox
       if (!termsCheckbox || !termsCheckbox.checked) {
         alert('Please agree to the Terms and Conditions before proceeding.');
@@ -41,10 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // Disable button and show loading
-      checkoutBtn.disabled = true;
-      checkoutBtn.textContent = 'Processing...';
-
       // Helper function to parse VND format to number
       function parseVND(text) {
         if (!text) return 0;
@@ -66,7 +65,67 @@ document.addEventListener('DOMContentLoaded', () => {
       const shipping = parseVND(shippingEl?.textContent);
       const total = parseVND(totalEl?.textContent);
 
-      // Send order to server with payment data
+      // Disable button and show loading
+      checkoutBtn.disabled = true;
+      checkoutBtn.textContent = 'Processing...';
+
+      // ============================================================
+      //  PAYPAL FLOW
+      // ============================================================
+      if (paymentMethod === 'paypal') {
+        checkoutBtn.textContent = 'Redirecting to PayPal...';
+
+        // Get voucher code if available
+        const voucherInput = document.querySelector('.voucher-input') || document.querySelector('#promoInput');
+        const voucherCode = voucherInput?.value || '';
+
+        try {
+          const res = await fetch(ROOT + '/controllers/website/PaypalController.php?action=create', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              total:          total,
+              addressId:      selectedAddressId,
+              shippingMethod: deliveryMethod === 'fast' ? 'Express' : 'Standard',
+              shippingFee:    shipping,
+              voucherCode:    voucherCode
+            })
+          });
+
+          const raw = await res.text();
+          let data;
+          try {
+            data = JSON.parse(raw);
+          } catch {
+            console.error('PayPal invalid response:', raw);
+            alert('Cannot connect to PayPal. Please try again.');
+            checkoutBtn.disabled = false;
+            checkoutBtn.textContent = 'Checkout';
+            return;
+          }
+
+          if (data.success && data.approvalUrl) {
+            window.location.href = data.approvalUrl;
+          } else {
+            const detail = data.details?.error_description || data.details?.message || '';
+            alert('PayPal error: ' + (data.message || 'Unknown error') + (detail ? '\n' + detail : ''));
+            checkoutBtn.disabled = false;
+            checkoutBtn.textContent = 'Checkout';
+          }
+        } catch (err) {
+          console.error('PayPal error:', err);
+          alert('Cannot connect to PayPal. Please try again.');
+          checkoutBtn.disabled = false;
+          checkoutBtn.textContent = 'Checkout';
+        }
+
+        return; // Stop here — don't run COD/Bank flow
+      }
+
+      // ============================================================
+      //  COD / BANK TRANSFER FLOW
+      // ============================================================
       const formData = new FormData();
       formData.append('action', 'place_order');
       formData.append('address_id', selectedAddressId);
@@ -108,6 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
 
 
 // ======================================
@@ -1069,130 +1129,30 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-
-// ============================================================
-//  PAYPAL JS PATCH - Thêm vào cuối file checkout.js
-//  (hoặc merge vào phần xử lý nút Checkout hiện có)
-// ============================================================
-
-// --- 1. Hiển thị/ẩn PayPal info hint khi chọn payment ---
+// PayPal UI: show USD estimate when PayPal payment is selected
 document.querySelectorAll('input[name="payment"]').forEach(function (radio) {
-    radio.addEventListener('change', function () {
-        const paypalInfo = document.getElementById('paypalInfo');
-        if (!paypalInfo) return;
-
-        if (this.value === 'paypal') {
-            paypalInfo.style.display = 'block';
-            updatePaypalUSD(); // cập nhật USD realtime
-        } else {
-            paypalInfo.style.display = 'none';
-        }
-    });
+  radio.addEventListener('change', function () {
+    const paypalInfo = document.getElementById('paypalInfo');
+    if (!paypalInfo) return;
+    if (this.value === 'paypal') {
+      paypalInfo.style.display = 'block';
+      updatePaypalUSD();
+    } else {
+      paypalInfo.style.display = 'none';
+    }
+  });
 });
 
-// --- 2. Tính và hiển thị giá trị USD ---
 function updatePaypalUSD() {
-    const VND_TO_USD = 25000;
-    const totalEl = document.getElementById('summaryTotal');
-    if (!totalEl) return;
-
-    // Parse "1.234.567 VND" → số
-    const totalVND = parseInt(
-        totalEl.textContent.replace(/[^0-9]/g, ''),
-        10
-    ) || 0;
-
-    const usd = (totalVND / VND_TO_USD).toFixed(2);
-    const usdEl = document.getElementById('paypalUSD');
-    if (usdEl) usdEl.textContent = usd;
+  const VND_TO_USD = 25000;
+  const totalEl = document.getElementById('summaryTotal');
+  if (!totalEl) return;
+  const totalVND = parseInt(totalEl.textContent.replace(/[^0-9]/g, ''), 10) || 0;
+  const usdEl = document.getElementById('paypalUSD');
+  if (usdEl) usdEl.textContent = (totalVND / VND_TO_USD).toFixed(2);
 }
 
-// Gọi lại khi total thay đổi (shipping method change)
-// Nếu code cũ của bạn dùng MutationObserver hoặc event để cập nhật total,
-// hãy gọi thêm updatePaypalUSD() ở đó.
 const summaryTotalEl = document.getElementById('summaryTotal');
 if (summaryTotalEl) {
-    new MutationObserver(updatePaypalUSD).observe(summaryTotalEl, { childList: true, subtree: true, characterData: true });
+  new MutationObserver(updatePaypalUSD).observe(summaryTotalEl, { childList: true, subtree: true, characterData: true });
 }
-
-// --- 3. Override nút Checkout khi chọn PayPal ---
-//
-// Giả sử code cũ của bạn xử lý nút #checkoutBtn như sau:
-//   document.getElementById('checkoutBtn').addEventListener('click', function() { ... })
-//
-// Hãy THÊM ĐOẠN NÀY VÀO ĐẦU handler đó (hoặc bọc toàn bộ như dưới):
-
-document.getElementById('checkoutBtn').addEventListener('click', async function (e) {
-    e.preventDefault();
-
-    // --- Validate terms checkbox ---
-    const termsCheckbox = document.getElementById('termsCheckbox');
-    if (!termsCheckbox || !termsCheckbox.checked) {
-        alert('Please agree to the Terms and Conditions.');
-        return;
-    }
-
-    // --- Lấy địa chỉ ---
-    const addressId = document.getElementById('selectedAddressId')?.value;
-    if (!addressId) {
-        alert('Please select a delivery address.');
-        return;
-    }
-
-    // --- Lấy phương thức thanh toán ---
-    const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value;
-
-    // --- Lấy shipping ---
-    const shippingMethod = document.querySelector('input[name="delivery"]:checked')?.value || 'standard';
-    const shippingText   = document.getElementById('summaryShipping')?.textContent || '0';
-    const shippingFee    = parseInt(shippingText.replace(/[^0-9]/g, ''), 10) || 0;
-
-    // --- Lấy total ---
-    const totalText = document.getElementById('summaryTotal')?.textContent || '0';
-    const totalVND  = parseInt(totalText.replace(/[^0-9]/g, ''), 10) || 0;
-
-    // --- Lấy voucher code ---
-    const voucherCode = document.querySelector('.voucher-input')?.value || '';
-
-    // ============================================================
-    //  PAYPAL FLOW
-    // ============================================================
-    if (paymentMethod === 'paypal') {
-        const btn = document.getElementById('checkoutBtn');
-        btn.disabled = true;
-        btn.textContent = 'Redirecting to PayPal...';
-
-        try {
-            const res = await fetch('/Candy-Crunch-Website/controllers/website/paypal_controller.php?action=create', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    total:          totalVND,
-                    addressId:      addressId,
-                    shippingMethod: shippingMethod === 'fast' ? 'Express' : 'Standard',
-                    shippingFee:    shippingFee,
-                    voucherCode:    voucherCode
-                })
-            });
-
-            const data = await res.json();
-
-            if (data.success && data.approvalUrl) {
-                // Redirect sang PayPal để thanh toán
-                window.location.href = data.approvalUrl;
-            } else {
-                alert('PayPal error: ' + (data.message || 'Unknown error'));
-                btn.disabled = false;
-                btn.textContent = 'Checkout';
-            }
-        } catch (err) {
-            console.error('PayPal error:', err);
-            alert('Cannot connect to PayPal. Please try again.');
-            btn.disabled = false;
-            btn.textContent = 'Checkout';
-        }
-
-        return; // Dừng, không chạy flow COD/Bank bên dưới
-    }
-
-});

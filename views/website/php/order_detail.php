@@ -198,31 +198,32 @@ include __DIR__ . '/../../../partials/header.php';
 
             <!-- ACTIONS BUTTONS -->
             <div class="order-actions">
-                <?php if ($data['buttons']['pay_now']): ?>
+                <?php $buttons = $data['buttons'] ?? []; ?>
+                <?php if (!empty($buttons['pay_now'])): ?>
                     <button class="btn-primary-medium btn-pay-now">Pay Now</button>
                 <?php endif; ?>
 
-                <?php if ($data['buttons']['change_method']): ?>
+                <?php if (!empty($buttons['change_method'])): ?>
                     <button class="btn-primary-outline-medium btn-change-method">Change Method</button>
                 <?php endif; ?>
 
-                <?php if ($data['buttons']['buy_again']): ?>
+                <?php if (!empty($buttons['buy_again'])): ?>
                     <button class="btn-primary-medium btn-buy-again">Buy Again</button>
                 <?php endif; ?>
 
-                <?php if ($data['buttons']['write_review']): ?>
+                <?php if (!empty($buttons['write_review'])): ?>
                     <button class="btn-primary-outline-medium btn-write-review">Write Review</button>
                 <?php endif; ?>
 
-                <?php if ($data['buttons']['return']): ?>
+                <?php if (!empty($buttons['return'])): ?>
                     <button class="btn-secondary-outline-medium btn-return">Return</button>
                 <?php endif; ?>
 
-                <?php if ($data['buttons']['cancel']): ?>
+                <?php if (!empty($buttons['cancel'])): ?>
                     <button class="btn-secondary-medium btn-cancel-order">Cancel</button>
                 <?php endif; ?>
 
-                <?php if ($data['buttons']['contact']): ?>
+                <?php if (!empty($buttons['contact'])): ?>
                     <button class="btn-secondary-outline-medium btn-contact">Contact</button>
                 <?php endif; ?>
             </div>

@@ -95,12 +95,23 @@ function handleCreateOrder()
         CURLOPT_HTTPHEADER     => [
             'Content-Type: application/json',
             'Authorization: Bearer ' . $accessToken,
-        ]
+        ],
+        CURLOPT_TIMEOUT        => 30,
+        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_SSL_VERIFYHOST => 2,
     ]);
 
-    $response = json_decode(curl_exec($ch), true);
+    $body     = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlErr  = curl_error($ch);
     curl_close($ch);
+
+    if ($body === false) {
+        echo json_encode(['success' => false, 'message' => 'PayPal request failed', 'details' => $curlErr]);
+        exit;
+    }
+
+    $response = json_decode($body, true);
 
     if ($httpCode !== 201 || empty($response['id'])) {
         echo json_encode([
@@ -146,11 +157,10 @@ function handleCaptureOrder()
 {
     $ROOT = '/Candy-Crunch-Website';
 
-    // PayPal redirect về với ?token=xxx&PayerID=xxx
+    // PayPal redirect về với ?token=ORDER_ID (PayerID optional on newer flows)
     $paypalOrderId = $_GET['token'] ?? '';
-    $payerId       = $_GET['PayerID'] ?? '';
 
-    if (empty($paypalOrderId) || empty($payerId)) {
+    if (empty($paypalOrderId)) {
         redirectWithMessage($ROOT, 'error', 'Invalid PayPal callback parameters.');
         exit;
     }
@@ -185,14 +195,25 @@ function handleCaptureOrder()
         CURLOPT_HTTPHEADER     => [
             'Content-Type: application/json',
             'Authorization: Bearer ' . $accessToken,
-        ]
+        ],
+        CURLOPT_TIMEOUT        => 30,
+        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_SSL_VERIFYHOST => 2,
     ]);
 
-    $response = json_decode(curl_exec($ch), true);
+    $body     = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
-    if ($httpCode !== 201 || ($response['status'] ?? '') !== 'COMPLETED') {
+    if ($body === false) {
+        redirectWithMessage($ROOT, 'error', 'Cannot connect to PayPal.');
+        exit;
+    }
+
+    $response = json_decode($body, true);
+
+    if (($httpCode !== 201 && $httpCode !== 200) || ($response['status'] ?? '') !== 'COMPLETED') {
+        error_log('PayPal capture failed: HTTP ' . $httpCode . ' - ' . json_encode($response));
         redirectWithMessage($ROOT, 'error', 'PayPal capture failed. Please contact support.');
         exit;
     }
@@ -210,13 +231,19 @@ function handleCaptureOrder()
         exit;
     }
 
+    // Lưu session cho trang order success
+    $_SESSION['last_order_id'] = $orderId;
+    $_SESSION['last_order_date'] = date('Y-m-d H:i:s');
+    $_SESSION['last_payment_method'] = 'PayPal';
+    $_SESSION['last_order_total'] = $pending['total_vnd'];
+    $_SESSION['last_order_shipping'] = $pending['shipping_fee'];
+
     // Xóa session pending
     unset($_SESSION['paypal_pending']);
     unset($_SESSION['voucher_code']);
-    unset($_SESSION['cart_id']);
 
     // Redirect đến trang success
-    header('Location: ' . $ROOT . '/views/website/php/order_success.php?order_id=' . urlencode($orderId) . '&method=paypal');
+    header('Location: ' . $ROOT . '/views/website/php/ordersuccess.php?order_id=' . urlencode($orderId) . '&method=paypal');
     exit;
 }
 
@@ -235,18 +262,37 @@ function handleCancel()
 // ============================================================
 function getPayPalAccessToken(): string
 {
+    if (!function_exists('curl_init')) {
+        error_log('PayPal: PHP cURL extension is not enabled');
+        return '';
+    }
+
     $ch = curl_init(PAYPAL_BASE_URL . '/v1/oauth2/token');
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_POST           => true,
         CURLOPT_POSTFIELDS     => 'grant_type=client_credentials',
         CURLOPT_USERPWD        => PAYPAL_CLIENT_ID . ':' . PAYPAL_CLIENT_SECRET,
-        CURLOPT_HTTPHEADER     => ['Accept: application/json']
+        CURLOPT_HTTPHEADER     => [
+            'Accept: application/json',
+            'Content-Type: application/x-www-form-urlencoded',
+        ],
+        CURLOPT_TIMEOUT        => 30,
+        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_SSL_VERIFYHOST => 2,
     ]);
 
-    $response = json_decode(curl_exec($ch), true);
+    $body     = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlErr  = curl_error($ch);
     curl_close($ch);
 
+    if ($body === false || $httpCode !== 200) {
+        error_log('PayPal token failed: HTTP ' . $httpCode . ' curl=' . $curlErr . ' body=' . substr((string) $body, 0, 300));
+        return '';
+    }
+
+    $response = json_decode($body, true);
     return $response['access_token'] ?? '';
 }
 

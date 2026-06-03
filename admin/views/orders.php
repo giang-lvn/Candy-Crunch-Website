@@ -18,6 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
         $deleteDetails = $pdo->prepare("DELETE FROM ORDER_DETAIL WHERE OrderID = ?");
         $deleteDetails->execute([$orderId]);
 
+        $deleteTx = $pdo->prepare("DELETE FROM transaction WHERE OrderID = ?");
+        $deleteTx->execute([$orderId]);
+
         // Xóa order
         $deleteOrder = $pdo->prepare("DELETE FROM ORDERS WHERE OrderID = ?");
         $deleteOrder->execute([$orderId]);
@@ -53,7 +56,9 @@ $sql = "SELECT
             o.OrderID,
             o.OrderDate,
             o.OrderStatus,
-            o.PaymentMethod,
+            (SELECT t.PaymentMethod FROM transaction t 
+             WHERE t.OrderID = o.OrderID AND t.TransactionType = 'Payment' 
+             ORDER BY t.CreatedAt DESC LIMIT 1) as PaymentMethod,
             o.ShippingMethod,
             o.ShippingFee,
             o.CustomerID,

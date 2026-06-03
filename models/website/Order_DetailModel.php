@@ -25,16 +25,18 @@ class OrderDetailModel
                 o.CustomerID,
                 o.VoucherID,
                 o.OrderDate,
-                o.PaymentMethod,
+                t.PaymentMethod,
                 o.ShippingMethod,
                 o.ShippingFee,
                 o.OrderStatus,
                 v.DiscountPercent,
                 v.DiscountAmount,
                 v.MinOrder
-            FROM ORDERS o
-            LEFT JOIN VOUCHER v ON o.VoucherID = v.VoucherID
+            FROM orders o
+            LEFT JOIN voucher v ON o.VoucherID = v.VoucherID
+            LEFT JOIN transaction t ON t.OrderID = o.OrderID AND t.TransactionType = 'Payment'
             WHERE o.OrderID = ?
+            ORDER BY t.CreatedAt DESC
             LIMIT 1
         ";
 
