@@ -8,6 +8,7 @@ require_once __DIR__ . '/../../config/paypal_config.php';
 require_once __DIR__ . '/../../models/db.php';
 require_once __DIR__ . '/../../models/website/orders_model.php';
 require_once __DIR__ . '/../../models/website/CartModel.php';
+require_once __DIR__ . '/../../services/OrderMailService.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -230,6 +231,12 @@ function handleCaptureOrder()
         redirectWithMessage($ROOT, 'error', 'Payment received but order creation failed. Contact support with PayPal ID: ' . $captureId);
         exit;
     }
+
+    global $db;
+    $customerId = $_SESSION['user_data']['CustomerID']
+        ?? $_SESSION['customer_id']
+        ?? null;
+    OrderMailService::sendOrderConfirmation($db, $orderId, $customerId);
 
     // Lưu session cho trang order success
     $_SESSION['last_order_id'] = $orderId;

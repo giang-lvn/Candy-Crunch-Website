@@ -20,6 +20,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 
 require_once __DIR__ . '/../../models/db.php';
 require_once __DIR__ . '/../../models/website/CartModel.php';
+require_once __DIR__ . '/../../services/OrderMailService.php';
 
 $action = $_POST['action'] ?? '';
 
@@ -223,6 +224,8 @@ function placeOrder()
         }
 
         $db->commit();
+
+        OrderMailService::sendOrderConfirmation($db, $orderId, $customerId);
 
         // Set session variables for order success page BEFORE any session manipulation
         $_SESSION['last_order_id'] = $orderId;
