@@ -16,7 +16,8 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
-
+CREATE DATABASE IF NOT EXISTS `candy_crunch` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `candy_crunch`;
 --
 -- Cơ sở dữ liệu: `candy_crunch`
 --
@@ -322,7 +323,6 @@ CREATE TABLE `orders` (
   `CustomerID` varchar(10) DEFAULT NULL,
   `VoucherID` varchar(10) DEFAULT NULL,
   `OrderDate` datetime DEFAULT NULL,
-  `PaymentMethod` varchar(50) DEFAULT NULL,
   `ShippingMethod` varchar(50) DEFAULT NULL,
   `ShippingFee` decimal(10,2) DEFAULT NULL,
   `OrderStatus` varchar(50) DEFAULT NULL
@@ -332,27 +332,45 @@ CREATE TABLE `orders` (
 -- Đang đổ dữ liệu cho bảng `orders`
 --
 
-INSERT INTO `orders` (`OrderID`, `CustomerID`, `VoucherID`, `OrderDate`, `PaymentMethod`, `ShippingMethod`, `ShippingFee`, `OrderStatus`) VALUES
-('ORD001', 'CUS001', NULL, '2025-12-23 16:26:42', 'COD', 'Standard', 30000.00, 'Complete'),
-('ORD002', 'CUS001', NULL, '2025-12-23 16:49:02', 'COD', 'Standard', 30000.00, 'Complete'),
-('ORD003', 'CUS001', NULL, '2025-12-23 17:12:02', 'COD', 'Standard', 30000.00, 'Complete'),
-('ORD004', 'CUS001', NULL, '2025-12-23 18:11:53', 'COD', 'Standard', 30000.00, 'Complete'),
-('ORD005', 'CUS001', NULL, '2025-12-23 18:14:23', 'COD', 'Standard', 30000.00, 'Complete'),
-('ORD006', 'CUS001', NULL, '2025-12-23 18:19:47', 'COD', 'Standard', 30000.00, 'Complete'),
-('ORD007', 'CUS001', NULL, '2025-12-23 18:20:31', 'COD', 'Standard', 0.00, 'Complete'),
-('ORD008', 'CUS001', NULL, '2025-12-23 18:43:12', 'COD', 'Standard', 30000.00, 'Complete'),
-('ORD009', 'CUS001', NULL, '2025-12-23 18:54:27', 'COD', 'Standard', 30000.00, 'Complete'),
-('ORD010', 'CUS002', 'V0007', '2025-12-24 03:33:38', 'Bank Transfer', 'Standard', 0.00, 'Complete'),
-('ORD011', 'CUS002', NULL, '2025-12-24 03:57:10', 'COD', 'Standard', 30000.00, 'Cancelled'),
-('ORD012', 'CUS003', NULL, '2025-12-24 04:42:42', 'Bank Transfer', 'Express', 50000.00, 'Returned'),
-('ORD013', 'CUS003', NULL, '2025-12-24 04:46:09', 'Bank Transfer', 'Standard', 30000.00, 'Cancelled'),
-('ORD014', 'CUS002', NULL, '2025-12-24 05:02:00', 'COD', 'Standard', 30000.00, 'Complete'),
-('ORD015', 'CUS002', NULL, '2025-12-24 06:27:25', 'Bank Transfer', 'Standard', 0.00, 'Cancelled'),
-('ORD016', 'CUS002', NULL, '2025-12-24 06:31:18', 'COD', 'Standard', 0.00, 'Returned'),
-('ORD017', 'CUS004', NULL, '2025-12-24 06:58:22', 'Bank Transfer', 'Standard', 0.00, 'Cancelled'),
-('ORD018', 'CUS004', NULL, '2025-12-24 07:04:57', 'COD', 'Express', 0.00, 'Complete'),
-('ORD019', 'CUS005', NULL, '2025-12-24 10:02:04', 'Bank Transfer', 'Standard', 0.00, 'Cancelled'),
-('ORD020', 'CUS005', NULL, '2025-12-24 10:04:25', 'COD', 'Standard', 0.00, 'Returned');
+INSERT INTO `orders` (`OrderID`, `CustomerID`, `VoucherID`, `OrderDate`, `ShippingMethod`, `ShippingFee`, `OrderStatus`) VALUES
+('ORD001', 'CUS001', NULL, '2025-12-23 16:26:42', 'Standard', 30000.00, 'Complete'),
+('ORD002', 'CUS001', NULL, '2025-12-23 16:49:02', 'Standard', 30000.00, 'Complete'),
+('ORD003', 'CUS001', NULL, '2025-12-23 17:12:02', 'Standard', 30000.00, 'Complete'),
+('ORD004', 'CUS001', NULL, '2025-12-23 18:11:53', 'Standard', 30000.00, 'Complete'),
+('ORD005', 'CUS001', NULL, '2025-12-23 18:14:23', 'Standard', 30000.00, 'Complete'),
+('ORD006', 'CUS001', NULL, '2025-12-23 18:19:47', 'Standard', 30000.00, 'Complete'),
+('ORD007', 'CUS001', NULL, '2025-12-23 18:20:31', 'Standard', 0.00, 'Complete'),
+('ORD008', 'CUS001', NULL, '2025-12-23 18:43:12', 'Standard', 30000.00, 'Complete'),
+('ORD009', 'CUS001', NULL, '2025-12-23 18:54:27', 'Standard', 30000.00, 'Complete'),
+('ORD010', 'CUS002', 'V0007', '2025-12-24 03:33:38', 'Standard', 0.00, 'Complete'),
+('ORD011', 'CUS002', NULL, '2025-12-24 03:57:10', 'Standard', 30000.00, 'Cancelled'),
+('ORD012', 'CUS003', NULL, '2025-12-24 04:42:42', 'Express', 50000.00, 'Returned'),
+('ORD013', 'CUS003', NULL, '2025-12-24 04:46:09', 'Standard', 30000.00, 'Cancelled'),
+('ORD014', 'CUS002', NULL, '2025-12-24 05:02:00', 'Standard', 30000.00, 'Complete'),
+('ORD015', 'CUS002', NULL, '2025-12-24 06:27:25', 'Standard', 0.00, 'Cancelled'),
+('ORD016', 'CUS002', NULL, '2025-12-24 06:31:18', 'Standard', 0.00, 'Returned'),
+('ORD017', 'CUS004', NULL, '2025-12-24 06:58:22', 'Standard', 0.00, 'Cancelled'),
+('ORD018', 'CUS004', NULL, '2025-12-24 07:04:57', 'Express', 0.00, 'Complete'),
+('ORD019', 'CUS005', NULL, '2025-12-24 10:02:04', 'Standard', 0.00, 'Cancelled'),
+('ORD020', 'CUS005', NULL, '2025-12-24 10:04:25', 'Standard', 0.00, 'Returned');
+
+-- --------------------------------------------------------
+--
+-- Cấu trúc bảng cho bảng `transaction`
+--
+
+CREATE TABLE `transaction` (
+  `TransactionID` varchar(20) NOT NULL,
+  `OrderID` varchar(10) DEFAULT NULL,
+  `TransactionType` varchar(50) DEFAULT NULL,
+  `PaymentMethod` varchar(50) DEFAULT NULL,
+  `PaymentStatus` varchar(50) DEFAULT NULL,
+  `Amount` decimal(10,2) DEFAULT NULL,
+  `ProviderTransactionID` varchar(255) DEFAULT NULL,
+  `Note` varchar(500) DEFAULT NULL,
+  `CreatedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`TransactionID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -684,6 +702,13 @@ ALTER TABLE `orders`
   ADD KEY `VoucherID` (`VoucherID`);
 
 --
+-- Chỉ mục cho bảng `transaction`
+--
+
+ALTER TABLE `transaction`
+  ADD KEY `OrderID` (`OrderID`);
+
+--
 -- Chỉ mục cho bảng `order_detail`
 --
 ALTER TABLE `order_detail`
@@ -797,6 +822,13 @@ ALTER TABLE `product`
 --
 ALTER TABLE `refund`
   ADD CONSTRAINT `refund_ibfk_1` FOREIGN KEY (`OrderID`) REFERENCES `orders` (`OrderID`);
+
+--
+-- Các ràng buộc cho bảng `transaction`
+--
+
+ALTER TABLE `transaction`
+  ADD CONSTRAINT `transaction_ibfk_1` FOREIGN KEY (`OrderID`) REFERENCES `orders` (`OrderID`);
 
 --
 -- Các ràng buộc cho bảng `sku`

@@ -61,16 +61,20 @@ class ProductDetailNewModel
                 s.PromotionPrice
             FROM PRODUCT p
             JOIN SKU s ON p.ProductID = s.ProductID
+                AND s.SKUID = (
+                    SELECT MIN(SKUID)
+                    FROM SKU
+                    WHERE ProductID = p.ProductID
+                )
             WHERE p.CategoryID = :categoryId 
             AND p.ProductID != :excludeProductId
-            GROUP BY p.ProductID
             ORDER BY RAND()
             LIMIT :limit
         ";
 
         $stmt = $this->db->prepare($sql);
-        $stmt->bindValue(':categoryId', $categoryId, PDO::PARAM_INT);
-        $stmt->bindValue(':excludeProductId', $excludeProductId, PDO::PARAM_INT);
+        $stmt->bindValue(':categoryId', $categoryId, PDO::PARAM_STR);
+        $stmt->bindValue(':excludeProductId', $excludeProductId, PDO::PARAM_STR);
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
 

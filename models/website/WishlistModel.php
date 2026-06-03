@@ -86,8 +86,12 @@ class WishlistModel
             FROM WISHLIST w
             JOIN PRODUCT p ON w.ProductID = p.ProductID
             LEFT JOIN SKU s ON p.ProductID = s.ProductID
+                AND s.SKUID = (
+                    SELECT MIN(SKUID)
+                    FROM SKU
+                    WHERE ProductID = p.ProductID
+                )
             WHERE w.CustomerID = :customerId
-            GROUP BY w.CustomerID, w.ProductID
         ";
 
         $stmt = $this->db->prepare($sql);

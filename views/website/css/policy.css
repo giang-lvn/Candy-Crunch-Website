@@ -11,16 +11,14 @@ body {
     min-height: 100vh;
     /* Đảm bảo trang đủ dài */
     background-color: var(--body-background, #F8F5EE);
-    padding: 60px 0 100px;
+    padding: 100px 0 100px;
     font-family: var(--font-primary, 'Poppins', sans-serif);
-    /* Không đặt position: sticky ở đây vì section không cần sticky */
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 24px;
-    /* QUAN TRỌNG: Bỏ overflow: hidden để không phá vỡ sticky behavior của sidebar */
 }
 
 /* --- 2. HEADER --- */
