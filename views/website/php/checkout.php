@@ -176,7 +176,7 @@ include(__DIR__ . '/../../../partials/header.php');
                 </label>
 
 
-
+                        
 
                 <label class="checkbox-item">
                     <input type="checkbox" name="invoice">
@@ -201,6 +201,28 @@ include(__DIR__ . '/../../../partials/header.php');
                         class="radio-icon">
                     <span class="radio-label">Bank Transfer</span>
                 </label>
+
+                <!-- PayPal -->
+                <label class="radio" data-checked="false" id="paypalRadioLabel">
+                    <input type="radio" name="payment" value="paypal" class="radio-input">
+                    <img src="<?php echo $ROOT; ?>/views/website/img/radio-unchecked.svg" alt="radio"
+                        class="radio-icon">
+                    <span class="radio-label">
+                        <!-- <img src="https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png"
+                             alt="PayPal" style="height:20px; vertical-align:middle; margin-right:6px;"> -->
+                        PayPal
+                    </span>
+                </label>
+
+                <!-- PayPal info hint (hiện khi chọn PayPal) -->
+                <div id="paypalInfo" style="display:none; margin-top:10px; padding:12px 16px;
+                     background:#f5f9ff; border:1px solid #b3d4f5; border-radius:8px; font-size:13px; color:#444;">
+                    <strong>💳 PayPal Sandbox</strong><br>
+                    You will be redirected to the PayPal website to complete your payment.<br>
+                    <span style="color:#888; font-size:12px;">
+                        Number of units converted: ~<span id="paypalUSD">0.00</span> USD
+                    </span>
+                </div>
 
                 <!-- Selected Banking Account Display (similar to Delivery Address) -->
                 <?php
