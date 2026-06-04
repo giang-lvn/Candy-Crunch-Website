@@ -72,6 +72,7 @@ class OrderController
                     'products' => [],
                     'productSkuIds' => [],
                     'totalRaw' => 0,
+                    'shippingFee' => floatval($o['ShippingFee'] ?? 0),
                     'voucher' => [
                         'code' => $o['VoucherCode'] ?? null,
                         'amount' => $o['DiscountAmount'] ?? 0,
@@ -118,12 +119,14 @@ class OrderController
                 }
             }
 
-            $total = $subTotal - $discount;
-            $order['total'] = number_format($total, 0, ',', '.') . ' VND';
+            $shippingFee = $order['shippingFee'] ?? 0;
+            $total = $subTotal - $discount + $shippingFee;
+            $order['total'] = number_format(max(0, $total), 0, ',', '.') . ' VND';
 
             // Xóa các field không cần thiết cho frontend
             unset($order['voucher']);
             unset($order['totalRaw']);
+            unset($order['shippingFee']);
         }
 
         // Chuyển từ associative array sang indexed array

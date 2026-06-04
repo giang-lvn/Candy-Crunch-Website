@@ -14,6 +14,7 @@ class OrderModel {
             o.OrderID,
             o.OrderStatus,
             o.OrderDate,
+            o.ShippingFee,
 
             SUM(od.OrderQuantity) AS Quantity,
             
@@ -41,7 +42,7 @@ class OrderModel {
 
         WHERE o.CustomerID = ?
 
-        GROUP BY o.OrderID, o.OrderStatus, o.OrderDate, v.VoucherID, v.Code, v.DiscountPercent, v.DiscountAmount, v.MinOrder, p.ProductName, p.Image, s.Attribute, s.SKUID
+        GROUP BY o.OrderID, o.OrderStatus, o.OrderDate, o.ShippingFee, v.VoucherID, v.Code, v.DiscountPercent, v.DiscountAmount, v.MinOrder, p.ProductName, p.Image, s.Attribute, s.SKUID
         ORDER BY o.OrderDate DESC, o.OrderID
         ";
 
