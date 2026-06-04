@@ -34,8 +34,8 @@ $to = trim($_GET['to'] ?? '');
         <button type="submit">Gửi thử</button>
     </form>
     <hr>
-    <p><strong>Laragon + Mailpit:</strong> Laragon → Start Mailpit → SMTP <code>127.0.0.1:1025</code> → xem mail tại <a href="http://127.0.0.1:8025" target="_blank">http://127.0.0.1:8025</a> (không vào hộp thư Gmail thật).</p>
-    <p><strong>Gmail thật:</strong> Sửa <code>config/mail_config.php</code>: host <code>smtp.gmail.com</code>, port <code>587</code>, encryption <code>tls</code>, App Password.</p>
+    <p><strong>Mailpit (test local):</strong> Cài Mailpit, chạy SMTP <code>127.0.0.1:1025</code> — dùng được với Apache/XAMPP/Laragon. Xem mail tại <a href="http://127.0.0.1:8025" target="_blank">127.0.0.1:8025</a>.</p>
+    <p><strong>Gmail (mọi localhost):</strong> Sửa <code>config/mail_config.php</code> hoặc tạo <code>config/mail_config.local.php</code> từ file <code>.example</code>.</p>
 <?php else:
     $html = '<p>Nếu bạn nhận được email này, cấu hình SMTP đã hoạt động.</p>';
     $ok = MailService::send($to, '[Candy Crunch] Test email', $html);
@@ -45,10 +45,16 @@ $to = trim($_GET['to'] ?? '');
             <p>Đang dùng Mailpit — mở <a href="http://127.0.0.1:8025" target="_blank">http://127.0.0.1:8025</a> để xem (không phải inbox Gmail).</p>
         <?php endif; ?>
     <?php else: ?>
-        <p class="err">Gửi thất bại. Xem <strong>Laragon → PHP → error log</strong> để biết chi tiết.</p>
+        <p class="err">Gửi thất bại.</p>
         <ul>
-            <li>Mailpit chưa chạy? Bật Mailpit trong Laragon.</li>
-            <li>Dùng Gmail? Cần App Password và <code>MAIL_ENCRYPTION = 'tls'</code>.</li>
+            <?php if (MAIL_HOST === '127.0.0.1' && (int) MAIL_PORT === 1025): ?>
+            <li><strong>Mailpit chưa chạy?</strong> Tải/chạy <a href="https://github.com/axllent/mailpit/releases" target="_blank">Mailpit</a>, mở <code>mailpit.exe</code> hoặc <code>mailpit</code> trong terminal.</li>
+            <li>Sau khi chạy, mở <a href="http://127.0.0.1:8025" target="_blank">127.0.0.1:8025</a> — mail test hiện ở đây, không phải Gmail thật.</li>
+            <?php endif; ?>
+            <?php if (stripos(MAIL_HOST, 'gmail') !== false && MAIL_USERNAME === ''): ?>
+            <li><strong>Gmail:</strong> Điền <code>MAIL_USERNAME</code> và <code>MAIL_PASSWORD</code> (App Password).</li>
+            <?php endif; ?>
+            <li>Chi tiết: <a href="mail_diagnose.php">mail_diagnose.php</a> hoặc PHP error log.</li>
         </ul>
     <?php endif;
 endif; ?>

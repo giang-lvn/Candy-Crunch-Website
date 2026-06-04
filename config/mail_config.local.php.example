@@ -1,0 +1,29 @@
+<?php
+/**
+ * Copy file này thành mail_config.local.php (cùng thư mục).
+ * File .local sẽ ghi đè cấu hình mặc định — dùng cho từng máy / môi trường.
+ * Không phụ thuộc Laragon hay Apache; chỉ cần SMTP hoạt động.
+ *
+ * return [
+ *     'MAIL_HOST' => 'smtp.gmail.com',
+ *     'MAIL_PORT' => 587,
+ *     'MAIL_USERNAME' => 'your@gmail.com',
+ *     'MAIL_PASSWORD' => 'your-app-password',
+ *     'MAIL_ENCRYPTION' => 'tls',
+ *     'MAIL_FROM_EMAIL' => 'your@gmail.com',
+ *     'MAIL_REDIRECT_TO_INBOX' => true,
+ *     'MAIL_REDIRECT_DELAY_SEC' => 2,
+ * ];
+ */
+
+// Ví dụ Mailpit (chỉ test local — cài Mailpit riêng, chạy trên mọi localhost):
+// return [
+//     'MAIL_HOST' => '127.0.0.1',
+//     'MAIL_PORT' => 1025,
+//     'MAIL_USERNAME' => '',
+//     'MAIL_PASSWORD' => '',
+//     'MAIL_ENCRYPTION' => '',
+//     'MAIL_FROM_EMAIL' => 'test@localhost',
+// ];
+
+return [];

@@ -9,13 +9,13 @@ class OrderMailService
      * Gửi email xác nhận đơn hàng sau thanh toán / đặt hàng thành công.
      * Lỗi gửi mail không làm gián đoạn luồng thanh toán.
      */
-    public static function sendOrderConfirmation(PDO $db, string $orderId, ?string $customerId = null): void
+    public static function sendOrderConfirmation(PDO $db, string $orderId, ?string $customerId = null): bool
     {
         if (!MAIL_ENABLED) {
             if (defined('MAIL_DEBUG') && MAIL_DEBUG) {
                 error_log('OrderMailService: MAIL_ENABLED is false — skip sending for ' . $orderId);
             }
-            return;
+            return false;
         }
 
         try {
@@ -29,7 +29,7 @@ class OrderMailService
                 if (defined('MAIL_DEBUG') && MAIL_DEBUG) {
                     error_log('OrderMailService: no customer_id in session for order ' . $orderId);
                 }
-                return;
+                return false;
             }
 
             $stmt = $db->prepare("
@@ -47,7 +47,7 @@ class OrderMailService
                 if (defined('MAIL_DEBUG') && MAIL_DEBUG) {
                     error_log('OrderMailService: invalid or missing email for customer ' . $customerId);
                 }
-                return;
+                return false;
             }
 
             $orderStmt = $db->prepare("
@@ -63,7 +63,7 @@ class OrderMailService
             $order = $orderStmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$order) {
-                return;
+                return false;
             }
 
             $itemsStmt = $db->prepare("
@@ -90,13 +90,41 @@ class OrderMailService
                 if (defined('MAIL_DEBUG') && MAIL_DEBUG) {
                     error_log('OrderMailService: sent order confirmation to ' . $toEmail . ' for ' . $orderId);
                 }
-            } else {
-                error_log('OrderMailService: FAILED to send to ' . $toEmail . ' for order ' . $orderId
-                    . ' — check SMTP (Mailpit/Gmail) in config/mail_config.php');
+                self::storeInboxRedirectSession($toEmail);
+                return true;
             }
+
+            error_log('OrderMailService: FAILED to send to ' . $toEmail . ' for order ' . $orderId
+                . ' — check SMTP in config/mail_config.php');
+            return false;
         } catch (Throwable $e) {
             error_log('OrderMailService error: ' . $e->getMessage());
+            return false;
         }
+    }
+
+    /** URL mở hộp thư web (Gmail, Outlook, Mailpit…) */
+    public static function getInboxRedirectUrl(string $email): ?string
+    {
+        if (defined('MAIL_HOST') && MAIL_HOST === '127.0.0.1' && (int) MAIL_PORT === 1025) {
+            return 'http://127.0.0.1:8025';
+        }
+
+        $domain = strtolower(ltrim(strrchr($email, '@') ?: '', '@'));
+
+        return match ($domain) {
+            'gmail.com', 'googlemail.com' => 'https://mail.google.com/mail/u/0/#inbox',
+            'outlook.com', 'hotmail.com', 'live.com' => 'https://outlook.live.com/mail/',
+            'yahoo.com' => 'https://mail.yahoo.com/',
+            default => null,
+        };
+    }
+
+    private static function storeInboxRedirectSession(string $toEmail): void
+    {
+        $_SESSION['last_order_email_sent'] = true;
+        $_SESSION['last_order_email_to']   = $toEmail;
+        $_SESSION['last_order_webmail_url'] = self::getInboxRedirectUrl($toEmail);
     }
 
     private static function buildHtml(string $customerName, array $order, array $items): string

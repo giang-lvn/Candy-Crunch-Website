@@ -225,7 +225,7 @@ function placeOrder()
 
         $db->commit();
 
-        OrderMailService::sendOrderConfirmation($db, $orderId, $customerId);
+        $emailSent = OrderMailService::sendOrderConfirmation($db, $orderId, $customerId);
 
         // Set session variables for order success page BEFORE any session manipulation
         $_SESSION['last_order_id'] = $orderId;

@@ -236,7 +236,7 @@ function handleCaptureOrder()
     $customerId = $_SESSION['user_data']['CustomerID']
         ?? $_SESSION['customer_id']
         ?? null;
-    OrderMailService::sendOrderConfirmation($db, $orderId, $customerId);
+    $emailSent = OrderMailService::sendOrderConfirmation($db, $orderId, $customerId);
 
     // Lưu session cho trang order success
     $_SESSION['last_order_id'] = $orderId;
@@ -249,8 +249,7 @@ function handleCaptureOrder()
     unset($_SESSION['paypal_pending']);
     unset($_SESSION['voucher_code']);
 
-    // Redirect đến trang success
-    header('Location: ' . $ROOT . '/views/website/php/ordersuccess.php?order_id=' . urlencode($orderId) . '&method=paypal');
+      header('Location: ' . $ROOT . '/views/website/php/ordersuccess.php?order_id=' . urlencode($orderId) . '&method=paypal');
     exit;
 }
 
