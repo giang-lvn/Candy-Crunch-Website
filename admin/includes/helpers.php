@@ -94,4 +94,48 @@ function generateOrderId($pdo) {
     $nextNum = ($result['maxNum'] ?? 0) + 1;
     return 'ORD' . str_pad($nextNum, 5, '0', STR_PAD_LEFT);
 }
+
+/**
+ * Loại giao dịch
+ */
+function getTransactionTypes() {
+    return [
+        'Payment' => 'Thanh toán',
+        'Refund' => 'Hoàn tiền',
+        'Adjustment' => 'Điều chỉnh',
+    ];
+}
+
+/**
+ * Trạng thái thanh toán giao dịch
+ */
+function getPaymentStatuses() {
+    return [
+        'Pending' => 'Chờ thanh toán',
+        'Completed' => 'Đã thanh toán',
+        'Failed' => 'Thất bại',
+        'Cancelled' => 'Đã hủy',
+        'Refunded' => 'Đã hoàn tiền',
+    ];
+}
+
+function getPaymentStatusColor($status) {
+    return match ($status) {
+        'Completed' => 'success',
+        'Pending' => 'warning',
+        'Failed', 'Cancelled' => 'danger',
+        'Refunded' => 'info',
+        default => 'secondary',
+    };
+}
+
+function getPaymentStatusText($status) {
+    $list = getPaymentStatuses();
+    return $list[$status] ?? $status;
+}
+
+function getTransactionTypeText($type) {
+    $list = getTransactionTypes();
+    return $list[$type] ?? $type;
+}
 ?>

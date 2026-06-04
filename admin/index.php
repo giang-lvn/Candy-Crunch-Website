@@ -201,6 +201,17 @@ try {
                         <i class="bi bi-people me-2"></i> Khách hàng
                     </a>
                 </li>
+
+                <?php
+                $transactionActions = ['transactions', 'view_transaction'];
+                $isTransactionSection = in_array($action, $transactionActions);
+                ?>
+                <li class="nav-item mb-2">
+                    <a href="<?php echo BASE_URL; ?>index.php?action=transactions"
+                       class="nav-link text-white <?php echo $isTransactionSection ? 'active bg-white text-dark' : ''; ?>">
+                        <i class="bi bi-credit-card me-2"></i> Giao dịch
+                    </a>
+                </li>
                 
                 <!-- Voucher Dropdown -->
                 <?php 
@@ -270,7 +281,9 @@ try {
                         'vouchers' => 'Quản lý Voucher',
                         'add_voucher' => 'Thêm voucher mới',
                         'edit_voucher' => 'Chỉnh sửa voucher',
-                        'feedback' => 'Phản hồi'
+                        'feedback' => 'Phản hồi',
+                        'transactions' => 'Quản lý giao dịch',
+                        'view_transaction' => 'Chi tiết giao dịch'
                     ];
                     echo $titles[$action] ?? 'Dashboard';
                     ?>
