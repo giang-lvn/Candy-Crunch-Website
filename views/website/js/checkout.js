@@ -248,6 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ======================================
 document.addEventListener('DOMContentLoaded', () => {
   const ROOT = '/Candy-Crunch-Website';
+  const promoInput = document.getElementById('promoCodeInput');
   const applyPromoBtn = document.getElementById('applyPromoBtn');
   const summarySubtotal = document.getElementById('summarySubtotal');
   const summaryDiscount = document.getElementById('summaryDiscount');

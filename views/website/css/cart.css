@@ -937,4 +937,14 @@
         font-size: 16px;
         border-radius: 12px;
     }
+    /* PROMO INPUT */
+/* PROMO INPUT */
+.promo-input {
+    width: 100%;
+}
+/* PROMO INPUT */
+.promo-input-field {
+    font-size: 14px;
+    padding: 12px 88px 12px 12px;
+}
 }
