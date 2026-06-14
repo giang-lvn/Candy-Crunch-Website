@@ -117,6 +117,22 @@ include(__DIR__ . '/../../../partials/header.php');
 </head>
 
 <body>
+    <?php
+    $flashError = $_SESSION['flash_error'] ?? null;
+    $flashInfo  = $_SESSION['flash_info']  ?? null;
+    unset($_SESSION['flash_error'], $_SESSION['flash_info']);
+    ?>
+    <?php if ($flashError): ?>
+    <div style="background:#fef2f2;border:1px solid #fca5a5;color:#b91c1c;padding:12px 20px;margin:12px 16px;border-radius:8px;font-size:14px;">
+        <?= htmlspecialchars($flashError) ?>
+    </div>
+    <?php endif; ?>
+    <?php if ($flashInfo): ?>
+    <div style="background:#eff6ff;border:1px solid #93c5fd;color:#1d4ed8;padding:12px 20px;margin:12px 16px;border-radius:8px;font-size:14px;">
+        <?= htmlspecialchars($flashInfo) ?>
+    </div>
+    <?php endif; ?>
+
     <main class="checkout-container">
         <div class="checkout-left">
             <!-- Delivery Address -->
@@ -196,10 +212,10 @@ include(__DIR__ . '/../../../partials/header.php');
                 </label>
 
                 <label class="radio" data-checked="false">
-                    <input type="radio" name="payment" value="bank" class="radio-input">
+                    <input type="radio" name="payment" value="momo" class="radio-input">
                     <img src="<?php echo $ROOT; ?>/views/website/img/radio-unchecked.svg" alt="radio"
                         class="radio-icon">
-                    <span class="radio-label">Bank Transfer</span>
+                    <span class="radio-label">MoMo</span>
                 </label>
 
                 <!-- PayPal -->
@@ -213,6 +229,15 @@ include(__DIR__ . '/../../../partials/header.php');
                         PayPal
                     </span>
                 </label>
+
+                <!-- MoMo info hint (hiện khi chọn MoMo) -->
+                <div id="momoInfo" style="display:none; margin-top:10px; padding:12px 16px;
+                     background:#fff0f6; border:1px solid #f5a0c8; border-radius:8px; font-size:13px; color:#444;">
+                    <strong style="color:#a50064;">MoMo Sandbox</strong><br>
+                    Bạn sẽ được chuyển đến trang thanh toán thử nghiệm của MoMo.<br>
+                    Dùng số điện thoại <strong>0000000000</strong> và OTP <strong>000000</strong> để thanh toán test.<br>
+                    <span style="color:#888; font-size:12px;">Chỉ dùng để kiểm tra — không trừ tiền thật.</span>
+                </div>
 
                 <!-- PayPal info hint (hiện khi chọn PayPal) -->
                 <div id="paypalInfo" style="display:none; margin-top:10px; padding:12px 16px;

@@ -124,6 +124,57 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // ============================================================
+      //  MOMO FLOW
+      // ============================================================
+      if (paymentMethod === 'momo') {
+        checkoutBtn.textContent = 'Đang chuyển đến MoMo...';
+
+        const voucherCode = document.getElementById('promoCodeInput')?.value || '';
+
+        try {
+          const res = await fetch(ROOT + '/controllers/website/MomoController.php?action=create', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              total:          total,
+              addressId:      selectedAddressId,
+              shippingMethod: deliveryMethod === 'fast' ? 'Express' : 'Standard',
+              shippingFee:    shipping,
+              voucherCode:    voucherCode
+            })
+          });
+
+          const raw = await res.text();
+          let data;
+          try {
+            data = JSON.parse(raw);
+          } catch {
+            console.error('MoMo invalid response:', raw);
+            alert('Không thể kết nối MoMo. Vui lòng thử lại.');
+            checkoutBtn.disabled = false;
+            checkoutBtn.textContent = 'Checkout';
+            return;
+          }
+
+          if (data.success && data.payUrl) {
+            window.location.href = data.payUrl;
+          } else {
+            alert('Lỗi MoMo: ' + (data.message || 'Lỗi không xác định'));
+            checkoutBtn.disabled = false;
+            checkoutBtn.textContent = 'Checkout';
+          }
+        } catch (err) {
+          console.error('MoMo error:', err);
+          alert('Không thể kết nối MoMo. Vui lòng thử lại.');
+          checkoutBtn.disabled = false;
+          checkoutBtn.textContent = 'Checkout';
+        }
+
+        return; // Stop here — don't run COD/Bank flow
+      }
+
+      // ============================================================
       //  COD / BANK TRANSFER FLOW
       // ============================================================
       const formData = new FormData();
@@ -1130,17 +1181,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// PayPal UI: show USD estimate when PayPal payment is selected
+// Payment info hints: show/hide MoMo and PayPal info panels on payment method change
 document.querySelectorAll('input[name="payment"]').forEach(function (radio) {
   radio.addEventListener('change', function () {
+    const momoInfo   = document.getElementById('momoInfo');
     const paypalInfo = document.getElementById('paypalInfo');
-    if (!paypalInfo) return;
-    if (this.value === 'paypal') {
-      paypalInfo.style.display = 'block';
-      updatePaypalUSD();
-    } else {
-      paypalInfo.style.display = 'none';
-    }
+
+    if (momoInfo)   momoInfo.style.display   = (this.value === 'momo')   ? 'block' : 'none';
+    if (paypalInfo) paypalInfo.style.display = (this.value === 'paypal') ? 'block' : 'none';
+
+    if (this.value === 'paypal') updatePaypalUSD();
   });
 });
 
