@@ -203,9 +203,9 @@ include __DIR__ . '/../../../partials/header.php';
                     <button class="btn-primary-medium btn-pay-now">Pay Now</button>
                 <?php endif; ?>
 
-                <?php if (!empty($buttons['change_method'])): ?>
+                <!-- <?php if (!empty($buttons['change_method'])): ?>
                     <button class="btn-primary-outline-medium btn-change-method">Change Method</button>
-                <?php endif; ?>
+                <?php endif; ?> -->
 
                 <?php if (!empty($buttons['buy_again'])): ?>
                     <button class="btn-primary-medium btn-buy-again">Buy Again</button>
